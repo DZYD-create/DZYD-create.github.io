@@ -1273,6 +1273,70 @@
   background: #dedfe6;
   color: #fff;
 }
+
+.history-batch-actions {
+  height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+.history-batch-actions > span {
+  margin-right: 8px;
+  color: #8d96a7;
+  font-size: 14px;
+}
+.history-batch-actions > button {
+  height: 42px;
+  padding: 0 18px;
+  border: 1px solid #e0dff0;
+  border-radius: 12px;
+  background: #f2f1f7;
+  color: #676d7b;
+  font-size: 15px;
+}
+.history-batch-actions > button:disabled {
+  opacity: 0.48;
+}
+.history-batch-actions > i {
+  width: 1px;
+  height: 20px;
+  margin: 0 4px;
+  background: #dddde6;
+}
+.history-batch-actions .history-cancel-batch {
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: #252936;
+}
+.history-record-preview .batch-check {
+  left: 10px !important;
+  right: auto !important;
+  top: 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: rgba(32, 36, 48, 0.42) !important;
+  color: transparent;
+}
+.history-record-preview .batch-check.selected {
+  background: #706cff !important;
+  color: #fff;
+}
+.history-favorite-star {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: #242630;
+  color: #ffb52c;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  font-style: normal;
+  box-shadow: 0 4px 12px rgba(25, 27, 36, 0.16);
+}
 .canvas-vertical-nav button[aria-label="添加"]:not(.active) img {
   filter: brightness(0) saturate(100%) !important;
   opacity: 0.9 !important;

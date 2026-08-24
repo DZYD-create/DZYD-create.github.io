@@ -62,6 +62,7 @@ function App() {
   const [selectedTemplateRatio, setSelectedTemplateRatio] = useState("3:4");
   const [conversationCollapsed, setConversationCollapsed] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [editorReturn, setEditorReturn] = useState<"studio" | "history">("studio");
   const [tool, setTool] = useState<EditorTool | null>(null);
   const [canvasImage, setCanvasImage] = useState<string | null>(null);
   const [folders, setFolders] = useState(["品牌素材", "产品图片"]);
@@ -282,7 +283,10 @@ function App() {
             generate={generate}
             generating={false}
             generated={false}
-            onEdit={() => setEditing(true)}
+            onEdit={() => {
+              setEditorReturn("studio");
+              setEditing(true);
+            }}
             onTemplate={(index) => {
               setSelectedTemplate(index);
               setTemplateDetailOpen(true);
@@ -351,7 +355,10 @@ function App() {
             tool={tool}
             setTool={setTool}
             prompt={prompt}
-            onClose={() => setEditing(false)}
+            onClose={() => {
+              setEditing(false);
+              if (editorReturn === "history") setSection("history");
+            }}
             onCanvas={() => {
               setCanvasImage("/assets/template-2.png");
               setSection("canvas");
@@ -363,8 +370,11 @@ function App() {
           <Canvas
             canvasImage={canvasImage}
             setCanvasImage={setCanvasImage}
+            folders={folders}
+            setFolders={setFolders}
             upload={upload}
             onEdit={() => {
+              setEditorReturn("studio");
               setSection("studio");
               setEditing(true);
             }}
@@ -374,6 +384,7 @@ function App() {
         {section === "history" && (
           <History
             onEdit={() => {
+              setEditorReturn("history");
               setSection("studio");
               setEditing(true);
             }}
@@ -1828,12 +1839,16 @@ function Editor({
 function Canvas({
   canvasImage,
   setCanvasImage,
+  folders,
+  setFolders,
   upload,
   onEdit,
   onBack,
 }: {
   canvasImage: string | null;
   setCanvasImage: (v: string | null) => void;
+  folders: string[];
+  setFolders: (v: string[]) => void;
   upload: (f?: File) => void;
   onEdit: () => void;
   onBack: () => void;
@@ -1857,6 +1872,13 @@ function Canvas({
   const [folderIndex, setFolderIndex] = useState(2);
   const [projectTitle, setProjectTitle] = useState("AI 视觉创作 · 未命名项目");
   const [folderName, setFolderName] = useState("");
+  const [folderNames, setFolderNames] = useState([
+    "项目名称1",
+    "项目名称2",
+    "项目名称3",
+    "项目名称4",
+    "项目名称5",
+  ]);
   const [folderColors, setFolderColors] = useState([
     "hsl(348 100% 96%)",
     "hsl(28 100% 96%)",
@@ -3445,7 +3467,7 @@ function Canvas({
                   style={{ "--folder-index": i } as React.CSSProperties}
                   aria-label={`打开项目名称${folderIndex + 1}中的图片 ${i + 1}`}
                   onClick={() => {
-                    const title = `项目名称${folderIndex + 1}`;
+                    const title = folderNames[folderIndex];
                     setProjectTitle(title);
                     setCanvasImage(src);
                     setCanvasNodes([
@@ -3467,7 +3489,7 @@ function Canvas({
               ))}
             </div>
             <div className="folder-carousel">
-              {[0, 1, 2, 3, 4].map((index) => {
+              {folderNames.map((folder, index) => {
                 const offset = index - folderIndex;
                 const position =
                   offset < -2
@@ -3497,7 +3519,7 @@ function Canvas({
                       src="/assets/folder-group-54.png"
                     />
                     <div className="folder-meta">
-                      <strong>项目名称{index + 1}</strong>
+                      <strong>{folder}</strong>
                       <small>2026.08.18</small>
                     </div>
                     {offset === 0 && (
@@ -3532,12 +3554,12 @@ function Canvas({
                 ‹
               </button>
             )}
-            {folderIndex < 4 && (
+            {folderIndex < folderNames.length - 1 && (
               <button
                 className="folder-switch folder-next"
                 aria-label="下一个文件夹"
                 onClick={() => {
-                  setFolderIndex((i) => Math.min(4, i + 1));
+                  setFolderIndex((i) => Math.min(folderNames.length - 1, i + 1));
                   setFolderExpanded(false);
                   setFolderColorOpen(null);
                 }}
@@ -3591,6 +3613,12 @@ function Canvas({
               {folderName.trim() && (
                 <button
                   onClick={() => {
+                    const name = folderName.trim();
+                    if (!name) return;
+                    setFolderNames((names) => [...names, name]);
+                    setFolderColors((colors) => [...colors, "#EDECFF"]);
+                    setFolders([...folders, name]);
+                    setFolderIndex(folderNames.length);
                     setFolderName("");
                     setFolderExpanded(false);
                   }}
@@ -4562,6 +4590,8 @@ function History({
   const [sortBy, setSortBy] = useState("修改时间");
   const [zoom, setZoom] = useState(42);
   const [batch, setBatch] = useState(false);
+  const [selectedHistory, setSelectedHistory] = useState<string[]>([]);
+  const [favoriteHistory, setFavoriteHistory] = useState<string[]>([]);
   const [cards, setCards] = useState([
     "夏日新品预热海报",
     "课程价格板设计",
@@ -4620,14 +4650,31 @@ function History({
                 onChange={(e) => setZoom(Number(e.target.value))}
               />
             </label>
-            <button
-              className={batch ? "active history-batch" : "history-batch"}
-              onClick={() => setBatch((v) => !v)}
-            >
-              <img src="/assets/history-search.svg" />
-              <i />
-              批量操作
-            </button>
+            {batch ? (
+              <div className="history-batch-actions">
+                <span>已选择 {selectedHistory.length} 项内容</span>
+                <button
+                  disabled={!selectedHistory.length}
+                  onClick={() => {
+                    setCards((items) => items.filter((name) => !selectedHistory.includes(name)));
+                    setSelectedHistory([]);
+                  }}
+                >♜ 删除</button>
+                <button
+                  disabled={!selectedHistory.length}
+                  onClick={() => {
+                    setFavoriteHistory((items) => [...new Set([...items, ...selectedHistory])]);
+                    setSelectedHistory([]);
+                  }}
+                >☆ 收藏</button>
+                <i />
+                <button className="history-cancel-batch" onClick={() => { setBatch(false); setSelectedHistory([]); }}>× 取消选择</button>
+              </div>
+            ) : (
+              <button className="history-batch" onClick={() => setBatch(true)}>
+                <img src="/assets/history-search.svg" /><i />批量选择
+              </button>
+            )}
           </div>
         </div>
         <div className="history-filter-row">
@@ -4752,12 +4799,23 @@ function History({
           {cards.map((name, i) => (
             <button
               className={`history-record ${batch ? "batching" : ""}`}
-              onClick={onEdit}
+              onClick={() => {
+                if (batch) {
+                  setSelectedHistory((items) =>
+                    items.includes(name) ? items.filter((item) => item !== name) : [...items, name],
+                  );
+                } else onEdit();
+              }}
               key={name}
             >
               <div className="history-record-preview">
                 {i === 0 && <span className="history-loader" />}
-                {batch && <i className="batch-check">✓</i>}
+                {batch && (
+                  <i className={`batch-check ${selectedHistory.includes(name) ? "selected" : ""}`}>
+                    {selectedHistory.includes(name) ? "✓" : ""}
+                  </i>
+                )}
+                {favoriteHistory.includes(name) && <i className="history-favorite-star">★</i>}
               </div>
               <strong>{name}</strong>
               {i > 0 && (
