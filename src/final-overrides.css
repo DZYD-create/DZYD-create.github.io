@@ -897,6 +897,50 @@
 .folder-browser .folder-add {
   display: none !important;
 }
+
+/* Folder controls: hue-varied equal-lightness swatches and true outer arrows. */
+.folder-browser .folder-color-trigger {
+  right: 34px !important;
+}
+.folder-browser .folder-prev {
+  left: -58px !important;
+  right: auto !important;
+}
+.folder-browser .folder-next {
+  left: auto !important;
+  right: -58px !important;
+}
+.folder-browser .folder-prev,
+.folder-browser .folder-next {
+  top: 103px !important;
+  opacity: 1 !important;
+}
+
+/* Generated-image preview fills the available stage while preserving ratio. */
+.generated-image-canvas img {
+  width: 92% !important;
+  height: 92% !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: contain !important;
+}
+
+/* Home rail keeps only hover and selected visual states; all icon motion is off. */
+.rail-items button,
+.rail-items button *,
+.rail-items button img,
+.rail-items .nav-glyph {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+}
+.rail-items .nav-motion,
+.rail-items button::before,
+.rail-items button::after {
+  display: none !important;
+  content: none !important;
+  animation: none !important;
+}
 .canvas-vertical-nav button[aria-label="添加"]:not(.active) img {
   filter: brightness(0) saturate(100%) !important;
   opacity: 0.9 !important;

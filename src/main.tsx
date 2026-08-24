@@ -1786,11 +1786,12 @@ function Canvas({
   const [folderIndex, setFolderIndex] = useState(2);
   const [folderName, setFolderName] = useState("");
   const [folderColors, setFolderColors] = useState([
+    "hsl(348 100% 96%)",
+    "hsl(28 100% 96%)",
+    "hsl(52 100% 96%)",
+    "hsl(142 100% 96%)",
+    "hsl(190 100% 96%)",
     "#EDECFF",
-    "#E5E1FF",
-    "#DDD7FF",
-    "#D5CCFF",
-    "#CDBFFF",
   ]);
   const [folderColorOpen, setFolderColorOpen] = useState<number | null>(null);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(
@@ -3398,12 +3399,12 @@ function Canvas({
                 onClick={(event) => event.stopPropagation()}
               >
                 {[
-                  "#F6F4FF",
+                  "hsl(348 100% 96%)",
+                  "hsl(28 100% 96%)",
+                  "hsl(52 100% 96%)",
+                  "hsl(142 100% 96%)",
+                  "hsl(190 100% 96%)",
                   "#EDECFF",
-                  "#E5E1FF",
-                  "#DDD7FF",
-                  "#D5CCFF",
-                  "#CDBFFF",
                 ].map((color) => (
                   <button
                     key={color}
