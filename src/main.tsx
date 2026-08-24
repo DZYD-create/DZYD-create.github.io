@@ -450,9 +450,19 @@ function GenerationPage({
   const [uploadOpen, setUploadOpen] = useState(false);
   const [assetsOpen, setAssetsOpen] = useState(false);
   const generationFile = useRef<HTMLInputElement>(null);
+  const composerInput = useRef<HTMLTextAreaElement>(null);
   const [progress, setProgress] = useState(generating ? 0 : 100);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [resultRound, setResultRound] = useState(0);
+  const [roundPrompts, setRoundPrompts] = useState([
+    prompt || "生成夏日新品直播海报，突出新品卖点，风格清爽明亮。",
+  ]);
+  const startNewRound = (request: string) => {
+    const nextRequest = request.trim() || prompt;
+    setRoundPrompts((items) => [...items, nextRequest]);
+    setResultRound((round) => round + 1);
+    onRegenerate(nextRequest);
+  };
   useEffect(() => {
     setDraft(prompt);
   }, [prompt]);
@@ -505,7 +515,7 @@ function GenerationPage({
             <div className="generation-round" key={round}>
               <div className="user-message-wrap">
                 <div className="user-message">
-                  <p>{prompt || "生成夏日新品直播海报，突出新品卖点，风格清爽明亮。"}</p>
+                  <p>{roundPrompts[round]}</p>
                 </div>
                 <img src="/assets/user-avatar.svg" alt="用户" />
               </div>
@@ -549,34 +559,29 @@ function GenerationPage({
                     ))}
                 </div>
               )}
+              {(!latest || (!preparing && !generating && generated)) && (
+                <div className="generation-result-actions">
+                  <button
+                    className="action-edit"
+                    onClick={() => {
+                      setDraft(roundPrompts[round]);
+                      window.setTimeout(() => composerInput.current?.focus(), 0);
+                    }}
+                  >
+                    <img src="/assets/magic.svg" />重新编辑
+                  </button>
+                  <button className="action-regenerate" onClick={() => startNewRound(roundPrompts[round])}>
+                    <img src="/assets/figma-redo.svg" />再次生成
+                  </button>
+                  <button className="action-more" aria-label={`第 ${round + 1} 轮更多`}>•••</button>
+                  <button className="batch-delete" onClick={() => setDeleteOpen(true)}>
+                    <span className="batch-delete-icon" />批量删除
+                  </button>
+                </div>
+              )}
             </div>
           );
         })}
-        {!preparing && !generating && generated && (
-          <div className="generation-result-actions">
-            <button className="action-edit" onClick={onEdit}>
-              <img src="/assets/magic.svg" />
-              重新编辑
-            </button>
-            <button
-              className="action-regenerate"
-              onClick={() => {
-                setResultRound((round) => round + 1);
-                onRegenerate(draft);
-              }}
-            >
-              <img src="/assets/figma-redo.svg" />
-              再次生成
-            </button>
-            <button className="action-more" aria-label="更多">
-              •••
-            </button>
-            <button className="batch-delete" onClick={() => setDeleteOpen(true)}>
-              <span className="batch-delete-icon" />
-              批量删除
-            </button>
-          </div>
-        )}
       </div>
       {deleteOpen && (
         <div className="generation-delete-backdrop" role="presentation">
@@ -608,6 +613,7 @@ function GenerationPage({
       )}
       <div className="generation-composer new-creation-composer">
         <textarea
+          ref={composerInput}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="描述你的设计需求，输入 @ 可引用素材或 Skill"
@@ -665,7 +671,7 @@ function GenerationPage({
           </button>
           <i />
           <button className="new-model">⌘</button>
-          <button className="new-generate" onClick={() => onRegenerate(draft)}>
+          <button className="new-generate" onClick={() => startNewRound(draft)}>
             {preparing || generating ? "生成中…" : "立即生成"}
           </button>
         </footer>
@@ -731,16 +737,13 @@ function StudioSidebar({
         />
       </label>
       <p className="muted label">过往对话</p>
-      {visible.map(([a, b]) => (
-        <button
-          className="history-row"
-          onClick={() => onOpenConversation(a)}
-          key={a}
-        >
-          <strong>{a}</strong>
-          <small>{b}</small>
-        </button>
-      ))}
+      <div className="conversation-history-scroll">
+        {visible.map(([a, b]) => (
+          <button className="history-row" onClick={() => onOpenConversation(a)} key={a}>
+            <strong>{a}</strong><small>{b}</small>
+          </button>
+        ))}
+      </div>
       <div className="panel-footer">清空记录　　设置</div>
     </aside>
   );
