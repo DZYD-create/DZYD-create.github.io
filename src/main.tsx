@@ -1216,6 +1216,7 @@ function SizePopover({ onClose }: { onClose: () => void }) {
             }}
             key={v}
           >
+            {v !== "智能" && <i aria-hidden="true" />}
             {v}
           </button>
         ))}
@@ -1860,6 +1861,19 @@ function Canvas({
         ? { ...node, mediaWidth, mediaHeight }
         : node,
     ));
+  };
+  const getCanvasPoint = (clientX: number, clientY: number) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: clientX, y: clientY };
+    const box = canvas.getBoundingClientRect();
+    const scale = canvasZoom / 75;
+    const centerX = canvas.clientWidth / 2;
+    const localX = clientX - box.left + canvas.scrollLeft;
+    const localY = clientY - box.top + canvas.scrollTop;
+    return {
+      x: centerX + (localX - centerX) / scale,
+      y: localY / scale,
+    };
   };
   const [imageDrag, setImageDrag] = useState<{
     id: number;
@@ -2534,15 +2548,17 @@ function Canvas({
           const side: eastWest = port.classList.contains("left")
             ? "left"
             : "right";
-          const box = canvasRef.current?.getBoundingClientRect();
-          if (!box) return;
           const rect = port.getBoundingClientRect();
+          const point = getCanvasPoint(
+            rect.left + rect.width / 2,
+            rect.top + rect.height / 2,
+          );
           setPendingLink({ from: Number(node.dataset.nodeId), side });
           setLinkDraft({
             from: Number(node.dataset.nodeId),
             side,
-            x: rect.left + rect.width / 2 - box.left,
-            y: rect.top + rect.height / 2 - box.top,
+            x: point.x,
+            y: point.y,
           });
           return;
         }
@@ -2583,11 +2599,7 @@ function Canvas({
             )
           )
             return;
-          const box = e.currentTarget.getBoundingClientRect();
-          const p = {
-            x: e.clientX - box.left + e.currentTarget.scrollLeft,
-            y: e.clientY - box.top + e.currentTarget.scrollTop,
-          };
+          const p = getCanvasPoint(e.clientX, e.clientY);
           selectionOrigin.current = p;
           selectionPointer.current = p;
           if (selectionHoldTimer.current)
@@ -2605,9 +2617,7 @@ function Canvas({
           }, 320);
         }}
         onMouseMove={(e) => {
-          const box = e.currentTarget.getBoundingClientRect();
-          const x = e.clientX - box.left + e.currentTarget.scrollLeft,
-            y = e.clientY - box.top + e.currentTarget.scrollTop;
+          const { x, y } = getCanvasPoint(e.clientX, e.clientY);
           selectionPointer.current = { x, y };
           if (linkDraft) {
             setLinkDraft((v) => v && { ...v, x, y });
@@ -2648,9 +2658,10 @@ function Canvas({
                 },
               ]);
             } else if (!targetId) {
-              const box = e.currentTarget.getBoundingClientRect();
-              const dropX = e.clientX - box.left + e.currentTarget.scrollLeft,
-                dropY = e.clientY - box.top + e.currentTarget.scrollTop;
+              const { x: dropX, y: dropY } = getCanvasPoint(
+                e.clientX,
+                e.clientY,
+              );
               const id = Date.now();
               const from = canvasNodes.find(
                 (node) => node.id === linkDraft.from,
@@ -2872,12 +2883,12 @@ function Canvas({
                               ...n,
                               x:
                                 imageDrag.originX +
-                                e.clientX -
-                                imageDrag.startX,
+                                (e.clientX - imageDrag.startX) /
+                                  (canvasZoom / 75),
                               y:
                                 imageDrag.originY +
-                                e.clientY -
-                                imageDrag.startY,
+                                (e.clientY - imageDrag.startY) /
+                                  (canvasZoom / 75),
                             }
                           : n,
                       ),
@@ -2897,12 +2908,12 @@ function Canvas({
                     onPointerDown={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      const box = canvasRef.current!.getBoundingClientRect();
-                      setLinkDraft({
-                        from: node.id,
-                        side: "left",
-                        x: e.clientX - box.left,
-                        y: e.clientY - box.top,
+                        const point = getCanvasPoint(e.clientX, e.clientY);
+                        setLinkDraft({
+                          from: node.id,
+                          side: "left",
+                          x: point.x,
+                          y: point.y,
                       });
                     }}
                   >
@@ -2942,12 +2953,12 @@ function Canvas({
                     onPointerDown={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      const box = canvasRef.current!.getBoundingClientRect();
-                      setLinkDraft({
-                        from: node.id,
-                        side: "right",
-                        x: e.clientX - box.left,
-                        y: e.clientY - box.top,
+                        const point = getCanvasPoint(e.clientX, e.clientY);
+                        setLinkDraft({
+                          from: node.id,
+                          side: "right",
+                          x: point.x,
+                          y: point.y,
                       });
                     }}
                   >
@@ -3075,7 +3086,10 @@ function Canvas({
             return (
               <section
                 className="canvas-node-prompt"
-                style={{ left: `calc(50% + ${node.x}px)`, top: 468 + node.y }}
+                style={{
+                  left: `calc(50% + ${node.x}px)`,
+                  top: 32 + node.y + getNodeGeometry(node).cardHeight + 14,
+                }}
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={(e) => e.stopPropagation()}
               >
