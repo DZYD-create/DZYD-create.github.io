@@ -260,6 +260,13 @@ function App() {
         studioView !== "detail" && (
           <StudioSidebar
             conversations={conversations}
+            onRename={(previous, next) => {
+              setConversations((items) =>
+                items.map(([title, time]) => [title === previous ? next : title, time]),
+              );
+              if (activeConversation === previous) setActiveConversation(next);
+              if (prompt === previous) setPrompt(next);
+            }}
             onNewWork={newCreation}
             onOpenConversation={(title) => {
               setPrompt(title);
@@ -709,14 +716,20 @@ function GenerationPage({
 
 function StudioSidebar({
   conversations,
+  onRename,
   onNewWork,
   onOpenConversation,
 }: {
   conversations: Array<[string, string]>;
+  onRename: (previous: string, next: string) => void;
   onNewWork: () => void;
   onOpenConversation: (title: string) => void;
 }) {
   const [query, setQuery] = useState("");
+  const [renaming, setRenaming] = useState<string | null>(null);
+  const [renameDraft, setRenameDraft] = useState("");
+  const renameOriginal = useRef("");
+  const renamePrevious = useRef("");
   const visible = conversations.filter(([title]) =>
     title.toLowerCase().includes(query.trim().toLowerCase()),
   );
@@ -739,12 +752,54 @@ function StudioSidebar({
       <p className="muted label">过往对话</p>
       <div className="conversation-history-scroll">
         {visible.map(([a, b]) => (
-          <button className="history-row" onClick={() => onOpenConversation(a)} key={a}>
+          <button
+            className="history-row"
+            onClick={() => onOpenConversation(a)}
+            onDoubleClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              renameOriginal.current = a;
+              renamePrevious.current = a;
+              setRenameDraft(a);
+              setRenaming(a);
+            }}
+            key={a}
+          >
             <strong>{a}</strong><small>{b}</small>
           </button>
         ))}
       </div>
       <div className="panel-footer">清空记录　　设置</div>
+      {renaming && (
+        <div className="conversation-rename-backdrop" onClick={(event) => event.stopPropagation()}>
+          <section className="conversation-rename-dialog" role="dialog" aria-modal="true" aria-labelledby="rename-title">
+            <button className="conversation-rename-close" aria-label="关闭" onClick={() => setRenaming(null)}>×</button>
+            <h2 id="rename-title">重命名聊天</h2>
+            <p>保持简短且易于识别</p>
+            <input
+              autoFocus
+              maxLength={40}
+              value={renameDraft}
+              onChange={(event) => {
+                const next = event.target.value;
+                setRenameDraft(next);
+                if (next.trim()) {
+                  onRename(renamePrevious.current, next);
+                  renamePrevious.current = next;
+                }
+              }}
+            />
+            <small>{renameDraft.length}/40</small>
+            <footer>
+              <button onClick={() => {
+                onRename(renamePrevious.current, renameOriginal.current);
+                setRenaming(null);
+              }}>取消</button>
+              <button className="save" disabled={!renameDraft.trim()} onClick={() => setRenaming(null)}>保存</button>
+            </footer>
+          </section>
+        </div>
+      )}
     </aside>
   );
 }
@@ -4807,12 +4862,18 @@ function History({
                   setSelectedHistory((items) =>
                     items.includes(name) ? items.filter((item) => item !== name) : [...items, name],
                   );
+                } else if (tab === "subject") {
+                  setSubjectName(name);
+                  setSubjectDescription("");
+                  setSubjectPreview(samples[i % samples.length]);
+                  setSubjectOpen(true);
                 } else onEdit();
               }}
               key={name}
             >
               <div className="history-record-preview">
-                {i === 0 && <span className="history-loader" />}
+                {tab === "subject" && <img src={samples[i % samples.length]} alt={name} />}
+                {i === 0 && tab === "canvas" && <span className="history-loader" />}
                 {batch && (
                   <i className={`batch-check ${selectedHistory.includes(name) ? "selected" : ""}`}>
                     {selectedHistory.includes(name) ? "✓" : ""}
@@ -4850,12 +4911,21 @@ function History({
             </header>
             <label>参考主体 <b>*</b></label>
             <div className="history-subject-upload">
-              {subjectPreview ? <img src={subjectPreview} alt="主体预览" /> : <span className="history-upload-symbol">⇧</span>}
-              <p>上传主图，将素材拖拽至此处或从以下选择</p>
-              <div>
-                <button onClick={() => subjectFile.current?.click()}>⇧ 从本地添加</button>
-                <button onClick={() => subjectFile.current?.click()}>▣ 从资产添加</button>
-              </div>
+              {subjectPreview ? (
+                <div className="history-subject-preview-row">
+                  <img src={subjectPreview} alt="主体预览" />
+                  <button aria-label="上传替换主体图片" onClick={() => subjectFile.current?.click()}>▧＋</button>
+                </div>
+              ) : (
+                <>
+                  <span className="history-upload-symbol">⇧</span>
+                  <p>上传主图，将素材拖拽至此处或从以下选择</p>
+                  <div>
+                    <button onClick={() => subjectFile.current?.click()}>⇧ 从本地添加</button>
+                    <button onClick={() => subjectFile.current?.click()}>▣ 从资产添加</button>
+                  </div>
+                </>
+              )}
             </div>
             <label>名称 <b>*</b></label>
             <div className="history-subject-input">

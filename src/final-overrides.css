@@ -1361,6 +1361,112 @@
   display: block;
   width: 100%;
 }
+
+.conversation-rename-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 360;
+  display: grid;
+  place-items: center;
+  background: rgba(34, 37, 49, 0.38);
+  backdrop-filter: blur(2px);
+}
+.conversation-rename-dialog {
+  position: relative;
+  width: 524px;
+  min-height: 264px;
+  padding: 28px 26px 24px;
+  border: 1px solid rgba(119, 108, 255, 0.16);
+  border-radius: 24px;
+  background: linear-gradient(145deg, #fff 58%, #f5f2ff 100%);
+  box-shadow: 0 22px 65px rgba(45, 45, 72, 0.2);
+  text-align: left;
+}
+.conversation-rename-dialog h2 {
+  margin: 0;
+  color: #252936;
+  font-size: 24px;
+  font-weight: 600;
+}
+.conversation-rename-dialog p {
+  margin: 6px 0 18px;
+  color: #8a91a0;
+  font-size: 15px;
+}
+.conversation-rename-dialog > input {
+  width: 100%;
+  height: 46px;
+  padding: 0 12px;
+  border: 1.5px solid #6e78ff !important;
+  border-radius: 10px;
+  outline: 0;
+  background: #fff !important;
+  animation: none !important;
+  font-size: 15px;
+}
+.conversation-rename-dialog > small {
+  display: block;
+  width: 200px;
+  height: 14px;
+  margin-top: 14px;
+  border-radius: 7px;
+  background: linear-gradient(90deg, #e7e5f4 55%, transparent 55%);
+  color: transparent;
+}
+.conversation-rename-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  border: 0;
+  background: transparent;
+  color: #555968;
+  font-size: 22px;
+}
+.conversation-rename-dialog footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 20px;
+}
+.conversation-rename-dialog footer button {
+  width: 76px;
+  height: 40px;
+  border: 1px solid #e2e0ed;
+  border-radius: 11px;
+  background: #fff;
+  color: #343844;
+}
+.conversation-rename-dialog footer .save {
+  border-color: #736eff;
+  background: linear-gradient(135deg, #6f76ff, #8d69ec);
+  color: #fff;
+}
+.conversation-rename-dialog footer .save:disabled {
+  opacity: 0.5;
+}
+.history-subject-preview-row {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 102px;
+}
+.history-subject-preview-row > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #d4cece;
+}
+.history-subject-preview-row > button {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid #e1dfeb;
+  border-radius: 0;
+  background: #f5f5f7;
+  color: #343844;
+  font-size: 24px;
+}
 .canvas-vertical-nav button[aria-label="添加"]:not(.active) img {
   filter: brightness(0) saturate(100%) !important;
   opacity: 0.9 !important;
