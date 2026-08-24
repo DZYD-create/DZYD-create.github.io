@@ -125,6 +125,26 @@ function App() {
   return (
     <div
       className={`app-shell ${isCanvas ? "canvas-shell" : ""}`}
+      onKeyDownCapture={(event) => {
+        if (
+          event.key !== "Enter" ||
+          event.shiftKey ||
+          event.nativeEvent.isComposing
+        )
+          return;
+        const target = event.target as HTMLElement;
+        if (!target.matches("input,textarea,[contenteditable='true']")) return;
+        const scope = target.closest(
+          ".composer,.generation-composer,.canvas-node-prompt,.canvas-comment-panel,.canvas-comment-reply,.folder-create,.apply-popover,.figma-tool-modal,.edit-prompt-block",
+        );
+        if (!scope) return;
+        const action = scope.querySelector<HTMLButtonElement>(
+          ".generate,.new-generate,.canvas-node-prompt-send,.canvas-comment-panel footer button,.canvas-comment-reply button,.folder-create button,.apply-canvas,.modal-generate,.save-edit,button[type='submit']",
+        );
+        if (!action || action.disabled) return;
+        event.preventDefault();
+        action.click();
+      }}
       onPointerDownCapture={(e) => {
         const target = e.target as HTMLElement;
         if (
@@ -1784,6 +1804,7 @@ function Canvas({
   const [folderDone, setFolderDone] = useState(false);
   const [folderExpanded, setFolderExpanded] = useState(false);
   const [folderIndex, setFolderIndex] = useState(2);
+  const [projectTitle, setProjectTitle] = useState("AI 视觉创作 · 未命名项目");
   const [folderName, setFolderName] = useState("");
   const [folderColors, setFolderColors] = useState([
     "hsl(348 100% 96%)",
@@ -2517,7 +2538,7 @@ function Canvas({
           <img src="/assets/project-dropdown.svg" />
         </button>
         <div>
-          <strong>AI 视觉创作 · 未命名项目</strong>
+          <strong>{projectTitle}</strong>
           <small>上次修改于 刚刚</small>
         </div>
       </header>
@@ -3322,6 +3343,24 @@ function Canvas({
                 <button
                   key={src}
                   style={{ "--folder-index": i } as React.CSSProperties}
+                  aria-label={`打开项目名称${folderIndex + 1}中的图片 ${i + 1}`}
+                  onClick={() => {
+                    const title = `项目名称${folderIndex + 1}`;
+                    setProjectTitle(title);
+                    setCanvasImage(src);
+                    setCanvasNodes([
+                      {
+                        id: Date.now(),
+                        url: src,
+                        x: 0,
+                        y: 0,
+                        name: title,
+                      },
+                    ]);
+                    setActiveNodeId(null);
+                    setFolderExpanded(false);
+                    setMode(null);
+                  }}
                 >
                   <img src={src} />
                 </button>

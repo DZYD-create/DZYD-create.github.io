@@ -800,13 +800,19 @@
 }
 .folder-browser .folder-color-wash {
   position: absolute;
-  left: 4px;
-  right: 4px;
-  top: 20px;
-  bottom: 4px;
-  border-radius: 24px 24px 20px 20px;
-  opacity: 0.82;
-  z-index: -1;
+  left: 0;
+  right: auto;
+  top: -57px;
+  bottom: auto;
+  width: 188px;
+  height: 214px;
+  border-radius: 0;
+  opacity: 0.78;
+  z-index: 2;
+  pointer-events: none;
+  -webkit-mask: url("/assets/folder-group-54.png") center / 100% 100% no-repeat;
+  mask: url("/assets/folder-group-54.png") center / 100% 100% no-repeat;
+  mix-blend-mode: color;
   transition: background 0.2s ease;
 }
 .folder-browser .folder-color-trigger {
@@ -973,6 +979,54 @@
 }
 .canvas-size-popover .canvas-ratio-grid button {
   flex-direction: column !important;
+}
+
+/* Completed comments use the site's soft violet/blue visual language. */
+.canvas-comment-marker {
+  border-color: rgba(116, 96, 232, 0.28) !important;
+  background: linear-gradient(145deg, #f0edff, #dfe9ff) !important;
+  color: #6854dc !important;
+  box-shadow: 0 6px 16px rgba(105, 83, 210, 0.14) !important;
+}
+.canvas-comment-card {
+  border-color: rgba(126, 105, 229, 0.2) !important;
+  background: rgba(255, 255, 255, 0.98) !important;
+  box-shadow: 0 16px 38px rgba(84, 70, 153, 0.16) !important;
+}
+.canvas-comment-card header > span {
+  background: linear-gradient(145deg, #ebe7ff, #dceaff) !important;
+  color: #6754d8 !important;
+}
+.canvas-comment-card header strong {
+  color: #292638 !important;
+}
+.canvas-comment-card header small {
+  color: #8b879b !important;
+}
+.canvas-comment-card header button {
+  border-color: rgba(126, 105, 229, 0.24) !important;
+  background: #f3f0ff !important;
+  color: #6f5be0 !important;
+}
+.canvas-comment-card p {
+  color: #3e3a4c !important;
+}
+.canvas-comment-reply {
+  border-color: #e5e0f5 !important;
+  background: #f8f7fc !important;
+}
+.canvas-comment-reply input {
+  color: #353143 !important;
+}
+.canvas-comment-reply input::placeholder {
+  color: #9b96a8 !important;
+}
+.canvas-comment-reply span {
+  color: #9993a7 !important;
+}
+.canvas-comment-reply button {
+  background: #ede9ff !important;
+  color: #6b58dc !important;
 }
 .canvas-vertical-nav button[aria-label="添加"]:not(.active) img {
   filter: brightness(0) saturate(100%) !important;
