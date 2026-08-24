@@ -1,0 +1,1157 @@
+/* Final Figma fidelity corrections. */
+.folder-result{left:50%!important;top:352px!important;transform:translateX(-50%)!important;width:188px!important;height:233px!important;filter:none!important;z-index:13!important}
+.folder-result>img{left:0!important;top:-57px!important;width:188px!important;height:201px!important;object-fit:contain!important;filter:drop-shadow(0 4px 8.5px #c6cad0)}
+.folder-result>strong{left:15px!important;top:118px!important;font-size:13px!important;line-height:14px!important;font-weight:400!important;color:#000!important}
+.folder-result>small{left:15px!important;top:134px!important;font-size:9px!important;line-height:14px!important;color:#202432!important}
+.folder-result .folder-expand{left:160px!important;right:auto!important;top:38px!important;width:18px!important;height:18px!important;padding:0!important;border:0!important;background:transparent!important;font-size:16px!important;line-height:18px!important}
+.folder-result .folder-delete{left:159px!important;right:auto!important;top:130px!important;width:18px!important;height:18px!important;padding:0!important}
+.folder-result .folder-add{left:7px!important;top:179px!important;width:174px!important;height:54px!important;border:1px solid #8a67f4!important;border-radius:100px!important;background:#fff!important;box-shadow:0 10px 24px rgba(0,0,0,.08),0 2px 8px rgba(107,122,153,.05)!important;font-size:18px!important;line-height:26px!important;font-weight:400!important}
+
+.search,.mini-search,.asset-search,.figma-history-search,.search-controls>label,.canvas-comment-panel,.canvas-prompt,.generation-composer,.modal-prompt,.tool-settings textarea,.canvas-drawer textarea{border:1px solid transparent!important;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(100deg,#39b9ff 0%,#6d72ff 18%,#c278ff 35%,#fff 46%,#ff83c7 54%,#7b7cff 72%,#39b9ff 100%) border-box!important;background-size:100% 100%,300% 100%!important;background-position:0 0,0% 50%!important;animation:visible-light-run 2.8s linear infinite!important}
+@keyframes visible-light-run{0%{background-position:0 0,0% 50%}100%{background-position:0 0,100% 50%}}
+
+/* Folder 2 / node 842:493: exact 188×157 card + 22px gap + 174×54 button. */
+.folder-result{display:flex!important;flex-direction:column!important;align-items:center!important;gap:22px!important;width:188px!important;height:233px!important}
+.folder-result .folder-card{position:relative;width:188px;height:157px;flex:0 0 157px;filter:drop-shadow(0 4px 8.5px #c6cad0)}
+.folder-result .folder-art{position:absolute!important;left:0!important;top:-57px!important;width:188px!important;height:214px!important;object-fit:fill!important;filter:none!important}
+.folder-result .folder-meta{position:absolute;left:15px;top:118px;display:flex;flex-direction:column;gap:2px;line-height:14px}
+.folder-result .folder-meta strong{position:static!important;font-size:13px!important;line-height:14px!important;font-weight:400!important;color:#000!important}
+.folder-result .folder-meta small{position:static!important;font-size:9px!important;line-height:14px!important;color:#202432!important}
+.folder-result .folder-expand{position:absolute!important;left:160px!important;top:38px!important;width:18px!important;height:18px!important;padding:0!important;border:0!important;background:transparent!important}
+.folder-result .folder-expand img{display:block;width:18px;height:18px}
+.folder-result .folder-delete{position:absolute!important;left:159px!important;top:130px!important;width:18px!important;height:18px!important;padding:0!important;border:0!important;background:transparent!important}
+.folder-result .folder-delete:before{left:5px!important;top:6px!important;width:8px!important;height:10px!important}.folder-result .folder-delete:after{left:4px!important;top:3px!important;width:10px!important}
+.folder-result .folder-add{position:relative!important;left:auto!important;top:auto!important;width:174px!important;height:54px!important;flex:0 0 54px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:4px!important;padding:0 20px!important}
+.folder-result .folder-add img{width:14px;height:14px;display:block}
+
+/* Site-wide moving 1px light outline for bordered containers, cards, bubbles and dialogs. */
+.new-work,.credits,.collapse-chat,.user-message,.generation-tile,.generation-result-actions button,.figma-composer,.canvas-prompt,.canvas-comment-panel,.canvas-add-popover,.canvas-bottom-dock,.figma-zoom,.asset-library-panel,.apply-popover,.figma-history-panel,.history-action-bar,.canvas-search-modal,.history-pop,.history-record-preview,.history-card,.folder,.result-card,.figma-tool-modal,.popover,.canvas-home-title>span,.canvas-home-actions button,.folder-card,.folder-add,.search,.mini-search,.asset-search,.figma-history-search,.search-controls>label{position:relative}
+.new-work::after,.credits::after,.collapse-chat::after,.user-message::after,.generation-tile::after,.generation-result-actions button::after,.figma-composer::after,.canvas-prompt::after,.canvas-comment-panel::after,.canvas-add-popover::after,.canvas-bottom-dock::after,.figma-zoom::after,.asset-library-panel::after,.apply-popover::after,.figma-history-panel::after,.history-action-bar::after,.canvas-search-modal::after,.history-pop::after,.history-record-preview::after,.history-card::after,.folder::after,.result-card::after,.figma-tool-modal::after,.popover::after,.canvas-home-title>span::after,.canvas-home-actions button::after,.folder-card::after,.folder-add::after,.search::after,.mini-search::after,.asset-search::after,.figma-history-search::after,.search-controls>label::after{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;pointer-events:none;z-index:8;background:linear-gradient(90deg,#39b9ff 0%,#6d72ff 18%,#be79ff 34%,#fff 45%,#ff83c7 55%,#7b7cff 72%,#39b9ff 100%);background-size:300% 100%;animation:site-outline-run 2.8s linear infinite;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+@keyframes site-outline-run{from{background-position:0% 50%}to{background-position:100% 50%}}
+
+/* Softer site-wide glow. */
+.new-work::after,.credits::after,.collapse-chat::after,.user-message::after,.generation-tile::after,.generation-result-actions button::after,.figma-composer::after,.canvas-prompt::after,.canvas-comment-panel::after,.canvas-add-popover::after,.canvas-bottom-dock::after,.figma-zoom::after,.asset-library-panel::after,.apply-popover::after,.figma-history-panel::after,.history-action-bar::after,.canvas-search-modal::after,.history-pop::after,.history-record-preview::after,.history-card::after,.folder::after,.result-card::after,.figma-tool-modal::after,.popover::after,.canvas-home-title>span::after,.canvas-home-actions button::after,.folder-card::after,.folder-add::after,.search::after,.mini-search::after,.asset-search::after,.figma-history-search::after,.search-controls>label::after{opacity:.34;animation-duration:5s!important}
+.search,.mini-search,.asset-search,.figma-history-search,.search-controls>label,.canvas-comment-panel,.canvas-prompt,.generation-composer,.modal-prompt,.tool-settings textarea,.canvas-drawer textarea{animation-duration:5s!important;filter:saturate(.7)}
+
+.generation-progress{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#fff;background:radial-gradient(circle at 15% -5%,rgba(255,255,255,.85),transparent 34%),radial-gradient(circle at 105% 110%,rgba(173,116,255,.8),transparent 44%),linear-gradient(115deg,#22c9ff 0%,#4d9cff 34%,#8f78ff 62%,#ef85c8 100%);background-size:180% 180%;animation:generation-flow 2.4s ease-in-out infinite}.generation-progress:after{content:"";position:absolute;inset:-45%;background:linear-gradient(110deg,transparent 36%,rgba(255,255,255,.38) 49%,transparent 62%);animation:generation-sweep 1.8s linear infinite}.generation-progress span{font-size:38px;line-height:38px;z-index:1;filter:drop-shadow(0 3px 8px rgba(57,93,255,.25))}.generation-progress strong{font-size:13px;line-height:16px;font-weight:400;z-index:1}@keyframes generation-flow{50%{background-position:100% 80%}}@keyframes generation-sweep{to{transform:translateX(55%)}}
+
+.folder-card::after,.folder-add::after,.folder-result::after{display:none!important;content:none!important}.folder-card,.folder-add{border-image:none!important;animation:none!important}.folder-card{cursor:pointer;outline:0}.folder-expanded-images{position:absolute;left:50%;top:-152px;transform:translateX(-50%);width:498px;height:118px;display:flex;justify-content:center;gap:18px;z-index:-1}.folder-expanded-images button{--folder-index:0;width:154px;height:104px;padding:0;border:0;border-radius:12px;background:#fff;overflow:hidden;box-shadow:0 10px 24px rgba(52,62,89,.12);opacity:0;transform:translateY(145px) scale(.42);animation:folder-image-pull .62s cubic-bezier(.2,.78,.22,1) forwards;animation-delay:calc(var(--folder-index) * 90ms)}.folder-expanded-images img{display:block;width:100%;height:100%;object-fit:cover}.folder-result.expanded .folder-expand{transform:rotate(180deg);transition:transform .3s ease}@keyframes folder-image-pull{0%{opacity:0;transform:translateY(145px) scale(.42)}55%{opacity:1;transform:translateY(-8px) scale(1.03)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.canvas-vertical-nav button[aria-label="添加"]{width:44px!important;height:44px!important;padding:12px!important;border-radius:22px!important}.canvas-vertical-nav button[aria-label="添加"] img{width:20px!important;height:20px!important;display:block!important}.canvas-vertical-nav{isolation:isolate}.figma-zoom{position:fixed!important;left:23px!important;bottom:26px!important;top:auto!important;z-index:20!important}
+
+.folder-result .folder-card{z-index:2!important;overflow:visible!important;filter:none!important}
+.folder-result .folder-art{transition:opacity .28s ease,transform .42s cubic-bezier(.2,.8,.2,1)!important}
+.folder-clean-art{position:absolute;left:0;top:25px;width:188px;height:132px;z-index:3;border-radius:22px 22px 19px 19px;background:#f7f6ff;box-shadow:0 12px 22px rgba(45,39,78,.10);opacity:0;transition:opacity .28s ease;pointer-events:none}
+.folder-clean-art::before{content:"";position:absolute;left:0;top:-28px;width:188px;height:65px;border-radius:22px 22px 5px 5px;background:linear-gradient(145deg,#d9ccff 0%,#c5b1ff 100%);clip-path:polygon(0 34%,38% 34%,45% 0,100% 0,100% 100%,0 100%)}
+.folder-clean-art::after{content:"";position:absolute;inset:0;border-radius:inherit;background:#f7f6ff}
+.folder-result.expanded .folder-art{opacity:0!important;transform:translateY(5px)}
+.folder-result .folder-art,.folder-result.expanded .folder-art{opacity:1!important;transform:none!important}
+.folder-result .folder-clean-art,.folder-result.expanded .folder-clean-art{display:none!important;opacity:0!important}
+.folder-result.expanded .folder-clean-art{opacity:1}
+.folder-result .folder-expanded-images{top:-132px!important;z-index:1!important;pointer-events:none!important}
+.folder-result .folder-expanded-images button{opacity:.15;transform:translateY(154px) scale(.42);animation-name:folder-image-emerge!important}
+@keyframes folder-image-emerge{0%{opacity:.15;transform:translateY(154px) scale(.42)}48%{opacity:1;transform:translateY(20px) scale(.92)}72%{opacity:1;transform:translateY(-8px) scale(1.03)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.folder-result .folder-meta,.folder-result .folder-expand,.folder-result .folder-delete{z-index:5!important}
+.folder-result .folder-expand{left:156px!important;top:48px!important;width:16px!important;height:16px!important;padding:0!important;overflow:hidden!important}
+.folder-result .folder-expand img{width:16px!important;height:16px!important;display:block!important}
+.folder-result .folder-delete{left:156px!important;top:130px!important;width:16px!important;height:16px!important;padding:0!important;overflow:hidden!important}
+
+/* Folder carousel: the original folder artwork is preserved at every depth. */
+.folder-result.folder-browser{display:block!important;left:50%!important;top:310px!important;width:820px!important;height:330px!important;transform:translateX(-50%)!important;overflow:visible!important}
+.folder-browser .folder-carousel{position:absolute;left:0;top:38px;width:100%;height:174px;perspective:900px}
+.folder-browser .folder-carousel-item{position:absolute;left:50%;top:0;width:188px;height:157px;padding:0;border:0;background:transparent;opacity:.55;filter:saturate(.78);transform:translateX(-50%) scale(.52);transform-origin:center bottom;transition:left .72s cubic-bezier(.16,.84,.24,1),transform .72s cubic-bezier(.16,.84,.24,1),opacity .58s ease,filter .58s ease;overflow:visible;cursor:pointer;will-change:left,transform,opacity}
+.folder-browser .folder-carousel-item .folder-art{position:absolute!important;left:0!important;top:-57px!important;width:188px!important;height:214px!important;object-fit:fill!important;opacity:1!important;transform:none!important;pointer-events:none}
+.folder-browser .folder-offset-0{left:10%;transform:translateX(-50%) scale(.52);opacity:.46;z-index:1}.folder-browser .folder-offset-1{left:29%;transform:translateX(-50%) scale(.76);opacity:.7;z-index:2}.folder-browser .folder-offset-2{left:50%;transform:translateX(-50%) scale(1);opacity:1;filter:none;z-index:4}.folder-browser .folder-offset-3{left:71%;transform:translateX(-50%) scale(.76);opacity:.7;z-index:2}.folder-browser .folder-offset-4{left:90%;transform:translateX(-50%) scale(.52);opacity:.46;z-index:1}
+.folder-browser .folder-out-left{left:-12%;transform:translateX(-50%) scale(.34);opacity:0;z-index:0}.folder-browser .folder-out-right{left:112%;transform:translateX(-50%) scale(.34);opacity:0;z-index:0}
+.folder-browser .folder-carousel-item.center:hover{animation:folder-center-wiggle .58s ease-in-out;filter:drop-shadow(0 8px 12px rgba(72,76,108,.13))}
+@keyframes folder-center-wiggle{0%,100%{transform:translateX(-50%) scale(1) rotate(0)}25%{transform:translateX(-50%) scale(1.018) rotate(-1.2deg)}55%{transform:translateX(-50%) scale(1.025) rotate(1.1deg)}78%{transform:translateX(-50%) scale(1.015) rotate(-.45deg)}}
+.folder-browser .folder-meta{z-index:3;pointer-events:none;transform-origin:left top}.folder-browser .folder-expanded-images{left:50%!important;top:-112px!important;z-index:3!important}
+.folder-browser .folder-add{position:absolute!important;left:50%!important;top:246px!important;transform:translateX(-50%)!important}
+.folder-browser .folder-switch{position:absolute;top:82px;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.88);color:#697080;font-size:28px;line-height:44px;box-shadow:0 6px 18px rgba(53,61,86,.08);opacity:0;transition:opacity .18s ease,background .18s ease,transform .18s ease;z-index:8}.folder-browser:hover .folder-switch{opacity:1}.folder-browser .folder-switch:hover{background:#edecff;transform:scale(1.06)}.folder-browser .folder-next{right:2px}
+.folder-browser .folder-prev{display:none!important}
+.canvas-vertical-nav button[aria-label="添加"]:not(.active) img{filter:brightness(0) saturate(100%)!important;opacity:.9!important}
+.canvas-vertical-nav button[aria-label="添加"].active img{filter:brightness(0) invert(1)!important;opacity:1!important}
+
+/* Main navigation hover mirrors its selected state without changing selection. */
+.rail-items button{transition:background-color .18s ease,color .18s ease,transform .18s ease}
+.rail-items button:not(.active):hover{background:#f0f5ff!important;color:#286bf6!important}
+.rail-items button:not(.active):hover img{filter:invert(42%) sepia(98%) saturate(3112%) hue-rotate(211deg) brightness(99%) contrast(95%)!important}
+
+/* Generated and conversation-history imagery gets a restrained preview hover. */
+.generation-tile,.result-card,.history-card,.figma-history-card,.history-record-preview,.drawer-grid button{transition:transform .22s cubic-bezier(.2,.75,.25,1),box-shadow .22s ease;transform-origin:center}
+.generation-tile:not(:disabled):hover,.result-card:hover,.history-card:hover,.figma-history-card:hover,.history-record-preview:hover,.drawer-grid button:hover{transform:scale(1.022);box-shadow:0 8px 18px rgba(50,57,86,.10)!important;z-index:2}
+.generation-tile img,.result-card img,.history-card img,.history-record-preview img,.drawer-grid img{transition:transform .22s cubic-bezier(.2,.75,.25,1)}
+@media (prefers-reduced-motion:reduce){.folder-expanded-images button,.rail-items button,.generation-tile,.result-card,.history-card,.figma-history-card,.history-record-preview,.drawer-grid button{animation:none!important;transition:none!important}}
+
+/* Smooth generation-to-completion status crossfade. */
+.generation-status-copy{position:relative;display:block;width:180px;height:22px;overflow:hidden}
+.generation-status-copy strong{position:absolute;left:0;top:1px;white-space:nowrap;opacity:0;transform:translateY(7px);transition:opacity .42s ease,transform .42s cubic-bezier(.2,.7,.2,1)}
+.generation-status-copy strong.active{opacity:1;transform:translateY(0)}
+.generation-status-copy .generating{color:transparent!important;background:linear-gradient(90deg,#8ebcff 0%,#2d7fff 38%,#8ebcff 72%,#2d7fff 100%);background-size:220% 100%;background-clip:text;-webkit-background-clip:text;animation:generation-text-flow 1.65s linear infinite}
+.generation-status-copy .preparing{color:transparent!important;background:linear-gradient(90deg,#a9caff 0%,#397fff 42%,#a9caff 78%,#397fff 100%);background-size:220% 100%;background-clip:text;-webkit-background-clip:text;animation:generation-text-flow 1.65s linear infinite}
+.generation-status-copy .generating:not(.active),.generation-status-copy .preparing:not(.active){animation-play-state:paused}
+.generation-status-copy .completed{color:#a6a7ad!important}
+.generation-progress strong{color:transparent;background:linear-gradient(90deg,#d9e9ff 0%,#fff 38%,#d9e9ff 72%,#fff 100%);background-size:220% 100%;background-clip:text;-webkit-background-clip:text;animation:generation-text-flow 1.65s linear infinite}
+@keyframes generation-text-flow{from{background-position:100% 50%}to{background-position:-120% 50%}}
+
+/* Short visual-plan pass before image rendering starts. */
+.visual-plan-transition{height:140px;margin:8px 0 10px 44px;border-radius:10px;background:linear-gradient(135deg,#f8fbff,#f7f4ff);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;box-shadow:0 5px 14px rgba(40,47,69,.04);animation:plan-card-in .38s ease both}
+.visual-plan-heading{display:flex;flex-direction:column;align-items:center;gap:6px}.visual-plan-heading span{font-size:14px;font-weight:500;color:#4f648c}.visual-plan-heading small{font-size:11px;color:#a2a9b5}
+.visual-plan-track{position:relative;width:360px;height:6px;border-radius:999px;background:#e8edf6;overflow:hidden}.visual-plan-track i{position:absolute;inset:0 auto 0 0;width:100%;border-radius:inherit;background:linear-gradient(90deg,#6db7ff,#697bff);transform-origin:left center;animation:visual-plan-progress 2.6s cubic-bezier(.22,.62,.25,1) both}
+@keyframes visual-plan-progress{0%{transform:scaleX(0)}18%{transform:scaleX(.12)}60%{transform:scaleX(.68)}100%{transform:scaleX(1)}}@keyframes plan-card-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* Figma action row: left editing group, independent batch action on the right. */
+.generation-result-actions{height:34px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:0!important}
+.generation-primary-actions{display:flex;align-items:center;gap:8px}.generation-result-actions button{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;height:30px!important;padding:0 12px!important}
+.generation-result-actions button img{width:14px;height:14px;display:block}.generation-result-actions .action-more{width:30px!important;padding:0!important;letter-spacing:1px}.generation-result-actions .batch-delete{margin-left:auto;color:#555a66!important;border-color:#e2e4e9!important}
+.batch-delete-icon{position:relative;width:13px;height:14px;display:block;border:1.4px solid currentColor;border-top:0;border-radius:0 0 2px 2px}.batch-delete-icon::before{content:"";position:absolute;left:-2px;top:-4px;width:15px;height:1.4px;background:currentColor;border-radius:2px}.batch-delete-icon::after{content:"";position:absolute;left:4px;top:-6px;width:5px;height:3px;border:1.4px solid currentColor;border-bottom:0;border-radius:2px 2px 0 0}
+
+/* GPU-friendly folder extraction with a softer continuous easing curve. */
+.folder-result .folder-expanded-images button{will-change:transform,opacity;backface-visibility:hidden;animation-duration:.82s!important;animation-timing-function:cubic-bezier(.16,.72,.22,1)!important;animation-delay:calc(var(--folder-index) * 55ms)!important}
+@keyframes folder-image-emerge{0%{opacity:0;transform:translate3d(0,148px,0) scale(.54)}35%{opacity:.72;transform:translate3d(0,72px,0) scale(.78)}72%{opacity:1;transform:translate3d(0,-3px,0) scale(1.008)}100%{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+
+/* Screenshot-matched completed-generation action row. */
+.generation-result-actions{height:48px!important;justify-content:flex-start!important;gap:14px!important;margin-top:12px!important}
+.generation-result-actions button{height:46px!important;border:1px solid #dfe3ea!important;border-radius:14px!important;background:#fff!important;padding:0 20px!important;color:#202432!important;font-size:16px!important;line-height:22px!important;box-shadow:0 1px 3px rgba(45,52,70,.03)!important}
+.generation-result-actions .action-edit{width:138px!important;border-color:#6c63ff!important;color:#5f5bff!important}.generation-result-actions .action-regenerate{width:128px!important}.generation-result-actions .action-more{width:72px!important;padding:0!important;font-size:20px!important}.generation-result-actions .batch-delete{width:124px!important;margin-left:0!important}
+.generation-result-actions button img{width:18px!important;height:18px!important}.generation-result-actions .action-edit img{width:19px!important;height:19px!important}.batch-delete-icon{width:13px;height:14px}
+
+/* Preloaded, transition-driven folder motion avoids mount-time image and keyframe stutter. */
+.folder-result .folder-expanded-images{pointer-events:none!important}
+.folder-result .folder-expanded-images button{animation:none!important;opacity:0!important;transform:translate3d(0,132px,0) scale(.68)!important;transition:opacity .42s ease,transform .72s cubic-bezier(.18,.76,.22,1),box-shadow .2s ease!important;transition-delay:calc(var(--folder-index) * 45ms)!important;will-change:transform,opacity;box-shadow:0 5px 12px rgba(52,62,89,.07)!important}
+.folder-result.expanded .folder-expanded-images{pointer-events:auto!important}
+.folder-result.expanded .folder-expanded-images button{opacity:1!important;transform:translate3d(0,0,0) scale(1)!important}
+.folder-result.expanded .folder-expanded-images button:hover{transform:translate3d(0,-2px,0) scale(1.025)!important;box-shadow:0 9px 20px rgba(52,62,89,.13)!important;transition-delay:0ms!important;z-index:3}
+.folder-result .folder-card{transform:translateZ(0) scale(1);transform-origin:center;transition:transform .22s ease,filter .22s ease!important}
+.folder-result .folder-card:hover{transform:translateZ(0) scale(1.025);filter:drop-shadow(0 7px 11px rgba(52,62,89,.12))!important}
+
+/* Scrollable homepage inspiration gallery. */
+.template-gallery-scroll{height:246px;margin-top:14px;overflow-y:auto;overflow-x:hidden;padding:3px 7px 12px 3px;scrollbar-width:thin;scrollbar-color:#d8dce5 transparent;overscroll-behavior:contain}
+.template-gallery-grid{display:grid;grid-template-columns:2fr 1.3fr 1fr 1.1fr;grid-auto-rows:118px;gap:7px}.template-gallery-grid button{min-width:0;border:0;border-radius:12px;padding:0;background:#fff;overflow:hidden;cursor:pointer;transition:transform .22s cubic-bezier(.2,.75,.25,1),box-shadow .22s ease;transform-origin:center}.template-gallery-grid button:nth-child(6n+1),.template-gallery-grid button:nth-child(6n+4){grid-row:span 2}.template-gallery-grid img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .22s ease}.template-gallery-grid button:hover{transform:scale(1.018);box-shadow:0 6px 14px rgba(50,57,86,.09);z-index:2}.template-gallery-scroll::-webkit-scrollbar{width:5px}.template-gallery-scroll::-webkit-scrollbar-thumb{background:#d8dce5;border-radius:999px}.template-gallery-scroll::-webkit-scrollbar-track{background:transparent}
+
+/* Final action-bar refinement against the supplied reference. */
+.generation-result-actions{gap:14px!important;margin-left:21px!important}
+.generation-result-actions button::after{display:none!important;content:none!important}.generation-result-actions button{border-radius:14px!important;box-shadow:0 1px 2px rgba(35,41,58,.025)!important;font-weight:400!important}.generation-result-actions .action-edit{color:#5d5aff!important;border-color:#655fff!important}.generation-result-actions .action-edit img{filter:grayscale(1) brightness(.72) sepia(1) saturate(8) hue-rotate(205deg)!important}.generation-result-actions .action-regenerate img{filter:brightness(0) saturate(100%)!important}.generation-result-actions .action-more{line-height:1!important;padding-bottom:5px!important}
+
+/* Softer low-saturation generation progress. */
+.generation-progress{background:radial-gradient(circle at 15% -5%,rgba(255,255,255,.72),transparent 35%),radial-gradient(circle at 105% 110%,rgba(196,187,225,.42),transparent 45%),linear-gradient(115deg,#b9dbe9 0%,#aec9df 35%,#b8b7d8 67%,#d7bfd0 100%)!important;filter:saturate(.58)}
+.generation-progress::after{opacity:.38;background:linear-gradient(110deg,transparent 38%,rgba(255,255,255,.25) 49%,transparent 61%)!important}.generation-progress span{color:rgba(255,255,255,.82)!important;filter:drop-shadow(0 2px 5px rgba(86,101,137,.12))!important}.generation-progress strong{background:linear-gradient(90deg,#edf3f8 0%,#fff 42%,#e4ebf2 76%,#fff 100%)!important;background-size:220% 100%!important;background-clip:text!important;-webkit-background-clip:text!important}
+
+.visual-plan-message{height:110px;margin:22px 0 10px;display:flex;align-items:flex-start;gap:12px}.visual-plan-message>img{width:32px;height:32px;border-radius:50%;object-fit:cover;flex:0 0 32px}.ai-generating-bubble{position:relative;width:584px;height:110px;flex:0 0 584px;border:1px solid #ccc7ff;border-radius:18px;background:linear-gradient(90deg,#f5f4ff,#f9f3ff);box-shadow:0 10px 24px rgba(0,0,0,.02),0 2px 8px rgba(107,122,153,.05)}.ai-generating-bubble>strong{position:absolute;left:17px;top:17px;width:250px;font-size:16px;line-height:24px;font-weight:400;color:#202432}.ai-generating-bubble>p{position:absolute;left:17px;top:44px;width:360px;margin:0;font-size:13px;line-height:16px;color:#8b95a5}.ai-generating-progress{position:absolute;left:17px;top:69px;height:22px;display:flex;align-items:center;gap:14px}.ai-generating-progress>span{position:relative;width:42px;height:22px;border-radius:8px;background:#f2efff}.ai-generating-progress>span img:first-child{position:absolute;left:10px;top:6px;width:15px;height:15px}.ai-generating-progress>span img:last-child{position:absolute;left:22px;top:3px;width:10px;height:10px}.ai-generating-progress>div{position:relative;width:472px;height:4px;border-radius:2px;background:#f5e4ff;overflow:hidden}.ai-generating-progress>div i{position:absolute;inset:0 auto 0 0;width:100%;border-radius:2px;background:#8f89ff;transform-origin:left;animation:visual-plan-progress 2.6s cubic-bezier(.22,.62,.25,1) both}
+
+.new-creation-page{position:relative;height:calc(100vh - 56px);min-height:700px;background:#f8f9fb;overflow:hidden}.new-creation-header{height:60px;border-bottom:1px solid #e1e4ea;background:#fff;display:grid;grid-template-columns:80px 1fr 110px;align-items:center;padding:0 25px}.new-creation-header>strong{text-align:center;font-size:15px;font-weight:400;color:#202432}.new-creation-header button{border:0;background:transparent}.new-creation-header button:first-child{width:24px;height:24px;padding:3px}.new-creation-header button:first-child img{width:18px;height:18px}.new-creation-header button:last-child{justify-self:end;height:30px;padding:0 16px;border:1px solid #e1e4ea;border-radius:10px;background:#fff;font-size:13px;color:#202432}.new-creation-intro{position:absolute;left:50%;top:99px;transform:translateX(-50%);width:820px;height:150px;text-align:center}.new-creation-intro>img{width:83px;height:83px;border-radius:50%;object-fit:cover;display:block;margin:0 auto -1px}.new-creation-intro p{margin:0;font-size:14px;line-height:19px;color:#8b92a1}.new-creation-intro h1{margin:2px 0 0;font-size:21px;line-height:29px;font-weight:600;background:linear-gradient(90deg,#2288ff 40%,#a683f8 60%);color:transparent;background-clip:text;-webkit-background-clip:text}.new-creation-intro h1 span{margin-left:4px;color:#a683f8;-webkit-text-fill-color:#a683f8}.new-creation-composer{position:absolute;left:50%;bottom:25px;transform:translateX(-50%);width:820px;height:156px;padding:14px;border:1px solid #7472ff;border-radius:16px;background:#fff;box-shadow:0 6px 4px rgba(216,216,216,.25)}.new-creation-composer textarea{width:100%;height:76px;padding:0;border:0;outline:0;resize:none;font-size:14px;line-height:22px;color:#202432}.new-creation-composer textarea::placeholder{color:#a0a6b2}.new-creation-composer footer{height:44px;display:flex;align-items:center;gap:10px}.new-creation-composer footer button{height:34px;border:0;border-radius:10px;background:#fbfbfb;padding:0 13px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:13px;color:#202432;white-space:nowrap}.new-creation-composer footer button img{width:20px;height:20px}.new-creation-composer footer .new-upload{width:34px;padding:7px}.new-creation-composer footer i{flex:1}.new-creation-composer footer .new-model{width:34px;border-radius:50%;padding:0}.new-creation-composer footer .new-generate{width:108px;height:40px;border-radius:50px;background:linear-gradient(110deg,#000 63%,#421a79 99%);color:#fff;box-shadow:0 4px 4px rgba(167,132,248,.3)}.new-creation-composer .model-selector-popover{left:44px;bottom:54px}.new-creation-composer .size-selector-popover{left:112px;bottom:54px}.new-creation-composer .new-upload-pop{left:14px;top:auto;bottom:54px;width:180px}
+
+.generation-result-actions{display:flex!important;flex-wrap:nowrap!important;width:506px!important;min-width:506px!important;white-space:nowrap!important}.generation-result-actions button{flex:0 0 auto!important}
+
+/* Natural two-speed press/release feedback for every interactive button. */
+button:not(:disabled){scale:1;transition:scale 230ms cubic-bezier(.16,1,.3,1),background-color 180ms ease,color 180ms ease,border-color 180ms ease,box-shadow 180ms ease,filter 180ms ease}button:not(:disabled):active{scale:.955;transition:scale 90ms cubic-bezier(.4,0,.6,1),background-color 90ms ease,box-shadow 90ms ease}@media (prefers-reduced-motion:reduce){button:not(:disabled){transition:none!important}button:not(:disabled):active{scale:1}}
+
+/* Figma generating stars softly pulse while the plan is being prepared. */
+.ai-generating-progress>span{animation:generating-stars-pulse 1.05s ease-in-out infinite;transform-origin:center}.ai-generating-progress>span img{animation:generating-star-twinkle 1.05s ease-in-out infinite}.ai-generating-progress>span img:last-child{animation-delay:.18s}@keyframes generating-stars-pulse{0%,100%{transform:scale(1);opacity:.82}50%{transform:scale(1.12);opacity:1}}@keyframes generating-star-twinkle{0%,100%{filter:brightness(.94);opacity:.72}50%{filter:brightness(1.18);opacity:1}}
+
+/* Homepage inspiration content participates in the main page scroll. */
+.template-gallery-scroll{height:auto!important;max-height:none!important;overflow:visible!important;padding-bottom:24px!important;scrollbar-width:none}.template-gallery-scroll::-webkit-scrollbar{display:none}.studio-page{padding-bottom:70px!important}.templates{overflow:visible!important}
+
+/* Current Figma refinements: calmer greeting, balanced sizing panel and home asset picker. */
+.new-creation-intro>img{animation:greeting-breathe 2.8s ease-in-out infinite;transform-origin:center bottom}@keyframes greeting-breathe{0%,100%{transform:scale(1)}50%{transform:scale(.985)}}
+.size-selector-popover{padding:20px!important}.size-fields{display:grid!important;grid-template-columns:minmax(0,1fr) 16px minmax(0,1fr)!important;gap:9px!important}.size-fields label{width:100%!important;min-width:0!important}.ratio-grid{grid-template-columns:repeat(6,minmax(0,1fr))!important;width:100%!important}.ratio-grid button{width:100%!important;padding:0 3px!important}.size-quality{width:100%!important}
+.home-asset-popover{position:absolute;right:112px;bottom:54px;z-index:82;width:420px;padding:18px;box-sizing:border-box;border:1px solid rgba(126,104,232,.18);border-radius:16px;background:linear-gradient(145deg,#f6f3ff 0%,#fff 62%);box-shadow:0 14px 38px rgba(43,35,90,.16);text-align:left}.home-asset-popover header,.home-asset-popover footer{display:flex;align-items:center;justify-content:space-between}.home-asset-popover header strong{font-size:16px;font-weight:500;color:#232630}.home-asset-popover header button{height:30px;border:0;border-radius:8px;background:#eeeaff;color:#6751da;padding:0 11px}.home-asset-popover>label{height:36px;margin:14px 0 12px;padding:0 12px;border:1px solid #e5e7ed;border-radius:9px;background:#fff;display:flex;align-items:center;gap:8px;color:#9ba0ab;font-size:13px}.home-asset-popover>label img{width:17px;height:17px}.home-asset-popover>small{display:block;margin-bottom:8px;color:#7d818c;font-size:12px}.home-asset-popover>div{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.home-asset-popover>div>button{position:relative;height:74px;padding:0;border:1px solid transparent;border-radius:9px;background:#f3f4f7;overflow:hidden}.home-asset-popover>div>button>img{display:block;width:100%;height:100%;object-fit:cover}.home-asset-popover>div>button.active{border-color:#7964ed;box-shadow:0 0 0 2px rgba(121,100,237,.1)}.home-asset-popover>div>button span{position:absolute;right:5px;top:5px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:#745fec;color:#fff;font-size:11px}.home-asset-popover footer{margin-top:14px}.home-asset-popover footer span{color:#8b909b;font-size:12px}.home-asset-popover footer button{width:72px;height:32px;border:0;border-radius:9px;background:#6f59e8;color:#fff}.new-creation-composer .home-asset-popover{right:112px}.studio-page .home-asset-popover{right:112px}
+.new-creation-composer footer .new-generate,.studio-page .composer-actions .generate{display:flex!important;align-items:center!important;justify-content:center!important;padding:0!important;text-align:center!important;line-height:40px!important}
+
+/* Figma “颜色” family applied consistently to the complete generation transition. */
+.generation-progress{background:radial-gradient(circle at 14% -8%,rgba(255,255,255,.76),transparent 36%),radial-gradient(circle at 106% 112%,rgba(224,199,238,.38),transparent 46%),linear-gradient(118deg,#c7e4ee 0%,#bbcfe4 34%,#c4bee0 67%,#e1c9d8 100%)!important;filter:saturate(.52)!important}.ai-generating-bubble{border-color:#d5cff2!important;background:linear-gradient(104deg,#f6f5ff 0%,#f6f2fb 52%,#fbf6fa 100%)!important}.ai-generating-progress>div{background:#eee8f5!important}.ai-generating-progress>div i{background:linear-gradient(90deg,#b8cdea 0%,#bcb5dc 54%,#dac4d6 100%)!important}
+
+/* Figma 861:1454 / 861:1572 — sidebar Assets page and its two floating menus. */
+.asset-page-figma{position:relative;min-height:calc(100vh - 56px);box-sizing:border-box;background:#fff;color:#202432;overflow:hidden}.asset-page-header{height:56px;box-sizing:border-box;border-bottom:1px solid #f4f4f4;padding:0 28px 0 10px;display:flex;align-items:center;justify-content:space-between}.asset-page-header>div{display:flex;align-items:center;gap:8px}.asset-page-header>div img{width:18px;height:18px}.asset-page-header strong{font-size:16px;line-height:24px;font-weight:400}.asset-page-header>button{width:80px;height:32px;border:0;border-radius:10px;background:linear-gradient(75deg,#2288ff .5%,#a683f8 99.5%);color:#fff;font-size:16px}.asset-page-tabs{position:absolute;left:48px;top:56px;height:42px;display:flex;align-items:start;gap:22px}.asset-page-tabs button{position:relative;height:36px;padding:10px 0 0;border:0;background:transparent;color:#a6a7ad;font-size:16px;line-height:24px}.asset-page-tabs button.active{color:#202432}.asset-page-tabs button.active::after{content:"";position:absolute;left:3px;right:3px;bottom:-1px;height:2px;border-radius:10px;background:#202432}.asset-add-menu{position:absolute;right:30px;top:42px;z-index:20;width:200px;height:104px;box-sizing:border-box;padding:8px 6px;border-radius:10px;background:#fff;box-shadow:0 10px 24px rgba(0,0,0,.08),0 2px 8px rgba(107,122,153,.05)}.asset-add-menu button{width:188px;height:42px;padding:0 12px;border:0;border-radius:12px;background:#fff;display:flex;align-items:center;gap:12px;color:#212429;font-size:14px;text-align:left}.asset-add-menu button.selected{color:#6c55ed}.asset-add-menu img{width:24px;height:24px;object-fit:contain}.asset-add-menu button span{margin-left:auto;color:#5868ff;font-size:18px}.asset-folder-menu{position:absolute;left:47px;top:76px;z-index:20;width:203px;box-sizing:border-box;padding:16px 20px;border-radius:20px;background:#fff;box-shadow:0 10px 24px rgba(0,0,0,.08),0 2px 8px rgba(107,122,153,.05);display:flex;flex-direction:column;gap:8px}.asset-folder-menu button{height:36px;padding:0 12px;border:0;border-radius:10px;background:#fff;color:#202432;display:flex;align-items:center;gap:4px;font-size:14px;text-align:left}.asset-folder-menu button span{width:24px;height:24px;display:grid;place-items:center;font-size:15px}.asset-folder-menu button.selected{background:#f2f1ff;color:#5e4ff2}.asset-empty{position:absolute;left:50%;top:246px;transform:translateX(-50%);width:260px;text-align:center;color:#797c84}.asset-empty>img{display:block;width:100px;height:100px;margin:0 auto;object-fit:contain}.asset-empty>p{margin:8px 0 18px;font-size:20px;line-height:28px}.asset-empty>div{display:flex;justify-content:center;gap:29px}.asset-empty button{height:38px;padding:0 12px;border:1px solid #a6a7ad;border-radius:10px;background:#fff;color:#000;display:flex;align-items:center;gap:2px;white-space:nowrap;font-size:14px}.asset-empty button span{width:24px;font-size:16px}.asset-content-grid{position:absolute;left:48px;right:48px;top:116px;display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));gap:18px}.asset-content-grid button{padding:0 0 12px;border:1px solid #eef0f3;border-radius:12px;background:#fff;overflow:hidden;text-align:left}.asset-content-grid img{width:100%;height:150px;object-fit:cover}.asset-content-grid strong,.asset-content-grid small{display:block;margin:8px 12px 0}.asset-content-grid strong{font-size:14px}.asset-content-grid small{color:#a6a7ad;font-size:11px}.asset-add-menu::after,.asset-folder-menu::after,.asset-empty button::after,.asset-content-grid button::after{display:none!important;content:none!important}
+
+/* Figma homepage composer: exact control sizing, labels and icon proportions. */
+.studio-page .figma-composer{width:820px!important;height:156px!important;padding:14px!important;border-radius:16px!important;box-shadow:0 6px 4px rgba(216,216,216,.25)!important}.studio-page .figma-composer textarea{left:14px!important;right:14px!important;top:14px!important;width:calc(100% - 28px)!important;height:72px!important;padding:0!important;line-height:22px!important}.studio-page .composer-actions{left:14px!important;right:14px!important;bottom:13px!important;height:34px!important;gap:10px!important}.studio-page .composer-actions button{height:34px!important;border-radius:10px!important;background:#fbfbfb!important;padding:0 13px!important;font-size:13px!important;gap:0!important}.studio-page .composer-actions button img{width:24px!important;height:24px!important}.studio-page .composer-actions .icon-button{width:34px!important;padding:5px!important}.studio-page .composer-actions .model{width:34px!important;padding:0!important;border-radius:999px!important;font-size:17px!important}.studio-page .composer-actions .generate{width:108px!important;height:40px!important;border-radius:50px!important;padding:0!important;background:linear-gradient(110deg,#000 63%,#421a79 99%)!important;color:#fff!important;font-weight:400!important;box-shadow:0 4px 4px rgba(167,132,248,.3)!important}
+
+/* Every floating-panel option previews its selected state on hover. */
+.popover button,.model-selector-popover>button,.size-quality button,.ratio-grid button,.canvas-add-popover button,.asset-library-panel button,.apply-popover button,.figma-history-panel button,.canvas-search-modal button,.canvas-comment-panel button,.figma-tool-modal button,.history-pop button,.account-popover button{transition:background-color 160ms ease,border-color 160ms ease,color 160ms ease,box-shadow 160ms ease,transform 180ms cubic-bezier(.16,1,.3,1)}
+.popover button:hover,.model-selector-popover>button:hover,.size-quality button:hover,.ratio-grid button:hover,.canvas-add-popover button:hover,.asset-library-panel button:hover,.apply-popover button:hover,.figma-history-panel button:hover,.canvas-search-modal button:hover,.canvas-comment-panel button:hover,.figma-tool-modal button:hover,.history-pop button:hover,.account-popover button:hover{background:#f2edff!important;border-color:#8a67f4!important;color:#694add!important;box-shadow:0 3px 10px rgba(105,74,221,.08)!important}
+
+/* Figma account menu (头像): 200 × 112 with the small top pointer. */
+.account{position:relative}.account-trigger{height:40px;padding:4px 0 4px 4px;border:0;background:transparent;display:flex;align-items:center;gap:8px;border-radius:12px}.account-trigger .avatar{overflow:hidden}.account-trigger .avatar img{width:100%;height:100%;object-fit:cover}.account-dropdown{width:16px;height:16px}.account-popover{position:absolute;z-index:120;right:0;top:44px;width:200px;height:104px;padding:8px 6px;background:#fff;border:1px solid #ebecef;border-radius:12px;box-shadow:0 12px 30px rgba(39,43,61,.14)}.account-popover>i{position:absolute;right:16px;top:-10px;width:18px;height:15px;background:#fff;clip-path:polygon(50% 0,100% 100%,0 100%);filter:drop-shadow(0 -1px 0 #ebecef)}.account-popover button{position:relative;width:188px;height:42px;padding:0 12px;border:1px solid transparent;border-radius:9px;background:#fff;display:flex;align-items:center;gap:12px;color:#202432}.account-popover button b{font-size:14px;line-height:22px;font-weight:400}.account-option-icon{width:20px;height:20px;display:grid;place-items:center;font-size:23px;line-height:20px;color:#202432}.account-logout{font-size:20px;transform:rotate(180deg)}.account-check{margin-left:auto;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;color:#775cff;background:#f0ebff;font-size:14px;font-weight:700}
+
+/* Figma “颜色”: restrained blue-violet flow with a soft pink edge. */
+.generation-progress{filter:none!important;background:radial-gradient(circle at 12% 0,rgba(255,255,255,.76),transparent 34%),radial-gradient(circle at 104% 105%,rgba(217,188,238,.44),transparent 43%),linear-gradient(118deg,#c8e7f2 0%,#b9d8ec 29%,#bbbfe2 59%,#dac4d8 100%)!important;background-size:180% 180%!important}.generation-progress::after{opacity:.3!important;background:linear-gradient(110deg,transparent 39%,rgba(255,255,255,.28) 50%,transparent 61%)!important}
+
+/* Stable canvas toolbar, history filters, and unified page return controls. */
+.canvas-bottom-dock{position:fixed!important;left:50%!important;right:auto!important;top:auto!important;bottom:24px!important;transform:translateX(-50%)!important;margin:0!important;z-index:40!important}.canvas-tool-prompt{position:fixed!important;left:50%!important;bottom:101px!important;transform:translateX(-50%)!important;z-index:41!important}
+.history-filter-row{gap:18px!important}.history-filter-row>.history-filter-anchor{position:relative!important;flex:0 0 72px!important;width:72px!important;min-width:72px!important}.history-filter-anchor>button{width:72px!important;justify-content:flex-start!important}.history-filter-anchor .history-pop{position:absolute!important;top:31px!important;left:0!important;right:auto!important;transform:none!important;margin:0!important}.history-filter-anchor .filter-pop,.history-filter-anchor .time-pop,.history-filter-anchor .sort-pop{left:0!important}
+.history-heading-back,.asset-page-back{width:24px!important;height:24px!important;padding:3px!important;border:0!important;background:transparent!important;border-radius:0!important;display:grid!important;place-items:center!important}.history-heading-back img,.asset-page-back img{display:block;width:18px!important;height:18px!important;object-fit:contain}.history-heading{gap:8px!important}.asset-page-header>div{gap:8px!important}.asset-page-header>div>.asset-page-back{flex:0 0 24px}
+
+/* Consistent icon/text centering across button containers. */
+button>img{vertical-align:middle;object-fit:contain;flex:0 0 auto}.new-work,.composer-actions button,.generation-composer-actions button,.generation-result-actions button,.editor-download,.go-canvas,.canvas-home-actions button,.asset-add-menu button,.asset-folder-menu button,.asset-empty button,.apply-canvas,.history-batch{align-items:center!important}.composer-actions button,.generation-composer-actions button,.generation-result-actions button,.editor-download,.canvas-home-actions button,.asset-add-menu button,.asset-folder-menu button,.asset-empty button,.apply-canvas,.history-batch{justify-content:center}.asset-add-menu button,.asset-folder-menu button{justify-content:flex-start!important}
+
+/* History cards share one top edge and one consistent gutter. */
+.history-cards{align-items:start!important;grid-auto-rows:auto!important;gap:20px!important}.history-record{align-self:start!important;margin:0!important}.history-record-preview{width:100%!important;height:179px!important;margin:0!important}.history-record>strong{margin-top:10px!important}.figma-history-cards{align-items:flex-start!important;gap:24px!important}.figma-history-card{align-self:flex-start!important;margin:0!important}
+
+/* Equal spacing for 全部 / 筛选 / 时间 / 排序, without chevrons. */
+.history-filter-row{display:grid!important;grid-template-columns:repeat(4,64px)!important;column-gap:20px!important;align-items:start!important}.history-filter-row>button.current,.history-filter-row>.history-filter-anchor{width:64px!important;min-width:64px!important;max-width:64px!important}.history-filter-row>button.current,.history-filter-anchor>button{justify-content:center!important;width:64px!important;gap:0!important;text-align:center!important}.history-filter-anchor>button>span{display:none!important}
+
+/* Right-side history action: search glyph, divider and copy are on one center line. */
+.history-batch{display:flex!important;height:42px!important;padding:0 18px!important;gap:12px!important;line-height:1!important}.history-batch>img{display:block!important;width:20px!important;height:20px!important}.history-batch>i{display:block!important;flex:0 0 1px!important;height:20px!important;margin:0!important}
+
+/* Real editable search controls on the homepage and conversation history. */
+.conversation-search,.template-head .mini-search{display:flex!important;align-items:center!important;gap:8px!important;cursor:text}.conversation-search{padding:0 10px!important}.conversation-search>img,.template-head .mini-search>img{display:block;width:16px;height:16px;flex:0 0 16px}.conversation-search>input,.template-head .mini-search>input{min-width:0;flex:1;height:100%;padding:0!important;border:0!important;outline:0!important;background:transparent!important;color:#202432;font-size:13px;line-height:normal}.conversation-search>input::placeholder,.template-head .mini-search>input::placeholder{color:#b5bac4}.template-head .mini-search{height:34px!important;padding:0 13px!important}
+
+/* Completed generation actions matched to the Figma single-row control group. */
+.generation-result-actions{display:grid!important;grid-template-columns:138px 128px 72px 124px!important;width:504px!important;min-width:504px!important;height:46px!important;gap:14px!important;align-items:center!important;margin-left:44px!important;margin-top:12px!important}.generation-result-actions button{width:100%!important;height:46px!important;margin:0!important;padding:0 16px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;border:1px solid #dfe3ea!important;border-radius:14px!important;background:#fff!important;color:#202432!important;font-size:16px!important;line-height:22px!important;font-weight:400!important;white-space:nowrap!important}.generation-result-actions .action-edit{border-color:#655fff!important;color:#5d5aff!important}.generation-result-actions .action-more{padding:0 0 6px!important;font-size:20px!important;letter-spacing:2px!important}.generation-result-actions button>img{display:block!important;width:18px!important;height:18px!important;margin:0!important}.generation-result-actions .batch-delete{gap:9px!important}.batch-delete-icon{position:relative!important;display:block!important;flex:0 0 16px!important;width:16px!important;height:16px!important;border:0!important;border-radius:0!important;color:#202432!important}.batch-delete-icon::before{content:""!important;position:absolute!important;left:3px!important;top:5px!important;width:10px!important;height:10px!important;box-sizing:border-box!important;border:1.4px solid currentColor!important;border-top:0!important;border-radius:0 0 2px 2px!important;background:transparent!important}.batch-delete-icon::after{content:""!important;position:absolute!important;left:2px!important;top:2px!important;width:12px!important;height:3px!important;box-sizing:border-box!important;border-top:1.4px solid currentColor!important;border-radius:0!important;background:linear-gradient(currentColor,currentColor) center top/5px 1.4px no-repeat!important}
+
+/* Figma generation palette: restrained icy blue through violet to soft rose. */
+.generation-progress{filter:none!important;background:radial-gradient(circle at 10% -5%,rgba(255,255,255,.82),transparent 36%),radial-gradient(circle at 105% 108%,rgba(236,205,229,.48),transparent 45%),linear-gradient(120deg,#d7eef7 0%,#c9def0 30%,#c8c9e8 61%,#e7cfdf 100%)!important;background-size:190% 190%!important;animation:generation-flow 2.8s ease-in-out infinite!important}.generation-progress::after{opacity:.24!important;background:linear-gradient(110deg,transparent 40%,rgba(255,255,255,.3) 50%,transparent 60%)!important}.generation-progress strong{background:linear-gradient(90deg,#f4f8fb 0%,#fff 42%,#eef2f7 76%,#fff 100%)!important;background-size:220% 100%!important;background-clip:text!important;-webkit-background-clip:text!important}
+
+/* Exact six-stop palette supplied for the generating-image flow. */
+.generation-progress{background:linear-gradient(118deg,#FFFFFF 0%,#22C9FF 18%,#4DF6FF 36%,#B6FFE2 54%,#C1CAFF 75%,#F1A1FF 100%)!important;background-size:260% 260%!important;filter:none!important;animation:generation-exact-palette 3.2s ease-in-out infinite alternate!important}.generation-progress::after{opacity:.28!important;background:linear-gradient(110deg,transparent 38%,#FFFFFF 50%,transparent 62%)!important}.generation-progress span{color:#FFFFFF!important}.generation-progress strong{background:linear-gradient(90deg,#FFFFFF 0%,#C1CAFF 48%,#FFFFFF 100%)!important;background-size:220% 100%!important;background-clip:text!important;-webkit-background-clip:text!important}@keyframes generation-exact-palette{0%{background-position:0% 30%}50%{background-position:60% 70%}100%{background-position:100% 35%}}
+
+/* Brand mark from the supplied logo reference: dark rounded tile + existing exact orbit asset. */
+.brand-mark{width:29px!important;height:29px!important;border:0!important;border-radius:8px!important;background:#202120!important;display:grid!important;place-items:center!important;overflow:hidden!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)!important}.brand-mark>img{display:block!important;width:22.5px!important;height:22.5px!important;object-fit:contain!important}.brand{gap:7px!important}
+
+/* Page titles use one typography specification. */
+.history-heading h1,.asset-page-header strong{margin:0!important;font-size:20px!important;line-height:28px!important;font-weight:500!important;color:#202432!important}
+
+/* Homepage model trigger and its Figma model popover. */
+.studio-page .home-model-trigger{display:flex!important;align-items:center!important;justify-content:center!important;gap:6px!important}.home-model-icon{width:24px;height:24px;display:grid;place-items:center;flex:0 0 24px;border-radius:7px;background:#f1f2f5}.home-model-icon>img{display:block!important;width:20px!important;height:20px!important;object-fit:contain!important}.studio-page .home-model-trigger[aria-expanded="true"]{background:#f2edff!important;color:#694add!important}.studio-page .home-model-trigger[aria-expanded="true"] .home-model-icon{background:#e8e2ff}.studio-page .model-selector-popover{left:48px!important;bottom:58px!important}
+
+/* Top-layer composer popovers and Figma 868:2176 invocation selector. */
+.studio-page .figma-composer,.new-creation-composer{overflow:visible!important;isolation:isolate;z-index:120!important}.studio-page .popover,.studio-page .model-selector-popover,.studio-page .size-selector-popover,.studio-page .home-asset-popover,.new-creation-composer .popover,.new-creation-composer .model-selector-popover,.new-creation-composer .size-selector-popover,.new-creation-composer .home-asset-popover{z-index:1000!important}.templates,.template-gallery-scroll,.template-gallery-grid{position:relative;z-index:1}
+.model-invocation-popover{position:absolute;right:0;bottom:-39px;z-index:1100;width:256px;height:26px;padding:1px 10px;box-sizing:border-box;border-radius:16px;background:#f4f4f4;box-shadow:0 10px 24px rgba(0,0,0,.08),0 2px 8px rgba(107,122,153,.05);display:grid;grid-template-columns:repeat(3,1fr);align-items:center}.model-invocation-popover button{position:relative!important;inset:auto!important;width:100%!important;height:24px!important;padding:0!important;border:0!important;border-radius:12px!important;background:transparent!important;color:#a6a7ad!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;font-size:9px!important}.model-invocation-popover button.active{background:linear-gradient(135deg,#7472ff,#a683f8)!important;color:#fff!important;box-shadow:0 3px 8px rgba(116,114,255,.24)!important}.model-invocation-popover button>i{width:36px;height:8px;display:flex;align-items:center;justify-content:space-between}.model-invocation-popover button>i b{display:block;width:1.2px;height:4px;background:#e9eaeb}.model-invocation-popover button>i b:nth-child(2){height:8px}.model-invocation-popover button.active>i{display:none}.invocation-trigger[aria-expanded="true"]{background:#f2edff!important;color:#6654e8!important}
+
+/* Asset folders share History popover styling and selected hover feedback. */
+.asset-folder-menu{border:0!important;border-radius:12px!important;background:#fff!important;box-shadow:0 10px 24px rgba(0,0,0,.02),0 2px 8px rgba(107,122,153,.05)!important;padding:12px 16px!important;gap:6px!important}.asset-folder-menu button{width:100%!important;height:36px!important;border:1px solid transparent!important;border-radius:8px!important;transition:background-color 160ms ease,border-color 160ms ease,color 160ms ease,box-shadow 160ms ease!important}.asset-folder-menu button:hover,.asset-folder-menu button.selected:hover{background:#f2edff!important;border-color:#8a67f4!important;color:#694add!important;box-shadow:0 3px 10px rgba(105,74,221,.08)!important}.asset-empty>div{align-items:center!important}.asset-empty button{display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;padding:0 12px!important}.asset-empty button span{display:grid!important;place-items:center!important;margin:0!important}
+
+/* Canvas header uses the homepage logo treatment. */
+.canvas-brand-mark{width:29px;height:29px;border-radius:8px;background:#202120;display:grid;place-items:center;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}.canvas-brand-mark>img{display:block;width:22.5px;height:22.5px;object-fit:contain}.project-logo>img:last-child{width:14px!important;height:14px!important}.project-logo .canvas-brand-mark+img{flex:0 0 14px}
+
+/* Asset folder menu aligns below its tab and mirrors History typography. */
+.asset-folder-menu{left:48px!important;top:100px!important;width:203px!important;z-index:1000!important;overflow:visible!important}.asset-folder-menu button{font-size:16px!important;line-height:22px!important;font-weight:400!important;color:#202432!important}.asset-folder-menu button span{font-size:16px!important;font-weight:400!important}.asset-folder-menu button.selected{font-weight:400!important}
+
+/* Same subtle moving 1px outline used across the site. */
+.asset-folder-menu{position:absolute!important}.asset-folder-menu::after{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;pointer-events:none;z-index:8;background:linear-gradient(90deg,#39b9ff 0%,#6d72ff 18%,#be79ff 34%,#FFFFFF 45%,#ff83c7 55%,#7b7cff 72%,#39b9ff 100%);background-size:300% 100%;animation:site-outline-run 5s linear infinite;opacity:.34;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+
+/* Homepage typography follows the “图片 4.5” model-option label. */
+.model-selector-popover b,
+.studio-page .skill-row button,
+.studio-page .composer-actions button,
+.studio-page .composer-actions .generate,
+.conversation-panel .history-row strong{
+  font-size:14px!important;
+  line-height:22px!important;
+  font-weight:500!important;
+}
+
+/* Keep the template action and its explanation on one visual center line. */
+.template-copy{display:inline-flex;align-items:center;gap:10px;min-width:0;vertical-align:middle}
+.template-copy>b{display:inline-flex!important;align-items:center;justify-content:center;gap:5px;flex:0 0 auto;margin:0!important}
+.template-copy>b>img{display:block;width:16px;height:16px;object-fit:contain}
+.template-copy>em{display:flex;align-items:center;margin:0;font-style:normal;line-height:22px;white-space:nowrap}
+
+/* The entered homepage template keyword matches the conversation-search placeholder. */
+.template-head .mini-search>input{color:#b5bac4!important;font-size:13px!important;line-height:20px!important;font-weight:400!important}
+.template-head .mini-search>input::placeholder{color:#b5bac4!important;font-size:13px!important;font-weight:400!important;opacity:1}
+
+/* Figma 868:1995 — exact homepage typography scale and weights. */
+.topbar,
+.rail,
+.conversation-panel,
+.studio-page{
+  font-family:"Alibaba PuHuiTi","Microsoft YaHei","PingFang SC",Arial,sans-serif;
+}
+.brand strong{
+  font-family:"Douyin Sans","Alibaba PuHuiTi","Microsoft YaHei",sans-serif!important;
+  font-size:20px!important;
+  line-height:normal!important;
+  font-weight:700!important;
+}
+.brand small{
+  font-size:8px!important;
+  line-height:normal!important;
+  font-weight:400!important;
+  letter-spacing:.16px!important;
+}
+.credits,
+.rail button span,
+.assistant-copy,
+.studio-page .skill-row button,
+.studio-page .composer-actions button,
+.studio-page .composer-actions .generate,
+.template-copy>b,
+.template-copy>em,
+.template-head .mini-search>input,
+.template-head .mini-search>input::placeholder{
+  font-size:13px!important;
+  line-height:16px!important;
+  font-weight:400!important;
+}
+.new-work span{
+  font-size:14px!important;
+  line-height:22px!important;
+  font-weight:400!important;
+}
+.conversation-search>input,
+.conversation-search>input::placeholder,
+.conversation-panel .label,
+.conversation-panel .history-row strong,
+.panel-footer{
+  font-size:13px!important;
+  line-height:16px!important;
+  font-weight:400!important;
+}
+.conversation-panel .history-row small{
+  font-size:9px!important;
+  line-height:14px!important;
+  font-weight:400!important;
+}
+.studio-page h1{
+  font-size:40px!important;
+  line-height:28px!important;
+  font-weight:700!important;
+}
+.studio-page .figma-composer textarea,
+.studio-page .figma-composer textarea::placeholder{
+  font-size:14px!important;
+  line-height:22px!important;
+  font-weight:400!important;
+}
+.studio-page .model-invocation-popover button{
+  font-size:9px!important;
+  line-height:14px!important;
+  font-weight:400!important;
+}
+
+/* Figma homepage hero, matching the supplied crop and node 868:2005/2006. */
+.studio-page .assistant-copy{width:820px!important;margin:0 auto!important;color:#8b92a1!important;font-size:13px!important;line-height:16px!important;font-weight:400!important;text-align:center!important;white-space:nowrap!important}
+.studio-page h1{width:820px!important;margin:6px auto 18px!important;color:transparent!important;background:linear-gradient(90deg,#17aeff 30%,#9c82ff 65%,#fc8ec1 96.635%)!important;background-clip:text!important;-webkit-background-clip:text!important;letter-spacing:0!important;text-align:center!important;white-space:nowrap!important;overflow:visible!important}
+.studio-page h1{line-height:52px!important;min-height:52px!important;margin-top:2px!important;margin-bottom:12px!important}
+
+/* Figma 875:2809 — model selection popover. */
+.studio-page .model-selector-popover,.new-creation-composer .model-selector-popover{width:420px!important;height:233px!important;padding:8px 12px!important;border:0!important;border-radius:10px!important;background:linear-gradient(180deg,rgba(246,241,255,.98) 24%,rgba(255,255,255,.98) 38.5%)!important;box-shadow:0 10px 24px rgba(0,0,0,.02),0 2px 8px rgba(107,122,153,.05)!important}
+.model-selector-popover>strong{margin:0 0 3px!important;font-size:16px!important;line-height:24px!important;font-weight:400!important;color:#202432!important}
+.model-selector-popover>button{width:396px!important;height:58px!important;margin:0 0 3px!important;padding:8px!important;border-radius:13px!important;background:#f7f8fa!important;gap:12px!important}
+.model-selector-popover>button:last-child{margin-bottom:0!important}.model-selector-popover>button.active{border:1px solid #8a67f4!important;background:#f7f6ff!important}
+.model-selector-popover>button>img:first-child{width:40px!important;height:40px!important;border-radius:11px!important}.model-selector-popover span{gap:0!important}.model-selector-popover b{font-size:14px!important;line-height:22px!important;font-weight:400!important;color:#252832!important}.model-selector-popover small{font-size:9px!important;line-height:14px!important;font-weight:400!important;color:#8b93a1!important}.model-selector-popover .model-check{right:8px!important;width:18px!important;height:18px!important}
+
+/* Figma 875:2469 — size selection popover. */
+.studio-page .size-selector-popover,.new-creation-composer .size-selector-popover{width:520px!important;height:282px!important;padding:8px 12px!important;border:0!important;border-radius:16px!important;background:linear-gradient(180deg,#f6f1ff 10.315%,#fff 24.476%)!important;box-shadow:0 10px 24px rgba(0,0,0,.02),0 2px 8px rgba(107,122,153,.05)!important}
+.size-selector-popover>strong{display:block!important;margin:0!important;font-size:16px!important;line-height:24px!important;font-weight:400!important;color:#1a1c26!important}.size-quality-label,.size-section-label,.size-selector-popover>small{display:block;color:#7a8291;font-size:13px;line-height:16px;font-weight:400}.size-quality-label{margin-top:-4px}.size-quality{display:grid!important;grid-template-columns:repeat(3,80px)!important;gap:21px!important;width:280px!important;margin:8px 0 10px!important}.size-quality button{width:80px!important;height:32px!important;border:1px solid #dee0e8!important;border-radius:16px!important;background:#fbfcfd!important;color:#404552!important;font-size:14px!important;line-height:22px!important;font-weight:400!important}.size-quality button.active{border:1.5px solid #2288ff!important;background:#f2f2ff!important;color:#6f63ec!important;box-shadow:none!important}.size-section-label{margin-bottom:5px}.size-fields{height:34px!important;margin:0 0 6px!important;grid-template-columns:210px 20px 210px!important;gap:24px!important;align-items:center!important}.size-fields label{height:34px!important;padding:0 14px!important;border:0!important;border-radius:11px!important;background:#f7f7fa!important;color:#757a87!important;font-size:13px!important;line-height:16px!important;font-weight:400!important}.size-fields label span{margin-left:14px!important;color:#292b33!important;font-size:14px!important;line-height:22px!important;font-weight:400!important}.size-fields>img{width:20px!important;height:28px!important}.ratio-grid{height:86px!important;margin-top:6px!important;gap:6px!important}.ratio-grid button{height:40px!important;border:1px solid #d6d9e0!important;border-radius:9px!important;background:#fff!important;color:#3b3d47!important;font-size:9px!important;line-height:14px!important;font-weight:400!important}.ratio-grid button.active{border:1.5px solid #2288ff!important;background:#f2f2ff!important;color:#6f63ec!important}.ratio-grid button:last-child{font-size:13px!important;line-height:16px!important}
+
+/* Homepage asset-library popover uses the same Figma card system. */
+.home-asset-popover{width:420px!important;min-height:228px!important;padding:8px 12px 12px!important;border:0!important;border-radius:10px!important;background:linear-gradient(180deg,rgba(246,241,255,.98) 0%,rgba(255,255,255,.98) 28%)!important;box-shadow:0 10px 24px rgba(0,0,0,.02),0 2px 8px rgba(107,122,153,.05)!important;font-family:"Alibaba PuHuiTi","Microsoft YaHei","PingFang SC",sans-serif!important;overflow:hidden!important}.home-asset-popover header{height:30px!important}.home-asset-popover header strong{font-size:16px!important;line-height:24px!important;font-weight:400!important;color:#202432!important}.home-asset-popover header button,.home-asset-popover>label,.home-asset-popover>small,.home-asset-popover footer span,.home-asset-popover footer button{font-size:13px!important;line-height:16px!important;font-weight:400!important}.home-asset-popover header button{height:30px!important;padding:0 11px!important;border-radius:9px!important}.home-asset-popover>label{height:34px!important;margin:8px 0!important;padding:0 12px!important;border-color:#dedee0!important;border-radius:10px!important;background:#fbfbfb!important}.home-asset-popover>small{margin-bottom:6px!important;color:#7a8291!important}.home-asset-popover>div{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important}.home-asset-popover>div>button{height:74px!important;border-radius:9px!important}.home-asset-popover footer{height:32px!important;margin-top:8px!important}.home-asset-popover footer button{height:32px!important;border-radius:9px!important}
+
+/* Homepage upload popover follows the auxiliary-text token used by Figma. */
+.studio-page .upload-pop,.new-creation-composer .new-upload-pop{padding:8px!important;border-radius:10px!important;background:rgba(255,255,255,.98)!important;box-shadow:0 10px 24px rgba(0,0,0,.02),0 2px 8px rgba(107,122,153,.05)!important}
+.studio-page .upload-pop button,.new-creation-composer .new-upload-pop button{min-height:36px!important;font-family:"Alibaba PuHuiTi","Microsoft YaHei","PingFang SC",sans-serif!important;font-size:13px!important;line-height:16px!important;font-weight:400!important;color:#202432!important;display:flex!important;align-items:center!important;gap:8px!important}
+.studio-page .upload-pop button img,.new-creation-composer .new-upload-pop button img{width:18px!important;height:18px!important}
+
+/* History filter labels remain visible without hover. */
+.history-filter-row>button,.history-filter-anchor>button{color:#667085!important;opacity:1!important;visibility:visible!important;font-weight:400!important}
+.history-filter-row>button.current{color:#202432!important}
+.history-filter-anchor>button:hover,.history-filter-anchor>button:focus-visible{color:#667085!important}
+
+/* History controls stay legible in every state, including the selected time item. */
+.history-filter-row>button,
+.history-filter-anchor>button,
+.history-pop button,
+.history-pop button.selected{
+  opacity:1!important;
+  visibility:visible!important;
+  -webkit-text-fill-color:currentColor!important;
+}
+.time-pop>button.selected{
+  color:#202432!important;
+  -webkit-text-fill-color:#202432!important;
+}
+
+/* Canvas history: keep the selection toolbar centered at the panel bottom. */
+.figma-history-panel .history-action-bar{
+  position:absolute!important;
+  left:50%!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:22px!important;
+  transform:translateX(-50%)!important;
+  z-index:16!important;
+}
+
+/* Figma canvas-home measurements (node 838:16). */
+.canvas-home-guide{z-index:1!important}
+.canvas-home-title>span,.canvas-home-actions button{box-sizing:border-box!important}
+.canvas-home-title>strong{letter-spacing:0!important}
+
+/* Canvas homepage — matched to the supplied Figma reference. */
+.canvas-home-guide{width:800px!important;height:140px!important}
+.canvas-home-title{height:60px!important;gap:16px!important}
+.canvas-home-title>span{width:136px!important;height:60px!important;border-radius:16px!important;gap:14px!important;font-size:20px!important;line-height:28px!important;font-weight:400!important}
+.canvas-home-title>span img{width:24px!important;height:24px!important;flex:0 0 24px!important}
+.canvas-home-title>strong{font-size:22px!important;line-height:30px!important;font-weight:400!important;color:#797c84!important}
+.canvas-home-actions{top:80px!important;width:800px!important;grid-template-columns:repeat(4,185px)!important;gap:20px!important}
+.canvas-home-actions button{height:60px!important;border-radius:16px!important;padding:0 34px!important;gap:16px!important;font-size:18px!important;line-height:26px!important;font-weight:400!important;justify-content:flex-start!important}
+.canvas-home-actions img{width:28px!important;height:28px!important;flex:0 0 28px!important}
+
+/* Comment mode leaves only the placed image and the centered comment composer on canvas. */
+.canvas-comments-mode .canvas-center-stage{top:50%!important;height:432px!important;transform:translate(-50%,-50%)!important}
+.canvas-comments-mode .canvas-image-row{display:flex!important;height:432px!important}
+
+/* Invocation level popup: selection never changes label position or column spacing. */
+.model-invocation-popover{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  column-gap:0!important;
+  overflow:hidden!important;
+}
+.model-invocation-popover button{
+  position:relative!important;
+  display:block!important;
+  min-width:0!important;
+  text-align:center!important;
+}
+.model-invocation-popover button>span{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  width:100%!important;
+  text-align:center!important;
+  line-height:24px!important;
+}
+.model-invocation-popover button>i{
+  position:absolute!important;
+  right:7px!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  margin:0!important;
+  transition:opacity 150ms ease!important;
+}
+.model-invocation-popover button.active>i{display:flex!important;opacity:0!important}
+
+/* Homepage controls: soft selected-like hover plus a playful, restrained icon motion. */
+.studio-page .skill-row button,
+.studio-page .composer-actions button{
+  transition:transform 180ms cubic-bezier(.2,.8,.2,1),background-color 180ms ease,border-color 180ms ease,color 180ms ease,box-shadow 180ms ease!important;
+}
+.studio-page .skill-row button:hover,
+.studio-page .composer-actions button:not(.generate):hover{
+  transform:translateY(-1px)!important;
+  background:#f2edff!important;
+  border-color:#8a67f4!important;
+  color:#694add!important;
+  box-shadow:0 4px 12px rgba(105,74,221,.10)!important;
+}
+.studio-page .skill-row button:hover img,
+.studio-page .composer-actions button:hover img{
+  animation:home-icon-play 620ms cubic-bezier(.2,.8,.2,1) both;
+  transform-origin:50% 55%;
+}
+.studio-page .skill-row button:nth-child(4):hover img{
+  animation:home-star-twinkle 700ms cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes home-icon-play{
+  0%,100%{transform:translateY(0) rotate(0) scale(1)}
+  35%{transform:translateY(-2px) rotate(-5deg) scale(1.08)}
+  68%{transform:translateY(0) rotate(4deg) scale(.98)}
+}
+@keyframes home-star-twinkle{
+  0%,100%{transform:rotate(0) scale(1);filter:none}
+  28%{transform:rotate(-9deg) scale(1.12);filter:drop-shadow(0 0 3px rgba(142,104,255,.42))}
+  55%{transform:rotate(8deg) scale(.96);filter:drop-shadow(0 0 1px rgba(142,104,255,.25))}
+  78%{transform:rotate(-3deg) scale(1.05);filter:none}
+}
+
+/* Four primary sidebar items receive the same lively hover language. */
+.rail-items button:hover{transform:translateY(-1px) scale(1.025)!important;box-shadow:0 5px 14px rgba(54,104,220,.09)!important}
+.rail-items button:hover img{animation:home-nav-bob 620ms cubic-bezier(.2,.8,.2,1) both;transform-origin:center}
+@keyframes home-nav-bob{
+  0%,100%{transform:translateY(0) rotate(0) scale(1)}
+  32%{transform:translateY(-2px) rotate(-4deg) scale(1.08)}
+  66%{transform:translateY(0) rotate(3deg) scale(1.01)}
+}
+@media (prefers-reduced-motion:reduce){
+  .studio-page .skill-row button:hover img,
+  .studio-page .composer-actions button:hover img,
+  .rail-items button:hover img{animation:none!important}
+}
+
+/* Distinct icon personalities: keep most glyphs still and animate only a tiny sparkle. */
+.studio-page .skill-row button:hover img,
+.studio-page .composer-actions button:hover img,
+.rail-items button:hover img{animation:none!important}
+.studio-page .skill-row button,
+.studio-page .composer-actions button,
+.rail-items button{position:relative!important;overflow:visible!important}
+.studio-page .skill-row button::before,
+.studio-page .composer-actions button:not(.generate)::before,
+.rail-items button::before{
+  content:"✦";
+  position:absolute;
+  z-index:3;
+  pointer-events:none;
+  color:#8b6cf6;
+  font-size:8px;
+  line-height:1;
+  opacity:0;
+  transform:scale(.4);
+  filter:drop-shadow(0 0 2px rgba(139,108,246,.28));
+}
+
+/* Five homepage skills — five subtly different sparkle rhythms. */
+.studio-page .skill-row button::before{left:25px;top:5px}
+.studio-page .skill-row button:nth-child(1):hover::before{animation:spark-soft-pop .72s ease-out both}
+.studio-page .skill-row button:nth-child(2):hover::before{animation:spark-side-drift .82s ease-in-out both}
+.studio-page .skill-row button:nth-child(3):hover::before{animation:spark-double-beat .78s ease-in-out both}
+.studio-page .skill-row button:nth-child(4):hover::before{animation:spark-cute-wiggle .88s cubic-bezier(.2,.8,.2,1) both}
+.studio-page .skill-row button:nth-child(5):hover::before{animation:spark-lazy-orbit .92s ease-in-out both}
+
+/* Composer icons: clip, model, size and assets each respond differently. */
+.studio-page .composer-actions button::before{left:8px;top:2px}
+.studio-page .composer-actions button:nth-of-type(1):hover img{animation:clip-nod .62s ease-in-out both!important}
+.studio-page .composer-actions button:nth-of-type(1):hover::before{animation:spark-soft-pop .7s ease-out both}
+.studio-page .composer-actions button:nth-of-type(2):hover::before{animation:spark-double-beat .8s ease-in-out both}
+.studio-page .composer-actions button:nth-of-type(3):hover::before{animation:spark-side-drift .82s ease-in-out both}
+.studio-page .composer-actions button:nth-of-type(4):hover::before{animation:spark-lazy-orbit .9s ease-in-out both}
+.studio-page .composer-actions button:nth-of-type(5):hover::before{animation:spark-cute-wiggle .86s ease-in-out both}
+
+/* The four main navigation icons use separate micro-motions and sparkle positions. */
+.rail-items button::before{right:8px;top:6px}
+.rail-items button:nth-child(1):hover img{animation:nav-gentle-rise .68s ease-out both!important}
+.rail-items button:nth-child(1):hover::before{animation:spark-soft-pop .72s ease-out both}
+.rail-items button:nth-child(2):hover img{animation:nav-soft-tilt .74s ease-in-out both!important}
+.rail-items button:nth-child(2):hover::before{animation:spark-side-drift .82s ease-in-out both}
+.rail-items button:nth-child(3):hover img{animation:nav-folder-breathe .82s ease-in-out both!important}
+.rail-items button:nth-child(3):hover::before{animation:spark-double-beat .84s ease-in-out both}
+.rail-items button:nth-child(4):hover img{animation:nav-library-peek .78s cubic-bezier(.2,.8,.2,1) both!important}
+.rail-items button:nth-child(4):hover::before{animation:spark-cute-wiggle .88s ease-in-out both}
+
+@keyframes spark-soft-pop{0%{opacity:0;transform:scale(.35)}38%{opacity:.92;transform:scale(1.12)}70%{opacity:.48;transform:scale(.84)}100%{opacity:0;transform:scale(1.18)}}
+@keyframes spark-side-drift{0%{opacity:0;transform:translate(-2px,2px) scale(.4)}38%{opacity:.9;transform:translate(1px,-1px) scale(1.05)}72%{opacity:.4;transform:translate(3px,-2px) scale(.8)}100%{opacity:0;transform:translate(4px,-3px) scale(1.08)}}
+@keyframes spark-double-beat{0%,100%{opacity:0;transform:scale(.35)}24%{opacity:.85;transform:scale(1.04)}48%{opacity:.25;transform:scale(.68)}68%{opacity:.78;transform:scale(.94)}84%{opacity:.25;transform:scale(.72)}}
+@keyframes spark-cute-wiggle{0%,100%{opacity:0;transform:rotate(0) scale(.4)}28%{opacity:.92;transform:rotate(-12deg) scale(1.08)}54%{opacity:.55;transform:rotate(9deg) scale(.86)}76%{opacity:.72;transform:rotate(-4deg) scale(.98)}}
+@keyframes spark-lazy-orbit{0%{opacity:0;transform:translate(-2px,2px) rotate(0) scale(.4)}35%{opacity:.85;transform:translate(0,-1px) rotate(35deg) scale(1)}72%{opacity:.42;transform:translate(2px,0) rotate(72deg) scale(.78)}100%{opacity:0;transform:translate(3px,2px) rotate(100deg) scale(1)}}
+@keyframes clip-nod{0%,100%{transform:rotate(0)}42%{transform:rotate(-5deg)}72%{transform:rotate(2deg)}}
+@keyframes nav-gentle-rise{0%,100%{transform:translateY(0)}42%{transform:translateY(-1.5px)}72%{transform:translateY(-.5px)}}
+@keyframes nav-soft-tilt{0%,100%{transform:rotate(0)}38%{transform:rotate(-3deg)}70%{transform:rotate(1.5deg)}}
+@keyframes nav-folder-breathe{0%,100%{transform:scale(1)}45%{transform:scale(1.045)}72%{transform:scale(1.015)}}
+@keyframes nav-library-peek{0%,100%{transform:translateX(0) rotate(0)}38%{transform:translateX(1px) rotate(2deg)}70%{transform:translateX(-.5px) rotate(-1deg)}}
+
+@media (prefers-reduced-motion:reduce){
+  .studio-page .skill-row button::before,
+  .studio-page .composer-actions button::before,
+  .rail-items button::before{display:none!important}
+}
+
+/* Main rail motion is inside the glyph only; the button frame stays visually still. */
+.rail-items button:hover{transform:none!important;box-shadow:none!important}
+.rail-items button::before{content:none!important;display:none!important}
+.rail-items button:hover img{animation:none!important}
+.nav-glyph{position:relative;display:block!important;width:24px;height:28px;margin:0 auto;overflow:visible}
+.nav-glyph>img{position:absolute;left:0;top:2px;width:24px;height:24px;display:block;transform-origin:center}
+.nav-motion{position:absolute;inset:0;display:block!important;pointer-events:none}
+.nav-motion i{position:absolute;display:block;opacity:0}
+
+/* 工作台：only the surrounding stars blink at different moments. */
+.nav-glyph-studio .nav-motion i{color:#7c68f3;font-style:normal;width:7px;height:7px;line-height:7px}
+.nav-glyph-studio .nav-motion i::before{content:"✦";font-size:7px}
+.nav-glyph-studio .nav-motion i:nth-child(1){left:7px;top:0}
+.nav-glyph-studio .nav-motion i:nth-child(2){right:-2px;top:7px;transform:scale(.7)}
+.nav-glyph-studio .nav-motion i:nth-child(3){left:-3px;top:10px;transform:scale(.6)}
+.rail-items button:hover .nav-glyph-studio .nav-motion i:nth-child(1){animation:rail-star-one 1.05s ease-in-out infinite}
+.rail-items button:hover .nav-glyph-studio .nav-motion i:nth-child(2){animation:rail-star-two 1.05s .16s ease-in-out infinite}
+.rail-items button:hover .nav-glyph-studio .nav-motion i:nth-child(3){animation:rail-star-three 1.05s .31s ease-in-out infinite}
+
+/* 画布：the glyph expands softly, fades at its edge, then returns. */
+.rail-items button:hover .nav-glyph-canvas>img{animation:rail-canvas-bloom 1.15s cubic-bezier(.2,.75,.25,1) infinite!important}
+
+/* 历史：a four-point star rises out of the folder and twinkles. */
+.nav-glyph-history .nav-motion i:first-child{left:8px;top:14px;color:#806af2;font-style:normal;width:9px;height:9px;line-height:9px}
+.nav-glyph-history .nav-motion i:first-child::before{content:"✦";font-size:9px}
+.rail-items button:hover .nav-glyph-history .nav-motion i:first-child{animation:rail-history-star 1.18s cubic-bezier(.2,.75,.25,1) infinite}
+
+/* 素材库：three loose files slide together into the stacked-file glyph. */
+.nav-glyph-assets .nav-motion i{left:5px;top:7px;width:14px;height:10px;border:1.3px solid #5f59d9;border-radius:2px;background:#fff;box-sizing:border-box;transform-origin:center}
+.nav-glyph-assets .nav-motion i:nth-child(1){z-index:1}
+.nav-glyph-assets .nav-motion i:nth-child(2){z-index:2}
+.nav-glyph-assets .nav-motion i:nth-child(3){z-index:3}
+.rail-items button:hover .nav-glyph-assets>img{animation:rail-assets-base 1.22s ease-in-out infinite!important}
+.rail-items button:hover .nav-glyph-assets .nav-motion i:nth-child(1){animation:rail-paper-left 1.22s ease-in-out infinite}
+.rail-items button:hover .nav-glyph-assets .nav-motion i:nth-child(2){animation:rail-paper-right 1.22s ease-in-out infinite}
+.rail-items button:hover .nav-glyph-assets .nav-motion i:nth-child(3){animation:rail-paper-center 1.22s ease-in-out infinite}
+
+@keyframes rail-star-one{0%,100%{opacity:.15;transform:scale(.55)}38%{opacity:1;transform:scale(1.12)}68%{opacity:.35;transform:scale(.78)}}
+@keyframes rail-star-two{0%,100%{opacity:.08;transform:scale(.4) rotate(0)}42%{opacity:.9;transform:scale(.82) rotate(14deg)}72%{opacity:.22;transform:scale(.58) rotate(25deg)}}
+@keyframes rail-star-three{0%,100%{opacity:.08;transform:scale(.35)}34%{opacity:.72;transform:scale(.72)}62%{opacity:.18;transform:scale(.48)}}
+@keyframes rail-canvas-bloom{0%,100%{transform:scale(1);opacity:1;filter:blur(0)}45%{transform:scale(1.2);opacity:.18;filter:blur(.55px)}62%{transform:scale(1.24);opacity:0;filter:blur(.9px)}63%{transform:scale(.9);opacity:0}82%{transform:scale(1.02);opacity:.92;filter:blur(0)}}
+@keyframes rail-history-star{0%{opacity:0;transform:translateY(5px) scale(.35)}36%{opacity:.92;transform:translateY(-4px) scale(1.02)}58%{opacity:.42;transform:translateY(-6px) scale(.72)}76%{opacity:.88;transform:translateY(-7px) scale(.94)}100%{opacity:0;transform:translateY(-10px) scale(.55)}}
+@keyframes rail-assets-base{0%,12%,100%{opacity:1}28%,70%{opacity:.08}86%{opacity:1}}
+@keyframes rail-paper-left{0%,12%{opacity:0;transform:translate(-7px,-3px) rotate(-13deg)}30%{opacity:.9;transform:translate(-6px,-2px) rotate(-10deg)}72%{opacity:1;transform:translate(0,2px) rotate(0)}88%,100%{opacity:0;transform:translate(0,2px)}}
+@keyframes rail-paper-right{0%,12%{opacity:0;transform:translate(7px,-4px) rotate(12deg)}34%{opacity:.9;transform:translate(6px,-2px) rotate(9deg)}72%{opacity:1;transform:translate(0,1px) rotate(0)}88%,100%{opacity:0;transform:translate(0,1px)}}
+@keyframes rail-paper-center{0%,18%{opacity:0;transform:translateY(-7px) scale(.94)}38%{opacity:.95;transform:translateY(-5px) scale(1)}72%{opacity:1;transform:translateY(0) scale(1)}88%,100%{opacity:0;transform:translateY(0)}}
+
+@media (prefers-reduced-motion:reduce){.nav-motion{display:none!important}.rail-items button:hover .nav-glyph>img{animation:none!important}}
+
+/* Final rail cleanup: no animated outlines; Assets uses only its inner sparkle. */
+.rail-items button:nth-child(2)::before,
+.rail-items button:nth-child(2)::after,
+.rail-items button:nth-child(4)::before,
+.rail-items button:nth-child(4)::after{
+  content:none!important;
+  display:none!important;
+  border:0!important;
+  background:none!important;
+  animation:none!important;
+}
+.nav-glyph-canvas .nav-motion{display:none!important}
+.rail-items button:hover .nav-glyph-canvas>img{animation:rail-canvas-clean-fade 1.05s cubic-bezier(.2,.75,.25,1) infinite!important}
+@keyframes rail-canvas-clean-fade{
+  0%,100%{transform:scale(1);opacity:1;filter:none}
+  44%{transform:scale(1.15);opacity:.42;filter:blur(.25px)}
+  65%{transform:scale(1.2);opacity:0;filter:blur(.55px)}
+  66%{transform:scale(.94);opacity:0;filter:none}
+  84%{transform:scale(1);opacity:1;filter:none}
+}
+.nav-glyph-assets .nav-motion i{
+  display:none!important;
+  border:0!important;
+  background:none!important;
+  animation:none!important;
+}
+.nav-glyph-assets .nav-motion i:first-child{
+  display:block!important;
+  left:8px!important;
+  top:7px!important;
+  width:9px!important;
+  height:9px!important;
+  color:#806af2!important;
+  font-style:normal!important;
+  line-height:9px!important;
+  opacity:0;
+}
+.nav-glyph-assets .nav-motion i:first-child::before{content:"✦"!important;font-size:9px!important}
+.rail-items button:hover .nav-glyph-assets>img{animation:none!important;opacity:1!important;transform:none!important}
+.rail-items button:hover .nav-glyph-assets .nav-motion i:first-child{animation:rail-assets-inner-star .92s ease-in-out infinite!important}
+@keyframes rail-assets-inner-star{
+  0%,100%{opacity:.16;transform:scale(.72) rotate(0)}
+  42%{opacity:.95;transform:scale(1.16) rotate(8deg)}
+  68%{opacity:.42;transform:scale(.9) rotate(-3deg)}
+}
+
+/* Invocation selector sits above its trigger and never emits decorative click lines. */
+.studio-page .model-invocation-popover{
+  right:0!important;
+  top:auto!important;
+  bottom:54px!important;
+  transform:none!important;
+  z-index:1200!important;
+}
+.model-invocation-popover::before,
+.model-invocation-popover::after,
+.model-invocation-popover button::before,
+.model-invocation-popover button::after,
+.invocation-trigger::before,
+.invocation-trigger::after{
+  content:none!important;
+  display:none!important;
+  animation:none!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+.model-invocation-popover button{scale:1!important;outline:0!important}
+.model-invocation-popover button:active{scale:1!important}
+
+/* Main sidebar: motion belongs to the glyph artwork, never the selected-state frame. */
+.rail-items button:hover{
+  transform:none!important;
+  box-shadow:none!important;
+}
+.rail-items button::before,.rail-items button::after{
+  pointer-events:none;
+  z-index:4;
+}
+
+/* 工作台 — surrounding stars blink independently while the hand remains steady. */
+.rail-items button:nth-child(1):hover img{animation:none!important}
+.rail-items button:nth-child(1)::before{
+  content:"✦"!important;
+  left:8px!important;right:auto!important;top:5px!important;
+  color:#557cff!important;font-size:8px!important;
+}
+.rail-items button:nth-child(1)::after{
+  content:"✦";
+  position:absolute;
+  left:35px;top:13px;
+  color:#a276f2;font-size:6px;line-height:1;
+  opacity:0;transform:scale(.35);
+}
+.rail-items button:nth-child(1):hover::before{animation:studio-star-one 1.05s ease-in-out both!important}
+.rail-items button:nth-child(1):hover::after{animation:studio-star-two 1.05s .14s ease-in-out both}
+
+/* 画布 — the glyph itself grows, softens at the edge and disappears naturally. */
+.rail-items button:nth-child(2)::before,.rail-items button:nth-child(2)::after{content:none!important}
+.rail-items button:nth-child(2):hover img{animation:canvas-expand-fade .9s cubic-bezier(.2,.7,.2,1) both!important}
+
+/* 历史 — a four-point star rises from inside the folder and twinkles. */
+.rail-items button:nth-child(3):hover img{animation:none!important}
+.rail-items button:nth-child(3)::before{
+  content:"✦"!important;
+  left:24px!important;right:auto!important;top:23px!important;
+  color:#8068ef!important;font-size:9px!important;
+  opacity:0;transform:translateY(5px) scale(.35);
+}
+.rail-items button:nth-child(3)::after{
+  content:"✦";
+  position:absolute;
+  left:32px;top:17px;
+  color:#57a0ff;font-size:5px;line-height:1;
+  opacity:0;transform:translateY(4px) scale(.3);
+}
+.rail-items button:nth-child(3):hover::before{animation:history-star-rise .92s cubic-bezier(.18,.8,.25,1) both!important}
+.rail-items button:nth-child(3):hover::after{animation:history-star-rise-small .92s .1s cubic-bezier(.18,.8,.25,1) both}
+
+/* 素材库 — two loose sheets slide and settle into the existing stacked-file glyph. */
+.rail-items button:nth-child(4)::before,.rail-items button:nth-child(4)::after{
+  content:""!important;
+  position:absolute!important;
+  width:14px!important;height:10px!important;
+  border:1.4px solid #566171!important;
+  border-radius:2px!important;
+  background:#fff!important;
+  opacity:0;
+  filter:none!important;
+}
+.rail-items button:nth-child(4)::before{left:11px!important;right:auto!important;top:10px!important;transform:translate(-5px,-4px) rotate(-12deg)}
+.rail-items button:nth-child(4)::after{left:28px!important;top:10px!important;transform:translate(5px,-4px) rotate(12deg)}
+.rail-items button:nth-child(4):hover::before{animation:asset-sheet-left .82s cubic-bezier(.2,.8,.2,1) both!important}
+.rail-items button:nth-child(4):hover::after{animation:asset-sheet-right .82s .05s cubic-bezier(.2,.8,.2,1) both}
+.rail-items button:nth-child(4):hover img{animation:asset-stack-resolve .82s cubic-bezier(.2,.8,.2,1) both!important}
+
+@keyframes studio-star-one{0%,100%{opacity:0;transform:scale(.35) rotate(0)}22%{opacity:.95;transform:scale(1.12) rotate(8deg)}48%{opacity:.24;transform:scale(.7) rotate(18deg)}68%{opacity:.78;transform:scale(.94) rotate(28deg)}86%{opacity:.18;transform:scale(.62) rotate(36deg)}}
+@keyframes studio-star-two{0%,100%{opacity:0;transform:scale(.3) rotate(0)}30%{opacity:.75;transform:scale(1) rotate(-10deg)}58%{opacity:.18;transform:scale(.62) rotate(-20deg)}78%{opacity:.7;transform:scale(.86) rotate(-28deg)}}
+@keyframes canvas-expand-fade{0%{transform:scale(1);opacity:1;filter:blur(0)}48%{transform:scale(1.15);opacity:.62;filter:blur(.35px)}78%{transform:scale(1.24);opacity:0;filter:blur(1.2px)}79%{transform:scale(.9);opacity:0;filter:blur(0)}100%{transform:scale(1);opacity:1;filter:blur(0)}}
+@keyframes history-star-rise{0%{opacity:0;transform:translateY(6px) scale(.3)}34%{opacity:.9;transform:translateY(-2px) scale(1.08)}62%{opacity:.38;transform:translateY(-5px) scale(.76)}80%{opacity:.82;transform:translateY(-7px) scale(.92)}100%{opacity:0;transform:translateY(-10px) scale(.58)}}
+@keyframes history-star-rise-small{0%{opacity:0;transform:translateY(5px) scale(.25)}42%{opacity:.72;transform:translateY(-1px) scale(.9)}72%{opacity:.32;transform:translateY(-4px) scale(.62)}100%{opacity:0;transform:translateY(-7px) scale(.45)}}
+@keyframes asset-sheet-left{0%{opacity:0;transform:translate(-7px,-5px) rotate(-14deg)}22%{opacity:.88}68%{opacity:.75;transform:translate(7px,5px) rotate(-3deg)}100%{opacity:0;transform:translate(12px,8px) rotate(0)}}
+@keyframes asset-sheet-right{0%{opacity:0;transform:translate(7px,-5px) rotate(14deg)}22%{opacity:.88}68%{opacity:.75;transform:translate(-7px,5px) rotate(3deg)}100%{opacity:0;transform:translate(-12px,8px) rotate(0)}}
+@keyframes asset-stack-resolve{0%,38%{transform:scale(.94);opacity:.5}72%{transform:scale(1.06);opacity:1}100%{transform:scale(1);opacity:1}}
+
+@media (prefers-reduced-motion:reduce){
+  .rail-items button::before,.rail-items button::after{display:none!important}
+  .rail-items button:hover img{animation:none!important}
+}
+
+/* Four sidebar stories: Workbench / Canvas / History / Assets. */
+.rail-items button:hover{transform:none!important}
+.rail-items button:hover img{animation:none!important}
+.rail-items button::before,.rail-items button::after{pointer-events:none;z-index:3}
+
+/* Workbench — small stars blink independently around the stable glyph. */
+.rail-items button:nth-child(1)::before{
+  content:"✦";right:7px;top:5px;left:auto;color:#637cff;font-size:8px;
+  opacity:0;filter:drop-shadow(-19px 11px 0 #9b7df7);
+}
+.rail-items button:nth-child(1)::after{
+  content:"✦";position:absolute;left:9px;top:18px;color:#7f70f3;font-size:6px;opacity:0;
+}
+.rail-items button:nth-child(1):hover::before{animation:workbench-stars-a 1.05s ease-in-out both}
+.rail-items button:nth-child(1):hover::after{animation:workbench-stars-b 1.05s .13s ease-in-out both}
+@keyframes workbench-stars-a{0%,100%{opacity:0;transform:scale(.45) rotate(0)}28%{opacity:.9;transform:scale(1.08) rotate(8deg)}55%{opacity:.28;transform:scale(.72) rotate(-4deg)}76%{opacity:.78;transform:scale(.94) rotate(3deg)}}
+@keyframes workbench-stars-b{0%,100%{opacity:0;transform:scale(.4)}38%{opacity:.82;transform:scale(1)}68%{opacity:.3;transform:scale(.7)}}
+
+/* Canvas — one soft outline expands beyond the glyph and dissolves. */
+.rail-items button:nth-child(2)::before{content:none!important}
+.rail-items button:nth-child(2)::after{
+  content:"";position:absolute;left:16px;top:7px;width:22px;height:22px;
+  box-sizing:border-box;border:1.2px solid #6485fa;border-radius:7px;opacity:0;
+}
+.rail-items button:nth-child(2):hover::after{animation:canvas-edge-fade .9s cubic-bezier(.2,.72,.2,1) both}
+@keyframes canvas-edge-fade{0%{opacity:0;transform:scale(.72)}25%{opacity:.68;transform:scale(.96)}100%{opacity:0;transform:scale(1.62);filter:blur(.35px)}}
+
+/* History — a four-point star rises out of the folder, twinkles, then settles. */
+.rail-items button:nth-child(3)::before{
+  content:"✦";left:24px;right:auto;top:23px;color:#846df5;font-size:8px;opacity:0;
+  filter:drop-shadow(0 0 2px rgba(132,109,245,.35));
+}
+.rail-items button:nth-child(3)::after{
+  content:"✦";position:absolute;left:31px;top:15px;color:#5f8cff;font-size:5px;opacity:0;
+}
+.rail-items button:nth-child(3):hover::before{animation:history-star-rise 1s cubic-bezier(.18,.78,.24,1) both}
+.rail-items button:nth-child(3):hover::after{animation:history-star-small .82s .18s ease-out both}
+@keyframes history-star-rise{0%{opacity:0;transform:translateY(5px) scale(.45)}38%{opacity:.95;transform:translateY(-8px) scale(1.08)}65%{opacity:.45;transform:translateY(-10px) scale(.78)}82%{opacity:.82;transform:translateY(-9px) scale(.96)}100%{opacity:0;transform:translateY(-12px) scale(.82)}}
+@keyframes history-star-small{0%{opacity:0;transform:translateY(3px) scale(.4)}45%{opacity:.78;transform:translateY(-4px) scale(1)}100%{opacity:0;transform:translateY(-7px) scale(.7)}}
+
+/* Assets — two loose sheets converge and stack into the finished library glyph. */
+.rail-items button:nth-child(4)::before,
+.rail-items button:nth-child(4)::after{
+  content:"";position:absolute;top:9px;width:13px;height:17px;border:1px solid #7c73ef;
+  border-radius:3px;background:rgba(255,255,255,.9);opacity:0;box-sizing:border-box;
+}
+.rail-items button:nth-child(4)::before{left:11px;transform:translate(-6px,2px) rotate(-12deg)}
+.rail-items button:nth-child(4)::after{right:11px;transform:translate(6px,-2px) rotate(11deg)}
+.rail-items button:nth-child(4):hover::before{animation:asset-sheet-left .88s cubic-bezier(.2,.8,.2,1) both}
+.rail-items button:nth-child(4):hover::after{animation:asset-sheet-right .88s cubic-bezier(.2,.8,.2,1) both}
+.rail-items button:nth-child(4):hover img{animation:asset-glyph-form .88s ease-out both!important}
+@keyframes asset-sheet-left{0%{opacity:0;transform:translate(-7px,2px) rotate(-13deg)}25%{opacity:.72}72%{opacity:.7;transform:translate(8px,0) rotate(-2deg)}100%{opacity:0;transform:translate(13px,0) rotate(0) scale(.9)}}
+@keyframes asset-sheet-right{0%{opacity:0;transform:translate(7px,-2px) rotate(12deg)}25%{opacity:.72}72%{opacity:.7;transform:translate(-8px,0) rotate(2deg)}100%{opacity:0;transform:translate(-13px,0) rotate(0) scale(.9)}}
+@keyframes asset-glyph-form{0%{opacity:.62;transform:scale(.92)}62%{opacity:.7;transform:scale(.96)}100%{opacity:1;transform:scale(1)}}
+
+@media (prefers-reduced-motion:reduce){
+  .rail-items button::before,.rail-items button::after{display:none!important}
+  .rail-items button:hover img{animation:none!important}
+}
+
+/* Main rail storyboard: each product area has its own visual metaphor. */
+.rail-items button>img{position:relative;z-index:2}
+.rail-items button::before,.rail-items button::after{pointer-events:none;z-index:3}
+
+/* 工作台 — two stars twinkle around the stable glyph. */
+.rail-items button:nth-child(1)::before,
+.rail-items button:nth-child(1)::after{
+  content:"✦"!important;
+  position:absolute!important;
+  color:#7b6cf6!important;
+  line-height:1!important;
+  opacity:0;
+  filter:drop-shadow(0 0 2px rgba(123,108,246,.35));
+}
+.rail-items button:nth-child(1)::before{left:7px!important;top:5px!important;font-size:8px!important}
+.rail-items button:nth-child(1)::after{right:7px!important;top:18px!important;font-size:6px!important}
+.rail-items button:nth-child(1):hover img{animation:none!important}
+.rail-items button:nth-child(1):hover::before{animation:studio-star-a .9s ease-in-out both!important}
+.rail-items button:nth-child(1):hover::after{animation:studio-star-b .9s .12s ease-in-out both!important}
+@keyframes studio-star-a{0%,100%{opacity:0;transform:scale(.35) rotate(0)}30%{opacity:.95;transform:scale(1.12) rotate(15deg)}58%{opacity:.3;transform:scale(.7) rotate(28deg)}76%{opacity:.72;transform:scale(.94) rotate(40deg)}}
+@keyframes studio-star-b{0%,100%{opacity:0;transform:scale(.3)}38%{opacity:.78;transform:scale(1)}68%{opacity:.22;transform:scale(.65)}82%{opacity:.58;transform:scale(.86)}}
+
+/* 画布 — glyph enlarges while a soft edge ring expands and fades. */
+.rail-items button:nth-child(2)::before{display:none!important}
+.rail-items button:nth-child(2)::after{
+  content:""!important;
+  position:absolute!important;
+  left:50%!important;top:19px!important;
+  width:24px!important;height:24px!important;
+  border:1px solid rgba(92,111,246,.55)!important;
+  border-radius:8px!important;
+  opacity:0;
+  transform:translate(-50%,-50%) scale(.72);
+}
+.rail-items button:nth-child(2):hover img{animation:canvas-focus-grow .82s cubic-bezier(.2,.8,.2,1) both!important}
+.rail-items button:nth-child(2):hover::after{animation:canvas-edge-fade .82s ease-out both!important}
+@keyframes canvas-focus-grow{0%,100%{transform:scale(1);opacity:1;filter:none}42%{transform:scale(1.10);opacity:.94;filter:drop-shadow(0 0 2px rgba(91,109,245,.2))}76%{transform:scale(1.035);opacity:1;filter:none}}
+@keyframes canvas-edge-fade{0%{opacity:0;transform:translate(-50%,-50%) scale(.68)}28%{opacity:.7;transform:translate(-50%,-50%) scale(.92)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.48)}}
+
+/* 历史 — a four-point star rises from the folder and twinkles once. */
+.rail-items button:nth-child(3)::after{display:none!important}
+.rail-items button:nth-child(3)::before{
+  content:"✦"!important;
+  position:absolute!important;
+  left:50%!important;top:21px!important;right:auto!important;
+  color:#806cf6!important;
+  font-size:8px!important;
+  opacity:0;
+  transform:translate(-50%,6px) scale(.45);
+}
+.rail-items button:nth-child(3):hover img{animation:history-folder-open .82s ease-in-out both!important}
+.rail-items button:nth-child(3):hover::before{animation:history-star-rise .92s cubic-bezier(.16,.8,.25,1) both!important}
+@keyframes history-folder-open{0%,100%{transform:scale(1)}34%{transform:scaleX(1.035) scaleY(.98)}68%{transform:scale(1.012)}}
+@keyframes history-star-rise{0%{opacity:0;transform:translate(-50%,7px) scale(.35)}35%{opacity:.9;transform:translate(-50%,-3px) scale(1.04)}60%{opacity:.38;transform:translate(-50%,-6px) scale(.72)}78%{opacity:.72;transform:translate(-50%,-8px) scale(.92)}100%{opacity:0;transform:translate(-50%,-11px) scale(.75)}}
+
+/* 素材库 — two loose file sheets slide together behind the final library glyph. */
+.rail-items button:nth-child(4)::before,
+.rail-items button:nth-child(4)::after{
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  left:50%!important;top:18px!important;right:auto!important;
+  width:15px!important;height:18px!important;
+  border:1px solid rgba(107,96,224,.62)!important;
+  border-radius:3px!important;
+  background:rgba(255,255,255,.9)!important;
+  opacity:0;
+  z-index:1!important;
+}
+.rail-items button:nth-child(4)::before{transform:translate(-19px,-7px) rotate(-13deg)}
+.rail-items button:nth-child(4)::after{transform:translate(4px,-6px) rotate(12deg)}
+.rail-items button:nth-child(4):hover img{animation:assets-final-settle .9s cubic-bezier(.2,.8,.2,1) both!important}
+.rail-items button:nth-child(4):hover::before{animation:assets-sheet-left .9s cubic-bezier(.2,.8,.2,1) both!important}
+.rail-items button:nth-child(4):hover::after{animation:assets-sheet-right .9s cubic-bezier(.2,.8,.2,1) both!important}
+@keyframes assets-sheet-left{0%{opacity:0;transform:translate(-21px,-8px) rotate(-15deg)}25%{opacity:.72}68%{opacity:.68;transform:translate(-10px,-3px) rotate(-3deg)}100%{opacity:0;transform:translate(-8px,-2px) rotate(0)}}
+@keyframes assets-sheet-right{0%{opacity:0;transform:translate(6px,-7px) rotate(14deg)}25%{opacity:.72}68%{opacity:.68;transform:translate(-5px,-3px) rotate(3deg)}100%{opacity:0;transform:translate(-8px,-2px) rotate(0)}}
+@keyframes assets-final-settle{0%{transform:scale(.94);opacity:.72}48%{transform:scale(1.055);opacity:1}76%{transform:scale(.985)}100%{transform:scale(1)}}
+
+@media (prefers-reduced-motion:reduce){.rail-items button:hover img,.rail-items button:hover::before,.rail-items button:hover::after{animation:none!important}}
+
+/* Authoritative rail state: no visible outlines for Canvas or Assets. */
+.rail-items button:nth-child(2)::before,.rail-items button:nth-child(2)::after,
+.rail-items button:nth-child(4)::before,.rail-items button:nth-child(4)::after{content:none!important;display:none!important;border:0!important;background:none!important;animation:none!important}
+.nav-glyph-canvas .nav-motion{display:none!important}
+.rail-items button:nth-child(2):hover .nav-glyph-canvas>img{animation:rail-canvas-clean-fade 1.05s cubic-bezier(.2,.75,.25,1) infinite!important}
+.nav-glyph-assets .nav-motion i{display:none!important;border:0!important;background:none!important;animation:none!important}
+.nav-glyph-assets .nav-motion i:first-child{display:block!important;left:8px!important;top:7px!important;width:9px!important;height:9px!important;color:#806af2!important;font-style:normal!important;line-height:9px!important;opacity:0}
+.nav-glyph-assets .nav-motion i:first-child::before{content:"✦"!important;font-size:9px!important}
+.rail-items button:nth-child(4):hover .nav-glyph-assets>img{animation:none!important;opacity:1!important;transform:none!important}
+.rail-items button:nth-child(4):hover .nav-glyph-assets .nav-motion i:first-child{animation:rail-assets-inner-star .92s ease-in-out infinite!important}
+
+/* Stable popup placement and clean click rendering. */
+.studio-page .model-invocation-popover{right:0!important;top:auto!important;bottom:54px!important;transform:none!important;z-index:1200!important}
+.model-invocation-popover::before,.model-invocation-popover::after,.model-invocation-popover button::before,.model-invocation-popover button::after,.invocation-trigger::before,.invocation-trigger::after{content:none!important;display:none!important;animation:none!important;border:0!important;box-shadow:none!important}
+.model-invocation-popover button,.model-invocation-popover button:active{scale:1!important;outline:0!important}
+
+/* Navigation animation now lives entirely inside each original SVG asset. */
+.rail-items .nav-motion,.rail-items button::before,.rail-items button::after{display:none!important;content:none!important;animation:none!important}
+.rail-items button:hover .nav-glyph>img{animation:none!important;transform:none!important;opacity:1!important;filter:none!important}
+
+/* Uploaded canvas images can be repositioned directly with the pointer. */
+.canvas-generated-image{cursor:grab;touch-action:none;user-select:none;will-change:transform;transition:box-shadow 160ms ease}
+.canvas-generated-image.is-dragging{cursor:grabbing;z-index:12;box-shadow:0 12px 28px rgba(31,38,58,.12)!important}
+.canvas-generated-image .placed-image{pointer-events:none;user-select:none;-webkit-user-drag:none}
+
+/* Canvas reference: larger double-click glyph. */
+.canvas-home-title>span img{width:32px!important;height:32px!important;flex:0 0 32px!important}
+
+/* The image carrier and its two equidistant add controls form one draggable unit. */
+.canvas-image-row{display:grid!important;grid-template-columns:40px 420px 40px!important;column-gap:20px!important;width:540px!important;margin:0 auto!important;align-items:center!important;justify-content:center!important;overflow:visible!important;cursor:grab!important;touch-action:none!important;will-change:transform!important}
+.canvas-image-row.is-dragging{cursor:grabbing!important;z-index:12!important}
+.canvas-image-row>.canvas-generated-image{width:420px!important;height:432px!important;border:1px solid #e1e3e8!important;border-radius:16px!important;background:#fff!important;box-shadow:0 8px 22px rgba(45,52,72,.07)!important;overflow:hidden!important;cursor:inherit!important}
+.canvas-image-row>.canvas-generated-image>.placed-image{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;border-radius:15px!important;background:#fff!important}
+.canvas-image-row>button{width:40px!important;height:40px!important;margin:0!important;padding:0!important;justify-self:center!important;border:1px solid #dedee0!important;border-radius:50%!important;background:#fff!important;color:#797c84!important;display:grid!important;place-items:center!important;font-size:24px!important;line-height:1!important;box-shadow:0 4px 12px rgba(48,55,76,.06)!important}
+.canvas-comments-mode .canvas-image-row{display:flex!important;width:420px!important;justify-content:center!important}
+
+/* Multi-image canvas nodes and user-routed connector lines. */
+.canvas-node-layer{position:absolute;inset:0;z-index:5;pointer-events:none}
+.canvas-node-card{position:absolute;left:50%;top:32px;width:320px;height:398px;padding:10px 10px 54px;border:1px solid #6677ff;border-radius:22px;background:linear-gradient(145deg,#f5f6ff,#f0edff);box-shadow:0 8px 20px rgba(66,75,118,.07);pointer-events:auto;cursor:grab;touch-action:none;user-select:none;will-change:transform}
+.canvas-node-card.is-dragging{cursor:grabbing;z-index:20;box-shadow:0 14px 30px rgba(61,70,108,.14)}
+.canvas-node-media{width:298px;height:310px;border:1px solid #7472ff;border-radius:16px;background:#fff;overflow:hidden}
+.canvas-node-media img{display:block;width:100%;height:100%;object-fit:contain;background:#fff;pointer-events:none;-webkit-user-drag:none}
+.canvas-node-card footer{position:absolute;left:20px;right:20px;bottom:13px;text-align:left}
+.canvas-node-card footer strong,.canvas-node-card footer small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.canvas-node-card footer strong{font-size:15px;line-height:22px;font-weight:500;color:#202432}
+.canvas-node-card footer small{font-size:11px;line-height:16px;color:#8b92a1}
+.canvas-node-port{position:absolute!important;top:174px!important;width:40px!important;height:40px!important;padding:0!important;border:1px solid #6878ff!important;border-radius:50%!important;background:#fff!important;color:#202432!important;font-size:24px!important;line-height:38px!important;display:grid!important;place-items:center!important;z-index:8!important;box-shadow:0 3px 10px rgba(54,65,108,.06)!important;cursor:crosshair!important;opacity:0;visibility:hidden;transform:scale(.9);transition:opacity 160ms ease,transform 180ms cubic-bezier(.2,.8,.2,1),visibility 160ms}
+.canvas-node-port{top:230px!important}
+.canvas-node-port.left{left:-62px!important}.canvas-node-port.right{right:-62px!important}
+.canvas-node-card:hover .canvas-node-port,.canvas-node-card[data-active] .canvas-node-port,.canvas-node-port:focus-visible{opacity:1;visibility:visible;transform:scale(1)}
+.canvas-links{position:absolute;inset:0;width:100%;height:100%;z-index:4;overflow:visible;pointer-events:none}
+.canvas-links path{fill:none;stroke:#7472ff;stroke-width:2;stroke-linecap:round;stroke-dasharray:7 6;filter:drop-shadow(0 2px 3px rgba(91,86,220,.12))}
+.canvas-links path.draft{stroke-dasharray:7 6;opacity:.75}
+
+/* Long-press marquee selection. */
+.global-folder-selection{border:1.5px dashed #7b72ef!important;border-radius:12px!important;background:rgba(123,114,239,.055)!important;box-shadow:0 0 0 1px rgba(255,255,255,.7) inset!important}
+.create-folder-button{width:168px!important;height:46px!important;border:1px solid #7b72ef!important;border-radius:23px!important;background:#fff!important;color:#202432!important;font-size:15px!important;box-shadow:0 8px 20px rgba(63,68,104,.10)!important;transform:translateY(-50%)!important}
+
+/* Selected node cards receive a restrained moving-light outline. */
+.canvas-node-card[data-selected]{border-color:transparent!important}
+.canvas-node-card[data-selected]::after{content:"";position:absolute;inset:-1px;border-radius:23px;padding:1px;pointer-events:none;background:linear-gradient(100deg,#70c8f2,#8584ed,#b59be8,#fff,#daa8cc,#70c8f2);background-size:300% 100%;animation:canvas-selection-glow 4.2s linear infinite;opacity:.68;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+@keyframes canvas-selection-glow{to{background-position:300% 50%}}
+
+/* Interactive link layer: visible connection, generous hover target and delete affordance. */
+.canvas-links path:not(.draft){display:none}
+.canvas-link-actions{position:absolute;inset:0;width:100%;height:100%;z-index:7;overflow:visible;pointer-events:none}
+.canvas-link-hit{pointer-events:stroke;cursor:pointer}
+.canvas-link-hit .visible-link{fill:none;stroke:#65708a;stroke-width:2.2;stroke-linecap:round;stroke-dasharray:none;transition:stroke-width 160ms ease,filter 160ms ease}
+.canvas-link-hit .hit-link{fill:none;stroke:transparent;stroke-width:16;pointer-events:stroke}
+.canvas-link-hit.selected .visible-link{stroke:#7674ff;stroke-width:2.4;stroke-dasharray:none!important;animation:none!important;filter:drop-shadow(0 0 4px rgba(113,111,255,.32))}
+@keyframes canvas-link-flow{to{stroke-dashoffset:-14}}
+.canvas-link-hit circle{fill:#fff;stroke:#7472ff;stroke-width:1.4;opacity:0;pointer-events:all;transition:opacity 150ms ease,transform 150ms ease;transform-box:fill-box;transform-origin:center}
+.canvas-link-hit text{fill:#202432;font-size:17px;text-anchor:middle;dominant-baseline:central;opacity:0;pointer-events:all;user-select:none;transition:opacity 150ms ease}
+.canvas-link-hit:hover circle,.canvas-link-hit:hover text{opacity:1}
+.canvas-link-hit:hover circle{transform:scale(1.06)}
+.canvas-link-hit:hover .visible-link{stroke-width:2.2;filter:drop-shadow(0 2px 3px rgba(74,79,108,.18))}
+
+/* Figma 888:7 — prompt shown for the currently clicked image node. */
+.canvas-node-prompt{position:absolute;z-index:18;width:min(790px,calc(100vw - 220px));min-height:146px;transform:translateX(-50%);padding:14px 18px;border:1px solid #7472ff;border-radius:18px;background:rgba(255,255,255,.98);box-shadow:0 10px 24px rgba(0,0,0,.02),0 2px 8px rgba(107,122,153,.05);display:flex;flex-direction:column;gap:10px;pointer-events:auto;user-select:auto}
+.canvas-node-prompt-tools{height:34px;display:flex;align-items:center;gap:9px}
+.canvas-node-prompt-tools button{width:34px;height:34px;padding:0;border:0;border-radius:10px;background:#f3f4f7;display:grid;place-items:center;color:#555b66;font-size:21px}
+.canvas-node-prompt-tools button:first-child{background:#fff}.canvas-node-prompt-tools img{width:34px;height:34px;object-fit:contain}.canvas-node-prompt-tools i{width:1px;height:22px;background:#dedee0}
+.canvas-node-prompt textarea{width:100%;height:42px;min-height:42px;padding:0;border:0!important;outline:0;resize:none;background:transparent!important;box-shadow:none!important;font:400 14px/22px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif;color:#202432;animation:none!important;filter:none!important}
+.canvas-node-prompt textarea::placeholder{color:#a6a7ad;opacity:1}
+.canvas-node-prompt-footer{display:flex;align-items:center;justify-content:space-between}.canvas-node-prompt-footer>div{display:flex;gap:9px}.canvas-node-prompt-footer>div button{min-width:126px;height:28px;padding:0 18px;border:0;border-radius:10px;background:#f5f6f8;color:#3f4651;font:400 13px/16px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif;display:flex;align-items:center;justify-content:center}
+.canvas-node-prompt-send{width:32px;height:34px;padding:0;border:0;background:transparent;display:grid;place-items:center}.canvas-node-prompt-send img{width:32px;height:34px;object-fit:contain}
+
+/* Figma 895:162 / 895:200 — canvas prompt popovers. */
+.canvas-model-popover,.canvas-size-popover{position:absolute;top:calc(100% + 8px);z-index:30;box-sizing:border-box;background:linear-gradient(180deg,rgba(246,241,255,.98) 10%,rgba(255,255,255,.98) 28%);box-shadow:0 10px 24px rgba(0,0,0,.02),0 2px 8px rgba(107,122,153,.05);font-family:"Alibaba PuHuiTi","Microsoft YaHei",sans-serif;animation:canvas-pop-under .2s cubic-bezier(.16,1,.3,1) both}
+@keyframes canvas-pop-under{from{opacity:0;transform:translateY(-7px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.canvas-model-popover{left:18px;width:420px;height:233px;padding:8px 12px;border-radius:10px;display:flex;flex-direction:column;gap:3px}.canvas-model-popover h3,.canvas-size-popover h3{margin:0;color:#202432;font-size:16px;line-height:24px;font-weight:400;text-align:left}.canvas-model-popover>button{position:relative;width:100%;height:58px;padding:8px;border:1px solid transparent;border-radius:13px;background:#f7f8fa;display:flex;align-items:center;gap:12px;text-align:left}.canvas-model-popover>button:hover,.canvas-model-popover>button.active{background:#f7f6ff;border-color:#8a67f4}.canvas-model-popover>button>img:first-child{width:40px;height:40px;border-radius:11px}.canvas-model-popover span{display:flex;flex-direction:column}.canvas-model-popover strong{color:#252832;font-size:14px;line-height:22px;font-weight:400}.canvas-model-popover small{color:#8b93a1;font-size:9px;line-height:14px}.canvas-model-popover .model-check{position:absolute;right:10px;width:18px;height:18px}
+.canvas-size-popover{left:150px;width:520px;height:282px;padding:8px 12px;border-radius:16px;display:flex;flex-direction:column;gap:5px}.canvas-size-popover>label{color:#7a8291;font-size:13px;line-height:16px}.canvas-quality-row{display:flex;gap:21px}.canvas-quality-row button{width:81px;height:33px;padding:0;border:1px solid #dee0e8;border-radius:16px;background:#fbfcfd;color:#404552;font-size:14px}.canvas-quality-row button:hover,.canvas-quality-row button.active{border:1.5px solid #28f;background:#f2f2ff;color:#6d70f5}.canvas-size-fields{display:grid;grid-template-columns:210px 44px 210px;align-items:center}.canvas-size-fields>span{height:34px;padding:0 14px;border-radius:11px;background:#f7f7fa;color:#757a87;font-size:13px;display:flex;align-items:center;gap:14px}.canvas-size-fields input{width:145px;border:0;outline:0;background:transparent;color:#292b33;font-size:14px}.canvas-size-fields>img{width:20px;height:28px;justify-self:center}.canvas-ratio-grid{height:86px;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(2,40px);gap:6px}.canvas-ratio-grid button{height:40px;padding:2px;border:1px solid #d6d9e0;border-radius:9px;background:#fff;color:#3b3d47;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}.canvas-ratio-grid button:hover,.canvas-ratio-grid button.active{border:1.5px solid #28f;background:#f2f2ff;color:#6e70f4}.canvas-ratio-grid small{font-size:9px;line-height:14px}.ratio-shape{display:block;width:16px;height:14px;border:1.5px solid #383b42;border-radius:3px;box-sizing:border-box}.ratio-32,.ratio-43,.ratio-1692,.ratio-1694{width:18px;height:12px}.ratio-23,.ratio-916,.ratio-9162,.ratio-9164{width:11px;height:18px}.ratio-34{width:14px;height:18px}.ratio-11,.ratio-112{width:16px;height:16px}.ratio-{display:none}
+
+/* Infinite canvas panning and real zoom; chrome stays fixed. */
+.figma-infinite-canvas{overflow:auto!important;overscroll-behavior:contain;background-attachment:local;scrollbar-width:thin;scrollbar-color:rgba(139,145,158,.28) transparent}
+.figma-infinite-canvas::before{content:"";position:absolute;left:0;top:0;width:2400px;height:1600px;pointer-events:none}
+.figma-infinite-canvas>.canvas-node-layer,.figma-infinite-canvas>.canvas-links,.figma-infinite-canvas>.canvas-link-actions,.figma-infinite-canvas>.canvas-home-guide,.figma-infinite-canvas>.folder-result,.figma-infinite-canvas>.global-folder-selection,.figma-infinite-canvas>.create-folder-button{zoom:var(--canvas-scale,1);transition:zoom .22s ease}
+.canvas-vertical-nav{position:fixed!important;left:23px!important;top:265px!important;z-index:60!important}.canvas-bottom-dock{position:fixed!important}.figma-zoom{position:fixed!important;display:flex!important;align-items:center!important;min-width:190px!important;width:auto!important}.figma-zoom>button{width:20px;height:20px;padding:0;border:0;background:transparent;display:grid;place-items:center;margin:0;flex:0 0 auto}.figma-zoom>button:last-child{width:auto!important;min-width:76px;height:30px;margin-left:auto;padding:7px 10px;background:#f0f2f5;white-space:nowrap;overflow:hidden;text-overflow:clip}.figma-zoom b{min-width:38px;text-align:center;font-variant-numeric:tabular-nums}
+
+/* Canvas navigation and dock: hover is visually identical to selected. */
+.canvas-vertical-nav button:not([aria-label="账户"]):hover,.canvas-vertical-nav button:not([aria-label="账户"]):focus-visible{background:linear-gradient(135deg,#248bff 4%,#527ff8 45%,#a875f2 100%)!important;border:1px solid rgba(255,255,255,.96)!important;border-radius:50%!important;box-shadow:0 0 0 3px rgba(255,255,255,.86),0 0 0 7px rgba(122,188,255,.2),0 7px 16px rgba(61,129,255,.48),0 14px 25px rgba(116,148,255,.24),inset 0 2px 3px rgba(255,255,255,.5),inset 0 -2px 4px rgba(78,74,222,.2)!important}
+.canvas-vertical-nav button:not([aria-label="账户"]):hover img,.canvas-vertical-nav button:not([aria-label="账户"]):focus-visible img{filter:brightness(0) invert(1)!important}
+.canvas-bottom-dock button:hover,.canvas-bottom-dock button:focus-visible,.canvas-bottom-dock button.active{background:#edecff!important;outline:0;transform:translateY(-1px)}
+
+/* Figma 890:10 — interactive crop workspace. */
+.canvas-crop-workspace{position:absolute;inset:0;z-index:30;pointer-events:none}
+.canvas-crop-stage{position:absolute;left:50%;top:32px;width:610px;height:500px;transform:translateX(-50%);pointer-events:auto;touch-action:none}
+.canvas-crop-mode .canvas-node-layer,.canvas-crop-mode .canvas-links,.canvas-crop-mode .canvas-link-actions,.canvas-crop-mode .global-folder-selection,.canvas-crop-mode .create-folder-button{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+.canvas-crop-source{position:absolute;left:45px;top:0;width:520px;height:500px;border-radius:0;background:#f0f2f5;overflow:hidden;box-shadow:0 10px 24px rgba(0,0,0,.08),0 2px 8px rgba(107,122,153,.05);transform-origin:center;animation:crop-focus-in 320ms cubic-bezier(.16,1,.3,1) both}
+.canvas-crop-source img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none}
+.canvas-crop-mask{position:absolute;z-index:1;background:rgba(23,27,38,.48);pointer-events:none;transition:left 40ms linear,top 40ms linear,width 40ms linear,height 40ms linear}
+.canvas-crop-frame{position:absolute;z-index:2;border:1.5px solid #777d89;background:transparent;cursor:move;box-sizing:border-box}
+@keyframes crop-focus-in{from{opacity:.22;transform:scale(.64)}to{opacity:1;transform:scale(1)}}
+.canvas-crop-workspace.is-closing .canvas-crop-source{animation:crop-focus-out 240ms cubic-bezier(.4,0,1,1) both}.canvas-crop-workspace.is-closing .canvas-crop-frame,.canvas-crop-workspace.is-closing .canvas-crop-mask,.canvas-crop-workspace.is-closing .canvas-crop-actions,.canvas-crop-workspace.is-closing .canvas-crop-ratios{opacity:0;transition:opacity 160ms ease}
+@keyframes crop-focus-out{from{opacity:1;transform:scale(1)}to{opacity:.15;transform:scale(.64)}}
+.crop-handle{position:absolute;width:19px;height:5px;border-radius:1px;background:#777d89;pointer-events:auto}.crop-handle.n,.crop-handle.s{left:50%;transform:translateX(-50%)}.crop-handle.n{top:-3px;cursor:n-resize}.crop-handle.s{bottom:-3px;cursor:s-resize}.crop-handle.e,.crop-handle.w{width:5px;height:19px;top:50%;transform:translateY(-50%)}.crop-handle.e{right:-3px;cursor:e-resize}.crop-handle.w{left:-3px;cursor:w-resize}.crop-handle.nw,.crop-handle.ne,.crop-handle.se,.crop-handle.sw{width:16px;height:16px;background:transparent;border-style:solid;border-color:#777d89;border-radius:0}.crop-handle.nw{left:-3px;top:-3px;border-width:4px 0 0 4px;cursor:nw-resize}.crop-handle.ne{right:-3px;top:-3px;border-width:4px 4px 0 0;cursor:ne-resize}.crop-handle.se{right:-3px;bottom:-3px;border-width:0 4px 4px 0;cursor:se-resize}.crop-handle.sw{left:-3px;bottom:-3px;border-width:0 0 4px 4px;cursor:sw-resize}
+.canvas-crop-ratios{position:absolute;left:24px;top:580px;width:190px;height:306px;padding:10px 12px;box-sizing:border-box;border-radius:20px;background:#fff;box-shadow:0 10px 24px rgba(0,0,0,.08),0 2px 8px rgba(107,122,153,.05);display:flex;flex-direction:column;gap:1px;z-index:6;animation:crop-menu-in 180ms cubic-bezier(.16,1,.3,1) both;transform-origin:top center}
+@keyframes crop-menu-in{from{opacity:0;transform:translateY(-8px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.canvas-crop-ratios button{height:25px;padding:0 12px;border:1px solid transparent;border-radius:10px;background:#fff;color:#2e3340;text-align:left;font:400 15px/24px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif;transition:background 150ms ease,color 150ms ease,border-color 150ms ease,transform 150ms ease}.canvas-crop-ratios button:hover,.canvas-crop-ratios button.active{background:#f7f6ff;border-color:#8a67f4;color:#5e4ff2}.canvas-crop-ratios button:last-child{height:39px;margin:5px -12px -10px;padding-left:24px;border-width:1px 0 0;border-color:#f4f4f4;border-radius:0;color:#2e3340;background:#fff}
+.canvas-crop-actions{position:absolute;left:50%;top:514px;width:720px;height:58px;transform:translateX(-50%);padding:8px 14px;box-sizing:border-box;border-radius:29px;background:#fff;box-shadow:0 10px 24px rgba(0,0,0,.08),0 2px 8px rgba(107,122,153,.05);display:flex;align-items:center;gap:18px;color:#6e7585;font:400 14px/22px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif;z-index:3}.canvas-crop-actions>button{height:42px;border:1px solid transparent;border-radius:14px;background:transparent;color:#525969;display:flex;align-items:center;justify-content:center;transition:background 150ms ease,border-color 150ms ease,transform 150ms ease}.canvas-crop-actions>button:hover{background:#edecff;border-color:#28f;transform:translateY(-1px)}.canvas-crop-actions>i{width:1px;height:26px;background:#e0e3eb}.canvas-crop-actions .crop-close{width:28px;padding:0;font-size:24px;color:#797c84}.canvas-crop-actions .crop-ratio-button{min-width:118px;padding:0 18px;background:#edecff;border-color:#28f}.canvas-crop-actions span{margin-right:auto;white-space:nowrap}.canvas-crop-actions .crop-quality{width:66px;background:#edecff;border-color:#28f}.canvas-crop-actions .crop-submit{width:52px;border-radius:21px;background:linear-gradient(103deg,#000 63%,#421a79 99%)}.canvas-crop-actions .crop-submit:hover{background:linear-gradient(103deg,#151515 55%,#6530a8 100%);border-color:transparent}.canvas-crop-actions .crop-submit img{width:34px;height:34px}
+
+/* Canvas-home double-click glyph uses the reference's larger visual weight. */
+.canvas-home-title>span img{width:36px!important;height:36px!important;flex:0 0 36px!important}
+.canvas-home-title>span{gap:12px!important}
+
+/* Uploaded node: visible rounded carrier with two equal side actions moving as one group. */
+.canvas-image-row{
+  grid-template-columns:38px 420px 38px!important;
+  column-gap:20px!important;
+  width:536px!important;
+  margin:0 auto!important;
+  transform-origin:center!important;
+  will-change:transform;
+}
+.canvas-generated-image{
+  width:420px!important;
+  height:432px!important;
+  border:1px solid #e1e4ea!important;
+  border-radius:18px!important;
+  background:#f4f5f7!important;
+  box-shadow:0 8px 22px rgba(40,47,69,.06)!important;
+  overflow:hidden!important;
+}
+.canvas-generated-image>.placed-image{width:100%!important;height:100%!important;object-fit:contain!important;border-radius:17px!important}
+.canvas-image-row>button{width:38px!important;height:38px!important;margin:0!important;justify-self:center!important;border-radius:50%!important}
+.canvas-image-row.is-dragging{z-index:12}
+.canvas-image-row.is-dragging .canvas-generated-image{cursor:grabbing;box-shadow:0 12px 28px rgba(31,38,58,.12)!important}
+
+/* Figma 896:2 — focus edit toast */
+.canvas-focus-toast{position:fixed;z-index:1200;top:18px;left:50%;transform:translateX(-50%);width:338px;height:58px;padding:0;border:0;border-radius:15px;overflow:hidden;background:linear-gradient(57.62deg,#2288ff .45%,#a683f8 99.55%);box-shadow:0 7px 18px rgba(61,56,140,.22);color:#fff;display:block}
+.canvas-focus-toast>div{position:absolute;left:16px;top:8px;display:flex;flex-direction:column;align-items:flex-start;gap:1px}
+.canvas-focus-toast strong{font:600 14px/17px Inter,"Microsoft YaHei",sans-serif;color:#fff}
+.canvas-focus-toast small{font:500 11px/13px Inter,"Microsoft YaHei",sans-serif;color:rgba(255,255,255,.76)}
+.canvas-focus-toast .canvas-focus-target{position:absolute;left:235px;top:12px;width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.16);display:grid;place-items:center}
+.canvas-focus-toast .canvas-focus-target img{width:18px;height:18px;object-fit:contain;filter:brightness(0) invert(1)}
+.canvas-focus-toast>button{position:absolute;left:276px;top:12px;width:54px;height:34px;padding:0;border:0;border-radius:11px;background:rgba(255,255,255,.18);color:#fff;font:600 12px/15px Inter,"Microsoft YaHei",sans-serif;display:grid;place-items:center;cursor:pointer}
+.canvas-focus-toast>button:hover{background:rgba(255,255,255,.28)}
+.canvas-focus-edit-mode .canvas-node-card[data-focus-target] .canvas-node-media img{filter:brightness(.38);transition:filter .22s ease}
+.figma-history-panel{z-index:90!important}
+
+/* Homepage inspiration detail */
+.template-detail-page{position:relative;min-height:calc(100vh - 72px);padding:34px 72px 42px 88px;box-sizing:border-box;display:grid;grid-template-columns:minmax(420px,1.08fr) minmax(390px,.92fr);gap:58px;align-items:center;background:radial-gradient(circle at 18% 12%,rgba(77,214,255,.11),transparent 29%),radial-gradient(circle at 86% 82%,rgba(174,117,244,.1),transparent 31%),#f8f9fc;overflow:auto}
+.template-detail-close{position:absolute;z-index:5;right:34px;top:26px;width:42px;height:42px;padding:0;border:1px solid rgba(139,143,157,.14);border-radius:13px;background:rgba(255,255,255,.86);box-shadow:0 7px 20px rgba(46,55,83,.08);font:300 30px/1 Arial,sans-serif;color:#222836;display:grid;place-items:center;cursor:pointer;transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s ease,background .2s ease}
+.template-detail-close:hover{transform:scale(1.06);background:#fff;box-shadow:0 10px 26px rgba(46,55,83,.13)}
+.template-detail-close:active{transform:scale(.9)}
+.template-detail-image{justify-self:end;width:min(100%,620px);height:min(72vh,760px);min-height:520px;padding:1px;border-radius:22px;background:linear-gradient(135deg,#22c9ff,#7771ff,#f1a1ff);box-shadow:0 24px 60px rgba(38,57,103,.13);box-sizing:border-box}
+.template-detail-image img{display:block;width:100%;height:100%;object-fit:cover;border-radius:21px;background:#eef1f7}
+.template-detail-info{align-self:center;max-width:580px;max-height:78vh;padding:32px 38px 34px;border-radius:26px;background:rgba(255,255,255,.82);border:1px solid rgba(130,138,162,.12);box-shadow:0 18px 50px rgba(51,61,99,.09);backdrop-filter:blur(16px);box-sizing:border-box;overflow:auto;scrollbar-width:thin;scrollbar-color:#d8d9ef transparent}
+.template-detail-label{display:inline-flex;height:28px;padding:0 12px;border-radius:9px;align-items:center;background:#f0edff;color:#7658ea;font-size:12px;font-weight:600}
+.template-detail-info h1{margin:15px 0 8px;color:#202434;font-size:26px;line-height:1.35;font-weight:650;letter-spacing:-.3px}
+.template-detail-date{margin:0;color:#9a9fad;font-size:13px;font-weight:400}
+.template-detail-intro{margin:15px 0 0;color:#656b7a;font-size:13px;line-height:1.75}
+.template-detail-info>i{display:block;height:1px;margin:25px 0;background:#e9ebf1}
+.template-detail-info h2{margin:0 0 12px;color:#7f8596;font-size:14px;line-height:1;font-weight:500}
+.template-detail-prompt{margin:0;color:#343948;font-size:15px;line-height:1.9;font-weight:400;text-align:justify}
+.template-detail-subtitle{margin-top:22px!important}.template-detail-tags{display:flex;flex-wrap:wrap;gap:8px}.template-detail-tags span{height:28px;padding:0 11px;border-radius:9px;background:#f3f1ff;color:#6f5bdc;display:inline-flex;align-items:center;font-size:12px}.template-detail-spec{margin:20px 0 0}.template-detail-spec>div{display:grid;grid-template-columns:76px 1fr;gap:10px;margin-top:10px;font-size:12px;line-height:1.65}.template-detail-spec dt{color:#8a90a0}.template-detail-spec dd{margin:0;color:#4f5565}
+.template-detail-meta{display:flex;align-items:center;gap:10px;margin-top:22px;color:#8c92a3;font-size:13px}.template-detail-meta b{color:#c6c9d2;font-weight:400}
+.template-detail-use{width:100%;height:48px;margin-top:28px;border:0;border-radius:15px;background:linear-gradient(92deg,#258cff 0%,#6e78ff 52%,#a975f2 100%);box-shadow:0 10px 24px rgba(97,102,246,.22);color:#fff;display:flex;align-items:center;justify-content:center;gap:9px;font-size:15px;font-weight:600;cursor:pointer;transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s ease}
+.template-detail-use img{width:19px;height:19px;filter:brightness(0) invert(1)}
+.template-detail-use:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(97,102,246,.3)}.template-detail-use:active{transform:scale(.96)}
+@media(max-width:1000px){.template-detail-page{grid-template-columns:1fr;padding:76px 30px 40px;gap:28px}.template-detail-image{justify-self:center;width:min(100%,620px);height:58vh;min-height:420px}.template-detail-info{justify-self:center;max-width:620px;width:100%}}
+.generation-thread.idle{display:none}
+.generation-page>.generation-composer.new-creation-composer{z-index:130;width:820px;height:156px;bottom:25px;padding:14px;overflow:visible!important}
+.generation-page>.generation-composer.new-creation-composer textarea{width:100%;height:76px;padding:0;border:0!important;background:transparent!important;animation:none!important;filter:none!important}
+.generation-page>.generation-composer.new-creation-composer footer{height:44px;display:flex;align-items:center;gap:10px}
+.generation-page>.generation-composer.new-creation-composer footer button{position:static!important;right:auto!important;bottom:auto!important;padding:0 13px!important;background:#fbfbfb!important;color:#202432!important;border-radius:10px!important}
+.generation-page>.generation-composer.new-creation-composer footer .new-upload{width:34px!important;padding:7px!important}
+.generation-page>.generation-composer.new-creation-composer footer .new-model{width:34px!important;padding:0!important;border-radius:50%!important}
+.generation-page>.generation-composer.new-creation-composer footer .new-generate{width:108px!important;height:40px!important;padding:0!important;border-radius:50px!important;background:linear-gradient(110deg,#000 63%,#421a79 99%)!important;color:#fff!important}
+
+/* Inspiration preview is a borderless modal over the homepage. */
+.template-detail-page{position:fixed!important;inset:0!important;z-index:3000!important;min-height:0!important;padding:44px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:0!important;background:rgba(22,25,34,.42)!important;backdrop-filter:blur(2px);overflow:hidden!important}
+.template-detail-image{justify-self:auto!important;width:min(48vw,560px)!important;height:min(78vh,700px)!important;min-height:520px!important;padding:0!important;border:0!important;border-radius:20px 0 0 20px!important;background:#f5f3ec!important;box-shadow:0 22px 60px rgba(16,20,35,.18)!important;overflow:hidden!important}
+.template-detail-image img{width:100%!important;height:100%!important;border:0!important;border-radius:20px 0 0 20px!important;object-fit:cover!important}
+.template-detail-info{align-self:auto!important;width:min(39vw,470px)!important;height:min(78vh,700px)!important;max-width:none!important;max-height:none!important;margin:0!important;padding:34px 34px 30px!important;border:0!important;border-radius:0 20px 20px 0!important;background:#fff!important;box-shadow:14px 22px 60px rgba(16,20,35,.18)!important;backdrop-filter:none!important;overflow:auto!important}
+.template-detail-close{position:fixed!important;left:calc(50% + min(43.5vw,515px) - 54px)!important;right:auto!important;top:calc(50% - min(39vh,350px) + 18px)!important;z-index:3002!important;width:36px!important;height:36px!important;border:0!important;border-radius:10px!important;background:transparent!important;box-shadow:none!important;font-size:27px!important}
+.template-detail-close:hover{background:#f3f4f7!important;box-shadow:none!important}
+.template-detail-info h1{font-size:22px!important}.template-detail-intro{font-size:13px!important}.template-detail-prompt{font-size:14px!important;line-height:1.8!important}.template-detail-use{height:42px!important;margin-top:22px!important;border-radius:12px!important;background:#191a1e!important;box-shadow:none!important}.template-detail-use:hover{background:#292b31!important;box-shadow:none!important}
+@media(max-width:900px){.template-detail-page{padding:24px!important;overflow:auto!important;flex-direction:column!important}.template-detail-image{width:min(92vw,620px)!important;height:48vh!important;min-height:320px!important;border-radius:18px 18px 0 0!important}.template-detail-image img{border-radius:18px 18px 0 0!important}.template-detail-info{width:min(92vw,620px)!important;height:auto!important;max-height:none!important;border-radius:0 0 18px 18px!important}.template-detail-close{position:fixed!important;left:auto!important;right:36px!important;top:34px!important;background:rgba(255,255,255,.88)!important}}
+
+/* Figma 898:11 / 899:51 — consistent composer popover hover states. */
+.generation-composer .model-selector-popover,.new-creation-composer .model-selector-popover{width:420px!important;height:233px!important}
+.generation-composer .size-selector-popover,.new-creation-composer .size-selector-popover{width:520px!important;height:282px!important}
+.model-selector-popover>button:hover{background:#f7f6ff!important;border-color:#8a67f4!important;color:#252832!important;box-shadow:none!important;transform:none!important}
+.size-quality button:hover,.ratio-grid button:hover{background:#f2f2ff!important;border-color:#2288ff!important;color:#596cff!important;box-shadow:none!important;transform:none!important}
+
+/* Figma 899:132 — asset picker shared by new, history and one-click conversations. */
+.home-asset-popover.figma-composer-assets{position:absolute!important;right:112px!important;bottom:54px!important;z-index:1000!important;width:461px!important;height:310px!important;padding:13px 16px!important;border:0!important;border-radius:16px!important;background:#fff!important;box-shadow:0 10px 24px rgba(0,0,0,.02),0 2px 8px rgba(107,122,153,.05)!important;box-sizing:border-box!important;text-align:left!important}
+.figma-composer-assets .composer-assets-tabs{width:429px;height:28px;padding:3px 8px!important;box-sizing:border-box;display:flex!important;align-items:center!important;gap:8px!important;border:1px solid #f4f4f4;border-radius:20px;background:#fbfbfb}
+.figma-composer-assets .composer-assets-tabs button{position:static!important;width:auto!important;height:22px!important;padding:0 12px!important;border:1px solid transparent!important;border-radius:10px!important;background:transparent!important;color:#202432!important;font:400 9px/22px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif!important;box-shadow:none!important}
+.figma-composer-assets .composer-assets-tabs button:hover,.figma-composer-assets .composer-assets-tabs button.active{border-color:#dedee0!important;background:#fff!important;color:#202432!important;transform:none!important}
+.figma-composer-assets .composer-assets-search{width:429px!important;height:22px!important;margin:7px 0 8px!important;padding:0 10px!important;box-sizing:border-box;border:1px solid #f4f4f4!important;border-radius:10px!important;background:#fbfbfb!important;display:flex!important;align-items:center!important;gap:6px!important}
+.figma-composer-assets .composer-assets-search img{width:12px!important;height:12px!important;opacity:.55}.figma-composer-assets .composer-assets-search input{height:20px!important;padding:0!important;border:0!important;background:transparent!important;animation:none!important;outline:0;color:#202432;font-size:9px}.figma-composer-assets .composer-assets-search input::placeholder{color:#d2d3d6}
+.figma-composer-assets .composer-assets-grid{display:flex!important;gap:14px!important;margin:0!important}
+.figma-composer-assets .composer-assets-grid>button{position:relative!important;width:101px!important;height:109px!important;padding:6px!important;border:.66px solid #f4f4f4!important;border-radius:8px!important;background:#fff!important;display:block!important;text-align:left!important;overflow:visible!important;box-shadow:none!important;transform:none!important}
+.figma-composer-assets .composer-assets-grid>button:hover,.figma-composer-assets .composer-assets-grid>button.active{border-color:#2288ff!important;background:#edecff!important;box-shadow:none!important;transform:translateY(-1px)!important}
+.figma-composer-assets .composer-assets-grid>button>span{display:block!important;width:87px!important;height:74px!important;border-radius:7px!important;background:#f8fafd!important;overflow:hidden!important}.figma-composer-assets .composer-assets-grid>button>span img{width:100%!important;height:100%!important;object-fit:cover!important}
+.figma-composer-assets .composer-assets-grid strong{display:block;margin-top:1px;color:#202436;font:400 9px/14px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif}.figma-composer-assets .composer-assets-grid small{display:block;color:#98a2b3;font:400 6px/9px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif}
+.figma-composer-assets .composer-assets-grid b{position:absolute;right:-1px;top:-1px;width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,#2288ff,#a683f8);color:#fff;display:grid;place-items:center;font-size:9px}
+.figma-composer-assets>footer{position:absolute!important;left:157px!important;bottom:18px!important;width:146px!important;height:31px!important;padding:0 13px!important;box-sizing:border-box;border:.6px solid #f4f4f4!important;border-radius:10px!important;background:#fff!important;box-shadow:0 6px 14px rgba(0,0,0,.02),0 1px 5px rgba(107,122,153,.05)!important;display:flex!important;align-items:center!important;gap:8px!important}
+.figma-composer-assets>footer button{position:static!important;width:15px!important;height:15px!important;padding:0!important;border:0!important;background:transparent!important;color:#797c84!important;font-size:14px!important;box-shadow:none!important}.figma-composer-assets>footer button:hover{color:#6e59e8!important;transform:scale(1.08)!important}.figma-composer-assets>footer span{white-space:nowrap;color:#1f2433;font-size:10px}.figma-composer-assets>footer i{width:1px;height:13px;background:#f4f4f4;margin-left:2px}
+
+/* Canvas focus-selection tooltip. */
+.canvas-node-prompt-tools button[aria-label="智能创作"]{position:relative;overflow:visible!important}
+.canvas-node-prompt-tools button[aria-label="智能创作"]::after{content:"焦点选择";position:absolute;left:50%;bottom:calc(100% + 8px);transform:translate(-50%,4px);height:26px;padding:0 10px;border-radius:8px;background:#f1edff;color:#7559e8;box-shadow:0 5px 14px rgba(103,82,218,.13);font:400 12px/26px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif;white-space:nowrap;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .16s ease,transform .18s ease}
+.canvas-node-prompt-tools button[aria-label="智能创作"]:hover::after{opacity:1;visibility:visible;transform:translate(-50%,0)}
+
+/* Exact Figma 898:11 model geometry. */
+.model-selector-popover{box-sizing:border-box!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important}
+.model-selector-popover>button{flex:0 0 58px!important;box-sizing:border-box!important;border:1px solid transparent!important;display:flex!important;align-items:center!important;justify-content:flex-start!important}
+.model-selector-popover>button:last-child{height:68px!important;flex-basis:68px!important}
+.model-selector-popover>button:hover{border:1px solid #8a67f4!important;background:#f7f6ff!important}
+
+/* Exact Figma 899:51 size geometry. */
+.size-selector-popover{box-sizing:border-box!important;overflow:hidden!important;display:block!important}
+.size-selector-popover .size-quality{display:grid!important;grid-template-columns:81px 80px 80px!important;column-gap:21px!important}
+.size-selector-popover .ratio-grid{display:grid!important;grid-template-columns:repeat(6,1fr)!important;grid-template-rows:repeat(2,40px)!important;width:496px!important;height:86px!important}
+.size-selector-popover .ratio-grid button{position:relative!important;width:auto!important;min-width:0!important;padding:18px 0 0!important;text-align:center!important;box-sizing:border-box!important}
+.size-selector-popover .ratio-grid button:last-child{padding-top:0!important}
+
+/* Precise semantic selection while the focus-edit master remains locked. */
+.canvas-focus-pick{position:absolute;z-index:1150;border:1.5px solid #8673ff;border-radius:7px;background:rgba(123,104,244,.055);box-shadow:0 0 0 1px rgba(255,255,255,.72),0 5px 14px rgba(104,82,220,.1);pointer-events:none;animation:focus-pick-in .18s cubic-bezier(.2,.8,.2,1);transition:left .26s cubic-bezier(.2,.8,.2,1),top .26s cubic-bezier(.2,.8,.2,1),width .26s cubic-bezier(.2,.8,.2,1),height .26s cubic-bezier(.2,.8,.2,1)}
+.canvas-focus-pick>i{position:absolute;width:6px;height:6px;border:1px solid #8673ff;border-radius:2px;background:#fff}.canvas-focus-pick>i:nth-last-child(4){left:-4px;top:-4px}.canvas-focus-pick>i:nth-last-child(3){right:-4px;top:-4px}.canvas-focus-pick>i:nth-last-child(2){left:-4px;bottom:-4px}.canvas-focus-pick>i:nth-last-child(1){right:-4px;bottom:-4px}
+.canvas-focus-label{position:absolute;left:50%;bottom:calc(100% + 7px);height:28px;max-width:190px;padding:0 9px;border:1px solid rgba(255,255,255,.48);border-radius:14px;background:#292929;color:#fff;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;font-size:12px;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,.18);transform:translateX(-50%);pointer-events:auto;cursor:pointer;z-index:3}
+.canvas-focus-label span{color:#fff;font-size:13px}.canvas-focus-label b{font-size:11px;font-weight:400;color:#d9d9d9;margin-left:1px}
+.canvas-focus-remove{position:absolute;left:calc(50% + 68px);bottom:calc(100% + 10px);z-index:4;width:22px;height:22px;padding:0;border:0;border-radius:50%;background:#3b3b3d;color:#ddd;display:grid;place-items:center;font:400 15px/22px Arial;opacity:0;transform:scale(.82);pointer-events:auto;cursor:pointer;transition:opacity .16s ease,transform .18s cubic-bezier(.16,1,.3,1),background .16s ease}.canvas-focus-pick:hover .canvas-focus-remove,.canvas-focus-label:hover+.canvas-focus-remove{opacity:1;transform:scale(1)}.canvas-focus-remove:hover{background:#6e5ae3;color:#fff}
+.canvas-focus-options{position:absolute;left:50%;top:-3px;width:176px;padding:7px;border:1px solid #494949;border-radius:16px;background:#191919;box-shadow:0 12px 28px rgba(0,0,0,.28);transform:translateX(-50%);pointer-events:auto;z-index:2;overflow:hidden}
+.canvas-focus-options button{position:relative;width:100%;height:37px;padding:0 12px;border:0;border-radius:10px;background:transparent;color:#f5f5f5;display:flex;align-items:center;text-align:left;font-size:14px;font-weight:500;cursor:pointer}.canvas-focus-options button:hover,.canvas-focus-options button.active{background:#292929}.canvas-focus-options button i{position:absolute;right:10px;width:7px;height:7px;border-radius:50%;background:#aaa}
+.canvas-prompt-inline-content{display:flex;align-items:flex-start;align-content:flex-start;gap:7px;flex-wrap:wrap;width:100%;min-height:44px}
+.canvas-prompt-inline-content>textarea{flex:0 1 auto!important;height:34px!important;min-height:34px!important}
+.canvas-prompt-inline-content.tags-first>textarea{width:42px!important;min-width:42px!important;padding:0!important}
+.canvas-inline-text{flex:0 0 auto!important;min-width:10px!important;height:27px!important;padding:0!important;border:0!important;border-radius:0!important;outline:0!important;background:transparent!important;background-image:none!important;box-shadow:none!important;color:#242630!important;font:400 14px/27px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif!important;animation:none!important;filter:none!important}
+.canvas-inline-text::placeholder{color:#a6a7ad}.canvas-inline-focus-tag{flex:0 0 auto;height:26px;padding:0 9px;border:1px solid rgba(118,100,238,.16);border-radius:13px;background:#f1eff8;color:#4b4c56;display:inline-flex;align-items:center;gap:5px;font:500 12px/26px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif;white-space:nowrap;cursor:pointer;transition:border-color .16s ease,background .16s ease,box-shadow .16s ease}.canvas-inline-focus-tag b{color:#7562e9}.canvas-inline-focus-tag:hover,.canvas-inline-focus-tag.active{border-color:#806cf0;background:#ebe7ff;box-shadow:0 0 0 2px rgba(128,108,240,.1)}
+.canvas-focus-prompt-tags{display:flex;align-items:center;gap:7px;flex-wrap:wrap;min-height:28px;padding:3px 0;flex:0 1 auto}
+.canvas-focus-prompt-tags>button{height:26px;padding:0 10px;border:1px solid rgba(118,100,238,.16);border-radius:13px;background:#f1eff8;color:#4b4c56;display:inline-flex;align-items:center;gap:5px;font:500 12px/26px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif;white-space:nowrap;cursor:pointer;animation:focus-tag-in .2s cubic-bezier(.2,.8,.2,1);transition:border-color .16s ease,background .16s ease,box-shadow .16s ease}.canvas-focus-prompt-tags>button:hover,.canvas-focus-prompt-tags>button.active{border-color:#806cf0;background:#ebe7ff;box-shadow:0 0 0 2px rgba(128,108,240,.1)}
+.canvas-focus-prompt-tags b{color:#7562e9;font-size:12px}
+@keyframes focus-tag-in{from{opacity:0;transform:translateY(4px) scale(.96)}to{opacity:1;transform:none}}
+.canvas-node-card.is-placeholder .canvas-node-media{background:#f1f2f5!important;border-color:#d9dce4!important}
+.canvas-placeholder-upload{width:100%;height:100%;padding:0;border:0;background:#f1f2f5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#8f96a3;font:500 13px/20px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif;cursor:pointer}.canvas-placeholder-upload:hover{background:#eceeff!important;color:#6e5ae3!important}.canvas-placeholder-upload img{width:54px!important;height:54px!important;object-fit:contain!important;background:transparent!important;transition:transform .2s cubic-bezier(.16,1,.3,1)}.canvas-placeholder-upload:hover img{transform:scale(1.06)}
+.canvas-focus-edit-mode .canvas-node-card[data-focus-target] .canvas-node-media{position:relative}
+.canvas-focus-edit-mode .canvas-node-card[data-focus-target] .canvas-node-media::after{content:"ESC  退出模式";position:absolute;left:50%;bottom:12px;z-index:3;height:25px;padding:0 10px;border:1px solid rgba(255,255,255,.24);border-radius:7px;background:rgba(38,37,48,.76);backdrop-filter:blur(6px);color:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;transform:translateX(-50%);font:500 11px/25px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif;letter-spacing:.2px;box-shadow:0 4px 12px rgba(0,0,0,.16);pointer-events:none;animation:focus-esc-in .22s ease}
+@keyframes focus-esc-in{from{opacity:0;transform:translate(-50%,5px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes focus-pick-in{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
+.canvas-focus-edit-mode .canvas-node-prompt{z-index:1160!important}
+
+/* Point-based canvas comments. */
+.canvas-comments-mode .figma-infinite-canvas,.canvas-comments-mode .figma-infinite-canvas .canvas-node-card,.canvas-comments-mode .figma-infinite-canvas .canvas-node-media{cursor:url('/assets/canvas-nav-chat.svg') 10 10,crosshair!important}
+.canvas-comments-mode .canvas-vertical-nav button{cursor:pointer!important}.canvas-comments-mode .canvas-comment-panel textarea{cursor:text!important}.canvas-comments-mode .canvas-comment-panel button{cursor:pointer!important}
+.canvas-comment-panel.canvas-comment-at-point{position:absolute!important;left:var(--comment-x)!important;top:var(--comment-y)!important;width:500px!important;height:132px!important;transform:none!important;margin:0!important;z-index:120!important;animation:comment-point-in .18s cubic-bezier(.2,.8,.2,1)}
+@keyframes comment-point-in{from{opacity:0;transform:translateY(5px) scale(.97)}to{opacity:1;transform:none}}
+.canvas-comment-marker-wrap{position:absolute;z-index:11;width:38px;height:38px;transform:translate(-19px,-19px);pointer-events:auto}
+.canvas-comment-marker{position:relative;z-index:2;width:38px;height:38px;padding:0;border:1px solid rgba(139,125,223,.34);border-radius:50%;background:linear-gradient(145deg,#302d3c,#24222d);color:#c7bfec;font:600 15px/38px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif;box-shadow:0 5px 14px rgba(41,32,91,.16);cursor:pointer;transition:transform .2s cubic-bezier(.16,1,.3,1),box-shadow .2s ease,opacity .14s ease}
+.canvas-comment-marker-wrap:hover .canvas-comment-marker{transform:scale(1.07);box-shadow:0 7px 18px rgba(80,65,170,.18)}
+.canvas-comment-marker-wrap.selected .canvas-comment-marker{box-shadow:0 0 0 3px rgba(113,92,235,.18),0 7px 18px rgba(80,65,170,.18)}
+.canvas-comment-card{position:absolute;left:-12px;top:-12px;z-index:3;width:360px;min-height:154px;padding:12px;border:1px solid rgba(139,125,223,.27);border-radius:16px;background:#24232c;box-shadow:0 16px 38px rgba(32,25,72,.25);opacity:0;visibility:hidden;transform:translateY(5px) scale(.98);transform-origin:left top;pointer-events:none;transition:opacity .18s ease,visibility .18s ease,transform .2s cubic-bezier(.16,1,.3,1)}
+.canvas-comment-marker-wrap:hover .canvas-comment-card,.canvas-comment-card:hover{opacity:1;visibility:visible;transform:none;pointer-events:auto}
+.canvas-comment-card header{height:34px;display:flex;align-items:center;gap:9px}.canvas-comment-card header>span{width:30px;height:30px;border-radius:50%;background:#393644;color:#d5cff5;display:grid;place-items:center;font-weight:600}.canvas-comment-card header strong{font-size:14px;color:#f5f3ff}.canvas-comment-card header small{font-size:12px;color:#9d99ab}.canvas-comment-card header button{margin-left:auto;width:28px;height:28px;padding:0;border:1px solid rgba(153,136,236,.35);border-radius:50%;background:#34313f;color:#c9c0f4;display:grid;place-items:center;font-size:14px;cursor:pointer}.canvas-comment-card header button:hover{background:#7562e9!important;color:#fff!important}
+.canvas-comment-card p{margin:7px 2px 12px;color:#f1eff8;font:400 14px/21px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif;word-break:break-word}.canvas-comment-reply{height:54px;padding:0 10px;border:1px solid #4c4858;border-radius:11px;background:#1c1b22;display:flex;align-items:center;gap:8px}.canvas-comment-reply input{flex:1;min-width:0;height:38px;padding:0;border:0!important;background:transparent!important;background-image:none!important;color:#eee!important;outline:0;box-shadow:none!important;animation:none!important}.canvas-comment-reply input::placeholder{color:#85818f}.canvas-comment-reply span{color:#777382;font-size:12px}.canvas-comment-reply button{width:30px;height:30px;padding:0;border:0;border-radius:50%;background:#34313f;color:#aaa4bb;display:grid;place-items:center}

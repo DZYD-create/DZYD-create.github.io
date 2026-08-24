@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.vite-cache*/
+*.log
+*.tsbuildinfo
+*.tar.gz
+work/
+public/assets/dog-thinking.gif
+public/assets/dog-complete.gif
+public/assets/dog-pointing-stars.gif
+public/assets/dog-greeting.gif
+public/assets/dog-thinking-web.gif
+public/assets/dog-complete-web.gif
+public/assets/dog-pointing-stars-web.gif
+public/assets/dog-greeting-web.gif
+public/assets/assistant.png
+public/assets/canvas-bg.svg

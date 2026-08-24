@@ -1,0 +1,11 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Credit Lightning Icon">
+<path id="Vector" d="M7.69875 1.47776L3.38208 7.11665C3.15653 7.41221 3.36653 7.83999 3.73986 7.83999H6.25986L5.6143 12.2811C5.55208 12.7011 6.08875 12.9189 6.33764 12.5767L10.7165 6.57221C10.9343 6.27665 10.7165 5.86443 10.351 5.86443H7.73764L8.42208 1.75776C8.49208 1.34554 7.95541 1.14332 7.69875 1.47776Z" fill="url(#paint0_linear_0_37)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_37" x1="3.28906" y1="12.2203" x2="11.5039" y2="11.6329" gradientUnits="userSpaceOnUse">
+<stop stop-color="#2288FF"/>
+<stop offset="1" stop-color="#A683F8"/>
+</linearGradient>
+</defs>
+</svg>
