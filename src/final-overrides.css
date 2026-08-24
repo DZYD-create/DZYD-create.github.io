@@ -1028,6 +1028,88 @@
   background: #ede9ff !important;
   color: #6b58dc !important;
 }
+
+.generation-delete-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  background: rgba(30, 32, 45, 0.42);
+  backdrop-filter: blur(2px);
+}
+.generation-delete-dialog {
+  position: relative;
+  width: 638px;
+  min-height: 250px;
+  padding: 38px 40px 32px;
+  border: 1px solid rgba(125, 115, 255, 0.16);
+  border-radius: 24px;
+  background: linear-gradient(145deg, #ffffff 52%, #f5f3ff 100%);
+  box-shadow: 0 24px 70px rgba(51, 48, 92, 0.2);
+  text-align: left;
+}
+.generation-delete-dialog h2 {
+  margin: 0;
+  color: #262936;
+  font-size: 21px;
+  line-height: 30px;
+  font-weight: 500;
+}
+.generation-delete-dialog p {
+  margin: 28px 0 40px;
+  color: #7c8495;
+  font-size: 16px;
+}
+.generation-delete-close {
+  position: absolute;
+  top: 30px;
+  right: 34px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #454958;
+  font-size: 30px;
+  line-height: 30px;
+  cursor: pointer;
+}
+.generation-delete-close:hover {
+  background: #f1efff;
+  color: #6d63e8;
+}
+.generation-delete-dialog footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+}
+.generation-delete-dialog footer button {
+  width: 100px;
+  height: 44px;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.generation-delete-cancel {
+  border: 1px solid #e0def2;
+  background: #f5f4fa;
+  color: #4d5160;
+}
+.generation-delete-confirm {
+  border: 1px solid #746cff;
+  background: linear-gradient(135deg, #6f74ff, #8c68ee);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(116, 108, 255, 0.24);
+}
+.generation-delete-cancel:hover {
+  border-color: #cac6ee;
+  background: #efedfa;
+}
+.generation-delete-confirm:hover {
+  background: linear-gradient(135deg, #6268f2, #7d5fdf);
+}
 .canvas-vertical-nav button[aria-label="添加"]:not(.active) img {
   filter: brightness(0) saturate(100%) !important;
   opacity: 0.9 !important;

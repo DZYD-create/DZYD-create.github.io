@@ -66,13 +66,29 @@ function App() {
   const [canvasImage, setCanvasImage] = useState<string | null>(null);
   const [folders, setFolders] = useState(["品牌素材", "产品图片"]);
   const [accountOpen, setAccountOpen] = useState(false);
+  const [conversations, setConversations] = useState<Array<[string, string]>>([
+    ["夏日新品直播海报", "今天 14:32"],
+    ["课程价格板设计", "昨天 18:10"],
+    ["新品种草海报", "08月02日"],
+    ["品牌活动视觉方案", "07月29日"],
+    ["门店促销物料", "07月21日"],
+  ]);
+  const [activeConversation, setActiveConversation] = useState<string | null>(null);
   const generationTimer = useRef<number | null>(null);
   const preparationTimer = useRef<number | null>(null);
 
   const generate = () => {
     if (generationTimer.current) window.clearTimeout(generationTimer.current);
     if (preparationTimer.current) window.clearTimeout(preparationTimer.current);
-    if (!prompt.trim()) setPrompt("夏日新品预热海报，清爽明亮的蓝色视觉");
+    const nextPrompt = prompt.trim() || "夏日新品预热海报，清爽明亮的蓝色视觉";
+    if (!prompt.trim()) setPrompt(nextPrompt);
+    const title = nextPrompt.length > 18 ? `${nextPrompt.slice(0, 18)}…` : nextPrompt;
+    setActiveConversation(title);
+    setConversations((items) =>
+      items.some(([name]) => name === title)
+        ? items
+        : [[title, "刚刚"], ...items],
+    );
     setStudioView("generation");
     setPreparing(true);
     setGenerating(false);
@@ -104,6 +120,7 @@ function App() {
     setConversationCollapsed(false);
     setEditing(false);
     setTool(null);
+    setActiveConversation(null);
   };
 
   useEffect(() => {
@@ -241,9 +258,11 @@ function App() {
         !conversationCollapsed &&
         studioView !== "detail" && (
           <StudioSidebar
+            conversations={conversations}
             onNewWork={newCreation}
             onOpenConversation={(title) => {
               setPrompt(title);
+              setActiveConversation(title);
               setStudioView("generation");
               setPreparing(false);
               setGenerating(false);
@@ -318,6 +337,13 @@ function App() {
               setPrompt(value);
               generate();
             }}
+            onDeleteConversation={() => {
+              if (activeConversation)
+                setConversations((items) =>
+                  items.filter(([title]) => title !== activeConversation),
+                );
+              newCreation();
+            }}
           />
         )}
         {section === "studio" && editing && (
@@ -387,6 +413,7 @@ function GenerationPage({
   onBack,
   onEdit,
   onRegenerate,
+  onDeleteConversation,
 }: {
   prompt: string;
   skill: string;
@@ -400,6 +427,7 @@ function GenerationPage({
   onBack: () => void;
   onEdit: () => void;
   onRegenerate: (value: string) => void;
+  onDeleteConversation: () => void;
 }) {
   const [draft, setDraft] = useState(prompt);
   const [modelOpen, setModelOpen] = useState(false);
@@ -408,6 +436,8 @@ function GenerationPage({
   const [assetsOpen, setAssetsOpen] = useState(false);
   const generationFile = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState(generating ? 0 : 100);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [resultRound, setResultRound] = useState(0);
   useEffect(() => {
     setDraft(prompt);
   }, [prompt]);
@@ -505,7 +535,9 @@ function GenerationPage({
           </div>
         ) : (
           <div className={`generated-gallery ${generating ? "loading" : ""}`}>
-            {samples.slice(0, 4).map((src, i) => (
+            {[...samples, ...samples]
+              .slice(resultRound % samples.length, resultRound % samples.length + 4)
+              .map((src, i) => (
               <button className="generation-tile" key={src} onClick={onEdit}>
                 {generating ? (
                   <div className="generation-progress">
@@ -527,7 +559,10 @@ function GenerationPage({
             </button>
             <button
               className="action-regenerate"
-              onClick={() => onRegenerate(draft)}
+              onClick={() => {
+                setResultRound((round) => round + 1);
+                onRegenerate(draft);
+              }}
             >
               <img src="/assets/figma-redo.svg" />
               再次生成
@@ -535,13 +570,41 @@ function GenerationPage({
             <button className="action-more" aria-label="更多">
               •••
             </button>
-            <button className="batch-delete">
+            <button className="batch-delete" onClick={() => setDeleteOpen(true)}>
               <span className="batch-delete-icon" />
               批量删除
             </button>
           </div>
         )}
       </div>
+      {deleteOpen && (
+        <div className="generation-delete-backdrop" role="presentation">
+          <section
+            className="generation-delete-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-dialog-title"
+          >
+            <button
+              className="generation-delete-close"
+              aria-label="关闭"
+              onClick={() => setDeleteOpen(false)}
+            >
+              ×
+            </button>
+            <h2 id="delete-dialog-title">确认删除</h2>
+            <p>删除的历史记录将无法找回</p>
+            <footer>
+              <button className="generation-delete-cancel" onClick={() => setDeleteOpen(false)}>
+                取消
+              </button>
+              <button className="generation-delete-confirm" onClick={onDeleteConversation}>
+                删除
+              </button>
+            </footer>
+          </section>
+        </div>
+      )}
       <div className="generation-composer new-creation-composer">
         <textarea
           value={draft}
@@ -638,20 +701,15 @@ function GenerationPage({
 }
 
 function StudioSidebar({
+  conversations,
   onNewWork,
   onOpenConversation,
 }: {
+  conversations: Array<[string, string]>;
   onNewWork: () => void;
   onOpenConversation: (title: string) => void;
 }) {
   const [query, setQuery] = useState("");
-  const conversations = [
-    ["夏日新品直播海报", "今天 14:32"],
-    ["课程价格板设计", "昨天 18:10"],
-    ["新品种草海报", "08月02日"],
-    ["品牌活动视觉方案", "07月29日"],
-    ["门店促销物料", "07月21日"],
-  ];
   const visible = conversations.filter(([title]) =>
     title.toLowerCase().includes(query.trim().toLowerCase()),
   );
