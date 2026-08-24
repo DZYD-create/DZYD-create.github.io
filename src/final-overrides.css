@@ -941,6 +941,39 @@
   content: none !important;
   animation: none !important;
 }
+
+/* Every size selector centers each choice inside its own container. */
+.size-selector-popover .size-quality,
+.size-selector-popover .size-fields,
+.size-selector-popover .ratio-grid,
+.canvas-size-popover .canvas-quality-row,
+.canvas-size-popover .canvas-size-fields,
+.canvas-size-popover .canvas-ratio-grid {
+  justify-content: center !important;
+}
+.size-selector-popover .size-quality button,
+.size-selector-popover .ratio-grid button,
+.canvas-size-popover .canvas-quality-row button,
+.canvas-size-popover .canvas-ratio-grid button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+.size-selector-popover .size-fields label,
+.canvas-size-popover .canvas-size-fields > span {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  text-align: center !important;
+}
+.size-selector-popover .size-fields label span {
+  margin-left: 0 !important;
+}
+.canvas-size-popover .canvas-ratio-grid button {
+  flex-direction: column !important;
+}
 .canvas-vertical-nav button[aria-label="添加"]:not(.active) img {
   filter: brightness(0) saturate(100%) !important;
   opacity: 0.9 !important;

@@ -2199,6 +2199,21 @@ function Canvas({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const wheel = (event: WheelEvent) => {
+      if (event.ctrlKey || event.metaKey) {
+        const target = event.target as HTMLElement;
+        if (
+          target.closest(
+            'input,textarea,button,select,[contenteditable="true"],.canvas-node-prompt,.canvas-bottom-dock,.canvas-vertical-nav,.figma-zoom,.canvas-add-popover,.canvas-model-popover,.canvas-size-popover,.canvas-comment-panel,.figma-history-panel,.asset-library-panel,.canvas-search-modal,.canvas-crop-workspace',
+          )
+        )
+          return;
+        event.preventDefault();
+        const direction = event.deltaY < 0 ? 1 : -1;
+        setCanvasZoom((value) =>
+          Math.max(25, Math.min(200, value + direction * 5)),
+        );
+        return;
+      }
       if (!event.shiftKey) return;
       event.preventDefault();
       canvas.scrollLeft += event.deltaY || event.deltaX;
