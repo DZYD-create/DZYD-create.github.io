@@ -382,6 +382,10 @@ function App() {
               setStudioView("home");
               setConversationCollapsed(false);
             }}
+            onCanvas={() => {
+              setSection("canvas");
+              setCanvasImage(null);
+            }}
           />
         )}
         {section === "assets" && (
@@ -482,75 +486,61 @@ function GenerationPage({
       <div
         className={`generation-thread ${!preparing && !generating && !generated ? "idle" : ""}`}
       >
-        <div className="user-message-wrap">
-          <div className="user-message">
-            <p>
-              {prompt || "生成夏日新品直播海报，突出新品卖点，风格清爽明亮。"}
-            </p>
-          </div>
-          <img src="/assets/user-avatar.svg" alt="用户" />
-        </div>
-        {!preparing && (
-          <div className="assistant-message">
-            <img
-              src={
-                generating
-                  ? "/assets/dog-thinking-public.gif"
-                  : "/assets/dog-complete-public.gif"
-              }
-              alt="跃动"
-            />
-            <span className="generation-status-copy" aria-live="polite">
-              <strong
-                className={generating ? "generating active" : "generating"}
-              >
-                正在生成 4 张图片…
-              </strong>
-              <strong
-                className={
-                  !generating && generated ? "completed active" : "completed"
-                }
-              >
-                已完成 4 张图片
-              </strong>
-            </span>
-          </div>
-        )}
-        {preparing ? (
-          <div className="visual-plan-message">
-            <img src="/assets/dog-thinking-public.gif" alt="思考中的跃动" />
-            <div className="ai-generating-bubble">
-              <strong>正在生成视觉方案…</strong>
-              <p>已接收 1 张图片，正在分析内容与版式</p>
-              <div className="ai-generating-progress">
-                <span>
-                  <img src="https://www.figma.com/api/mcp/asset/d3ce3bc8-5673-441c-8d71-f1fe5fb783a2.svg" />
-                  <img src="https://www.figma.com/api/mcp/asset/adcbbb32-29cf-42ac-993a-c680c80b3bb5.svg" />
-                </span>
-                <div>
-                  <i />
+        {Array.from({ length: resultRound + 1 }, (_, round) => {
+          const latest = round === resultRound;
+          const isPreparing = latest && preparing;
+          const isGenerating = latest && generating;
+          return (
+            <div className="generation-round" key={round}>
+              <div className="user-message-wrap">
+                <div className="user-message">
+                  <p>{prompt || "生成夏日新品直播海报，突出新品卖点，风格清爽明亮。"}</p>
                 </div>
+                <img src="/assets/user-avatar.svg" alt="用户" />
               </div>
-            </div>
-          </div>
-        ) : (
-          <div className={`generated-gallery ${generating ? "loading" : ""}`}>
-            {[...samples, ...samples]
-              .slice(resultRound % samples.length, resultRound % samples.length + 4)
-              .map((src, i) => (
-              <button className="generation-tile" key={src} onClick={onEdit}>
-                {generating ? (
-                  <div className="generation-progress">
-                    <span>✦</span>
-                    <strong>生成中 {progress}%</strong>
+              {!isPreparing && (
+                <div className="assistant-message">
+                  <img
+                    src={isGenerating ? "/assets/dog-thinking-public.gif" : "/assets/dog-complete-public.gif"}
+                    alt="跃动"
+                  />
+                  <span className="generation-status-copy" aria-live="polite">
+                    <strong className={isGenerating ? "generating active" : "generating"}>
+                      正在生成 4 张图片…
+                    </strong>
+                    <strong className={!isGenerating ? "completed active" : "completed"}>
+                      已完成 4 张图片
+                    </strong>
+                  </span>
+                </div>
+              )}
+              {isPreparing ? (
+                <div className="visual-plan-message">
+                  <img src="/assets/dog-thinking-public.gif" alt="思考中的跃动" />
+                  <div className="ai-generating-bubble">
+                    <strong>正在生成视觉方案…</strong>
+                    <p>已接收 1 张图片，正在分析内容与版式</p>
+                    <div className="ai-generating-progress"><span>✦</span><div><i /></div></div>
                   </div>
-                ) : (
-                  <img src={src} alt={`生成结果 ${i + 1}`} />
-                )}
-              </button>
-            ))}
-          </div>
-        )}
+                </div>
+              ) : (
+                <div className={`generated-gallery ${isGenerating ? "loading" : ""}`}>
+                  {[...samples, ...samples]
+                    .slice(round % samples.length, round % samples.length + 4)
+                    .map((src, i) => (
+                      <button className="generation-tile" key={`${round}-${src}`} onClick={onEdit}>
+                        {isGenerating ? (
+                          <div className="generation-progress"><span>✦</span><strong>生成中 {progress}%</strong></div>
+                        ) : (
+                          <img src={src} alt={`第 ${round + 1} 轮生成结果 ${i + 1}`} />
+                        )}
+                      </button>
+                    ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
         {!preparing && !generating && generated && (
           <div className="generation-result-actions">
             <button className="action-edit" onClick={onEdit}>
@@ -4558,9 +4548,11 @@ function HistoryDrawer({ onClose }: { onClose: () => void }) {
 function History({
   onEdit,
   onBack,
+  onCanvas,
 }: {
   onEdit: () => void;
   onBack: () => void;
+  onCanvas: () => void;
 }) {
   const [tab, setTab] = useState<"subject" | "canvas">("subject");
   const [popup, setPopup] = useState<"filter" | "time" | "sort" | null>(null);
@@ -4570,12 +4562,18 @@ function History({
   const [sortBy, setSortBy] = useState("修改时间");
   const [zoom, setZoom] = useState(42);
   const [batch, setBatch] = useState(false);
-  const cards = [
+  const [cards, setCards] = useState([
     "夏日新品预热海报",
     "课程价格板设计",
     "新品种草海报",
     "直播间活动主视觉",
-  ];
+  ]);
+  const [subjectOpen, setSubjectOpen] = useState(false);
+  const [subjectClosing, setSubjectClosing] = useState(false);
+  const [subjectName, setSubjectName] = useState("");
+  const [subjectDescription, setSubjectDescription] = useState("");
+  const [subjectPreview, setSubjectPreview] = useState<string | null>(null);
+  const subjectFile = useRef<HTMLInputElement>(null);
   const choose = (kind: "filter" | "time" | "sort") =>
     setPopup((v) => (v === kind ? null : kind));
   return (
@@ -4595,13 +4593,19 @@ function History({
           <div className="history-tabs">
             <button
               className={tab === "subject" ? "active" : ""}
-              onClick={() => setTab("subject")}
+              onClick={(event) => {
+                event.stopPropagation();
+                setTab("subject");
+              }}
             >
               主体
             </button>
             <button
               className={tab === "canvas" ? "active" : ""}
-              onClick={() => setTab("canvas")}
+              onClick={(event) => {
+                event.stopPropagation();
+                setTab("canvas");
+              }}
             >
               画布
             </button>
@@ -4738,6 +4742,13 @@ function History({
           </div>
         </div>
         <div className="history-cards">
+          <button
+            className="history-record history-create-record"
+            onClick={tab === "subject" ? () => setSubjectOpen(true) : onCanvas}
+          >
+            <div className="history-record-preview"><span>＋</span></div>
+            <strong>{tab === "subject" ? "新建主体" : "新建画布"}</strong>
+          </button>
           {cards.map((name, i) => (
             <button
               className={`history-record ${batch ? "batching" : ""}`}
@@ -4758,6 +4769,66 @@ function History({
           ))}
         </div>
       </div>
+      {subjectOpen && (
+        <div className="history-subject-backdrop">
+          <section className={`history-subject-dialog ${subjectClosing ? "is-closing" : ""}`} role="dialog" aria-modal="true" aria-labelledby="subject-dialog-title">
+            <header>
+              <h2 id="subject-dialog-title">设置主体 <small>ⓘ</small></h2>
+              <button
+                aria-label="关闭"
+                onPointerDown={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  setSubjectClosing(true);
+                  window.setTimeout(() => {
+                    setSubjectOpen(false);
+                    setSubjectClosing(false);
+                  }, 120);
+                }}
+              >×</button>
+            </header>
+            <label>参考主体 <b>*</b></label>
+            <div className="history-subject-upload">
+              {subjectPreview ? <img src={subjectPreview} alt="主体预览" /> : <span className="history-upload-symbol">⇧</span>}
+              <p>上传主图，将素材拖拽至此处或从以下选择</p>
+              <div>
+                <button onClick={() => subjectFile.current?.click()}>⇧ 从本地添加</button>
+                <button onClick={() => subjectFile.current?.click()}>▣ 从资产添加</button>
+              </div>
+            </div>
+            <label>名称 <b>*</b></label>
+            <div className="history-subject-input">
+              <input maxLength={20} value={subjectName} onChange={(e) => setSubjectName(e.target.value)} placeholder="请输入名称" />
+              <span>{subjectName.length}/20</span>
+            </div>
+            <label>描述</label>
+            <textarea value={subjectDescription} onChange={(e) => setSubjectDescription(e.target.value)} placeholder="请输入描述" />
+            <footer>
+              <button
+                disabled={!subjectName.trim() || !subjectPreview}
+                onClick={() => {
+                  setCards((items) => [subjectName.trim(), ...items]);
+                  setSubjectOpen(false);
+                  setSubjectName("");
+                  setSubjectDescription("");
+                  setSubjectPreview(null);
+                }}
+              >保存</button>
+            </footer>
+            <input
+              ref={subjectFile}
+              hidden
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) setSubjectPreview(URL.createObjectURL(file));
+                e.currentTarget.value = "";
+              }}
+            />
+          </section>
+        </div>
+      )}
     </section>
   );
 }
