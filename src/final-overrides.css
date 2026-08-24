@@ -5633,8 +5633,8 @@ button > img {
   position: absolute;
   left: 50%;
   top: 32px;
-  width: 320px;
-  height: 398px;
+  width: calc(var(--node-media-width, 298px) + 22px);
+  height: calc(var(--node-media-height, 310px) + 88px);
   padding: 10px 10px 54px;
   border: 1px solid #6677ff;
   border-radius: 22px;
@@ -5652,8 +5652,8 @@ button > img {
   box-shadow: 0 14px 30px rgba(61, 70, 108, 0.14);
 }
 .canvas-node-media {
-  width: 298px;
-  height: 310px;
+  width: var(--node-media-width, 298px);
+  height: var(--node-media-height, 310px);
   border: 1px solid #7472ff;
   border-radius: 16px;
   background: #fff;
@@ -5663,7 +5663,7 @@ button > img {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   background: #fff;
   pointer-events: none;
   -webkit-user-drag: none;
@@ -5719,13 +5719,18 @@ button > img {
     visibility 160ms;
 }
 .canvas-node-port {
-  top: 230px !important;
+  top: calc(10px + var(--node-media-height, 310px) / 2 - 20px) !important;
 }
 .canvas-node-port.left {
   left: -62px !important;
 }
 .canvas-node-port.right {
   right: -62px !important;
+}
+
+.editor-zoom-control {
+  z-index: 6;
+  display: flex !important;
 }
 .canvas-node-card:hover .canvas-node-port,
 .canvas-node-card[data-active] .canvas-node-port,

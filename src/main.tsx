@@ -15,6 +15,8 @@ type CanvasNode = {
   y: number;
   name: string;
   placeholder?: boolean;
+  mediaWidth?: number;
+  mediaHeight?: number;
 };
 type eastWest = "left" | "right";
 type CanvasLink = {
@@ -1837,6 +1839,28 @@ function Canvas({
         ]
       : [],
   );
+  const getNodeGeometry = (node: CanvasNode) => {
+    const mediaWidth = node.mediaWidth ?? 298;
+    const mediaHeight = node.mediaHeight ?? 310;
+    return {
+      mediaWidth,
+      mediaHeight,
+      cardWidth: mediaWidth + 22,
+      cardHeight: mediaHeight + 88,
+      centerY: 42 + node.y + mediaHeight / 2,
+    };
+  };
+  const updateNodeImageSize = (id: number, naturalWidth: number, naturalHeight: number) => {
+    if (!naturalWidth || !naturalHeight) return;
+    const scale = Math.min(360 / naturalWidth, 420 / naturalHeight);
+    const mediaWidth = Math.max(180, Math.round(naturalWidth * scale));
+    const mediaHeight = Math.max(120, Math.round(naturalHeight * scale));
+    setCanvasNodes((nodes) => nodes.map((node) =>
+      node.id === id && (node.mediaWidth !== mediaWidth || node.mediaHeight !== mediaHeight)
+        ? { ...node, mediaWidth, mediaHeight }
+        : node,
+    ));
+  };
   const [imageDrag, setImageDrag] = useState<{
     id: number;
     pointerId: number;
@@ -2011,10 +2035,11 @@ function Canvas({
     const w = canvasRef.current?.clientWidth || 1000;
     const ids = canvasNodes
       .filter((node) => {
-        const left = w / 2 + node.x - 160,
+        const geometry = getNodeGeometry(node);
+        const left = w / 2 + node.x - geometry.cardWidth / 2,
           top = 32 + node.y,
-          right = left + 320,
-          bottom = top + 398;
+          right = left + geometry.cardWidth,
+          bottom = top + geometry.cardHeight;
         return (
           selection.x < right &&
           selection.x + selection.width > left &&
@@ -2652,10 +2677,11 @@ function Canvas({
           if (selection && dragStart) {
             const w = e.currentTarget.clientWidth;
             const overlaps = canvasNodes.some((node) => {
-              const left = w / 2 + node.x - 160,
+              const geometry = getNodeGeometry(node);
+              const left = w / 2 + node.x - geometry.cardWidth / 2,
                 top = 32 + node.y,
-                right = left + 320,
-                bottom = top + 398;
+                right = left + geometry.cardWidth,
+                bottom = top + geometry.cardHeight;
               return (
                 selection.x < right &&
                 selection.x + selection.width > left &&
@@ -2725,11 +2751,13 @@ function Canvas({
                 to = canvasNodes.find((n) => n.id === link.to);
               if (!from || !to) return null;
               const w = canvasRef.current?.clientWidth || 1000;
-              const sx = w / 2 + from.x + (link.side === "left" ? -160 : 160),
-                sy = 231 + from.y;
+              const fromGeometry = getNodeGeometry(from);
+              const toGeometry = getNodeGeometry(to);
+              const sx = w / 2 + from.x + (link.side === "left" ? -fromGeometry.mediaWidth / 2 : fromGeometry.mediaWidth / 2),
+                sy = fromGeometry.centerY;
               const ex =
-                  w / 2 + to.x + (link.targetSide === "left" ? -160 : 160),
-                ey = 231 + to.y;
+                  w / 2 + to.x + (link.targetSide === "left" ? -toGeometry.mediaWidth / 2 : toGeometry.mediaWidth / 2),
+                ey = toGeometry.centerY;
               const d = `M ${sx} ${sy} C ${sx + (link.side === "left" ? -90 : 90)} ${sy}, ${ex + (link.targetSide === "left" ? -90 : 90)} ${ey}, ${ex} ${ey}`;
               const active =
                 selectedNodeIds.includes(from.id) &&
@@ -2764,12 +2792,14 @@ function Canvas({
                 const to = canvasNodes.find((n) => n.id === link.to);
                 if (!from) return null;
                 const w = canvasRef.current?.clientWidth || 1000;
-                const sx = w / 2 + from.x + (link.side === "left" ? -180 : 180),
-                  sy = 92 + from.y + 190;
+                const fromGeometry = getNodeGeometry(from);
+                const toGeometry = to ? getNodeGeometry(to) : null;
+                const sx = w / 2 + from.x + (link.side === "left" ? -fromGeometry.mediaWidth / 2 : fromGeometry.mediaWidth / 2),
+                  sy = fromGeometry.centerY;
                 const ex = to
-                    ? w / 2 + to.x - (link.side === "right" ? 180 : -180)
+                    ? w / 2 + to.x + (link.targetSide === "left" ? -(toGeometry?.mediaWidth ?? 298) / 2 : (toGeometry?.mediaWidth ?? 298) / 2)
                     : link.endX,
-                  ey = to ? 92 + to.y + 190 : link.endY;
+                  ey = to ? toGeometry!.centerY : link.endY;
                 return (
                   <path
                     key={link.id}
@@ -2782,9 +2812,9 @@ function Canvas({
                   const from = canvasNodes.find((n) => n.id === linkDraft.from);
                   if (!from) return null;
                   const w = canvasRef.current?.clientWidth || 1000;
-                  const sx =
-                      w / 2 + from.x + (linkDraft.side === "left" ? -180 : 180),
-                    sy = 92 + from.y + 190;
+                  const geometry = getNodeGeometry(from);
+                  const sx = w / 2 + from.x + (linkDraft.side === "left" ? -geometry.mediaWidth / 2 : geometry.mediaWidth / 2),
+                    sy = geometry.centerY;
                   return (
                     <path
                       className="draft"
@@ -2799,8 +2829,12 @@ function Canvas({
                   data-node-id={node.id}
                   className={`canvas-node-card ${node.placeholder ? "is-placeholder" : ""} ${imageDrag?.id === node.id ? "is-dragging" : ""}`}
                   style={{
+                    width: `${getNodeGeometry(node).cardWidth}px`,
+                    height: `${getNodeGeometry(node).cardHeight}px`,
+                    "--node-media-width": `${getNodeGeometry(node).mediaWidth}px`,
+                    "--node-media-height": `${getNodeGeometry(node).mediaHeight}px`,
                     transform: `translate(calc(-50% + ${node.x}px),${node.y}px)`,
-                  }}
+                  } as React.CSSProperties}
                   key={node.id}
                   onPointerDown={(e) => {
                     if (
@@ -2895,7 +2929,11 @@ function Canvas({
                         <span>点击上传图片</span>
                       </button>
                     ) : (
-                      <img src={node.url} draggable={false} />
+                      <img
+                        src={node.url}
+                        draggable={false}
+                        onLoad={(event) => updateNodeImageSize(node.id, event.currentTarget.naturalWidth, event.currentTarget.naturalHeight)}
+                      />
                     )}
                   </div>
                   <button
