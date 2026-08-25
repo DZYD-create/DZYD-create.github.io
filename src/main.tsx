@@ -187,7 +187,7 @@ function App() {
         const target = e.target as HTMLElement;
         if (
           !target.closest(
-            "[data-popover-trigger],.theme-picker,.popover,.model-selector-popover,.size-selector-popover,.model-invocation-popover,.canvas-add-popover,.asset-library-panel,.home-asset-popover,.asset-add-menu,.asset-folder-menu,.apply-popover,.figma-history-panel,.canvas-search-modal,.canvas-comment-panel,.canvas-comments-mode,.figma-tool-modal",
+            "[data-popover-trigger],.theme-picker,.popover,.model-selector-popover,.size-selector-popover,.model-invocation-popover,.canvas-add-popover,.asset-library-panel,.home-asset-popover,.asset-add-menu,.asset-folder-menu,.asset-context-menu,.apply-popover,.figma-history-panel,.canvas-search-modal,.canvas-comment-panel,.canvas-comments-mode,.figma-tool-modal",
           )
         )
           document.dispatchEvent(new Event("dismiss-popovers"));
@@ -2507,6 +2507,8 @@ function Canvas({
     if (!canvas) return;
     const blockContentDoubleClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
+      // Let the asset drawer handle its own double-click-to-rename action.
+      if (target.closest(".asset-library-panel")) return;
       const icon =
         target.tagName === "IMG" && !target.closest(".canvas-node-media");
       if (
@@ -4704,7 +4706,7 @@ function AssetLibrary({
   };
   const visibleTeachers = teachers.map((name, index) => ({ name, index })).filter(({ name }) => name.toLowerCase().includes(query.trim().toLowerCase()));
   return (
-    <aside className="asset-library-panel">
+    <aside className="asset-library-panel" onDoubleClick={(event) => event.stopPropagation()}>
       <div className="asset-title">
         <button onClick={onClose}>
           <img src="/assets/asset-back.svg" />
