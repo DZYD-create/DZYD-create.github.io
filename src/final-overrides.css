@@ -9035,3 +9035,23 @@ button > img {
 .redraw-history-group{border-color:#e0e1e7!important;background:#f5f6f8!important;box-shadow:none!important}
 .redraw-history-group>button img{filter:brightness(0)!important}
 .redraw-history-group>button:not(:disabled):hover{background:#edecff!important}
+
+/* 素材库卡片与历史卡片使用完全相同的浮动和阴影。 */
+.asset-subject-card{transition:transform .22s cubic-bezier(.2,.75,.25,1),box-shadow .22s ease!important;transform-origin:center!important}
+.asset-subject-card:hover{transform:scale(1.022)!important;filter:none!important;z-index:2!important}
+.asset-subject-card:hover>div{transform:none!important;outline:0!important;box-shadow:0 8px 18px rgba(50,57,86,.1)!important}
+
+/* 对话资产库：缩短高度并保证标签、搜索栏始终完整显示。 */
+.generation-page>.generation-composer.new-creation-composer .home-asset-popover.figma-composer-assets{position:absolute!important;left:112px!important;right:auto!important;top:auto!important;bottom:calc(100% + 10px)!important;width:500px!important;height:286px!important;padding:12px 18px!important;overflow:hidden!important;z-index:1600!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-tabs{position:static!important;width:464px!important;height:28px!important;margin:0!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-search{position:static!important;width:464px!important;height:28px!important;margin:7px 0 9px!important;visibility:visible!important;opacity:1!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid{position:static!important;display:grid!important;grid-template-columns:repeat(3,142px)!important;gap:14px!important;height:150px!important;margin:0!important;overflow:hidden!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid>button{width:142px!important;height:150px!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid>button>span{height:100px!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets>footer{bottom:8px!important}
+
+/* 对话上传菜单恢复为按钮上方的两行白色浮窗。 */
+.generation-page>.generation-composer.new-creation-composer .new-upload-pop{position:absolute!important;z-index:1700!important;left:12px!important;right:auto!important;top:auto!important;bottom:calc(100% + 10px)!important;width:168px!important;height:96px!important;margin:0!important;padding:8px!important;border:1px solid #d9d5f7!important;border-radius:10px!important;background:#fff!important;box-shadow:0 10px 24px rgba(47,43,83,.14)!important;display:flex!important;flex-direction:column!important;gap:4px!important;overflow:visible!important}
+.generation-page>.generation-composer.new-creation-composer .new-upload-pop>button{position:static!important;inset:auto!important;width:150px!important;height:36px!important;min-height:36px!important;margin:0!important;padding:0 10px!important;border:0!important;border-radius:7px!important;background:#fff!important;color:#202432!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:9px!important;box-shadow:none!important;transform:none!important}
+.generation-page>.generation-composer.new-creation-composer .new-upload-pop>button:hover{background:#f2efff!important;color:#5549c7!important}
+.generation-page>.generation-composer.new-creation-composer .new-upload-pop>button img{width:16px!important;height:16px!important;filter:brightness(0)!important}
