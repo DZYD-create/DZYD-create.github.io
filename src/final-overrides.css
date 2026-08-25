@@ -9085,3 +9085,12 @@ button > img {
 .generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid>button>span{width:118px!important;height:106px!important}
 .generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid strong{height:17px!important;margin-top:3px!important;line-height:17px!important}
 .generation-page>.generation-composer.new-creation-composer .figma-composer-assets>footer{left:50%!important;bottom:8px!important;transform:translateX(-50%)!important}
+
+/* 资产浮窗强制下移并压缩：完整避开页面顶部栏。 */
+.generation-page>.generation-composer.new-creation-composer .home-asset-popover.figma-composer-assets{bottom:calc(100% - 48px)!important;height:252px!important;padding:9px 16px!important;clip-path:none!important;overflow:visible!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-tabs{height:25px!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-search{height:25px!important;margin:5px 0 16px!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid{height:126px!important;margin-left:6px!important;grid-template-columns:repeat(3,132px)!important;gap:13px!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid>button{height:126px!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid>button>span{height:82px!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets>footer{bottom:7px!important}

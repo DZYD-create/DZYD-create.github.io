@@ -5151,8 +5151,10 @@ function Assets({
   onBack: () => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
-  const [uploaded, setUploaded] = useState<{ name: string; url: string }[]>([]);
-  const [tab, setTab] = useState<"subject" | "assets">("subject");
+  const [uploaded, setUploaded] = useState<{ name: string; url: string }[]>([
+    { name: "孩子开学抢跑必备神器", url: "/assets/school-kickoff-poster.png" },
+  ]);
+  const [tab, setTab] = useState<"subject" | "assets" | "kt">("subject");
   const [subjectOpen, setSubjectOpen] = useState(false);
   const [subjectName, setSubjectName] = useState("");
   const [subjectImages, setSubjectImages] = useState<string[]>([]);
@@ -5225,6 +5227,16 @@ function Assets({
           }}
         >
           海报
+        </button>
+        <button
+          className={tab === "kt" ? "active" : ""}
+          onClick={() => {
+            setTab("kt");
+            setFolderMenu(false);
+            setAddOpen(false);
+          }}
+        >
+          KT板
         </button>
       </nav>
       {addOpen && (
