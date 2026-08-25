@@ -1963,8 +1963,11 @@ function Canvas({
   const [canvasTool, setCanvasTool] = useState("上传");
   const [redrawMode, setRedrawMode] = useState("画笔");
   const [redrawBrushSize, setRedrawBrushSize] = useState(48);
-  const [redrawStrokes, setRedrawStrokes] = useState<Array<{ nodeId: number; size: number; points: Array<{ x: number; y: number }> }>>([]);
-  const [activeRedrawStroke, setActiveRedrawStroke] = useState<{ nodeId: number; size: number; points: Array<{ x: number; y: number }> } | null>(null);
+  type RedrawStroke = { nodeId: number; size: number; kind: "brush" | "box"; points: Array<{ x: number; y: number }> };
+  const [redrawStrokes, setRedrawStrokes] = useState<RedrawStroke[]>([]);
+  const [activeRedrawStroke, setActiveRedrawStroke] = useState<RedrawStroke | null>(null);
+  const [redrawUndoStack, setRedrawUndoStack] = useState<RedrawStroke[][]>([]);
+  const [redrawRedoStack, setRedrawRedoStack] = useState<RedrawStroke[][]>([]);
   const [redrawCursor, setRedrawCursor] = useState<{ nodeId: number; x: number; y: number } | null>(null);
   const [imageMenu, setImageMenu] = useState<{ x: number; y: number } | null>(
     null,
@@ -2380,7 +2383,12 @@ function Canvas({
       if (canvasTool !== "局部重绘" || !(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== "z") return;
       event.preventDefault();
       setActiveRedrawStroke(null);
-      setRedrawStrokes((items) => items.slice(0, -1));
+      setRedrawUndoStack((history) => {
+        if (!history.length) return history;
+        const previous = history[history.length - 1];
+        setRedrawStrokes((current) => { setRedrawRedoStack((redo) => [...redo, current]); return previous; });
+        return history.slice(0, -1);
+      });
     };
     window.addEventListener("keydown", undoRedraw);
     return () => window.removeEventListener("keydown", undoRedraw);
@@ -3133,30 +3141,52 @@ function Canvas({
                     )}
                     {!node.placeholder && canvasTool === "局部重绘" && (
                       <svg
-                        className="canvas-redraw-layer"
+                        className={`canvas-redraw-layer redraw-mode-${redrawMode}`}
                         viewBox={`0 0 ${getNodeGeometry(node).mediaWidth} ${getNodeGeometry(node).mediaHeight}`}
                         onPointerDown={(event) => {
-                          if (redrawMode !== "画笔") return;
+                          if (redrawMode === "橡皮") {
+                            event.preventDefault(); event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId);
+                            const box=event.currentTarget.getBoundingClientRect();
+                            const point={x:(event.clientX-box.left)/box.width*getNodeGeometry(node).mediaWidth,y:(event.clientY-box.top)/box.height*getNodeGeometry(node).mediaHeight};
+                            setRedrawStrokes((items) => {
+                              const hit=(stroke:RedrawStroke)=>stroke.nodeId===node.id && (stroke.kind === "box"
+                                ? point.x>=Math.min(stroke.points[0].x,stroke.points[1].x)-redrawBrushSize/2 && point.x<=Math.max(stroke.points[0].x,stroke.points[1].x)+redrawBrushSize/2 && point.y>=Math.min(stroke.points[0].y,stroke.points[1].y)-redrawBrushSize/2 && point.y<=Math.max(stroke.points[0].y,stroke.points[1].y)+redrawBrushSize/2
+                                : stroke.points.some((p)=>Math.hypot(p.x-point.x,p.y-point.y)<=(stroke.size+redrawBrushSize)/2));
+                              const next=items.filter((stroke)=>!hit(stroke));
+                              if(next.length!==items.length){setRedrawUndoStack((history)=>[...history,items]);setRedrawRedoStack([]);}
+                              return next;
+                            });
+                            return;
+                          }
                           event.preventDefault(); event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId);
                           const box=event.currentTarget.getBoundingClientRect();
                           const point={x:(event.clientX-box.left)/box.width*getNodeGeometry(node).mediaWidth,y:(event.clientY-box.top)/box.height*getNodeGeometry(node).mediaHeight};
-                          setActiveRedrawStroke({nodeId:node.id,size:redrawBrushSize,points:[point]}); setRedrawCursor({nodeId:node.id,...point});
+                          setActiveRedrawStroke({nodeId:node.id,size:redrawBrushSize,kind:redrawMode === "框选" ? "box" : "brush",points:[point,point]}); setRedrawCursor({nodeId:node.id,...point});
                         }}
                         onPointerMove={(event) => {
                           const box=event.currentTarget.getBoundingClientRect();
                           const point={x:(event.clientX-box.left)/box.width*getNodeGeometry(node).mediaWidth,y:(event.clientY-box.top)/box.height*getNodeGeometry(node).mediaHeight};
                           setRedrawCursor({nodeId:node.id,...point});
-                          if(event.buttons===1) setActiveRedrawStroke((stroke)=>stroke&&stroke.nodeId===node.id?{...stroke,points:[...stroke.points,point]}:stroke);
+                          if(redrawMode==="橡皮"&&event.buttons===1){
+                            setRedrawStrokes((items)=>{
+                              const hit=(stroke:RedrawStroke)=>stroke.nodeId===node.id && (stroke.kind==="box"
+                                ? point.x>=Math.min(stroke.points[0].x,stroke.points[1].x)-redrawBrushSize/2&&point.x<=Math.max(stroke.points[0].x,stroke.points[1].x)+redrawBrushSize/2&&point.y>=Math.min(stroke.points[0].y,stroke.points[1].y)-redrawBrushSize/2&&point.y<=Math.max(stroke.points[0].y,stroke.points[1].y)+redrawBrushSize/2
+                                : stroke.points.some((p)=>Math.hypot(p.x-point.x,p.y-point.y)<=(stroke.size+redrawBrushSize)/2));
+                              return items.filter((stroke)=>!hit(stroke));
+                            });
+                            return;
+                          }
+                          if(event.buttons===1) setActiveRedrawStroke((stroke)=>stroke&&stroke.nodeId===node.id?{...stroke,points:stroke.kind==="box"?[stroke.points[0],point]:[...stroke.points,point]}:stroke);
                         }}
                         onPointerUp={(event) => {
                           event.stopPropagation();
-                          setActiveRedrawStroke((stroke)=>{if(stroke&&stroke.points.length>1)setRedrawStrokes((items)=>[...items,stroke]);return null;});
+                          setActiveRedrawStroke((stroke)=>{if(stroke&&stroke.points.length>1)setRedrawStrokes((items)=>{setRedrawUndoStack((history)=>[...history,items]);setRedrawRedoStack([]);return [...items,stroke];});return null;});
                         }}
                         onPointerLeave={() => setRedrawCursor(null)}
                       >
-                        {redrawStrokes.filter((stroke)=>stroke.nodeId===node.id).map((stroke,index)=><polyline key={index} points={stroke.points.map((point)=>`${point.x},${point.y}`).join(" ")} strokeWidth={stroke.size} />)}
-                        {activeRedrawStroke?.nodeId===node.id&&<polyline points={activeRedrawStroke.points.map((point)=>`${point.x},${point.y}`).join(" ")} strokeWidth={activeRedrawStroke.size} />}
-                        {redrawCursor?.nodeId===node.id&&<circle className="redraw-cursor-ring" cx={redrawCursor.x} cy={redrawCursor.y} r={redrawBrushSize/2} />}
+                        {redrawStrokes.filter((stroke)=>stroke.nodeId===node.id).map((stroke,index)=>stroke.kind==="box"?<rect key={index} x={Math.min(stroke.points[0].x,stroke.points[1].x)} y={Math.min(stroke.points[0].y,stroke.points[1].y)} width={Math.abs(stroke.points[1].x-stroke.points[0].x)} height={Math.abs(stroke.points[1].y-stroke.points[0].y)} />:<polyline key={index} points={stroke.points.map((point)=>`${point.x},${point.y}`).join(" ")} strokeWidth={stroke.size} />)}
+                        {activeRedrawStroke?.nodeId===node.id&&(activeRedrawStroke.kind==="box"?<rect x={Math.min(activeRedrawStroke.points[0].x,activeRedrawStroke.points[1].x)} y={Math.min(activeRedrawStroke.points[0].y,activeRedrawStroke.points[1].y)} width={Math.abs(activeRedrawStroke.points[1].x-activeRedrawStroke.points[0].x)} height={Math.abs(activeRedrawStroke.points[1].y-activeRedrawStroke.points[0].y)} />:<polyline points={activeRedrawStroke.points.map((point)=>`${point.x},${point.y}`).join(" ")} strokeWidth={activeRedrawStroke.size} />)}
+                        {redrawMode!=="框选"&&redrawCursor?.nodeId===node.id&&<circle className="redraw-cursor-ring" cx={redrawCursor.x} cy={redrawCursor.y} r={redrawBrushSize/2} />}
                       </svg>
                     )}
                   </div>
@@ -3947,19 +3977,14 @@ function Canvas({
           >
             <button className="redraw-close" aria-label="关闭局部重绘" onClick={() => setCanvasTool("移动")}>×</button>
             <i />
-            {[
-              ["画笔", "figma-brush.svg"],
-              ["框选", "figma-resize.svg"],
-              ["橡皮", "figma-eraser-mode.svg"],
-            ].map(([label, icon]) => (
-              <button key={label} className={redrawMode === label ? "active" : ""} aria-label={label} onClick={() => setRedrawMode(label)}><img src={`/assets/${icon}`} /></button>
-            ))}
+            <button className={redrawMode === "框选" ? "active" : ""} aria-label="框选画笔" onClick={() => setRedrawMode((mode) => mode === "框选" ? "画笔" : "框选")}><img src="/assets/figma-resize.svg" /></button>
+            <button className={redrawMode === "橡皮" ? "active" : ""} aria-label="擦除笔触" onClick={() => setRedrawMode((mode) => mode === "橡皮" ? "画笔" : "橡皮")}><img src="/assets/figma-eraser-mode.svg" /></button>
             <i />
             <img className="redraw-brush-small" src="/assets/figma-brush-small.svg" />
             <input aria-label="笔触大小" type="range" min="8" max="100" value={redrawBrushSize} onChange={(event) => setRedrawBrushSize(Number(event.target.value))} />
             <i />
-            <button aria-label="撤销" onClick={() => setRedrawStrokes((items) => items.slice(0, -1))}><img src="/assets/figma-undo.svg" /></button>
-            <button aria-label="重做"><img src="/assets/figma-redo.svg" /></button>
+            <button aria-label="撤销" disabled={!redrawUndoStack.length} onClick={() => setRedrawUndoStack((history)=>{if(!history.length)return history;const previous=history[history.length-1];setRedrawStrokes((current)=>{setRedrawRedoStack((redo)=>[...redo,current]);return previous;});return history.slice(0,-1);})}><img src="/assets/figma-undo.svg" /></button>
+            <button aria-label="重做" disabled={!redrawRedoStack.length} onClick={() => setRedrawRedoStack((redo)=>{if(!redo.length)return redo;const next=redo[redo.length-1];setRedrawStrokes((current)=>{setRedrawUndoStack((history)=>[...history,current]);return next;});return redo.slice(0,-1);})}><img src="/assets/figma-redo.svg" /></button>
           </div>
         )}
         {canvasTool === "裁剪" && cropNode && mode !== "comments" && (
