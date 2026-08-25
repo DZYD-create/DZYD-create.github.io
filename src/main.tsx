@@ -455,7 +455,9 @@ function App() {
               ];
               const assets = item.category === "live" ? liveParts : [{ name: item.name, url: item.url }];
               setPendingCanvasAssets(assets);
-              setCanvasImageName(assets[0].name);
+              // Keep the source asset name as the canvas project title. The
+              // five live-room parts retain their own individual node names.
+              setCanvasImageName(item.name);
               setCanvasImage(assets[0].url);
               setSection("canvas");
             }}
@@ -2009,7 +2011,7 @@ function Canvas({
   const [folderDone, setFolderDone] = useState(false);
   const [folderExpanded, setFolderExpanded] = useState(false);
   const [folderIndex, setFolderIndex] = useState(2);
-  const [projectTitle, setProjectTitle] = useState("AI 视觉创作 · 未命名项目");
+  const [projectTitle, setProjectTitle] = useState(canvasImageName || "AI 视觉创作 · 未命名项目");
   const [folderName, setFolderName] = useState("");
   const [folderNames, setFolderNames] = useState([
     "项目名称1",
