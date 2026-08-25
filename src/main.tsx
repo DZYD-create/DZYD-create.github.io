@@ -859,6 +859,7 @@ function NewCreationPage({
       </header>
       <div className="new-creation-intro">
         <img
+          className={greetingFinished ? "greeting-settled" : "greeting-playing"}
           src={greetingFinished ? "/assets/dog-greeting-ears.png" : "/assets/dog-greeting-public.gif"}
           alt="打招呼的小狗"
         />
@@ -1292,6 +1293,9 @@ function ModelPopover({ onClose }: { onClose: () => void }) {
 function SizePopover({ onClose }: { onClose: () => void }) {
   const [quality, setQuality] = useState("高");
   const [ratio, setRatio] = useState("9:16");
+  const [width, setWidth] = useState("1456");
+  const [height, setHeight] = useState("816");
+  const [linked, setLinked] = useState(true);
   const ratios = [
     "1:1",
     "3:2",
@@ -1324,11 +1328,11 @@ function SizePopover({ onClose }: { onClose: () => void }) {
       <span className="size-section-label">尺寸</span>
       <div className="size-fields">
         <label>
-          W <span>1456</span>
+          W <input aria-label="宽度" inputMode="numeric" value={width} onChange={(e) => { const next=e.target.value.replace(/\D/g,""); setWidth(next); const match=ratio.match(/^(\d+):(\d+)/); if(linked&&next&&match) setHeight(String(Math.round(Number(next)*Number(match[2])/Number(match[1])))); }} />
         </label>
-        <img src="/assets/figma-size-link.svg" />
+        <button className={`size-link-toggle ${linked ? "active" : ""}`} aria-label={linked ? "取消宽高关联" : "关联宽高"} aria-pressed={linked} onClick={()=>setLinked((value)=>!value)}><img src="/assets/figma-size-link.svg" /></button>
         <label>
-          H <span>816</span>
+          H <input aria-label="高度" inputMode="numeric" value={height} onChange={(e) => { const next=e.target.value.replace(/\D/g,""); setHeight(next); const match=ratio.match(/^(\d+):(\d+)/); if(linked&&next&&match) setWidth(String(Math.round(Number(next)*Number(match[1])/Number(match[2])))); }} />
         </label>
       </div>
       <small>选择比例</small>
@@ -1338,6 +1342,8 @@ function SizePopover({ onClose }: { onClose: () => void }) {
             className={ratio === v ? "active" : ""}
             onClick={() => {
               setRatio(v);
+              const match=v.match(/^(\d+):(\d+)/);
+              if(linked&&match) setHeight(String(Math.round(Number(width||1456)*Number(match[2])/Number(match[1]))));
               if (v === "智能") setTimeout(onClose, 120);
             }}
             key={v}
@@ -4012,6 +4018,7 @@ function CanvasSizePopover({
 }) {
   const [width, setWidth] = useState("1456"),
     [height, setHeight] = useState("816");
+  const [linked, setLinked] = useState(true);
   const ratios = [
     "1:1",
     "3:2",
@@ -4047,15 +4054,15 @@ function CanvasSizePopover({
           W
           <input
             value={width}
-            onChange={(e) => setWidth(e.target.value.replace(/\D/g, ""))}
+            onChange={(e) => { const next=e.target.value.replace(/\D/g, ""); setWidth(next); const match=ratio.match(/^(\d+):(\d+)/); if(linked&&next&&match) setHeight(String(Math.round(Number(next)*Number(match[2])/Number(match[1])))); }}
           />
         </span>
-        <img src="/assets/figma-size-link.svg" />
+        <button className={`size-link-toggle ${linked ? "active" : ""}`} aria-label={linked ? "取消宽高关联" : "关联宽高"} aria-pressed={linked} onClick={()=>setLinked((value)=>!value)}><img src="/assets/figma-size-link.svg" /></button>
         <span>
           H
           <input
             value={height}
-            onChange={(e) => setHeight(e.target.value.replace(/\D/g, ""))}
+            onChange={(e) => { const next=e.target.value.replace(/\D/g, ""); setHeight(next); const match=ratio.match(/^(\d+):(\d+)/); if(linked&&next&&match) setWidth(String(Math.round(Number(next)*Number(match[1])/Number(match[2])))); }}
           />
         </span>
       </div>
@@ -4065,7 +4072,7 @@ function CanvasSizePopover({
           <button
             key={item}
             className={ratio === item ? "active" : ""}
-            onClick={() => onRatio(item)}
+            onClick={() => { onRatio(item); const match=item.match(/^(\d+):(\d+)/); if(linked&&match) setHeight(String(Math.round(Number(width||1456)*Number(match[2])/Number(match[1])))); }}
           >
             <i className={`ratio-shape ratio-${item.replace(/[^0-9]/g, "")}`} />
             <small>{item}</small>
