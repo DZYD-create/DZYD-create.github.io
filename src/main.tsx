@@ -5035,7 +5035,6 @@ function History({
               <div className="history-record-preview">
                 {tab === "subject" && <img src={samples[i % samples.length]} alt={name} />}
                 {tab === "canvas" && <img src={`/assets/template-${(i % 5) + 1}.png`} alt={name} />}
-                {i === 0 && tab === "canvas" && <span className="history-loader" />}
                 {batch && (
                   <i className={`batch-check ${selectedHistory.includes(name) ? "selected" : ""}`}>
                     {selectedHistory.includes(name) ? "✓" : ""}
