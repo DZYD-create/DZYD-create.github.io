@@ -285,6 +285,7 @@ function App() {
         studioView !== "detail" && (
           <StudioSidebar
             conversations={conversations}
+            activeConversation={activeConversation}
             onRename={(previous, next) => {
               setConversations((items) =>
                 items.map(([title, time]) => [title === previous ? next : title, time]),
@@ -757,11 +758,13 @@ function GenerationPage({
 
 function StudioSidebar({
   conversations,
+  activeConversation,
   onRename,
   onNewWork,
   onOpenConversation,
 }: {
   conversations: Array<[string, string]>;
+  activeConversation: string | null;
   onRename: (previous: string, next: string) => void;
   onNewWork: () => void;
   onOpenConversation: (title: string) => void;
@@ -791,7 +794,7 @@ function StudioSidebar({
       <div className="conversation-history-scroll">
         {visible.map(([a, b]) => (
           <button
-            className="history-row"
+            className={`history-row ${activeConversation === a ? "active" : ""}`}
             onClick={() => onOpenConversation(a)}
             onDoubleClick={(event) => {
               event.preventDefault();
@@ -5211,7 +5214,7 @@ function Assets({
             setFolderMenu(false);
           }}
         >
-          主体
+          人物
         </button>
         <button
           className={tab === "assets" ? "active" : ""}
@@ -5221,7 +5224,7 @@ function Assets({
             setAddOpen(false);
           }}
         >
-          素材
+          海报
         </button>
       </nav>
       {addOpen && (
