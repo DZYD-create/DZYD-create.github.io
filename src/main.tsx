@@ -1969,6 +1969,14 @@ function Canvas({
   const [redrawUndoStack, setRedrawUndoStack] = useState<RedrawStroke[][]>([]);
   const [redrawRedoStack, setRedrawRedoStack] = useState<RedrawStroke[][]>([]);
   const [redrawCursor, setRedrawCursor] = useState<{ nodeId: number; x: number; y: number } | null>(null);
+  useEffect(() => {
+    if (!["局部重绘", "擦除"].includes(canvasTool)) return;
+    setRedrawMode("画笔");
+    setRedrawStrokes([]);
+    setActiveRedrawStroke(null);
+    setRedrawUndoStack([]);
+    setRedrawRedoStack([]);
+  }, [canvasTool]);
   const [imageMenu, setImageMenu] = useState<{ x: number; y: number } | null>(
     null,
   );
@@ -2380,7 +2388,7 @@ function Canvas({
   }, []);
   useEffect(() => {
     const undoRedraw = (event: KeyboardEvent) => {
-      if (canvasTool !== "局部重绘" || !(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== "z") return;
+      if (!["局部重绘", "擦除"].includes(canvasTool) || !(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== "z") return;
       event.preventDefault();
       setActiveRedrawStroke(null);
       setRedrawUndoStack((history) => {
@@ -3139,9 +3147,9 @@ function Canvas({
                         onLoad={(event) => updateNodeImageSize(node.id, event.currentTarget.naturalWidth, event.currentTarget.naturalHeight)}
                       />
                     )}
-                    {!node.placeholder && canvasTool === "局部重绘" && (
+                    {!node.placeholder && ["局部重绘", "擦除"].includes(canvasTool) && (
                       <svg
-                        className={`canvas-redraw-layer redraw-mode-${redrawMode}`}
+                        className={`canvas-redraw-layer redraw-mode-${redrawMode} ${canvasTool === "擦除" ? "canvas-erase-editor" : ""}`}
                         viewBox={`0 0 ${getNodeGeometry(node).mediaWidth} ${getNodeGeometry(node).mediaHeight}`}
                         onPointerDown={(event) => {
                           event.preventDefault(); event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId);
@@ -3162,14 +3170,15 @@ function Canvas({
                         onPointerLeave={() => setRedrawCursor(null)}
                       >
                         <defs>
+                          <pattern id={`erase-checker-${node.id}`} width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" style={{fill:"#f1f1f1",stroke:"none"}}/><rect width="8" height="8" style={{fill:"#c9c9c9",stroke:"none"}}/><rect x="8" y="8" width="8" height="8" style={{fill:"#c9c9c9",stroke:"none"}}/></pattern>
                           {redrawStrokes.filter((stroke)=>stroke.nodeId===node.id&&stroke.kind!=="erase").map((_,drawIndex)=>{
                             const nodeActions=redrawStrokes.filter((stroke)=>stroke.nodeId===node.id);
                             const actualIndex=nodeActions.findIndex((stroke,index)=>stroke.kind!=="erase"&&nodeActions.filter((item,j)=>j<=index&&item.kind!=="erase").length===drawIndex+1);
                             return <mask key={drawIndex} id={`redraw-mask-${node.id}-${drawIndex}`} maskUnits="userSpaceOnUse" x="0" y="0" width={getNodeGeometry(node).mediaWidth} height={getNodeGeometry(node).mediaHeight}><rect className="redraw-mask-base" width="100%" height="100%" />{nodeActions.slice(actualIndex+1).filter((stroke)=>stroke.kind==="erase").map((stroke,index)=><polyline className="redraw-erase-path" key={index} points={stroke.points.map((point)=>`${point.x},${point.y}`).join(" ")} strokeWidth={stroke.size} />)}{activeRedrawStroke?.nodeId===node.id&&activeRedrawStroke.kind==="erase"&&<polyline className="redraw-erase-path" points={activeRedrawStroke.points.map((point)=>`${point.x},${point.y}`).join(" ")} strokeWidth={activeRedrawStroke.size} />}</mask>;
                           })}
                         </defs>
-                        {(()=>{let drawIndex=0;return redrawStrokes.filter((stroke)=>stroke.nodeId===node.id).map((stroke,index)=>{if(stroke.kind==="erase")return null;const mask=`url(#redraw-mask-${node.id}-${drawIndex++})`;return stroke.kind==="box"?<rect key={index} mask={mask} x={Math.min(stroke.points[0].x,stroke.points[1].x)} y={Math.min(stroke.points[0].y,stroke.points[1].y)} width={Math.abs(stroke.points[1].x-stroke.points[0].x)} height={Math.abs(stroke.points[1].y-stroke.points[0].y)} />:<polyline key={index} mask={mask} points={stroke.points.map((point)=>`${point.x},${point.y}`).join(" ")} strokeWidth={stroke.size} />;});})()}
-                        {activeRedrawStroke?.nodeId===node.id&&activeRedrawStroke.kind!=="erase"&&(activeRedrawStroke.kind==="box"?<rect x={Math.min(activeRedrawStroke.points[0].x,activeRedrawStroke.points[1].x)} y={Math.min(activeRedrawStroke.points[0].y,activeRedrawStroke.points[1].y)} width={Math.abs(activeRedrawStroke.points[1].x-activeRedrawStroke.points[0].x)} height={Math.abs(activeRedrawStroke.points[1].y-activeRedrawStroke.points[0].y)} />:<polyline points={activeRedrawStroke.points.map((point)=>`${point.x},${point.y}`).join(" ")} strokeWidth={activeRedrawStroke.size} />)}
+                        {(()=>{let drawIndex=0;return redrawStrokes.filter((stroke)=>stroke.nodeId===node.id).map((stroke,index)=>{if(stroke.kind==="erase")return null;const mask=`url(#redraw-mask-${node.id}-${drawIndex++})`;const checker=`url(#erase-checker-${node.id})`;return stroke.kind==="box"?<rect key={index} mask={mask} style={canvasTool==="擦除"?{fill:checker}:undefined} x={Math.min(stroke.points[0].x,stroke.points[1].x)} y={Math.min(stroke.points[0].y,stroke.points[1].y)} width={Math.abs(stroke.points[1].x-stroke.points[0].x)} height={Math.abs(stroke.points[1].y-stroke.points[0].y)} />:<polyline key={index} mask={mask} style={canvasTool==="擦除"?{stroke:checker}:undefined} points={stroke.points.map((point)=>`${point.x},${point.y}`).join(" ")} strokeWidth={stroke.size} />;});})()}
+                        {activeRedrawStroke?.nodeId===node.id&&activeRedrawStroke.kind!=="erase"&&(activeRedrawStroke.kind==="box"?<rect style={canvasTool==="擦除"?{fill:`url(#erase-checker-${node.id})`}:undefined} x={Math.min(activeRedrawStroke.points[0].x,activeRedrawStroke.points[1].x)} y={Math.min(activeRedrawStroke.points[0].y,activeRedrawStroke.points[1].y)} width={Math.abs(activeRedrawStroke.points[1].x-activeRedrawStroke.points[0].x)} height={Math.abs(activeRedrawStroke.points[1].y-activeRedrawStroke.points[0].y)} />:<polyline style={canvasTool==="擦除"?{stroke:`url(#erase-checker-${node.id})`}:undefined} points={activeRedrawStroke.points.map((point)=>`${point.x},${point.y}`).join(" ")} strokeWidth={activeRedrawStroke.size} />)}
                         {redrawMode!=="框选"&&redrawCursor?.nodeId===node.id&&<circle className="redraw-cursor-ring" cx={redrawCursor.x} cy={redrawCursor.y} r={redrawBrushSize/2} />}
                       </svg>
                     )}
@@ -3951,7 +3960,7 @@ function Canvas({
               </button>
             </div>
           )}
-        {canvasTool === "局部重绘" && redrawNode && mode !== "comments" && (
+        {["局部重绘", "擦除"].includes(canvasTool) && redrawNode && mode !== "comments" && (
           <div
             className="canvas-redraw-toolbar"
             style={{
@@ -3959,7 +3968,7 @@ function Canvas({
               top: Math.max(8, (32 + redrawNode.y) * (canvasZoom / 75) - 62),
             }}
           >
-            <button className="redraw-close" aria-label="关闭局部重绘" onClick={() => setCanvasTool("移动")}>×</button>
+            <button className="redraw-close" aria-label={`关闭${canvasTool}`} onClick={() => setCanvasTool("移动")}>×</button>
             <i />
             <button className={redrawMode === "画笔" ? "active" : ""} aria-label="画笔重绘" onClick={() => setRedrawMode("画笔")}><img src="/assets/figma-brush.svg" /></button>
             <button className={redrawMode === "框选" ? "active" : ""} aria-label="框选重绘" onClick={() => setRedrawMode("框选")}><img src="/assets/figma-resize.svg" /></button>

@@ -8866,7 +8866,8 @@ button > img {
 
 /* 底部八项工具使用与焦点编辑一致的悬浮提示。 */
 .canvas-bottom-dock>button{position:relative!important;overflow:visible!important}
-.canvas-bottom-dock>button::after{content:attr(aria-label);position:absolute;z-index:80;left:50%;bottom:calc(100% + 9px);transform:translate(-50%,4px);height:26px;padding:0 10px;border-radius:8px;background:#f1edff;color:#7559e8;box-shadow:0 5px 14px rgba(103,82,218,.13);font:400 12px/26px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif;white-space:nowrap;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .16s ease,transform .18s ease,visibility .16s ease}
+.canvas-bottom-dock>button::after{content:attr(aria-label);position:absolute;z-index:10001;left:50%;bottom:calc(100% + 9px);transform:translate(-50%,4px);height:26px;padding:0 10px;border-radius:8px;background:#f1edff;color:#7559e8;box-shadow:0 5px 14px rgba(103,82,218,.13);font:400 12px/26px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif;white-space:nowrap;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .16s ease,transform .18s ease,visibility .16s ease}
+.canvas-bottom-dock{z-index:10000!important;overflow:visible!important}
 .canvas-bottom-dock>button:hover::after,.canvas-bottom-dock>button:focus-visible::after{opacity:1;visibility:visible;transform:translate(-50%,0)}
 
 /* 局部重绘：图片上方横向工具框。 */
