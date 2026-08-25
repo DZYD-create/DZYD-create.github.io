@@ -9107,3 +9107,4 @@ button > img {
 .asset-inline-rename{min-width:0!important;width:100%!important;height:25px!important;padding:2px 6px!important;border:1px solid #8b7cf2!important;border-radius:6px!important;background:#fff!important;background-image:none!important;animation:none!important;outline:0!important;font-size:13px!important}
 .asset-tree .asset-logo-file{margin-left:52px!important}
 .asset-tree .asset-logo-file img{width:26px!important;height:26px!important;object-fit:contain!important;background:#f4f6fa!important}
+.asset-tree .asset-logo-file span{color:#111!important;font-weight:400!important}

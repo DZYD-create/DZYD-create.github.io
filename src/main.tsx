@@ -4672,7 +4672,7 @@ function AssetLibrary({
   const [query, setQuery] = useState("");
   const [teachers, setTeachers] = useState(["以诺老师", "冯梦飞", "李颖", "憨爸", "临风"]);
   const [folderNames, setFolderNames] = useState({ root: "素材库", teachers: "教师形象照", logo: "logo" });
-  const [logoName, setLogoName] = useState("KCLEcIKcmH");
+  const [logoName, setLogoName] = useState("洋葱学园");
   const [collapsed, setCollapsed] = useState({ root: false, teachers: false, logo: false });
   const [editing, setEditing] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
@@ -4724,10 +4724,11 @@ function AssetLibrary({
           <button
             className={selected === i + 1 ? "selected" : ""}
             onClick={() => onSelect(i + 1)}
+            onDoubleClick={(event) => { event.preventDefault(); event.stopPropagation(); beginRename(`teacher-${i}`, v); }}
             key={v}
           >
             <img src={i === 1 ? "/assets/feng-mengfei.png" : `/assets/teacher-${i + 1}.svg`} />
-            {editing===`teacher-${i}`?<input className="asset-inline-rename" autoFocus value={draft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setDraft(e.target.value)} onBlur={commitRename} onKeyDown={(e)=>{if(e.key==="Enter")commitRename();}}/>:<span onDoubleClick={(e)=>{e.stopPropagation();beginRename(`teacher-${i}`,v);}}>{v}</span>}
+            {editing===`teacher-${i}`?<input className="asset-inline-rename" autoFocus value={draft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setDraft(e.target.value)} onBlur={commitRename} onKeyDown={(e)=>{if(e.key==="Enter")commitRename();}}/>:<span>{v}</span>}
           </button>
         ))}
         {!visibleTeachers.length && <p className="asset-search-empty">未找到“{query}”</p>}
