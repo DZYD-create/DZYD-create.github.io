@@ -835,7 +835,7 @@ function NewCreationPage({
   const [greetingFinished, setGreetingFinished] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    const timer = window.setTimeout(() => setGreetingFinished(true), 1100);
+    const timer = window.setTimeout(() => setGreetingFinished(true), 1790);
     return () => window.clearTimeout(timer);
   }, []);
   useEffect(() => {
@@ -859,7 +859,7 @@ function NewCreationPage({
       </header>
       <div className="new-creation-intro">
         <img
-          src={greetingFinished ? "/assets/dog-greeting-peak.png" : "/assets/dog-greeting-public.gif"}
+          src={greetingFinished ? "/assets/dog-greeting-ears.png" : "/assets/dog-greeting-public.gif"}
           alt="打招呼的小狗"
         />
         <p>你好，我是你的 AI 设计助手</p>
@@ -4972,7 +4972,7 @@ function Assets({
   const [subjectOpen, setSubjectOpen] = useState(false);
   const [subjectName, setSubjectName] = useState("");
   const [subjectImages, setSubjectImages] = useState<string[]>([]);
-  const [fanProgress, setFanProgress] = useState(0);
+  const [activeSubjectImage, setActiveSubjectImage] = useState(0);
   const [subjects, setSubjects] = useState(["夏日新品预热海报", "课程价格板设计", "新品种草海报", "直播间活动主视觉"]);
   const subjectFile = useRef<HTMLInputElement>(null);
   const [addOpen, setAddOpen] = useState(false);
@@ -5080,9 +5080,9 @@ function Assets({
       )}
       {tab === "subject" ? (
         <div className="asset-subject-grid">
-          <button className="asset-subject-card create" onClick={() => { setSubjectName(""); setSubjectImages([]); setFanProgress(0); setSubjectOpen(true); }}><div>＋</div><strong>新建主体</strong></button>
+          <button className="asset-subject-card create" onClick={() => { setSubjectName(""); setSubjectImages([]); setActiveSubjectImage(0); setSubjectOpen(true); }}><div>＋</div><strong>新建主体</strong></button>
           {subjects.map((name, i) => (
-            <button className="asset-subject-card" key={name} onClick={() => { setSubjectName(name); setSubjectImages([samples[i % samples.length], samples[(i + 1) % samples.length], samples[(i + 2) % samples.length]]); setFanProgress(0); setSubjectOpen(true); }}>
+            <button className="asset-subject-card" key={name} onClick={() => { setSubjectName(name); setSubjectImages([samples[i % samples.length], samples[(i + 1) % samples.length], samples[(i + 2) % samples.length]]); setActiveSubjectImage(0); setSubjectOpen(true); }}>
               <div><img src={samples[i % samples.length]} alt={name} /></div><strong>{name}</strong><small>主体 · 最近修改</small>
             </button>
           ))}
@@ -5124,7 +5124,7 @@ function Assets({
             <header><h2 id="asset-subject-title">设置主体 <small>ⓘ</small></h2><button aria-label="关闭" onClick={() => setSubjectOpen(false)}>×</button></header>
             <label>参考主体 <b>*</b></label>
             <div className={`history-subject-upload ${subjectImages.length ? "has-preview" : ""}`}>
-              {subjectImages.length ? <><div className="subject-fan" onPointerMove={(event) => { const box=event.currentTarget.getBoundingClientRect(); setFanProgress(Math.max(0,Math.min(1,(event.clientX-box.left)/box.width))); }} onPointerLeave={() => setFanProgress(0)}>{subjectImages.map((src,index)=><img key={`${src}-${index}`} src={src} alt={`主体参考图 ${index+1}`} style={{transform:`translateX(${index*(16+fanProgress*58)}px) translateY(${fanProgress && index ? -8-(index%2)*5 : 0}px) rotate(${(index-(subjectImages.length-1)/2)*(6-3*fanProgress)}deg)`,zIndex:index+1}} />)}</div><button aria-label="添加新的主体图片" onClick={() => subjectFile.current?.click()}>▧＋</button></> : <><span className="history-upload-symbol">⇧</span><p>上传主图，将素材拖拽至此处</p><button onClick={() => subjectFile.current?.click()}>⇧ 从本地添加</button></>}
+              {subjectImages.length ? <><div className="subject-gallery"><img className="subject-main-image" src={subjectImages[activeSubjectImage] || subjectImages[0]} alt="当前主体主图" /><div className="subject-thumbnails">{subjectImages.map((src,index)=><button key={`${src}-${index}`} type="button" className={activeSubjectImage===index ? "active" : ""} aria-label={`切换到主体图片 ${index+1}`} onClick={()=>setActiveSubjectImage(index)}><img src={src} alt={`主体参考图 ${index+1}`} /></button>)}</div></div><button aria-label="添加新的主体图片" onClick={() => subjectFile.current?.click()}>▧＋</button></> : <><span className="history-upload-symbol">⇧</span><p>上传主图，将素材拖拽至此处</p><button onClick={() => subjectFile.current?.click()}>⇧ 从本地添加</button></>}
             </div>
             <label>名称 <b>*</b></label>
             <div className="history-subject-input"><input maxLength={20} value={subjectName} onChange={(e) => setSubjectName(e.target.value)} placeholder="请输入名称" /><span>{subjectName.length}/20</span></div>

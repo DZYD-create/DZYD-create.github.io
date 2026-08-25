@@ -8716,3 +8716,17 @@ button > img {
 .history-subject-upload.has-preview>.subject-fan{position:relative;width:100%;height:306px;overflow:hidden;background:#c7c1c3}
 .subject-fan>img{position:absolute;left:10px;top:8px;width:calc(100% - 70px);height:290px;object-fit:cover;border-radius:10px;box-shadow:0 8px 22px rgba(26,24,35,.18);transform-origin:50% 92%;transition:transform .22s cubic-bezier(.2,.8,.25,1),box-shadow .22s ease}
 .subject-fan:hover>img{box-shadow:0 12px 28px rgba(26,24,35,.24)}
+
+/* 主体多图：主图固定在左，其他图片水平排列在右，点击即可切换主图。 */
+.history-subject-upload.has-preview>.subject-gallery{min-width:0;height:306px;display:flex;align-items:center;gap:12px;padding:10px;background:#c7c1c3;overflow-x:auto;overflow-y:hidden;box-sizing:border-box}
+.subject-main-image{flex:0 0 min(62%,360px);width:min(62%,360px);height:286px;object-fit:contain;border-radius:10px;background:#beb8ba;box-shadow:0 7px 18px rgba(26,24,35,.16)}
+.subject-thumbnails{display:flex;align-items:center;gap:10px;height:100%;padding:0 8px 0 0}
+.subject-thumbnails>button{flex:0 0 92px!important;width:92px!important;height:132px!important;margin:0!important;padding:0!important;border:2px solid transparent!important;border-radius:9px!important;overflow:hidden;background:#d8d3d5!important;box-shadow:0 5px 13px rgba(26,24,35,.15);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease!important}
+.subject-thumbnails>button:hover{transform:translateY(-6px);box-shadow:0 10px 20px rgba(26,24,35,.22)}
+.subject-thumbnails>button.active{border-color:#7767eb!important;box-shadow:0 0 0 2px rgba(255,255,255,.8),0 8px 18px rgba(70,57,160,.22)}
+.subject-thumbnails>button img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* 文字裁切严格绑定图标所处横坐标：碰到首字才开始，离开末字即完成。 */
+.new-work>img,.new-work::before{animation-timing-function:linear!important}
+.new-work>span{animation-timing-function:linear!important}
+@keyframes new-work-title-sync{0%,7%{clip-path:inset(0 0 0 0)}17%,74%{clip-path:inset(0 0 0 100%)}90%,100%{clip-path:inset(0 0 0 0)}}
