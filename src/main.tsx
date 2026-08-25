@@ -1961,6 +1961,8 @@ function Canvas({
   const [addOpen, setAddOpen] = useState(false);
   const [quickOpen, setQuickOpen] = useState(false);
   const [canvasTool, setCanvasTool] = useState("上传");
+  const [redrawMode, setRedrawMode] = useState("画笔");
+  const [redrawBrushSize, setRedrawBrushSize] = useState(48);
   const [imageMenu, setImageMenu] = useState<{ x: number; y: number } | null>(
     null,
   );
@@ -2652,6 +2654,8 @@ function Canvas({
     if (label === "上传") ref.current?.click();
   };
   const cropNode = canvasNodes.find((node) => node.id === activeNodeId);
+  const redrawNode =
+    canvasNodes.find((node) => node.id === activeNodeId) || canvasNodes[0];
   const promptOwnerId =
     focusEdit && focusNodeId !== null ? focusNodeId : activeNodeId;
   const focusChoices = [
@@ -3892,6 +3896,31 @@ function Canvas({
               </button>
             </div>
           )}
+        {canvasTool === "局部重绘" && redrawNode && mode !== "comments" && (
+          <div
+            className="canvas-redraw-toolbar"
+            style={{
+              left: `calc(50% + ${redrawNode.x * (canvasZoom / 75)}px)`,
+              top: Math.max(8, (32 + redrawNode.y) * (canvasZoom / 75) - 62),
+            }}
+          >
+            <button className="redraw-close" aria-label="关闭局部重绘" onClick={() => setCanvasTool("移动")}>×</button>
+            <i />
+            {[
+              ["画笔", "figma-brush.svg"],
+              ["框选", "figma-resize.svg"],
+              ["橡皮", "figma-eraser-mode.svg"],
+            ].map(([label, icon]) => (
+              <button key={label} className={redrawMode === label ? "active" : ""} aria-label={label} onClick={() => setRedrawMode(label)}><img src={`/assets/${icon}`} /></button>
+            ))}
+            <i />
+            <img className="redraw-brush-small" src="/assets/figma-brush-small.svg" />
+            <input aria-label="笔触大小" type="range" min="8" max="100" value={redrawBrushSize} onChange={(event) => setRedrawBrushSize(Number(event.target.value))} />
+            <i />
+            <button aria-label="撤销"><img src="/assets/figma-undo.svg" /></button>
+            <button aria-label="重做"><img src="/assets/figma-redo.svg" /></button>
+          </div>
+        )}
         {canvasTool === "裁剪" && cropNode && mode !== "comments" && (
           <CanvasCropWorkspace
             src={cropNode.url}
@@ -3910,18 +3939,17 @@ function Canvas({
         {canvasImage && mode !== "comments" && (
           <nav className="canvas-bottom-dock" aria-label="图片编辑工具">
             {[
-              ["上传", "canvas-dock-upload.svg"],
               ["移动", "canvas-dock-move.svg"],
               ["局部重绘", "canvas-dock-redraw.svg"],
-              ["擦除内容", "canvas-dock-erase.svg"],
-              ["高清", "canvas-dock-hd.svg"],
-              ["修改文字", "canvas-dock-text.svg"],
+              ["擦除", "canvas-dock-erase.svg"],
+              ["高清画质", "canvas-dock-hd.svg"],
+              ["扩图", "canvas-dock-text.svg"],
               ["裁剪", "canvas-dock-color.svg"],
               ["下载", "canvas-dock-download.svg"],
               ["预览", "canvas-dock-preview.svg"],
             ].map(([label, icon], i) => (
               <React.Fragment key={label}>
-                {i === 7 && <i />}
+                {i === 6 && <i />}
                 <button
                   className={canvasTool === label ? "active" : ""}
                   aria-label={label}

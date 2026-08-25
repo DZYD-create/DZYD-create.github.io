@@ -8863,3 +8863,18 @@ button > img {
 .generation-page>.generation-composer.new-creation-composer footer>button[data-popover-trigger]:not(.new-upload){cursor:pointer!important;transition:background .18s ease,color .18s ease,box-shadow .18s ease!important}
 .generation-page>.generation-composer.new-creation-composer footer>button[data-popover-trigger]:not(.new-upload):hover,.generation-page>.generation-composer.new-creation-composer footer>button[data-popover-trigger]:not(.new-upload):focus-visible{background:#eeefff!important;color:#6558dc!important;box-shadow:inset 0 0 0 1px #c8c2f6!important;outline:0!important}
 .generation-page>.generation-composer.new-creation-composer footer>button[data-popover-trigger]:not(.new-upload):hover img{filter:brightness(0) saturate(100%) invert(39%) sepia(54%) saturate(1519%) hue-rotate(218deg)!important}
+
+/* 底部八项工具使用与焦点编辑一致的悬浮提示。 */
+.canvas-bottom-dock>button{position:relative!important;overflow:visible!important}
+.canvas-bottom-dock>button::after{content:attr(aria-label);position:absolute;z-index:80;left:50%;bottom:calc(100% + 9px);transform:translate(-50%,4px);height:26px;padding:0 10px;border-radius:8px;background:#f1edff;color:#7559e8;box-shadow:0 5px 14px rgba(103,82,218,.13);font:400 12px/26px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif;white-space:nowrap;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .16s ease,transform .18s ease,visibility .16s ease}
+.canvas-bottom-dock>button:hover::after,.canvas-bottom-dock>button:focus-visible::after{opacity:1;visibility:visible;transform:translate(-50%,0)}
+
+/* 局部重绘：图片上方横向工具框。 */
+.canvas-redraw-toolbar{position:absolute;z-index:72;width:482px;height:54px;transform:translateX(-50%);padding:6px 10px;display:flex;align-items:center;gap:7px;border:1px solid rgba(116,114,255,.28);border-radius:27px;background:rgba(34,36,45,.96);box-shadow:0 12px 30px rgba(27,30,46,.24);backdrop-filter:blur(12px)}
+.canvas-redraw-toolbar>button{flex:0 0 40px;width:40px;height:40px;padding:8px;border:0;border-radius:20px;background:transparent;color:#fff;display:grid;place-items:center;cursor:pointer;transition:background .18s ease,transform .18s ease}
+.canvas-redraw-toolbar>button:hover,.canvas-redraw-toolbar>button.active{background:linear-gradient(135deg,#5e71ff,#9a76ef);transform:translateY(-1px)}
+.canvas-redraw-toolbar>.redraw-close{font-size:24px;line-height:1;color:#b8bdc9;background:#2d3039}
+.canvas-redraw-toolbar>button img{width:24px;height:24px;filter:brightness(0) invert(1)}
+.canvas-redraw-toolbar>i{flex:0 0 1px;width:1px;height:28px;background:rgba(255,255,255,.14);margin:0 2px}
+.canvas-redraw-toolbar>.redraw-brush-small{width:22px;height:22px;filter:brightness(0) invert(1)}
+.canvas-redraw-toolbar>input{width:92px;accent-color:#8c7aff;cursor:pointer}
