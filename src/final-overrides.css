@@ -8666,3 +8666,17 @@ button > img {
 /* 主侧栏悬浮态统一为工作台的浅蓝底与蓝紫图标。 */
 .rail-items button:hover{background:#f3f7ff!important;color:#2888ff!important}
 .rail-items button:hover .nav-glyph>img{filter:brightness(0) saturate(100%) invert(49%) sepia(97%) saturate(2748%) hue-rotate(207deg) brightness(103%) contrast(101%)!important}
+
+/* 历史与素材库使用完全一致的图片卡片规格。 */
+.history-cards,.asset-subject-grid{grid-template-columns:repeat(4,minmax(180px,1fr))!important;gap:20px!important}
+.history-record-preview,.asset-subject-card>div{height:224px!important;border-radius:12px!important;background:#f3f4f6!important;overflow:hidden!important}
+.history-record-preview>img,.asset-subject-card>div>img{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:12px!important}
+.history-create-record .history-record-preview,.asset-subject-card.create>div{border:0!important;background:#f1f2f4!important;display:grid!important;place-items:center!important}
+
+/* 右侧固定图标移除后，滚动终点延伸到按钮右侧。 */
+.new-work{--new-work-travel:136px;justify-content:flex-start!important}
+.new-work>span{margin-right:0!important}
+.new-work>b{display:none!important}
+
+/* 恢复最初的 GIF 打招呼，不叠加额外旋转。 */
+.new-creation-intro>img{animation:none!important;transform:none!important}

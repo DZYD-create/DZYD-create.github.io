@@ -517,6 +517,7 @@ function GenerationPage({
         className={`generation-thread ${!preparing && !generating && !generated ? "idle" : ""}`}
       >
         {Array.from({ length: resultRound + 1 }, (_, round) => {
+          if (deletedRounds.includes(round)) return null;
           const latest = round === resultRound;
           const isPreparing = latest && preparing;
           const isGenerating = latest && generating;
@@ -553,8 +554,6 @@ function GenerationPage({
                     <div className="ai-generating-progress"><span>✦</span><div><i /></div></div>
                   </div>
                 </div>
-              ) : deletedRounds.includes(round) ? (
-                <div className="generation-round-deleted">本轮生成的 4 张图片已删除</div>
               ) : (
                 <div className={`generated-gallery ${isGenerating ? "loading" : ""}`}>
                   {[...samples, ...samples]
@@ -570,7 +569,7 @@ function GenerationPage({
                     ))}
                 </div>
               )}
-              {!deletedRounds.includes(round) && (!latest || (!preparing && !generating && generated)) && (
+              {(!latest || (!preparing && !generating && generated)) && (
                 <div className="generation-result-actions">
                   <button
                     className="action-edit"
@@ -610,7 +609,7 @@ function GenerationPage({
               ×
             </button>
             <h2 id="delete-dialog-title">确认删除</h2>
-            <p>删除的历史记录将无法找回</p>
+            <p>该轮请求与生成图片删除后将无法找回</p>
             <footer>
               <button className="generation-delete-cancel" onClick={() => setDeleteOpen(false)}>
                 取消
@@ -745,9 +744,6 @@ function StudioSidebar({
     <aside className="conversation-panel">
       <button className="new-work" onClick={onNewWork}>
         <img src="/assets/creation-ai.svg" /> <span>新建创作</span>
-        <b>
-          <img src="/assets/new.svg" />
-        </b>
       </button>
       <label className="search conversation-search">
         <img src="/assets/search.svg" />
@@ -830,7 +826,7 @@ function NewCreationPage({
   const [greetingFinished, setGreetingFinished] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    const timer = window.setTimeout(() => setGreetingFinished(true), 4200);
+    const timer = window.setTimeout(() => setGreetingFinished(true), 1100);
     return () => window.clearTimeout(timer);
   }, []);
   useEffect(() => {
@@ -854,8 +850,7 @@ function NewCreationPage({
       </header>
       <div className="new-creation-intro">
         <img
-          className={greetingFinished ? "greeting-finished" : "greeting-waving"}
-          src="/assets/dog-greeting-peak.png"
+          src={greetingFinished ? "/assets/dog-greeting-peak.png" : "/assets/dog-greeting-public.gif"}
           alt="打招呼的小狗"
         />
         <p>你好，我是你的 AI 设计助手</p>
