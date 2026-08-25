@@ -9055,3 +9055,23 @@ button > img {
 .generation-page>.generation-composer.new-creation-composer .new-upload-pop>button{position:static!important;inset:auto!important;width:150px!important;height:36px!important;min-height:36px!important;margin:0!important;padding:0 10px!important;border:0!important;border-radius:7px!important;background:#fff!important;color:#202432!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:9px!important;box-shadow:none!important;transform:none!important}
 .generation-page>.generation-composer.new-creation-composer .new-upload-pop>button:hover{background:#f2efff!important;color:#5549c7!important}
 .generation-page>.generation-composer.new-creation-composer .new-upload-pop>button img{width:16px!important;height:16px!important;filter:brightness(0)!important}
+
+/* 对话选中态仅使用简单填充，不显示描边或侧边标记。 */
+.conversation-history-scroll .history-row.active{background:#edecff!important;border-color:transparent!important;box-shadow:none!important;color:#4f49b8!important}
+.conversation-history-scroll .history-row.active strong{font-weight:500!important;color:#4f49b8!important}
+.conversation-history-scroll .history-row.active small{color:#8d88c8!important}
+
+/* 对话结果操作按钮统一悬浮态。 */
+.generation-result-actions>button{cursor:pointer!important;transition:background .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease,transform .18s ease!important}
+.generation-result-actions>button:hover,.generation-result-actions>button:focus-visible{background:#edecff!important;border-color:#aaa0f2!important;color:#5749c8!important;box-shadow:0 5px 14px rgba(91,74,196,.13)!important;transform:translateY(-1px)!important;outline:0!important}
+.generation-result-actions>button:hover img{filter:brightness(0) saturate(100%) invert(36%) sepia(69%) saturate(1264%) hue-rotate(219deg)!important}
+
+/* 对话资产库与首页资产库采用同一张卡片规格和文字布局。 */
+.generation-page>.generation-composer.new-creation-composer .home-asset-popover.figma-composer-assets{height:326px!important;padding:13px 18px!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid{height:164px!important;grid-template-columns:repeat(3,142px)!important;align-items:start!important;overflow:visible!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid>button{width:142px!important;height:164px!important;padding:7px!important;background:#fff!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid>button.active{background:#edecff!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid>button>span{width:126px!important;height:112px!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid strong{display:block!important;height:18px!important;margin:4px 0 0!important;font-size:12px!important;line-height:18px!important;color:#202436!important;overflow:hidden!important;white-space:nowrap!important;text-overflow:ellipsis!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid small{display:block!important;font-size:9px!important;line-height:13px!important;color:#98a2b3!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets>footer{bottom:10px!important}
