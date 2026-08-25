@@ -5,6 +5,9 @@ dist/
 *.tsbuildinfo
 *.tar.gz
 work/
+.tmp-isogit/
+.tmp-sites-push.mjs
+.npm-cache/_cacache/
 public/assets/dog-thinking.gif
 public/assets/dog-complete.gif
 public/assets/dog-pointing-stars.gif

@@ -460,6 +460,8 @@ function GenerationPage({
   const composerInput = useRef<HTMLTextAreaElement>(null);
   const [progress, setProgress] = useState(generating ? 0 : 100);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteRound, setDeleteRound] = useState<number | null>(null);
+  const [deletedRounds, setDeletedRounds] = useState<number[]>([]);
   const [resultRound, setResultRound] = useState(0);
   const [roundPrompts, setRoundPrompts] = useState([
     prompt || "生成夏日新品直播海报，突出新品卖点，风格清爽明亮。",
@@ -551,6 +553,8 @@ function GenerationPage({
                     <div className="ai-generating-progress"><span>✦</span><div><i /></div></div>
                   </div>
                 </div>
+              ) : deletedRounds.includes(round) ? (
+                <div className="generation-round-deleted">本轮生成的 4 张图片已删除</div>
               ) : (
                 <div className={`generated-gallery ${isGenerating ? "loading" : ""}`}>
                   {[...samples, ...samples]
@@ -566,7 +570,7 @@ function GenerationPage({
                     ))}
                 </div>
               )}
-              {(!latest || (!preparing && !generating && generated)) && (
+              {!deletedRounds.includes(round) && (!latest || (!preparing && !generating && generated)) && (
                 <div className="generation-result-actions">
                   <button
                     className="action-edit"
@@ -581,7 +585,7 @@ function GenerationPage({
                     <img src="/assets/figma-redo.svg" />再次生成
                   </button>
                   <button className="action-more" aria-label={`第 ${round + 1} 轮更多`}>•••</button>
-                  <button className="batch-delete" onClick={() => setDeleteOpen(true)}>
+                  <button className="batch-delete" onClick={() => { setDeleteRound(round); setDeleteOpen(true); }}>
                     <span className="batch-delete-icon" />批量删除
                   </button>
                 </div>
@@ -611,7 +615,11 @@ function GenerationPage({
               <button className="generation-delete-cancel" onClick={() => setDeleteOpen(false)}>
                 取消
               </button>
-              <button className="generation-delete-confirm" onClick={onDeleteConversation}>
+              <button className="generation-delete-confirm" onClick={() => {
+                if (deleteRound !== null) setDeletedRounds((items) => items.includes(deleteRound) ? items : [...items, deleteRound]);
+                setDeleteOpen(false);
+                setDeleteRound(null);
+              }}>
                 删除
               </button>
             </footer>
@@ -3374,6 +3382,9 @@ function Canvas({
           >
             <img src="/assets/canvas-nav-folder.svg" />
           </button>
+          <button data-popover-trigger className={mode === "assets" ? "active" : ""} aria-label="素材库" onClick={() => switchMode("assets")}>
+            <img src="/assets/nav-assets.svg" />
+          </button>
           <button
             data-popover-trigger
             className={mode === "comments" ? "active" : ""}
@@ -4640,7 +4651,7 @@ function History({
   onBack: () => void;
   onCanvas: () => void;
 }) {
-  const [tab, setTab] = useState<"subject" | "canvas">("subject");
+  const [tab] = useState<"subject" | "canvas">("canvas");
   const [popup, setPopup] = useState<"filter" | "time" | "sort" | null>(null);
   const [filter, setFilter] = useState("操作");
   const [time, setTime] = useState("全部");
@@ -4678,26 +4689,7 @@ function History({
       </div>
       <div className="history-workspace">
         <div className="history-top-row">
-          <div className="history-tabs">
-            <button
-              className={tab === "subject" ? "active" : ""}
-              onClick={(event) => {
-                event.stopPropagation();
-                setTab("subject");
-              }}
-            >
-              主体
-            </button>
-            <button
-              className={tab === "canvas" ? "active" : ""}
-              onClick={(event) => {
-                event.stopPropagation();
-                setTab("canvas");
-              }}
-            >
-              画布
-            </button>
-          </div>
+          <div className="history-tabs"><button className="active">画布</button></div>
           <div className="history-top-actions">
             <label className="history-zoom">
               <input
@@ -4975,7 +4967,12 @@ function Assets({
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploaded, setUploaded] = useState<{ name: string; url: string }[]>([]);
-  const [tab, setTab] = useState<"all" | "folders">("all");
+  const [tab, setTab] = useState<"subject" | "assets">("subject");
+  const [subjectOpen, setSubjectOpen] = useState(false);
+  const [subjectName, setSubjectName] = useState("");
+  const [subjectPreview, setSubjectPreview] = useState<string | null>(null);
+  const [subjects, setSubjects] = useState(["夏日新品预热海报", "课程价格板设计", "新品种草海报", "直播间活动主视觉"]);
+  const subjectFile = useRef<HTMLInputElement>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [folderMenu, setFolderMenu] = useState(false);
   useEffect(() => {
@@ -4988,7 +4985,7 @@ function Assets({
   }, []);
   const addFolder = () => {
     setFolders([...folders, `新建文件夹 ${folders.length + 1}`]);
-    setTab("folders");
+    setTab("assets");
     setAddOpen(false);
     setFolderMenu(false);
   };
@@ -5026,24 +5023,23 @@ function Assets({
       </header>
       <nav className="asset-page-tabs">
         <button
-          className={tab === "all" ? "active" : ""}
+          className={tab === "subject" ? "active" : ""}
           onClick={() => {
-            setTab("all");
+            setTab("subject");
             setFolderMenu(false);
           }}
         >
-          全部
+          主体
         </button>
         <button
-          data-popover-trigger
-          className={tab === "folders" ? "active" : ""}
+          className={tab === "assets" ? "active" : ""}
           onClick={() => {
-            setTab("folders");
-            setFolderMenu((v) => !v);
+            setTab("assets");
+            setFolderMenu(false);
             setAddOpen(false);
           }}
         >
-          文件夹
+          素材
         </button>
       </nav>
       {addOpen && (
@@ -5080,7 +5076,16 @@ function Assets({
           </button>
         </div>
       )}
-      {empty ? (
+      {tab === "subject" ? (
+        <div className="asset-subject-grid">
+          <button className="asset-subject-card create" onClick={() => { setSubjectName(""); setSubjectPreview(null); setSubjectOpen(true); }}><div>＋</div><strong>新建主体</strong></button>
+          {subjects.map((name, i) => (
+            <button className="asset-subject-card" key={name} onClick={() => { setSubjectName(name); setSubjectPreview(samples[i % samples.length]); setSubjectOpen(true); }}>
+              <div><img src={samples[i % samples.length]} alt={name} /></div><strong>{name}</strong><small>主体 · 最近修改</small>
+            </button>
+          ))}
+        </div>
+      ) : empty ? (
         <div className="asset-empty">
           <img src="/assets/dog-search-none.png" />
           <p>暂无内容，快去创建吧</p>
@@ -5111,6 +5116,22 @@ function Assets({
         accept="image/*"
         onChange={(e) => uploadFile(e.target.files?.[0])}
       />
+      {subjectOpen && (
+        <div className="history-subject-backdrop">
+          <section className="history-subject-dialog" role="dialog" aria-modal="true" aria-labelledby="asset-subject-title">
+            <header><h2 id="asset-subject-title">设置主体 <small>ⓘ</small></h2><button aria-label="关闭" onClick={() => setSubjectOpen(false)}>×</button></header>
+            <label>参考主体 <b>*</b></label>
+            <div className={`history-subject-upload ${subjectPreview ? "has-preview" : ""}`}>
+              {subjectPreview ? <><img src={subjectPreview} alt="主体预览" /><button aria-label="上传替换主体图片" onClick={() => subjectFile.current?.click()}>▧＋</button></> : <><span className="history-upload-symbol">⇧</span><p>上传主图，将素材拖拽至此处</p><button onClick={() => subjectFile.current?.click()}>⇧ 从本地添加</button></>}
+            </div>
+            <label>名称 <b>*</b></label>
+            <div className="history-subject-input"><input maxLength={20} value={subjectName} onChange={(e) => setSubjectName(e.target.value)} placeholder="请输入名称" /><span>{subjectName.length}/20</span></div>
+            <label>描述</label><textarea placeholder="请输入描述" />
+            <footer><button disabled={!subjectName.trim() || !subjectPreview} onClick={() => { const name = subjectName.trim(); if (!subjects.includes(name)) setSubjects((items) => [name, ...items]); setSubjectOpen(false); }}>保存</button></footer>
+            <input ref={subjectFile} hidden type="file" accept="image/*" onChange={(e) => { const file=e.target.files?.[0]; if(file) setSubjectPreview(URL.createObjectURL(file)); e.currentTarget.value=""; }} />
+          </section>
+        </div>
+      )}
     </section>
   );
 }
