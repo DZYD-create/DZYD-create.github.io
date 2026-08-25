@@ -8795,3 +8795,18 @@ button > img {
 .theme-dark .rail .theme-picker>button{color:#f2f4fa!important}
 .theme-dark .theme-picker img:not(.theme-check){filter:brightness(0) invert(1)}
 .theme-dark img{opacity:.96}
+
+/* 最终校正：首页详情左右两栏无接缝，操作按钮固定在右栏底部。 */
+.template-detail-image{position:relative!important;z-index:2!important;margin-right:-2px!important;padding:0!important;border:0!important;outline:0!important;box-shadow:0 22px 60px rgba(16,20,35,.18)!important}
+.template-detail-image img{position:absolute!important;inset:-3px!important;width:calc(100% + 6px)!important;height:calc(100% + 6px)!important;margin:0!important;border:0!important;outline:0!important;border-radius:23px 0 0 23px!important;transform:none!important}
+.template-detail-info{position:relative!important;z-index:1!important;display:flex!important;flex-direction:column!important;overflow:auto!important}
+.template-detail-use{flex:0 0 42px!important;margin-top:auto!important;transform:translateY(8px)!important}
+
+/* 最终校正：比例图形和文字作为一个整体在每个按钮正中央，不受旧定位影响。 */
+.size-selector-popover .ratio-grid{align-items:stretch!important;justify-items:stretch!important;align-content:center!important}
+.size-selector-popover .ratio-grid button{position:relative!important;display:grid!important;grid-template-rows:17px 13px!important;place-content:center!important;place-items:center!important;align-content:center!important;justify-content:center!important;gap:1px!important;padding:0!important;text-align:center!important;line-height:12px!important}
+.size-selector-popover .ratio-grid button i{position:static!important;inset:auto!important;display:block!important;margin:0 auto!important;transform:none!important;align-self:center!important;justify-self:center!important}
+.size-selector-popover .ratio-grid button:last-child{display:grid!important;grid-template-rows:1fr!important;place-items:center!important;padding:0!important}
+.canvas-ratio-grid{align-items:stretch!important;justify-items:stretch!important;align-content:center!important}
+.canvas-ratio-grid>button{display:grid!important;grid-template-rows:17px 13px!important;place-content:center!important;place-items:center!important;gap:1px!important;padding:0!important}
+.canvas-ratio-grid>button .ratio-shape,.canvas-ratio-grid>button small{position:static!important;inset:auto!important;margin:0!important;transform:none!important}
