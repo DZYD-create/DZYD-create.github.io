@@ -4962,7 +4962,8 @@ function Assets({
   const [tab, setTab] = useState<"subject" | "assets">("subject");
   const [subjectOpen, setSubjectOpen] = useState(false);
   const [subjectName, setSubjectName] = useState("");
-  const [subjectPreview, setSubjectPreview] = useState<string | null>(null);
+  const [subjectImages, setSubjectImages] = useState<string[]>([]);
+  const [fanProgress, setFanProgress] = useState(0);
   const [subjects, setSubjects] = useState(["夏日新品预热海报", "课程价格板设计", "新品种草海报", "直播间活动主视觉"]);
   const subjectFile = useRef<HTMLInputElement>(null);
   const [addOpen, setAddOpen] = useState(false);
@@ -5070,9 +5071,9 @@ function Assets({
       )}
       {tab === "subject" ? (
         <div className="asset-subject-grid">
-          <button className="asset-subject-card create" onClick={() => { setSubjectName(""); setSubjectPreview(null); setSubjectOpen(true); }}><div>＋</div><strong>新建主体</strong></button>
+          <button className="asset-subject-card create" onClick={() => { setSubjectName(""); setSubjectImages([]); setFanProgress(0); setSubjectOpen(true); }}><div>＋</div><strong>新建主体</strong></button>
           {subjects.map((name, i) => (
-            <button className="asset-subject-card" key={name} onClick={() => { setSubjectName(name); setSubjectPreview(samples[i % samples.length]); setSubjectOpen(true); }}>
+            <button className="asset-subject-card" key={name} onClick={() => { setSubjectName(name); setSubjectImages([samples[i % samples.length], samples[(i + 1) % samples.length], samples[(i + 2) % samples.length]]); setFanProgress(0); setSubjectOpen(true); }}>
               <div><img src={samples[i % samples.length]} alt={name} /></div><strong>{name}</strong><small>主体 · 最近修改</small>
             </button>
           ))}
@@ -5113,14 +5114,14 @@ function Assets({
           <section className="history-subject-dialog" role="dialog" aria-modal="true" aria-labelledby="asset-subject-title">
             <header><h2 id="asset-subject-title">设置主体 <small>ⓘ</small></h2><button aria-label="关闭" onClick={() => setSubjectOpen(false)}>×</button></header>
             <label>参考主体 <b>*</b></label>
-            <div className={`history-subject-upload ${subjectPreview ? "has-preview" : ""}`}>
-              {subjectPreview ? <><img src={subjectPreview} alt="主体预览" /><button aria-label="上传替换主体图片" onClick={() => subjectFile.current?.click()}>▧＋</button></> : <><span className="history-upload-symbol">⇧</span><p>上传主图，将素材拖拽至此处</p><button onClick={() => subjectFile.current?.click()}>⇧ 从本地添加</button></>}
+            <div className={`history-subject-upload ${subjectImages.length ? "has-preview" : ""}`}>
+              {subjectImages.length ? <><div className="subject-fan" onPointerMove={(event) => { const box=event.currentTarget.getBoundingClientRect(); setFanProgress(Math.max(0,Math.min(1,(event.clientX-box.left)/box.width))); }} onPointerLeave={() => setFanProgress(0)}>{subjectImages.map((src,index)=><img key={`${src}-${index}`} src={src} alt={`主体参考图 ${index+1}`} style={{transform:`translateX(${index*(16+fanProgress*58)}px) translateY(${fanProgress && index ? -8-(index%2)*5 : 0}px) rotate(${(index-(subjectImages.length-1)/2)*(6-3*fanProgress)}deg)`,zIndex:index+1}} />)}</div><button aria-label="添加新的主体图片" onClick={() => subjectFile.current?.click()}>▧＋</button></> : <><span className="history-upload-symbol">⇧</span><p>上传主图，将素材拖拽至此处</p><button onClick={() => subjectFile.current?.click()}>⇧ 从本地添加</button></>}
             </div>
             <label>名称 <b>*</b></label>
             <div className="history-subject-input"><input maxLength={20} value={subjectName} onChange={(e) => setSubjectName(e.target.value)} placeholder="请输入名称" /><span>{subjectName.length}/20</span></div>
             <label>描述</label><textarea placeholder="请输入描述" />
-            <footer><button disabled={!subjectName.trim() || !subjectPreview} onClick={() => { const name = subjectName.trim(); if (!subjects.includes(name)) setSubjects((items) => [name, ...items]); setSubjectOpen(false); }}>保存</button></footer>
-            <input ref={subjectFile} hidden type="file" accept="image/*" onChange={(e) => { const file=e.target.files?.[0]; if(file) setSubjectPreview(URL.createObjectURL(file)); e.currentTarget.value=""; }} />
+            <footer><button disabled={!subjectName.trim() || !subjectImages.length} onClick={() => { const name = subjectName.trim(); if (!subjects.includes(name)) setSubjects((items) => [name, ...items]); setSubjectOpen(false); }}>保存</button></footer>
+            <input ref={subjectFile} hidden multiple type="file" accept="image/*" onChange={(e) => { const files=Array.from(e.target.files || []); if(files.length) setSubjectImages((items) => [...items,...files.map((file)=>URL.createObjectURL(file))]); e.currentTarget.value=""; }} />
           </section>
         </div>
       )}

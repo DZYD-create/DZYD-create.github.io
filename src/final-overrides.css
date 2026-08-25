@@ -8694,3 +8694,18 @@ button > img {
 .new-work>img,.new-work::before{animation-timing-function:ease-in-out!important}
 .new-work>span{opacity:1!important;animation:new-work-title-sync 4.8s ease-in-out infinite!important}
 @keyframes new-work-title-sync{0%,6%{clip-path:inset(0 0 0 0)}27%,69%{clip-path:inset(0 0 0 100%)}90%,100%{clip-path:inset(0 0 0 0)}}
+
+/* 对话记录独立滚动，标题、侧栏和底部输入区保持固定。 */
+.generation-page{position:relative!important;height:calc(100vh - 56px)!important;min-height:0!important;overflow:hidden!important;padding:0!important}
+.generation-header{position:relative;z-index:20}
+.generation-thread{position:absolute!important;inset:60px 0 206px!important;width:auto!important;max-width:none!important;margin:0!important;padding:28px max(24px,calc((100% - 920px)/2)) 44px!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain;scrollbar-gutter:stable}
+.generation-page>.generation-composer.new-creation-composer{position:absolute!important}
+
+/* 清除全局流光描边遗留，归位时按钮矩形绝不参与动画。 */
+.new-work::after{inset:auto!important;right:auto!important;bottom:auto!important;padding:0!important;border:0!important;border-radius:0!important;background:none!important;background-size:auto!important;-webkit-mask:none!important;mask:none!important;box-shadow:none!important}
+
+/* 多主体参考图：容器贴图，默认扇形叠放，指针向右时逐张跳动展开。 */
+.history-subject-upload.has-preview{grid-template-columns:minmax(0,1fr) 100px!important;height:306px!important;background:#f1f1f2!important}
+.history-subject-upload.has-preview>.subject-fan{position:relative;width:100%;height:306px;overflow:hidden;background:#c7c1c3}
+.subject-fan>img{position:absolute;left:10px;top:8px;width:calc(100% - 70px);height:290px;object-fit:cover;border-radius:10px;box-shadow:0 8px 22px rgba(26,24,35,.18);transform-origin:50% 92%;transition:transform .22s cubic-bezier(.2,.8,.25,1),box-shadow .22s ease}
+.subject-fan:hover>img{box-shadow:0 12px 28px rgba(26,24,35,.24)}
