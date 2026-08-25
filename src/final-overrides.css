@@ -9117,3 +9117,11 @@ button > img {
 .asset-context-menu>button:hover>span{color:#6659e8!important}
 .asset-context-menu>.primary-action{background:#f0edff!important;color:#7565ef!important}
 .asset-context-menu>.primary-action>span{color:#7565ef!important;font-size:30px!important;font-weight:300!important}
+
+/* 素材树文件改为非按钮容器，确保双击后的紫色输入框稳定获得焦点。 */
+.asset-tree>.asset-tree-entry{height:28px;margin-left:52px;display:grid;grid-template-columns:26px minmax(0,1fr);align-items:center;gap:10px;padding:1px 4px;border-radius:7px;text-align:left;cursor:pointer;color:#4b5565}
+.asset-tree>.asset-tree-entry:hover,.asset-tree>.asset-tree-entry.selected{background:#f0edff;color:#5549c7}
+.asset-tree>.asset-tree-entry>img{width:26px;height:26px;object-fit:cover;border-radius:7px;background:#eef0f5}
+.asset-tree>.asset-tree-entry>span{font-size:14px;color:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.asset-inline-rename{border:2px solid #806af2!important;color:#332a7b!important;box-shadow:0 0 0 2px rgba(128,106,242,.12)!important}
+.asset-inline-rename::selection{background:#806af2;color:#fff}

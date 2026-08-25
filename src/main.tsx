@@ -67,6 +67,7 @@ function App() {
   const [tool, setTool] = useState<EditorTool | null>(null);
   const [canvasImage, setCanvasImage] = useState<string | null>(null);
   const [canvasImageName, setCanvasImageName] = useState("AI 视觉创作 · 未命名项目");
+  const [pendingCanvasAssets, setPendingCanvasAssets] = useState<Array<{ name: string; url: string }>>([]);
   const [folders, setFolders] = useState(["品牌素材", "产品图片"]);
   const [accountOpen, setAccountOpen] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
@@ -404,6 +405,7 @@ function App() {
           <Canvas
             canvasImage={canvasImage}
             canvasImageName={canvasImageName}
+            initialAssets={pendingCanvasAssets}
             setCanvasImage={setCanvasImage}
             folders={folders}
             setFolders={setFolders}
@@ -444,8 +446,17 @@ function App() {
               setConversationCollapsed(false);
             }}
             onSendToCanvas={(item) => {
-              setCanvasImageName(item.name);
-              setCanvasImage(item.url);
+              const liveParts = [
+                { name: "直播间下贴片", url: "/assets/live-lower-strip.png" },
+                { name: "直播间上贴片背景", url: "/assets/live-upper-background.png" },
+                { name: "冯梦飞姓名贴", url: "/assets/live-name-feng.png" },
+                { name: "蝎子号姓名贴", url: "/assets/live-name-cohost.png" },
+                { name: "直播间上贴片标题", url: "/assets/live-upper-title.png" },
+              ];
+              const assets = item.category === "live" ? liveParts : [{ name: item.name, url: item.url }];
+              setPendingCanvasAssets(assets);
+              setCanvasImageName(assets[0].name);
+              setCanvasImage(assets[0].url);
               setSection("canvas");
             }}
           />
@@ -1947,6 +1958,7 @@ function Editor({
 function Canvas({
   canvasImage,
   canvasImageName,
+  initialAssets,
   setCanvasImage,
   folders,
   setFolders,
@@ -1956,6 +1968,7 @@ function Canvas({
 }: {
   canvasImage: string | null;
   canvasImageName: string;
+  initialAssets: Array<{ name: string; url: string }>;
   setCanvasImage: (v: string | null) => void;
   folders: string[];
   setFolders: (v: string[]) => void;
@@ -2024,16 +2037,10 @@ function Canvas({
     height: number;
   } | null>(null);
   const [canvasNodes, setCanvasNodes] = useState<CanvasNode[]>(() =>
-    canvasImage
-      ? [
-          {
-            id: 1,
-            url: canvasImage,
-            x: 0,
-            y: 0,
-            name: canvasImageName,
-          },
-        ]
+    initialAssets.length
+      ? initialAssets.map((asset,index)=>({id:index+1,url:asset.url,name:asset.name,x:(index%3-1)*390,y:Math.floor(index/3)*460}))
+      : canvasImage
+        ? [{ id: 1, url: canvasImage, x: 0, y: 0, name: canvasImageName }]
       : [],
   );
   const getNodeGeometry = (node: CanvasNode) => {
@@ -4683,12 +4690,17 @@ function AssetLibrary({
   const [folderNames, setFolderNames] = useState({ root: "素材库", teachers: "教师形象照", logo: "logo" });
   const [logoName, setLogoName] = useState("洋葱学园");
   const [collapsed, setCollapsed] = useState({ root: false, teachers: false, logo: false });
-  const renameWithPrompt = (key: string, current: string) => {
-    const value = window.prompt("请输入新名称", current)?.trim();
-    if (!value || value === current) return;
-    if (key.startsWith("teacher-")) { const index=Number(key.split("-")[1]); setTeachers((items)=>items.map((item,i)=>i===index?value:item)); }
-    else if (key === "logo-file") setLogoName(value);
-    else if (["root","teachers","logo"].includes(key)) setFolderNames((names)=>({...names,[key]:value}));
+  const [editing, setEditing] = useState<string | null>(null);
+  const [renameDraft, setRenameDraft] = useState("");
+  const beginInlineRename = (key: string, current: string) => { setEditing(key); setRenameDraft(current); };
+  const commitInlineRename = () => {
+    const value=renameDraft.trim(); const key=editing;
+    if (value && key) {
+      if (key.startsWith("teacher-")) { const index=Number(key.split("-")[1]); setTeachers((items)=>items.map((item,i)=>i===index?value:item)); }
+      else if (key === "logo-file") setLogoName(value);
+      else if (["root","teachers","logo"].includes(key)) setFolderNames((names)=>({...names,[key]:value}));
+    }
+    setEditing(null);
   };
   const visibleTeachers = teachers.map((name, index) => ({ name, index })).filter(({ name }) => name.toLowerCase().includes(query.trim().toLowerCase()));
   return (
@@ -4716,32 +4728,34 @@ function AssetLibrary({
         <div className="tree-row">
           <img className={`tree-chevron ${collapsed.root ? "collapsed" : ""}`} src="/assets/asset-chevron.svg" onClick={() => setCollapsed((value)=>({...value,root:!value.root}))} />
           <i className="folder-icon cyan" />
-          <b onDoubleClick={()=>renameWithPrompt("root",folderNames.root)}>{folderNames.root}</b>
+          {editing==="root"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("root",folderNames.root)}>{folderNames.root}</b>}
         </div>
         {!collapsed.root && <>
         <div className="tree-row expanded">
           <img className={`tree-chevron ${collapsed.teachers ? "collapsed" : ""}`} src="/assets/asset-chevron.svg" onClick={() => setCollapsed((value)=>({...value,teachers:!value.teachers}))} />
           <i className="folder-icon blue" />
-          <b onDoubleClick={()=>renameWithPrompt("teachers",folderNames.teachers)}>{folderNames.teachers}</b>
+          {editing==="teachers"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("teachers",folderNames.teachers)}>{folderNames.teachers}</b>}
         </div>
         {!collapsed.teachers && visibleTeachers.map(({name:v,index:i}) => (
-          <button
-            className={selected === i + 1 ? "selected" : ""}
+          <div
+            role="button"
+            tabIndex={0}
+            className={`asset-tree-entry ${selected === i + 1 ? "selected" : ""}`}
             onClick={() => onSelect(i + 1)}
-            onDoubleClick={(event) => { event.preventDefault(); event.stopPropagation(); renameWithPrompt(`teacher-${i}`, v); }}
+            onDoubleClick={(event) => { event.preventDefault(); event.stopPropagation(); beginInlineRename(`teacher-${i}`, v); }}
             key={v}
           >
             <img src={i === 1 ? "/assets/feng-mengfei.png" : `/assets/teacher-${i + 1}.svg`} />
-            <span>{v}</span>
-          </button>
+            {editing===`teacher-${i}`?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{v}</span>}
+          </div>
         ))}
         {!visibleTeachers.length && <p className="asset-search-empty">未找到“{query}”</p>}
         <div className="tree-row logo-row">
           <img className={`tree-chevron ${collapsed.logo ? "collapsed" : ""}`} src="/assets/asset-chevron.svg" onClick={() => setCollapsed((value)=>({...value,logo:!value.logo}))} />
           <i className="folder-icon green" />
-          <b onDoubleClick={()=>renameWithPrompt("logo",folderNames.logo)}>{folderNames.logo}</b>
+          {editing==="logo"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("logo",folderNames.logo)}>{folderNames.logo}</b>}
         </div>
-        {!collapsed.logo && <button className={`asset-logo-file ${selected===6?"selected":""}`} onClick={()=>onSelect(6)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();renameWithPrompt("logo-file",logoName);}}><img src="/assets/brand-logo-kcle.png" /><span>{logoName}</span></button>}
+        {!collapsed.logo && <div role="button" tabIndex={0} className={`asset-tree-entry asset-logo-file ${selected===6?"selected":""}`} onClick={()=>onSelect(6)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("logo-file",logoName);}}><img src="/assets/brand-logo-kcle.png" />{editing==="logo-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{logoName}</span>}</div>}
         </>}
       </div>
     </aside>
@@ -5173,7 +5187,7 @@ function Assets({
   folders: string[];
   setFolders: (v: string[]) => void;
   onBack: () => void;
-  onSendToCanvas: (item: { name: string; url: string }) => void;
+  onSendToCanvas: (item: { name: string; url: string; category?: "assets" | "live" }) => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploaded, setUploaded] = useState<{ name: string; url: string; category: "assets" | "live" }[]>([
