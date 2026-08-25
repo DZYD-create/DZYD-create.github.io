@@ -1963,6 +1963,9 @@ function Canvas({
   const [canvasTool, setCanvasTool] = useState("上传");
   const [redrawMode, setRedrawMode] = useState("画笔");
   const [redrawBrushSize, setRedrawBrushSize] = useState(48);
+  const [redrawStrokes, setRedrawStrokes] = useState<Array<{ nodeId: number; size: number; points: Array<{ x: number; y: number }> }>>([]);
+  const [activeRedrawStroke, setActiveRedrawStroke] = useState<{ nodeId: number; size: number; points: Array<{ x: number; y: number }> } | null>(null);
+  const [redrawCursor, setRedrawCursor] = useState<{ nodeId: number; x: number; y: number } | null>(null);
   const [imageMenu, setImageMenu] = useState<{ x: number; y: number } | null>(
     null,
   );
@@ -2373,6 +2376,16 @@ function Canvas({
     };
   }, []);
   useEffect(() => {
+    const undoRedraw = (event: KeyboardEvent) => {
+      if (canvasTool !== "局部重绘" || !(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== "z") return;
+      event.preventDefault();
+      setActiveRedrawStroke(null);
+      setRedrawStrokes((items) => items.slice(0, -1));
+    };
+    window.addEventListener("keydown", undoRedraw);
+    return () => window.removeEventListener("keydown", undoRedraw);
+  }, [canvasTool]);
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || !selection || dragStart) return;
     const clearSelection = (event: PointerEvent) => {
@@ -2434,7 +2447,7 @@ function Canvas({
         if (
           target.closest(
             'input,textarea,button,select,[contenteditable="true"],.canvas-node-prompt,.canvas-bottom-dock,.canvas-vertical-nav,.figma-zoom,.canvas-add-popover,.canvas-model-popover,.canvas-size-popover,.canvas-comment-panel,.figma-history-panel,.asset-library-panel,.canvas-search-modal,.canvas-crop-workspace',
-          )
+          ) && !target.closest(".canvas-placeholder-upload")
         )
           return;
         event.preventDefault();
@@ -3117,6 +3130,34 @@ function Canvas({
                         draggable={false}
                         onLoad={(event) => updateNodeImageSize(node.id, event.currentTarget.naturalWidth, event.currentTarget.naturalHeight)}
                       />
+                    )}
+                    {!node.placeholder && canvasTool === "局部重绘" && (
+                      <svg
+                        className="canvas-redraw-layer"
+                        viewBox={`0 0 ${getNodeGeometry(node).mediaWidth} ${getNodeGeometry(node).mediaHeight}`}
+                        onPointerDown={(event) => {
+                          if (redrawMode !== "画笔") return;
+                          event.preventDefault(); event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId);
+                          const box=event.currentTarget.getBoundingClientRect();
+                          const point={x:(event.clientX-box.left)/box.width*getNodeGeometry(node).mediaWidth,y:(event.clientY-box.top)/box.height*getNodeGeometry(node).mediaHeight};
+                          setActiveRedrawStroke({nodeId:node.id,size:redrawBrushSize,points:[point]}); setRedrawCursor({nodeId:node.id,...point});
+                        }}
+                        onPointerMove={(event) => {
+                          const box=event.currentTarget.getBoundingClientRect();
+                          const point={x:(event.clientX-box.left)/box.width*getNodeGeometry(node).mediaWidth,y:(event.clientY-box.top)/box.height*getNodeGeometry(node).mediaHeight};
+                          setRedrawCursor({nodeId:node.id,...point});
+                          if(event.buttons===1) setActiveRedrawStroke((stroke)=>stroke&&stroke.nodeId===node.id?{...stroke,points:[...stroke.points,point]}:stroke);
+                        }}
+                        onPointerUp={(event) => {
+                          event.stopPropagation();
+                          setActiveRedrawStroke((stroke)=>{if(stroke&&stroke.points.length>1)setRedrawStrokes((items)=>[...items,stroke]);return null;});
+                        }}
+                        onPointerLeave={() => setRedrawCursor(null)}
+                      >
+                        {redrawStrokes.filter((stroke)=>stroke.nodeId===node.id).map((stroke,index)=><polyline key={index} points={stroke.points.map((point)=>`${point.x},${point.y}`).join(" ")} strokeWidth={stroke.size} />)}
+                        {activeRedrawStroke?.nodeId===node.id&&<polyline points={activeRedrawStroke.points.map((point)=>`${point.x},${point.y}`).join(" ")} strokeWidth={activeRedrawStroke.size} />}
+                        {redrawCursor?.nodeId===node.id&&<circle className="redraw-cursor-ring" cx={redrawCursor.x} cy={redrawCursor.y} r={redrawBrushSize/2} />}
+                      </svg>
                     )}
                   </div>
                   <button
@@ -3917,7 +3958,7 @@ function Canvas({
             <img className="redraw-brush-small" src="/assets/figma-brush-small.svg" />
             <input aria-label="笔触大小" type="range" min="8" max="100" value={redrawBrushSize} onChange={(event) => setRedrawBrushSize(Number(event.target.value))} />
             <i />
-            <button aria-label="撤销"><img src="/assets/figma-undo.svg" /></button>
+            <button aria-label="撤销" onClick={() => setRedrawStrokes((items) => items.slice(0, -1))}><img src="/assets/figma-undo.svg" /></button>
             <button aria-label="重做"><img src="/assets/figma-redo.svg" /></button>
           </div>
         )}

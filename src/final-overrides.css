@@ -8878,3 +8878,13 @@ button > img {
 .canvas-redraw-toolbar>i{flex:0 0 1px;width:1px;height:28px;background:rgba(255,255,255,.14);margin:0 2px}
 .canvas-redraw-toolbar>.redraw-brush-small{width:22px;height:22px;filter:brightness(0) invert(1)}
 .canvas-redraw-toolbar>input{width:92px;accent-color:#8c7aff;cursor:pointer}
+
+/* 工具栏所有图标采用同一可视尺寸，覆盖旧的第二项放大规则。 */
+.canvas-bottom-dock>button,.canvas-bottom-dock>button:nth-of-type(2){width:46px!important;height:46px!important;padding:12px!important}
+.canvas-bottom-dock>button>img,.canvas-bottom-dock>button:nth-of-type(2)>img,.canvas-bottom-dock>button:first-child>img,.canvas-bottom-dock>button:nth-last-child(-n+2)>img{display:block!important;width:22px!important;height:22px!important;object-fit:contain!important}
+
+/* 局部重绘的真实笔触层与动态中空圆形光标。 */
+.canvas-node-media{position:relative}
+.canvas-redraw-layer{position:absolute;z-index:12;inset:0;width:100%;height:100%;overflow:hidden;touch-action:none;cursor:none}
+.canvas-redraw-layer polyline{fill:none;stroke:rgba(116,104,244,.34);stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.canvas-redraw-layer .redraw-cursor-ring{fill:rgba(255,255,255,.04);stroke:#49627b;stroke-width:1.4;vector-effect:non-scaling-stroke;pointer-events:none}
