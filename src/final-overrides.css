@@ -8641,3 +8641,28 @@ button > img {
 .asset-page-tabs button{width:96px;min-width:96px;height:42px;padding:0!important;border:1px solid transparent!important;border-radius:10px!important;background:#fff!important;color:#667085!important;display:grid;place-items:center}
 .asset-page-tabs button.active{background:#f4f4f4!important;border-color:#dedee0!important;color:#111827!important}
 .asset-page-tabs button.active::after{display:none!important}
+
+/* 主体已有图片：左侧完整预览，右侧独立添加入口。 */
+.history-subject-upload.has-preview{height:306px;display:grid;grid-template-columns:minmax(0,5fr) 100px;align-items:stretch;justify-content:stretch;border:0;border-radius:12px;background:#f3f3f5;overflow:hidden}
+.history-subject-upload.has-preview>img{width:100%;height:306px;object-fit:contain;background:#c7c1c3}
+.history-subject-upload.has-preview>button{width:100%;height:306px;margin:0;padding:0;border:0;border-left:1px solid #fff;border-radius:0;background:#f1f1f2;color:#16181d;font-size:25px;display:grid;place-items:center}
+
+/* 打招呼节奏：四秒完成两次缓慢挥手，随后停住。 */
+.new-creation-intro>img.greeting-waving{transform-origin:50% 82%;animation:greeting-two-slow-waves 4.2s ease-in-out both}
+.new-creation-intro>img.greeting-finished{animation:none;transform:rotate(0)}
+@keyframes greeting-two-slow-waves{0%,48%,100%{transform:rotate(0)}12%,36%,60%,84%{transform:rotate(-7deg)}24%,72%{transform:rotate(7deg)}}
+
+/* 新建创作：实体圆形遮罩逐字覆盖，不使用渐隐；归位后星光闪烁。 */
+.new-work{--new-work-travel:112px}
+.new-work>img{animation:new-work-icon-roll-fast 4.8s ease-in-out infinite!important}
+.new-work>span{opacity:1!important;animation:new-work-title-step 4.8s steps(4,end) infinite!important}
+.new-work::before{content:""!important;display:block!important;position:absolute;z-index:2;left:8px;top:7px;width:38px;height:38px;border-radius:50%;background:#f8f4ff;animation:new-work-mask-roll 4.8s ease-in-out infinite!important;pointer-events:none}
+.new-work::after{content:"✦  ✦"!important;display:block!important;position:absolute;z-index:6;left:5px;top:4px;color:#806af2;font-size:9px;letter-spacing:21px;white-space:nowrap;opacity:0;animation:new-work-return-stars 4.8s ease-in-out infinite!important;pointer-events:none}
+@keyframes new-work-icon-roll-fast{0%,6%{transform:translateX(0) rotate(0)}27%,69%{transform:translateX(var(--new-work-travel)) rotate(360deg)}90%,100%{transform:translateX(0) rotate(0)}}
+@keyframes new-work-mask-roll{0%,6%{transform:translateX(0)}27%,69%{transform:translateX(var(--new-work-travel))}90%,100%{transform:translateX(0)}}
+@keyframes new-work-title-step{0%,6%{clip-path:inset(0 0 0 0)}27%,69%{clip-path:inset(0 0 0 100%)}90%,100%{clip-path:inset(0 0 0 0)}}
+@keyframes new-work-return-stars{0%,88%{opacity:0;transform:scale(.5) rotate(0)}92%{opacity:1;transform:scale(1.25) rotate(12deg)}97%{opacity:.25;transform:scale(.85) rotate(-5deg)}100%{opacity:0;transform:scale(.65)}}
+
+/* 主侧栏悬浮态统一为工作台的浅蓝底与蓝紫图标。 */
+.rail-items button:hover{background:#f3f7ff!important;color:#2888ff!important}
+.rail-items button:hover .nav-glyph>img{filter:brightness(0) saturate(100%) invert(49%) sepia(97%) saturate(2748%) hue-rotate(207deg) brightness(103%) contrast(101%)!important}

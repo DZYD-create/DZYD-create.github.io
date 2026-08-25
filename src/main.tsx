@@ -830,7 +830,7 @@ function NewCreationPage({
   const [greetingFinished, setGreetingFinished] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    const timer = window.setTimeout(() => setGreetingFinished(true), 2200);
+    const timer = window.setTimeout(() => setGreetingFinished(true), 4200);
     return () => window.clearTimeout(timer);
   }, []);
   useEffect(() => {
@@ -854,11 +854,8 @@ function NewCreationPage({
       </header>
       <div className="new-creation-intro">
         <img
-          src={
-            greetingFinished
-              ? "/assets/dog-greeting-peak.png"
-              : "/assets/dog-greeting-public.gif"
-          }
+          className={greetingFinished ? "greeting-finished" : "greeting-waving"}
+          src="/assets/dog-greeting-peak.png"
           alt="打招呼的小狗"
         />
         <p>你好，我是你的 AI 设计助手</p>
