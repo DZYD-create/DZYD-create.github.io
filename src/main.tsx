@@ -4670,7 +4670,22 @@ function AssetLibrary({
 }) {
   const [scope, setScope] = useState<"个人" | "团队">("团队");
   const [query, setQuery] = useState("");
-  const teachers = ["以诺老师", "冯梦飞", "李颖", "憨爸", "临风"];
+  const [teachers, setTeachers] = useState(["以诺老师", "冯梦飞", "李颖", "憨爸", "临风"]);
+  const [folderNames, setFolderNames] = useState({ root: "素材库", teachers: "教师形象照", logo: "logo" });
+  const [logoName, setLogoName] = useState("KCLEcIKcmH");
+  const [collapsed, setCollapsed] = useState({ root: false, teachers: false, logo: false });
+  const [editing, setEditing] = useState<string | null>(null);
+  const [draft, setDraft] = useState("");
+  const beginRename = (key: string, value: string) => { setEditing(key); setDraft(value); };
+  const commitRename = () => {
+    const value = draft.trim();
+    if (value) {
+      if (editing?.startsWith("teacher-")) { const index=Number(editing.split("-")[1]); setTeachers((items)=>items.map((item,i)=>i===index?value:item)); }
+      else if (editing === "logo-file") setLogoName(value);
+      else if (editing && ["root","teachers","logo"].includes(editing)) setFolderNames((names)=>({...names,[editing]:value}));
+    }
+    setEditing(null);
+  };
   const visibleTeachers = teachers.map((name, index) => ({ name, index })).filter(({ name }) => name.toLowerCase().includes(query.trim().toLowerCase()));
   return (
     <aside className="asset-library-panel">
@@ -4695,31 +4710,34 @@ function AssetLibrary({
       <small className="folder-label">文件夹</small>
       <div className="asset-tree">
         <div className="tree-row">
-          <img className="tree-chevron" src="/assets/asset-chevron.svg" />
+          <img className={`tree-chevron ${collapsed.root ? "collapsed" : ""}`} src="/assets/asset-chevron.svg" onClick={() => setCollapsed((value)=>({...value,root:!value.root}))} />
           <i className="folder-icon cyan" />
-          <b>素材库</b>
+          {editing==="root"?<input className="asset-inline-rename" autoFocus value={draft} onChange={(e)=>setDraft(e.target.value)} onBlur={commitRename} onKeyDown={(e)=>{if(e.key==="Enter")commitRename();}}/>:<b onDoubleClick={()=>beginRename("root",folderNames.root)}>{folderNames.root}</b>}
         </div>
+        {!collapsed.root && <>
         <div className="tree-row expanded">
-          <img className="tree-chevron" src="/assets/asset-chevron.svg" />
+          <img className={`tree-chevron ${collapsed.teachers ? "collapsed" : ""}`} src="/assets/asset-chevron.svg" onClick={() => setCollapsed((value)=>({...value,teachers:!value.teachers}))} />
           <i className="folder-icon blue" />
-          <b>教师形象照</b>
+          {editing==="teachers"?<input className="asset-inline-rename" autoFocus value={draft} onChange={(e)=>setDraft(e.target.value)} onBlur={commitRename} onKeyDown={(e)=>{if(e.key==="Enter")commitRename();}}/>:<b onDoubleClick={()=>beginRename("teachers",folderNames.teachers)}>{folderNames.teachers}</b>}
         </div>
-        {visibleTeachers.map(({name:v,index:i}) => (
+        {!collapsed.teachers && visibleTeachers.map(({name:v,index:i}) => (
           <button
             className={selected === i + 1 ? "selected" : ""}
             onClick={() => onSelect(i + 1)}
             key={v}
           >
             <img src={i === 1 ? "/assets/feng-mengfei.png" : `/assets/teacher-${i + 1}.svg`} />
-            <span>{v}</span>
+            {editing===`teacher-${i}`?<input className="asset-inline-rename" autoFocus value={draft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setDraft(e.target.value)} onBlur={commitRename} onKeyDown={(e)=>{if(e.key==="Enter")commitRename();}}/>:<span onDoubleClick={(e)=>{e.stopPropagation();beginRename(`teacher-${i}`,v);}}>{v}</span>}
           </button>
         ))}
         {!visibleTeachers.length && <p className="asset-search-empty">未找到“{query}”</p>}
         <div className="tree-row logo-row">
-          <img className="tree-chevron" src="/assets/asset-chevron.svg" />
+          <img className={`tree-chevron ${collapsed.logo ? "collapsed" : ""}`} src="/assets/asset-chevron.svg" onClick={() => setCollapsed((value)=>({...value,logo:!value.logo}))} />
           <i className="folder-icon green" />
-          <b>logo</b>
+          {editing==="logo"?<input className="asset-inline-rename" autoFocus value={draft} onChange={(e)=>setDraft(e.target.value)} onBlur={commitRename} onKeyDown={(e)=>{if(e.key==="Enter")commitRename();}}/>:<b onDoubleClick={()=>beginRename("logo",folderNames.logo)}>{folderNames.logo}</b>}
         </div>
+        {!collapsed.logo && <button className="asset-logo-file"><img src="/assets/brand-logo-kcle.png" />{editing==="logo-file"?<input className="asset-inline-rename" autoFocus value={draft} onChange={(e)=>setDraft(e.target.value)} onBlur={commitRename} onKeyDown={(e)=>{if(e.key==="Enter")commitRename();}}/>:<span onDoubleClick={()=>beginRename("logo-file",logoName)}>{logoName}</span>}</button>}
+        </>}
       </div>
     </aside>
   );
@@ -5282,7 +5300,7 @@ function Assets({
             </button>
           ))}
         </div>
-      ) : empty ? (
+      ) : tab === "kt" || empty ? (
         <div className="asset-empty">
           <img src="/assets/dog-search-none.png" />
           <p>暂无内容，快去创建吧</p>
