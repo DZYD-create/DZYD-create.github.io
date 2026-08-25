@@ -8680,3 +8680,17 @@ button > img {
 
 /* 恢复最初的 GIF 打招呼，不叠加额外旋转。 */
 .new-creation-intro>img{animation:none!important;transform:none!important}
+
+/* 历史、素材库共用同一左侧基线与内容间距。 */
+.asset-page-header{padding-left:26px!important}
+.asset-page-tabs{margin-left:34px!important}
+.asset-subject-grid{padding:0 31px 50px 34px!important}
+.asset-subject-card,.history-record{align-self:start!important;margin-top:0!important}
+.asset-subject-card.create,.history-create-record{padding-top:0!important}
+
+/* 新建创作仅让图标、遮罩和文字协同移动，按钮边框保持静止。 */
+.new-work{animation:none!important;transform:none!important;box-shadow:none!important;outline:0!important;border:1px solid #f3c3f7!important}
+.new-work:hover,.new-work:focus,.new-work:active{animation:none!important;transform:none!important;box-shadow:none!important;outline:0!important}
+.new-work>img,.new-work::before{animation-timing-function:ease-in-out!important}
+.new-work>span{opacity:1!important;animation:new-work-title-sync 4.8s ease-in-out infinite!important}
+@keyframes new-work-title-sync{0%,6%{clip-path:inset(0 0 0 0)}27%,69%{clip-path:inset(0 0 0 100%)}90%,100%{clip-path:inset(0 0 0 0)}}
