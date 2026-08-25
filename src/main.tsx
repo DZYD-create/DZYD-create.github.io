@@ -615,7 +615,16 @@ function GenerationPage({
                 取消
               </button>
               <button className="generation-delete-confirm" onClick={() => {
-                if (deleteRound !== null) setDeletedRounds((items) => items.includes(deleteRound) ? items : [...items, deleteRound]);
+                if (deleteRound !== null && !deletedRounds.includes(deleteRound)) {
+                  const remainingRounds = resultRound + 1 - deletedRounds.length;
+                  if (remainingRounds <= 1) {
+                    setDeleteOpen(false);
+                    setDeleteRound(null);
+                    onDeleteConversation();
+                    return;
+                  }
+                  setDeletedRounds((items) => [...items, deleteRound]);
+                }
                 setDeleteOpen(false);
                 setDeleteRound(null);
               }}>
@@ -3375,7 +3384,7 @@ function Canvas({
             <img src="/assets/canvas-nav-folder.svg" />
           </button>
           <button data-popover-trigger className={mode === "assets" ? "active" : ""} aria-label="素材库" onClick={() => switchMode("assets")}>
-            <img src="/assets/nav-assets.svg" />
+            <img src="/assets/canvas-nav-assets-linear.svg" />
           </button>
           <button
             data-popover-trigger

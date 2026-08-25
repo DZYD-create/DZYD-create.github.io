@@ -8693,7 +8693,14 @@ button > img {
 .new-work:hover,.new-work:focus,.new-work:active{animation:none!important;transform:none!important;box-shadow:none!important;outline:0!important}
 .new-work>img,.new-work::before{animation-timing-function:ease-in-out!important}
 .new-work>span{opacity:1!important;animation:new-work-title-sync 4.8s ease-in-out infinite!important}
-@keyframes new-work-title-sync{0%,6%{clip-path:inset(0 0 0 0)}27%,69%{clip-path:inset(0 0 0 100%)}90%,100%{clip-path:inset(0 0 0 0)}}
+@keyframes new-work-title-sync{0%,12%{clip-path:inset(0 0 0 0)}27%,69%{clip-path:inset(0 0 0 100%)}88%,100%{clip-path:inset(0 0 0 0)}}
+
+/* Canvas assets uses a quiet linear icon; its open panel must float above the tool rail. */
+.canvas-vertical-nav button[aria-label="素材库"] img{width:22px;height:22px;color:#202432}
+.canvas-vertical-nav button[aria-label="素材库"].active img{filter:brightness(0) invert(1)}
+.canvas-vertical-nav{z-index:40!important}
+.asset-library-panel{z-index:60!important}
+.asset-library-panel .apply-popover,.apply-popover{z-index:61!important}
 
 /* 对话记录独立滚动，标题、侧栏和底部输入区保持固定。 */
 .generation-page{position:relative!important;height:calc(100vh - 56px)!important;min-height:0!important;overflow:hidden!important;padding:0!important}
