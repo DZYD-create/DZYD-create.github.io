@@ -8830,3 +8830,14 @@ button > img {
 .history-subject-upload.has-preview{display:grid!important;grid-template-columns:minmax(0,1fr) 100px!important;height:306px!important;padding:0!important;gap:0!important;overflow:hidden!important;border-radius:12px!important;background:#f1f1f2!important}
 .history-subject-upload.has-preview>img{position:static!important;width:100%!important;height:306px!important;margin:0!important;padding:0!important;object-fit:contain!important;border:0!important;border-radius:12px 0 0 12px!important;background:#c7c1c3!important;box-shadow:none!important;transform:none!important}
 .history-subject-upload.has-preview>button{position:static!important;width:100%!important;height:306px!important;margin:0!important;padding:0!important;border:0!important;border-left:1px solid #fff!important;border-radius:0 12px 12px 0!important;background:#f1f1f2!important;color:#16181d!important;font-size:25px!important;display:grid!important;place-items:center!important}
+
+/* 画布素材库：应用浮窗锚定在所选教师条目的右侧。 */
+.figma-infinite-canvas>.apply-popover{position:absolute!important;left:324px!important;right:auto!important;width:268px!important;height:174px!important;transform:none!important;z-index:65!important}
+.figma-infinite-canvas>.apply-popover::before{content:"";position:absolute;left:-8px;top:78px;width:16px;height:16px;background:#fff;border-left:1px solid #e6e9ef;border-bottom:1px solid #e6e9ef;transform:rotate(45deg);border-radius:2px}
+
+/* 素材库与历史使用完全相同的加高卡片像素和圆角。 */
+.asset-subject-grid,.history-cards{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:20px!important;padding-left:34px!important;padding-right:31px!important;align-items:start!important}
+.asset-subject-card,.history-record{width:100%!important;min-width:0!important;align-self:start!important}
+.asset-subject-card>div,.history-record-preview{width:100%!important;height:286px!important;min-height:286px!important;aspect-ratio:auto!important;margin:0!important;border-radius:12px!important;overflow:hidden!important;background:#f1f2f4!important}
+.asset-subject-card>div>img,.history-record-preview>img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;border-radius:12px!important}
+.asset-subject-card.create>div,.history-create-record>.history-record-preview{height:286px!important;min-height:286px!important;border-radius:12px!important;display:grid!important;place-items:center!important}

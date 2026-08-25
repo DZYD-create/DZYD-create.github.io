@@ -3746,7 +3746,7 @@ function Canvas({
             {selectedTeacher > 0 && (
               <div
                 className="apply-popover"
-                style={{ top: 331 + (selectedTeacher - 1) * 32 }}
+                style={{ top: 259 + (selectedTeacher - 1) * 32 }}
               >
                 <h3>教师形象照</h3>
                 <p>将选中的教师头像快速放入当前画布</p>
