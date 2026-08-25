@@ -8765,3 +8765,33 @@ button > img {
 .subject-thumbnails>button:hover{transform:translate(calc(var(--stack-index,0)*38px),calc(-50% + var(--stack-index,0)*10px - 5px))!important;box-shadow:9px 4px 22px rgba(0,0,0,.2)!important}
 .subject-thumbnails>button.active{visibility:hidden}
 .subject-thumbnails>button img{object-fit:cover!important;background:#fff!important}
+
+/* Figma 908:6 — 左下角主题选择浮窗。 */
+.theme-picker{position:fixed;z-index:3200;left:24px;bottom:72px;width:200px;height:105px;padding:8px 14px;display:flex;flex-direction:column;gap:4px;background:#fff;border-radius:10px;box-shadow:0 10px 24px rgba(0,0,0,.08),0 2px 8px rgba(107,122,153,.05)}
+.theme-picker::after{content:"";position:absolute;left:34px;bottom:-14px;width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-top:15px solid #fff}
+.rail .theme-picker>button{width:172px;height:30px;min-height:30px;padding:0!important;display:grid;grid-template-columns:22px 1fr 22px;align-items:center;gap:12px;border:0;border-radius:6px;background:transparent;color:#202432;text-align:left}
+.theme-picker>button:hover{background:#f5f7fb!important}
+.theme-picker>button>img,.theme-picker>button>i{width:22px!important;height:22px!important;margin:0!important}
+.theme-picker>button>span{display:block!important;font-size:15px!important;line-height:22px!important;white-space:nowrap}
+.theme-picker>button.active>span{color:transparent;background:linear-gradient(63deg,#2288ff .45%,#a683f8 99.55%);background-clip:text;-webkit-background-clip:text}
+.theme-picker .theme-check{width:22px!important;height:22px!important}
+
+/* 全站深色主题：保留品牌渐变，统一主要页面、浮层、输入与可读文字。 */
+.theme-dark{color:#f3f5fb!important;background:#111318!important;color-scheme:dark}
+.theme-dark .topbar,.theme-dark .rail,.theme-dark .conversation-panel,.theme-dark .project-bar,.theme-dark .canvas-toolbar,.theme-dark .editor-bar,.theme-dark .new-creation-header,.theme-dark .generation-header{background:#171a21!important;border-color:#30343e!important;color:#f4f6fb!important}
+.theme-dark .main,.theme-dark .studio-page,.theme-dark .new-creation-page,.theme-dark .generation-page,.theme-dark .library-page,.theme-dark .asset-page-figma,.theme-dark .history-page-figma,.theme-dark .editor,.theme-dark .figma-canvas-page{background:#111318!important;color:#f4f6fb!important}
+.theme-dark .studio-page{background:radial-gradient(circle at 65% 0,rgba(92,45,102,.28),transparent 30%),radial-gradient(circle at 20% 0,rgba(35,71,112,.32),transparent 35%),#111318!important}
+.theme-dark button,.theme-dark input,.theme-dark textarea,.theme-dark select{color:#f1f3f8}
+.theme-dark .rail button,.theme-dark .canvas-vertical-nav,.theme-dark .canvas-bottom-dock,.theme-dark .history-row,.theme-dark .asset-subject-card,.theme-dark .history-record,.theme-dark .template-detail-info,.theme-dark .composer,.theme-dark .generation-composer,.theme-dark .edit-panel,.theme-dark .canvas-drawer,.theme-dark .asset-library-panel,.theme-dark .figma-history-panel,.theme-dark .canvas-comment-panel,.theme-dark .figma-tool-modal,.theme-dark .popover,.theme-dark .model-selector-popover,.theme-dark .size-selector-popover,.theme-dark .canvas-size-popover,.theme-dark .home-asset-popover,.theme-dark .history-subject-dialog{background:#1b1e26!important;border-color:#343945!important;color:#f4f6fb!important}
+.theme-dark .rail button:hover,.theme-dark .rail button.active,.theme-dark .history-row:hover,.theme-dark .theme-picker>button:hover{background:#272c38!important}
+.theme-dark input,.theme-dark textarea,.theme-dark select,.theme-dark .search,.theme-dark .mini-search,.theme-dark .size-fields label,.theme-dark .canvas-size-fields span,.theme-dark .history-subject-input,.theme-dark .history-subject-dialog textarea{background:#242832!important;border-color:#3b414f!important;color:#f5f7fb!important}
+.theme-dark h1,.theme-dark h2,.theme-dark h3,.theme-dark h4,.theme-dark strong,.theme-dark b,.theme-dark p,.theme-dark label,.theme-dark dt,.theme-dark dd,.theme-dark small,.theme-dark span{border-color:#343945}
+.theme-dark .muted,.theme-dark small,.theme-dark .label,.theme-dark .panel-footer,.theme-dark .template-detail-date{color:#aeb5c3!important}
+.theme-dark .template-detail-page{background:rgba(4,6,10,.72)!important}
+.theme-dark .template-detail-image{background:#0c0e13!important}
+.theme-dark .figma-infinite-canvas,.theme-dark .infinite-canvas{background-color:#151820!important;background-image:radial-gradient(#39404d 1px,transparent 1px)!important}
+.theme-dark .theme-picker{background:#1b1e26!important;box-shadow:0 12px 30px rgba(0,0,0,.42)}
+.theme-dark .theme-picker::after{border-top-color:#1b1e26}
+.theme-dark .rail .theme-picker>button{color:#f2f4fa!important}
+.theme-dark .theme-picker img:not(.theme-check){filter:brightness(0) invert(1)}
+.theme-dark img{opacity:.96}

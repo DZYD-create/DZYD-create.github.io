@@ -7,6 +7,7 @@ import "./editor-figma.css";
 import "./final-overrides.css";
 
 type Section = "studio" | "canvas" | "history" | "assets";
+type ThemeMode = "system" | "dark" | "light";
 type EditorTool = "局部重绘" | "擦除内容" | "图片尺寸" | "增强清晰度";
 type CanvasNode = {
   id: number;
@@ -67,6 +68,9 @@ function App() {
   const [canvasImage, setCanvasImage] = useState<string | null>(null);
   const [folders, setFolders] = useState(["品牌素材", "产品图片"]);
   const [accountOpen, setAccountOpen] = useState(false);
+  const [themeOpen, setThemeOpen] = useState(false);
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => (localStorage.getItem("studio-theme") as ThemeMode) || "light");
+  const [systemDark, setSystemDark] = useState(() => window.matchMedia("(prefers-color-scheme: dark)").matches);
   const [conversations, setConversations] = useState<Array<[string, string]>>([
     ["夏日新品直播海报", "今天 14:32"],
     ["课程价格板设计", "昨天 18:10"],
@@ -125,7 +129,7 @@ function App() {
   };
 
   useEffect(() => {
-    const dismiss = () => setAccountOpen(false);
+    const dismiss = () => { setAccountOpen(false); setThemeOpen(false); };
     document.addEventListener("dismiss-popovers", dismiss);
     return () => {
       document.removeEventListener("dismiss-popovers", dismiss);
@@ -135,6 +139,17 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const update = () => setSystemDark(media.matches);
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("studio-theme", themeMode);
+  }, [themeMode]);
+
   const upload = (file?: File) => {
     if (!file) return;
     const url = URL.createObjectURL(file);
@@ -142,9 +157,10 @@ function App() {
   };
 
   const isCanvas = section === "canvas";
+  const darkTheme = themeMode === "dark" || (themeMode === "system" && systemDark);
   return (
     <div
-      className={`app-shell ${isCanvas ? "canvas-shell" : ""}`}
+      className={`app-shell ${isCanvas ? "canvas-shell" : ""} ${darkTheme ? "theme-dark" : "theme-light"}`}
       onKeyDownCapture={(event) => {
         if (
           event.key !== "Enter" ||
@@ -169,7 +185,7 @@ function App() {
         const target = e.target as HTMLElement;
         if (
           !target.closest(
-            "[data-popover-trigger],.popover,.model-selector-popover,.size-selector-popover,.model-invocation-popover,.canvas-add-popover,.asset-library-panel,.home-asset-popover,.asset-add-menu,.asset-folder-menu,.apply-popover,.figma-history-panel,.canvas-search-modal,.canvas-comment-panel,.canvas-comments-mode,.figma-tool-modal",
+            "[data-popover-trigger],.theme-picker,.popover,.model-selector-popover,.size-selector-popover,.model-invocation-popover,.canvas-add-popover,.asset-library-panel,.home-asset-popover,.asset-add-menu,.asset-folder-menu,.apply-popover,.figma-history-panel,.canvas-search-modal,.canvas-comment-panel,.canvas-comments-mode,.figma-tool-modal",
           )
         )
           document.dispatchEvent(new Event("dismiss-popovers"));
@@ -249,9 +265,18 @@ function App() {
               </button>
             ))}
           </div>
-          <button className="theme">
+          <button data-popover-trigger className="theme" aria-label="主题设置" aria-expanded={themeOpen} onClick={() => setThemeOpen((value) => !value)}>
             <img src="/assets/theme.svg" />
           </button>
+          {themeOpen && (
+            <div className="theme-picker" role="menu" aria-label="选择网站主题">
+              {([['system','跟随系统','/assets/theme-system.svg'],['dark','深色主题','/assets/theme-moon.svg'],['light','浅色主题','/assets/theme-sun.svg']] as const).map(([value,label,icon]) => (
+                <button key={value} role="menuitemradio" aria-checked={themeMode===value} className={themeMode===value ? "active" : ""} onClick={() => { setThemeMode(value); setThemeOpen(false); }}>
+                  <img src={icon} alt="" /><span>{label}</span>{themeMode===value ? <img className="theme-check" src="/assets/theme-check.svg" alt="已选择" /> : <i />}
+                </button>
+              ))}
+            </div>
+          )}
         </aside>
       )}
       {section === "studio" &&

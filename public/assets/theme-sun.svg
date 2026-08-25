@@ -1,0 +1,16 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icon / sun">
+<path id="Vector" d="M10.9997 14.6668C13.0247 14.6668 14.6663 13.0252 14.6663 11.0002C14.6663 8.97512 13.0247 7.3335 10.9997 7.3335C8.97463 7.3335 7.33301 8.97512 7.33301 11.0002C7.33301 13.0252 8.97463 14.6668 10.9997 14.6668Z" stroke="url(#paint0_linear_0_9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_2" d="M10.9997 2.56689V4.49189M10.9997 17.5086V19.4336M4.49141 4.49189L5.86641 5.86689M16.1331 16.1336L17.5081 17.5086M2.56641 11.0002H4.49141M17.5081 11.0002H19.4331M4.49141 17.5086L5.86641 16.1336M16.1331 5.86689L17.5081 4.49189" stroke="url(#paint1_linear_0_9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_9" x1="7.33301" y1="14.33" x2="15.2967" y2="13.4634" gradientUnits="userSpaceOnUse">
+<stop stop-color="#2288FF"/>
+<stop offset="1" stop-color="#A683F8"/>
+</linearGradient>
+<linearGradient id="paint1_linear_0_9" x1="2.56641" y1="18.6588" x2="20.8829" y2="16.6657" gradientUnits="userSpaceOnUse">
+<stop stop-color="#2288FF"/>
+<stop offset="1" stop-color="#A683F8"/>
+</linearGradient>
+</defs>
+</svg>
