@@ -8917,3 +8917,14 @@ button > img {
 /* 左右连接加号始终严格对齐图片本体的垂直中心。 */
 .canvas-node-port{top:calc(10px + var(--node-media-height,310px)/2)!important;transform:translateY(-50%) scale(.9)!important}
 .canvas-node-card:hover .canvas-node-port,.canvas-node-card[data-active] .canvas-node-port,.canvas-node-port:focus-visible{transform:translateY(-50%) scale(1)!important}
+
+/* 画布左侧栏所有图标容器始终保持正圆。 */
+.canvas-vertical-nav>button,.canvas-vertical-nav>button:hover,.canvas-vertical-nav>button:focus-visible,.canvas-vertical-nav>button.active{box-sizing:border-box!important;flex:0 0 44px!important;width:44px!important;min-width:44px!important;max-width:44px!important;height:44px!important;min-height:44px!important;max-height:44px!important;padding:11px!important;border-radius:50%!important;aspect-ratio:1/1!important}
+
+/* 连线固定在所有图片节点的底层。 */
+.figma-infinite-canvas>.canvas-links{z-index:1!important}
+.figma-infinite-canvas>.canvas-node-layer{z-index:6!important}
+
+/* 加高图片下方的创作输入框。 */
+.canvas-node-prompt{min-height:184px!important;padding-top:16px!important;padding-bottom:16px!important}
+.canvas-node-prompt textarea{height:76px!important;min-height:76px!important;line-height:24px!important}
