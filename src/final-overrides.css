@@ -9009,3 +9009,13 @@ button > img {
 .canvas-vertical-nav>i{width:28px!important;justify-self:center!important}
 .canvas-vertical-nav>button[aria-label="账户"]{padding:6px!important}
 .canvas-vertical-nav>button[aria-label="账户"] img{display:block!important;width:32px!important;height:32px!important;margin:0!important;object-fit:cover!important}
+
+/* 画布素材库：个人/团队共享数据，搜索框与人物缩略图真实可用。 */
+.asset-scope{display:grid!important;grid-template-columns:1fr 1fr!important;gap:4px!important;padding:4px!important}
+.asset-scope>button{height:28px!important;padding:0!important;border:1px solid transparent!important;border-radius:14px!important;background:transparent!important;color:#8d93a0!important;font:400 14px/28px inherit!important;position:static!important}
+.asset-scope>button.active{border-color:#e5e9f1!important;background:#fff!important;color:#202432!important;box-shadow:0 2px 6px rgba(50,58,82,.06)!important}
+.asset-search input{min-width:0!important;width:100%!important;height:30px!important;padding:0!important;border:0!important;background:transparent!important;background-image:none!important;box-shadow:none!important;outline:0!important;animation:none!important;color:#202432!important;font:400 14px/30px inherit!important}
+.asset-search input::placeholder{color:#98a2b3!important}
+.asset-tree>button img{object-fit:cover!important;border-radius:7px!important;background:#eef0f5!important}
+.asset-search-empty{margin:12px 0 0 52px;color:#98a2b3;font-size:13px}
+.selected-teacher img{object-fit:cover!important;border-radius:7px!important;background:#eef0f5!important}

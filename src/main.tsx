@@ -3864,7 +3864,7 @@ function Canvas({
                 <h3>教师形象照</h3>
                 <p>将选中的教师头像快速放入当前画布</p>
                 <div className="selected-teacher">
-                  <img src={`/assets/teacher-${selectedTeacher}.svg`} />
+                  <img src={selectedTeacher === 2 ? "/assets/feng-mengfei.png" : `/assets/teacher-${selectedTeacher}.svg`} />
                   <span>
                     {
                       ["以诺老师", "冯梦飞", "李颖", "憨爸", "临风"][
@@ -3876,7 +3876,16 @@ function Canvas({
                 </div>
                 <button
                   className="apply-canvas"
-                  onClick={() => setApplied(true)}
+                  onClick={() => {
+                    const source = selectedTeacher === 2 ? "/assets/feng-mengfei.png" : `/assets/teacher-${selectedTeacher}.svg`;
+                    const name = ["以诺老师", "冯梦飞", "李颖", "憨爸", "临风"][selectedTeacher - 1];
+                    const nextId = Math.max(0, ...canvasNodes.map((node) => node.id)) + 1;
+                    const nextX = canvasNodes.length ? Math.max(...canvasNodes.map((node) => node.x)) + 390 : 0;
+                    setCanvasNodes((nodes) => [...nodes, { id: nextId, url: source, x: nextX, y: 0, name }]);
+                    setCanvasImage(source);
+                    setActiveNodeId(nextId);
+                    setApplied(true);
+                  }}
                 >
                   {applied ? "已应用到画布" : "应用到画布"}{" "}
                   <img src="/assets/apply.svg" />
@@ -4656,6 +4665,10 @@ function AssetLibrary({
   onSelect: (i: number) => void;
   onClose: () => void;
 }) {
+  const [scope, setScope] = useState<"个人" | "团队">("团队");
+  const [query, setQuery] = useState("");
+  const teachers = ["以诺老师", "冯梦飞", "李颖", "憨爸", "临风"];
+  const visibleTeachers = teachers.map((name, index) => ({ name, index })).filter(({ name }) => name.toLowerCase().includes(query.trim().toLowerCase()));
   return (
     <aside className="asset-library-panel">
       <div className="asset-title">
@@ -4665,13 +4678,12 @@ function AssetLibrary({
         <h2>素材库</h2>
       </div>
       <div className="asset-scope">
-        <span>个人</span>
-        <strong>团队</strong>
+        {["个人", "团队"].map((item) => <button className={scope === item ? "active" : ""} onClick={() => setScope(item as "个人" | "团队")} key={item}>{item}</button>)}
       </div>
-      <div className="asset-search">
+      <label className="asset-search">
         <img src="/assets/asset-search.svg" />
-        <span>搜索</span>
-      </div>
+        <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索主体名称" />
+      </label>
       <div className="subject-title">
         <strong>主体库</strong>
         <img src="/assets/asset-help.svg" />
@@ -4689,16 +4701,17 @@ function AssetLibrary({
           <i className="folder-icon blue" />
           <b>教师形象照</b>
         </div>
-        {["以诺老师", "冯梦飞", "李颖", "憨爸", "临风"].map((v, i) => (
+        {visibleTeachers.map(({name:v,index:i}) => (
           <button
             className={selected === i + 1 ? "selected" : ""}
             onClick={() => onSelect(i + 1)}
             key={v}
           >
-            <img src={`/assets/teacher-${i + 1}.svg`} />
+            <img src={i === 1 ? "/assets/feng-mengfei.png" : `/assets/teacher-${i + 1}.svg`} />
             <span>{v}</span>
           </button>
         ))}
+        {!visibleTeachers.length && <p className="asset-search-empty">未找到“{query}”</p>}
         <div className="tree-row logo-row">
           <img className="tree-chevron" src="/assets/asset-chevron.svg" />
           <i className="folder-icon green" />
