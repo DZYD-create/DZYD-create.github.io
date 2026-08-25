@@ -8841,3 +8841,18 @@ button > img {
 .asset-subject-card>div,.history-record-preview{width:100%!important;height:286px!important;min-height:286px!important;aspect-ratio:auto!important;margin:0!important;border-radius:12px!important;overflow:hidden!important;background:#f1f2f4!important}
 .asset-subject-card>div>img,.history-record-preview>img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;border-radius:12px!important}
 .asset-subject-card.create>div,.history-create-record>.history-record-preview{height:286px!important;min-height:286px!important;border-radius:12px!important;display:grid!important;place-items:center!important}
+
+/* 对话浮窗最终修复：清除输入框按钮的绝对定位继承，完整显示质量项与标题。 */
+.generation-page>.generation-composer.new-creation-composer .size-selector-popover .size-quality>button{position:static!important;inset:auto!important;display:grid!important;place-items:center!important;width:81px!important;height:32px!important;margin:0!important;padding:0!important;transform:none!important;visibility:visible!important;opacity:1!important}
+.generation-page>.generation-composer.new-creation-composer .size-selector-popover .size-link-toggle{position:static!important;inset:auto!important;justify-self:center!important;margin:2px 0!important;visibility:visible!important;opacity:1!important}
+.generation-page>.generation-composer.new-creation-composer .model-selector-popover{padding-top:10px!important;overflow:visible!important}
+.generation-page>.generation-composer.new-creation-composer .model-selector-popover>strong{position:static!important;flex:0 0 24px!important;min-height:24px!important;height:24px!important;margin:0 0 3px!important;padding:0 2px!important;overflow:visible!important;visibility:visible!important;opacity:1!important;transform:none!important}
+.generation-page>.generation-composer.new-creation-composer .model-selector-popover>button{inset:auto!important;flex:0 0 58px!important;visibility:visible!important;opacity:1!important;transform:none!important}
+
+/* 素材库与生成历史统一到距侧边栏 34px 的内容基线。 */
+.asset-page-header{padding-left:26px!important;margin-left:0!important}
+.history-heading{padding-left:0!important;margin-left:0!important}
+.asset-page-tabs{margin-left:34px!important;padding-left:0!important}
+.asset-subject-grid{padding-left:34px!important;padding-right:31px!important}
+.history-workspace{padding-left:8px!important}
+.history-cards{padding-left:0!important;padding-right:7px!important}
