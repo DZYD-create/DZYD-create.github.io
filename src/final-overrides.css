@@ -9075,3 +9075,13 @@ button > img {
 .generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid strong{display:block!important;height:18px!important;margin:4px 0 0!important;font-size:12px!important;line-height:18px!important;color:#202436!important;overflow:hidden!important;white-space:nowrap!important;text-overflow:ellipsis!important}
 .generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid small{display:block!important;font-size:9px!important;line-height:13px!important;color:#98a2b3!important}
 .generation-page>.generation-composer.new-creation-composer .figma-composer-assets>footer{bottom:10px!important}
+
+/* 对话资产库最终紧凑版：匹配图一留白并避免触碰顶部栏。 */
+.generation-page>.generation-composer.new-creation-composer .home-asset-popover.figma-composer-assets{left:112px!important;bottom:calc(100% + 8px)!important;width:468px!important;height:280px!important;padding:10px 16px!important;border-radius:16px!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-tabs{width:436px!important;height:26px!important;margin:0!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-search{width:436px!important;height:26px!important;margin:6px 0 8px!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid{width:422px!important;height:154px!important;margin:0 0 0 6px!important;grid-template-columns:repeat(3,132px)!important;gap:13px!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid>button{width:132px!important;height:154px!important;padding:6px!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid>button>span{width:118px!important;height:106px!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid strong{height:17px!important;margin-top:3px!important;line-height:17px!important}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets>footer{left:50%!important;bottom:8px!important;transform:translateX(-50%)!important}
