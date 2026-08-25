@@ -8856,3 +8856,10 @@ button > img {
 .asset-subject-grid{padding-left:34px!important;padding-right:31px!important}
 .history-workspace{padding-left:8px!important}
 .history-cards{padding-left:0!important;padding-right:7px!important}
+
+/* 画布输入框与生图对话功能按钮：统一悬浮态。 */
+.canvas-node-prompt-footer>div>button{cursor:pointer!important;transition:background .18s ease,color .18s ease,border-color .18s ease,box-shadow .18s ease!important}
+.canvas-node-prompt-footer>div>button:hover,.canvas-node-prompt-footer>div>button:focus-visible{background:#eeefff!important;color:#6558dc!important;box-shadow:inset 0 0 0 1px #c8c2f6!important;outline:0!important}
+.generation-page>.generation-composer.new-creation-composer footer>button[data-popover-trigger]:not(.new-upload){cursor:pointer!important;transition:background .18s ease,color .18s ease,box-shadow .18s ease!important}
+.generation-page>.generation-composer.new-creation-composer footer>button[data-popover-trigger]:not(.new-upload):hover,.generation-page>.generation-composer.new-creation-composer footer>button[data-popover-trigger]:not(.new-upload):focus-visible{background:#eeefff!important;color:#6558dc!important;box-shadow:inset 0 0 0 1px #c8c2f6!important;outline:0!important}
+.generation-page>.generation-composer.new-creation-composer footer>button[data-popover-trigger]:not(.new-upload):hover img{filter:brightness(0) saturate(100%) invert(39%) sepia(54%) saturate(1519%) hue-rotate(218deg)!important}

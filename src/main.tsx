@@ -3255,8 +3255,11 @@ function Canvas({
               <section
                 className="canvas-node-prompt"
                 style={{
-                  left: `calc(50% + ${node.x}px)`,
-                  top: 32 + node.y + getNodeGeometry(node).cardHeight + 14,
+                  left: `calc(50% + ${node.x * (canvasZoom / 75)}px)`,
+                  top:
+                    (32 + node.y + getNodeGeometry(node).cardHeight) *
+                      (canvasZoom / 75) +
+                    14,
                 }}
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={(e) => e.stopPropagation()}
