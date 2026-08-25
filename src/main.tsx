@@ -830,7 +830,7 @@ function NewCreationPage({
   const [greetingFinished, setGreetingFinished] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    const timer = window.setTimeout(() => setGreetingFinished(true), 1100);
+    const timer = window.setTimeout(() => setGreetingFinished(true), 2200);
     return () => window.clearTimeout(timer);
   }, []);
   useEffect(() => {
@@ -5009,7 +5009,7 @@ function Assets({
           >
             <img src="/assets/history-back.svg" />
           </button>
-          <strong>我的资产</strong>
+          <strong>素材库</strong>
         </div>
         <button
           data-popover-trigger
