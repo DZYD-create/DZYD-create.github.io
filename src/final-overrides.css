@@ -8896,3 +8896,13 @@ button > img {
 .canvas-redraw-layer .redraw-erase-path{fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round}
 .canvas-redraw-layer.redraw-mode-框选{cursor:crosshair}
 .canvas-redraw-layer .redraw-cursor-ring{fill:rgba(255,255,255,.04);stroke:#49627b;stroke-width:1.4;vector-effect:non-scaling-stroke;pointer-events:none}
+
+/* 扩图：移除卡片容器，仅保留图片与可拖拽尺寸框。 */
+.canvas-node-card.is-expand-active{border-color:transparent!important;background:transparent!important;box-shadow:none!important}
+.canvas-node-card.is-expand-active .canvas-node-media{overflow:visible!important;border-color:transparent!important;background:transparent!important}
+.canvas-node-card.is-expand-active footer,.canvas-node-card.is-expand-active>.canvas-node-port{display:none!important}
+.canvas-expand-frame{position:absolute;z-index:25;left:50%;top:50%;transform:translate(-50%,-50%);box-sizing:border-box;border:2px solid #7668f4;border-radius:2px;pointer-events:auto;filter:drop-shadow(0 3px 9px rgba(107,87,232,.16))}
+.canvas-expand-handle{position:absolute!important;z-index:2!important;width:18px!important;height:18px!important;padding:0!important;border:3px solid #7668f4!important;border-radius:2px!important;background:#fff!important;box-shadow:0 2px 6px rgba(84,69,190,.12)!important}
+.canvas-expand-handle.nw{left:-6px;top:-6px;border-right:0!important;border-bottom:0!important;cursor:nwse-resize}.canvas-expand-handle.n{left:50%;top:-6px;transform:translateX(-50%);width:34px!important;height:8px!important;border-width:2px!important;cursor:ns-resize}.canvas-expand-handle.ne{right:-6px;top:-6px;border-left:0!important;border-bottom:0!important;cursor:nesw-resize}.canvas-expand-handle.e{right:-6px;top:50%;transform:translateY(-50%);width:8px!important;height:34px!important;border-width:2px!important;cursor:ew-resize}.canvas-expand-handle.se{right:-6px;bottom:-6px;border-left:0!important;border-top:0!important;cursor:nwse-resize}.canvas-expand-handle.s{left:50%;bottom:-6px;transform:translateX(-50%);width:34px!important;height:8px!important;border-width:2px!important;cursor:ns-resize}.canvas-expand-handle.sw{left:-6px;bottom:-6px;border-right:0!important;border-top:0!important;cursor:nesw-resize}.canvas-expand-handle.w{left:-6px;top:50%;transform:translateY(-50%);width:8px!important;height:34px!important;border-width:2px!important;cursor:ew-resize}
+.canvas-node-card.is-hd-result .canvas-node-media img{filter:contrast(1.06) saturate(1.08) brightness(1.02)}
+.canvas-node-card.is-hd-result{box-shadow:0 10px 28px rgba(95,78,225,.18)}

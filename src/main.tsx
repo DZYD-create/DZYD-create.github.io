@@ -2068,6 +2068,8 @@ function Canvas({
     originY: number;
   } | null>(null);
   const [canvasLinks, setCanvasLinks] = useState<CanvasLink[]>([]);
+  const [expandFrame, setExpandFrame] = useState<{ id: number; width: number; height: number } | null>(null);
+  const [expandResize, setExpandResize] = useState<{ pointerId: number; startX: number; startY: number; width: number; height: number; axis: string } | null>(null);
   const [linkDraft, setLinkDraft] = useState<{
     from: number;
     side: "left" | "right";
@@ -2679,6 +2681,25 @@ function Canvas({
         window.open(canvasImage, "_blank", "noopener,noreferrer");
       return;
     }
+    if (label === "高清画质") {
+      const source = canvasNodes.find((node) => node.id === activeNodeId) || canvasNodes[0];
+      if (!source) return;
+      const nextId = Math.max(0, ...canvasNodes.map((node) => node.id)) + 1;
+      const sourceWidth = getNodeGeometry(source).mediaWidth;
+      const nextNode: CanvasNode = { ...source, id: nextId, x: source.x + sourceWidth + 190, y: source.y, name: `${source.name} · 高清` };
+      setCanvasNodes((nodes) => [...nodes, nextNode]);
+      setCanvasLinks((links) => [...links, { id: Date.now(), from: source.id, side: "right", to: nextId, targetSide: "left" }]);
+      setActiveNodeId(nextId);
+      setCanvasTool(label);
+      return;
+    }
+    if (label === "扩图") {
+      const source = canvasNodes.find((node) => node.id === activeNodeId) || canvasNodes[0];
+      if (!source) return;
+      const geometry = getNodeGeometry(source);
+      setActiveNodeId(source.id);
+      setExpandFrame({ id: source.id, width: geometry.mediaWidth + 48, height: geometry.mediaHeight + 48 });
+    }
     setCanvasTool(label);
     if (label === "上传") ref.current?.click();
   };
@@ -3039,7 +3060,7 @@ function Canvas({
               {canvasNodes.map((node) => (
                 <article
                   data-node-id={node.id}
-                  className={`canvas-node-card ${node.placeholder ? "is-placeholder" : ""} ${imageDrag?.id === node.id ? "is-dragging" : ""}`}
+                  className={`canvas-node-card ${node.placeholder ? "is-placeholder" : ""} ${imageDrag?.id === node.id ? "is-dragging" : ""} ${node.name.endsWith("· 高清") ? "is-hd-result" : ""} ${canvasTool === "扩图" && expandFrame?.id === node.id ? "is-expand-active" : ""}`}
                   style={{
                     width: `${getNodeGeometry(node).cardWidth}px`,
                     height: `${getNodeGeometry(node).cardHeight}px`,
@@ -3052,7 +3073,7 @@ function Canvas({
                     if (
                       e.button !== 0 ||
                       (e.target as HTMLElement).closest(
-                        ".canvas-node-port,.canvas-placeholder-upload",
+                        ".canvas-node-port,.canvas-placeholder-upload,.canvas-expand-frame,.canvas-expand-handle",
                       )
                     )
                       return;
@@ -3181,6 +3202,11 @@ function Canvas({
                         {activeRedrawStroke?.nodeId===node.id&&activeRedrawStroke.kind!=="erase"&&(activeRedrawStroke.kind==="box"?<rect style={canvasTool==="擦除"?{fill:`url(#erase-checker-${node.id})`}:undefined} x={Math.min(activeRedrawStroke.points[0].x,activeRedrawStroke.points[1].x)} y={Math.min(activeRedrawStroke.points[0].y,activeRedrawStroke.points[1].y)} width={Math.abs(activeRedrawStroke.points[1].x-activeRedrawStroke.points[0].x)} height={Math.abs(activeRedrawStroke.points[1].y-activeRedrawStroke.points[0].y)} />:<polyline style={canvasTool==="擦除"?{stroke:`url(#erase-checker-${node.id})`}:undefined} points={activeRedrawStroke.points.map((point)=>`${point.x},${point.y}`).join(" ")} strokeWidth={activeRedrawStroke.size} />)}
                         {redrawMode!=="框选"&&redrawCursor?.nodeId===node.id&&<circle className="redraw-cursor-ring" cx={redrawCursor.x} cy={redrawCursor.y} r={redrawBrushSize/2} />}
                       </svg>
+                    )}
+                    {!node.placeholder && canvasTool === "扩图" && expandFrame?.id === node.id && (
+                      <div className="canvas-expand-frame" style={{width:expandFrame.width,height:expandFrame.height}}>
+                        {["nw","n","ne","e","se","s","sw","w"].map((axis)=><button key={axis} className={`canvas-expand-handle ${axis}`} aria-label={`调整${axis}边界`} onPointerDown={(event)=>{event.preventDefault();event.stopPropagation();event.currentTarget.setPointerCapture(event.pointerId);setExpandResize({pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,width:expandFrame.width,height:expandFrame.height,axis});}} onPointerMove={(event)=>{if(!expandResize||expandResize.pointerId!==event.pointerId)return;event.preventDefault();event.stopPropagation();const dx=(event.clientX-expandResize.startX)/(canvasZoom/75),dy=(event.clientY-expandResize.startY)/(canvasZoom/75);const horizontal=expandResize.axis.includes("e")?dx:expandResize.axis.includes("w")?-dx:0;const vertical=expandResize.axis.includes("s")?dy:expandResize.axis.includes("n")?-dy:0;setExpandFrame((frame)=>frame?{...frame,width:Math.max(getNodeGeometry(node).mediaWidth,expandResize.width+horizontal*2),height:Math.max(getNodeGeometry(node).mediaHeight,expandResize.height+vertical*2)}:frame);}} onPointerUp={(event)=>{event.preventDefault();event.stopPropagation();setExpandResize(null);}} />)}
+                      </div>
                     )}
                   </div>
                   <button
