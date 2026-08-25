@@ -8928,3 +8928,22 @@ button > img {
 /* 加高图片下方的创作输入框。 */
 .canvas-node-prompt{min-height:184px!important;padding-top:16px!important;padding-bottom:16px!important}
 .canvas-node-prompt textarea{height:76px!important;min-height:76px!important;line-height:24px!important}
+
+/* 高清画质生成过程。 */
+.canvas-hd-generating{position:relative;width:100%;height:100%;overflow:hidden;border-radius:15px;background:linear-gradient(125deg,#d9f5ff 0%,#63d6ff 46%,#58e8dc 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#fff;text-shadow:0 1px 4px rgba(54,111,160,.16)}
+.canvas-hd-generating b{font-size:38px;line-height:1;animation:hd-star-pulse 1.1s ease-in-out infinite}
+.canvas-hd-generating span{font-size:15px;font-weight:500;letter-spacing:.3px}
+.canvas-hd-generating i{position:absolute;left:0;bottom:0;height:5px;background:rgba(255,255,255,.9);box-shadow:0 0 12px rgba(255,255,255,.75);transition:width .18s linear}
+@keyframes hd-star-pulse{50%{transform:scale(1.18) rotate(12deg);opacity:.78}}
+
+/* 重绘/擦除的撤销重做区重新排版为独立按钮组。 */
+.canvas-redraw-toolbar{width:558px!important;padding-left:12px!important;padding-right:12px!important;gap:8px!important}
+.redraw-history-group{flex:0 0 94px;height:42px;padding:3px;display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid rgba(255,255,255,.15);border-radius:21px;background:rgba(14,16,23,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.redraw-history-group>button{width:36px;height:36px;padding:8px;border:0;border-radius:50%;display:grid;place-items:center;background:transparent;cursor:pointer;transition:background .16s ease,transform .16s ease,opacity .16s ease}
+.redraw-history-group>button:not(:disabled):hover{background:#7567f2;transform:translateY(-1px)}
+.redraw-history-group>button:disabled{opacity:.28;cursor:not-allowed}
+.redraw-history-group>button img{display:block;width:20px;height:20px;filter:brightness(0) invert(1)}
+
+/* 首页侧边栏历史卡片使用真实图片缩略图。 */
+.history-image-area{overflow:hidden!important;background:#eef0f4!important}
+.history-image-area>img{display:block;width:100%;height:100%;object-fit:cover;border-radius:9px}

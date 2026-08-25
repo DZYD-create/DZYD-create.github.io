@@ -2068,6 +2068,7 @@ function Canvas({
     originY: number;
   } | null>(null);
   const [canvasLinks, setCanvasLinks] = useState<CanvasLink[]>([]);
+  const [hdProgress, setHdProgress] = useState<Record<number, number>>({});
   const [expandFrame, setExpandFrame] = useState<{ id: number; width: number; height: number } | null>(null);
   const [expandResize, setExpandResize] = useState<{ pointerId: number; startX: number; startY: number; width: number; height: number; axis: string } | null>(null);
   const [linkDraft, setLinkDraft] = useState<{
@@ -2689,6 +2690,19 @@ function Canvas({
       const nextNode: CanvasNode = { ...source, id: nextId, x: source.x + sourceWidth + 190, y: source.y, name: `${source.name} · 高清` };
       setCanvasNodes((nodes) => [...nodes, nextNode]);
       setCanvasLinks((links) => [...links, { id: Date.now(), from: source.id, side: "right", to: nextId, targetSide: "left" }]);
+      setHdProgress((items) => ({ ...items, [nextId]: 6 }));
+      const timer = window.setInterval(() => {
+        setHdProgress((items) => {
+          const current = items[nextId];
+          if (current === undefined) { window.clearInterval(timer); return items; }
+          const next = Math.min(100, current + Math.max(5, Math.round(Math.random() * 13)));
+          if (next >= 100) {
+            window.clearInterval(timer);
+            window.setTimeout(() => setHdProgress((values) => { const copy = { ...values }; delete copy[nextId]; return copy; }), 360);
+          }
+          return { ...items, [nextId]: next };
+        });
+      }, 190);
       setActiveNodeId(nextId);
       setCanvasTool(label);
       return;
@@ -3149,7 +3163,9 @@ function Canvas({
                       setCanvasNodes((v) => v.filter((n) => n.id !== node.id));
                     }}
                   >
-                    {node.placeholder ? (
+                    {hdProgress[node.id] !== undefined ? (
+                      <div className="canvas-hd-generating"><b>✦</b><span>生成中 {hdProgress[node.id]}%</span><i style={{width:`${hdProgress[node.id]}%`}} /></div>
+                    ) : node.placeholder ? (
                       <button
                         className="canvas-placeholder-upload"
                         onClick={(e) => {
@@ -4004,8 +4020,10 @@ function Canvas({
             <input aria-label="笔触大小" type="range" min="8" max="100" value={redrawBrushSize} onChange={(event) => setRedrawBrushSize(Number(event.target.value))} />
             <img className="redraw-brush-large" src="/assets/figma-brush-small.svg" />
             <i />
-            <button aria-label="撤销" disabled={!redrawUndoStack.length} onClick={() => setRedrawUndoStack((history)=>{if(!history.length)return history;const previous=history[history.length-1];setRedrawStrokes((current)=>{setRedrawRedoStack((redo)=>[...redo,current]);return previous;});return history.slice(0,-1);})}><img src="/assets/figma-undo.svg" /></button>
-            <button aria-label="重做" disabled={!redrawRedoStack.length} onClick={() => setRedrawRedoStack((redo)=>{if(!redo.length)return redo;const next=redo[redo.length-1];setRedrawStrokes((current)=>{setRedrawUndoStack((history)=>[...history,current]);return next;});return redo.slice(0,-1);})}><img src="/assets/figma-redo.svg" /></button>
+            <div className="redraw-history-group">
+              <button aria-label="撤销" disabled={!redrawUndoStack.length} onClick={() => setRedrawUndoStack((history)=>{if(!history.length)return history;const previous=history[history.length-1];setRedrawStrokes((current)=>{setRedrawRedoStack((redo)=>[...redo,current]);return previous;});return history.slice(0,-1);})}><img src="/assets/figma-undo.svg" /></button>
+              <button aria-label="重做" disabled={!redrawRedoStack.length} onClick={() => setRedrawRedoStack((redo)=>{if(!redo.length)return redo;const next=redo[redo.length-1];setRedrawStrokes((current)=>{setRedrawUndoStack((history)=>[...history,current]);return next;});return redo.slice(0,-1);})}><img src="/assets/figma-redo.svg" /></button>
+            </div>
           </div>
         )}
         {canvasTool === "裁剪" && cropNode && mode !== "comments" && (
@@ -4759,7 +4777,7 @@ function HistoryDrawer({ onClose }: { onClose: () => void }) {
             onClick={() => toggle(i)}
             key={i}
           >
-            <div className="history-image-area" />
+            <div className="history-image-area"><img src={`/assets/template-${i + 2}.png`} alt="历史图片缩略图" /></div>
             <strong>小学全科卡</strong>
             <small>图片 · 今天</small>
             {selected.includes(i) && (
@@ -5016,6 +5034,7 @@ function History({
             >
               <div className="history-record-preview">
                 {tab === "subject" && <img src={samples[i % samples.length]} alt={name} />}
+                {tab === "canvas" && <img src={`/assets/template-${(i % 5) + 1}.png`} alt={name} />}
                 {i === 0 && tab === "canvas" && <span className="history-loader" />}
                 {batch && (
                   <i className={`batch-check ${selectedHistory.includes(name) ? "selected" : ""}`}>
