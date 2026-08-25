@@ -8947,3 +8947,32 @@ button > img {
 /* 首页侧边栏历史卡片使用真实图片缩略图。 */
 .history-image-area{overflow:hidden!important;background:#eef0f4!important}
 .history-image-area>img{display:block;width:100%;height:100%;object-fit:cover;border-radius:9px}
+
+/* 画布侧栏延长，将账户头像完整收进同一白色胶囊。 */
+.canvas-vertical-nav{height:438px!important;min-height:438px!important;padding:10px 9px!important;gap:10px!important;overflow:visible!important}
+.canvas-vertical-nav>i{flex:0 0 1px!important;margin:0 auto!important}
+.canvas-vertical-nav>button[aria-label="账户"]{position:static!important;margin:0!important;transform:none!important}
+.canvas-vertical-nav>button[aria-label="账户"] img{width:40px!important;height:40px!important;border-radius:50%!important}
+
+/* 主体预览区域不再保留图片上下灰色留白。 */
+.history-subject-upload.has-preview>img,.history-subject-preview-row>img{height:306px!important;object-fit:cover!important;background:transparent!important}
+.history-subject-upload.has-preview,.history-subject-preview-row{height:306px!important;min-height:0!important;align-items:stretch!important;overflow:hidden!important}
+
+/* 素材库图片的明确悬浮态。 */
+.asset-subject-card{cursor:pointer!important;transition:transform .2s ease,filter .2s ease!important}
+.asset-subject-card>div{transition:box-shadow .2s ease,border-color .2s ease,transform .2s ease!important}
+.asset-subject-card:hover{transform:translateY(-5px)!important;filter:saturate(1.04)}
+.asset-subject-card:hover>div{box-shadow:0 12px 26px rgba(78,67,166,.16)!important;transform:scale(1.012);outline:1px solid rgba(116,104,244,.32)}
+
+/* 对话生图尺寸浮窗：为标题、标签和比例区留出真实空间。 */
+.generation-page>.generation-composer.new-creation-composer .size-selector-popover{height:326px!important;padding:16px 12px 14px!important;overflow:visible!important}
+.generation-page>.generation-composer.new-creation-composer .size-selector-popover>strong{height:22px!important;line-height:22px!important;margin:0 0 2px!important}
+.generation-page>.generation-composer.new-creation-composer .size-selector-popover>.size-quality-label,.generation-page>.generation-composer.new-creation-composer .size-selector-popover>.size-section-label,.generation-page>.generation-composer.new-creation-composer .size-selector-popover>small{height:18px!important;line-height:18px!important;margin:0!important;position:static!important;visibility:visible!important;opacity:1!important}
+.generation-page>.generation-composer.new-creation-composer .size-selector-popover .size-quality{margin:5px auto 7px!important}
+.generation-page>.generation-composer.new-creation-composer .size-selector-popover .size-fields{margin:3px 0 7px!important}
+.generation-page>.generation-composer.new-creation-composer .size-selector-popover .ratio-grid{margin:5px 0 0!important}
+
+/* 历史缩略图占满容器，加载圈仅覆盖在图片上方。 */
+.history-record-preview{display:block!important;position:relative!important}
+.history-record-preview>img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important}
+.history-record-preview>.history-loader{position:absolute!important;z-index:3!important;left:50%!important;top:50%!important;margin:-12px 0 0 -12px!important;background:rgba(255,255,255,.8)!important}
