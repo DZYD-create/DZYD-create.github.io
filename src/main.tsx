@@ -1528,7 +1528,7 @@ function TemplateDetail({
   const item = templateDetails[index] || templateDetails[0];
   const extra = templateExtras[index] || templateExtras[0];
   return (
-    <section className="template-detail-page">
+    <section className="template-detail-page" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
       <button
         className="template-detail-close"
         onClick={onClose}
@@ -5004,7 +5004,6 @@ function Assets({
   const [subjectOpen, setSubjectOpen] = useState(false);
   const [subjectName, setSubjectName] = useState("");
   const [subjectImages, setSubjectImages] = useState<string[]>([]);
-  const [activeSubjectImage, setActiveSubjectImage] = useState(0);
   const [subjects, setSubjects] = useState(["夏日新品预热海报", "课程价格板设计", "新品种草海报", "直播间活动主视觉"]);
   const subjectFile = useRef<HTMLInputElement>(null);
   const [addOpen, setAddOpen] = useState(false);
@@ -5112,9 +5111,9 @@ function Assets({
       )}
       {tab === "subject" ? (
         <div className="asset-subject-grid">
-          <button className="asset-subject-card create" onClick={() => { setSubjectName(""); setSubjectImages([]); setActiveSubjectImage(0); setSubjectOpen(true); }}><div>＋</div><strong>新建主体</strong></button>
+          <button className="asset-subject-card create" onClick={() => { setSubjectName(""); setSubjectImages([]); setSubjectOpen(true); }}><div>＋</div><strong>新建主体</strong></button>
           {subjects.map((name, i) => (
-            <button className="asset-subject-card" key={name} onClick={() => { setSubjectName(name); setSubjectImages([samples[i % samples.length], samples[(i + 1) % samples.length], samples[(i + 2) % samples.length]]); setActiveSubjectImage(0); setSubjectOpen(true); }}>
+            <button className="asset-subject-card" key={name} onClick={() => { setSubjectName(name); setSubjectImages([samples[i % samples.length]]); setSubjectOpen(true); }}>
               <div><img src={samples[i % samples.length]} alt={name} /></div><strong>{name}</strong><small>主体 · 最近修改</small>
             </button>
           ))}
@@ -5156,7 +5155,7 @@ function Assets({
             <header><h2 id="asset-subject-title">设置主体 <small>ⓘ</small></h2><button aria-label="关闭" onClick={() => setSubjectOpen(false)}>×</button></header>
             <label>参考主体 <b>*</b></label>
             <div className={`history-subject-upload ${subjectImages.length ? "has-preview" : ""}`}>
-              {subjectImages.length ? <><div className="subject-gallery"><img className="subject-main-image" src={subjectImages[activeSubjectImage] || subjectImages[0]} alt="当前主体主图" /><div className="subject-thumbnails">{subjectImages.map((src,index)=><button key={`${src}-${index}`} type="button" className={activeSubjectImage===index ? "active" : ""} aria-label={`切换到主体图片 ${index+1}`} onClick={()=>setActiveSubjectImage(index)}><img src={src} alt={`主体参考图 ${index+1}`} /></button>)}</div></div><button aria-label="添加新的主体图片" onClick={() => subjectFile.current?.click()}>▧＋</button></> : <><span className="history-upload-symbol">⇧</span><p>上传主图，将素材拖拽至此处</p><button onClick={() => subjectFile.current?.click()}>⇧ 从本地添加</button></>}
+              {subjectImages.length ? <><img src={subjectImages[0]} alt="主体预览" /><button aria-label="添加新的主体图片" onClick={() => subjectFile.current?.click()}>▧＋</button></> : <><span className="history-upload-symbol">⇧</span><p>上传主图，将素材拖拽至此处</p><button onClick={() => subjectFile.current?.click()}>⇧ 从本地添加</button></>}
             </div>
             <label>名称 <b>*</b></label>
             <div className="history-subject-input"><input maxLength={20} value={subjectName} onChange={(e) => setSubjectName(e.target.value)} placeholder="请输入名称" /><span>{subjectName.length}/20</span></div>
