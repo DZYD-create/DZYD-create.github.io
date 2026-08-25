@@ -66,6 +66,7 @@ function App() {
   const [editorReturn, setEditorReturn] = useState<"studio" | "history">("studio");
   const [tool, setTool] = useState<EditorTool | null>(null);
   const [canvasImage, setCanvasImage] = useState<string | null>(null);
+  const [canvasImageName, setCanvasImageName] = useState("AI 视觉创作 · 未命名项目");
   const [folders, setFolders] = useState(["品牌素材", "产品图片"]);
   const [accountOpen, setAccountOpen] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
@@ -402,6 +403,7 @@ function App() {
         {section === "canvas" && (
           <Canvas
             canvasImage={canvasImage}
+            canvasImageName={canvasImageName}
             setCanvasImage={setCanvasImage}
             folders={folders}
             setFolders={setFolders}
@@ -440,6 +442,11 @@ function App() {
               setSection("studio");
               setStudioView("home");
               setConversationCollapsed(false);
+            }}
+            onSendToCanvas={(item) => {
+              setCanvasImageName(item.name);
+              setCanvasImage(item.url);
+              setSection("canvas");
             }}
           />
         )}
@@ -1939,6 +1946,7 @@ function Editor({
 
 function Canvas({
   canvasImage,
+  canvasImageName,
   setCanvasImage,
   folders,
   setFolders,
@@ -1947,6 +1955,7 @@ function Canvas({
   onBack,
 }: {
   canvasImage: string | null;
+  canvasImageName: string;
   setCanvasImage: (v: string | null) => void;
   folders: string[];
   setFolders: (v: string[]) => void;
@@ -2022,7 +2031,7 @@ function Canvas({
             url: canvasImage,
             x: 0,
             y: 0,
-            name: "AI 视觉创作 · 未命名项目",
+            name: canvasImageName,
           },
         ]
       : [],
@@ -2200,10 +2209,10 @@ function Canvas({
           url: canvasImage,
           x: (v.length % 3) * 360,
           y: Math.floor(v.length / 3) * 480,
-          name: "AI 视觉创作 · 未命名项目",
+          name: canvasImageName,
         },
       ]);
-  }, [canvasImage, canvasNodes]);
+  }, [canvasImage, canvasImageName, canvasNodes]);
   useEffect(() => {
     if (!dragStart || !selection) return;
     const endX =
@@ -5159,10 +5168,12 @@ function Assets({
   folders,
   setFolders,
   onBack,
+  onSendToCanvas,
 }: {
   folders: string[];
   setFolders: (v: string[]) => void;
   onBack: () => void;
+  onSendToCanvas: (item: { name: string; url: string }) => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploaded, setUploaded] = useState<{ name: string; url: string; category: "assets" | "live" }[]>([
@@ -5177,10 +5188,12 @@ function Assets({
   const subjectFile = useRef<HTMLInputElement>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [folderMenu, setFolderMenu] = useState(false);
+  const [assetContext, setAssetContext] = useState<{ x: number; y: number; item: { name: string; url: string; category: "assets" | "live" } } | null>(null);
   useEffect(() => {
     const dismiss = () => {
       setAddOpen(false);
       setFolderMenu(false);
+      setAssetContext(null);
     };
     document.addEventListener("dismiss-popovers", dismiss);
     return () => document.removeEventListener("dismiss-popovers", dismiss);
@@ -5324,7 +5337,7 @@ function Assets({
       ) : (
         <div className="asset-content-grid">
           {activeAssets.map((item) => (
-            <button key={item.url}>
+            <button key={item.url} onContextMenu={(event)=>{event.preventDefault();event.stopPropagation();setAssetContext({x:Math.min(event.clientX,window.innerWidth-304),y:Math.min(event.clientY,window.innerHeight-330),item});}}>
               <img src={item.url} />
               <strong>{item.name}</strong>
               <small>刚刚上传</small>
@@ -5332,6 +5345,14 @@ function Assets({
           ))}
         </div>
       )}
+      {assetContext && <div className="asset-context-menu" style={{left:assetContext.x,top:assetContext.y}} onClick={(event)=>event.stopPropagation()}>
+        <button className="primary-action" onClick={()=>onSendToCanvas(assetContext.item)}><span>＋</span>发送到画布</button>
+        <button onClick={()=>{const name=window.prompt("请输入新名称",assetContext.item.name)?.trim();if(name)setUploaded((items)=>items.map((item)=>item.url===assetContext.item.url?{...item,name}:item));setAssetContext(null);}}><span>✎</span>重命名</button>
+        <button onClick={()=>setAssetContext(null)}><span>□</span>移动到</button>
+        <button onClick={()=>{setUploaded((items)=>[...items,{...assetContext.item,name:`${assetContext.item.name} 副本`,url:`${assetContext.item.url}#copy-${Date.now()}`}]);setAssetContext(null);}}><span>↥</span>创建副本</button>
+        <button onClick={()=>{const link=document.createElement("a");link.href=assetContext.item.url;link.download=`${assetContext.item.name}.png`;link.click();setAssetContext(null);}}><span>⇩</span>下载</button>
+        <button onClick={()=>{setUploaded((items)=>items.filter((item)=>item.url!==assetContext.item.url));setAssetContext(null);}}><span>♙</span>删除</button>
+      </div>}
       <input
         ref={fileRef}
         hidden
