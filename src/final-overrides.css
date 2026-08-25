@@ -8906,3 +8906,14 @@ button > img {
 .canvas-expand-handle.nw{left:-6px;top:-6px;border-right:0!important;border-bottom:0!important;cursor:nwse-resize}.canvas-expand-handle.n{left:50%;top:-6px;transform:translateX(-50%);width:34px!important;height:8px!important;border-width:2px!important;cursor:ns-resize}.canvas-expand-handle.ne{right:-6px;top:-6px;border-left:0!important;border-bottom:0!important;cursor:nesw-resize}.canvas-expand-handle.e{right:-6px;top:50%;transform:translateY(-50%);width:8px!important;height:34px!important;border-width:2px!important;cursor:ew-resize}.canvas-expand-handle.se{right:-6px;bottom:-6px;border-left:0!important;border-top:0!important;cursor:nwse-resize}.canvas-expand-handle.s{left:50%;bottom:-6px;transform:translateX(-50%);width:34px!important;height:8px!important;border-width:2px!important;cursor:ns-resize}.canvas-expand-handle.sw{left:-6px;bottom:-6px;border-right:0!important;border-top:0!important;cursor:nesw-resize}.canvas-expand-handle.w{left:-6px;top:50%;transform:translateY(-50%);width:8px!important;height:34px!important;border-width:2px!important;cursor:ew-resize}
 .canvas-node-card.is-hd-result .canvas-node-media img{filter:contrast(1.06) saturate(1.08) brightness(1.02)}
 .canvas-node-card.is-hd-result{box-shadow:0 10px 28px rgba(95,78,225,.18)}
+
+/* 画布发送箭头统一悬浮反馈。 */
+.canvas-node-prompt-send,.canvas-tool-prompt>button,.canvas-comment-reply>button,.canvas-crop-actions .crop-submit{border-radius:10px!important;cursor:pointer!important;transition:transform .16s ease,background .16s ease,box-shadow .16s ease,filter .16s ease!important}
+.canvas-node-prompt-send:hover,.canvas-node-prompt-send:focus-visible,.canvas-tool-prompt>button:hover,.canvas-tool-prompt>button:focus-visible,.canvas-comment-reply>button:hover,.canvas-comment-reply>button:focus-visible,.canvas-crop-actions .crop-submit:hover,.canvas-crop-actions .crop-submit:focus-visible{background:#eeebff!important;box-shadow:0 5px 14px rgba(105,83,222,.18)!important;filter:saturate(1.12);transform:translateY(-1px);outline:0!important}
+
+/* 擦除模式的透明棋盘格蒙版。 */
+.canvas-redraw-layer.canvas-erase-editor>polyline,.canvas-redraw-layer.canvas-erase-editor>rect{opacity:.56}
+
+/* 左右连接加号始终严格对齐图片本体的垂直中心。 */
+.canvas-node-port{top:calc(10px + var(--node-media-height,310px)/2)!important;transform:translateY(-50%) scale(.9)!important}
+.canvas-node-card:hover .canvas-node-port,.canvas-node-card[data-active] .canvas-node-port,.canvas-node-port:focus-visible{transform:translateY(-50%) scale(1)!important}
