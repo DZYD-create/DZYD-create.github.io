@@ -2741,6 +2741,15 @@ function Canvas({
     if (label === "上传") ref.current?.click();
   };
   const cropNode = canvasNodes.find((node) => node.id === activeNodeId);
+  const selectedLibraryAsset: Record<number, { name: string; url: string; group: string; description: string }> = {
+    1: { name: "冯梦飞", url: "/assets/feng-mengfei.png", group: "教师形象照", description: "将选中的教师头像快速放入当前画布" },
+    2: { name: "李颖", url: "/assets/teacher-liying.png", group: "教师形象照", description: "将选中的教师头像快速放入当前画布" },
+    3: { name: "憨爸", url: "/assets/teacher-hanba.png", group: "教师形象照", description: "将选中的教师头像快速放入当前画布" },
+    4: { name: "临风", url: "/assets/teacher-linfeng.png", group: "教师形象照", description: "将选中的教师头像快速放入当前画布" },
+    5: { name: "孩子开学抢跑必备神器", url: "/assets/school-kickoff-poster.png", group: "海报", description: "将选中的海报快速放入当前画布" },
+    6: { name: "洋葱学园", url: "/assets/brand-logo-kcle.png", group: "品牌 Logo", description: "将选中的品牌 Logo 快速放入当前画布" },
+  };
+  const activeLibraryAsset = selectedLibraryAsset[selectedTeacher];
   const redrawNode =
     canvasNodes.find((node) => node.id === activeNodeId) || canvasNodes[0];
   const promptOwnerId =
@@ -3879,29 +3888,23 @@ function Canvas({
                 setSelectedTeacher(0);
               }}
             />
-            {selectedTeacher > 0 && (
+            {activeLibraryAsset && (
               <div
                 className="apply-popover"
-                style={{ top: 259 + (selectedTeacher - 1) * 32 }}
+                style={{ top: selectedTeacher === 5 ? 259 : selectedTeacher === 6 ? 447 : 291 + (selectedTeacher - 1) * 32 }}
               >
-                <h3>{selectedTeacher === 6 ? "品牌 Logo" : "教师形象照"}</h3>
-                <p>{selectedTeacher === 6 ? "将选中的品牌 Logo 快速放入当前画布" : "将选中的教师头像快速放入当前画布"}</p>
+                <h3>{activeLibraryAsset.group}</h3>
+                <p>{activeLibraryAsset.description}</p>
                 <div className="selected-teacher">
-                  <img src={selectedTeacher === 6 ? "/assets/brand-logo-kcle.png" : selectedTeacher === 2 ? "/assets/feng-mengfei.png" : `/assets/teacher-${selectedTeacher}.svg`} />
-                  <span>
-                    {selectedTeacher === 6 ? "洋葱学园" :
-                      ["以诺老师", "冯梦飞", "李颖", "憨爸", "临风"][
-                        selectedTeacher - 1
-                      ]
-                    }
-                  </span>
+                  <img src={activeLibraryAsset.url} />
+                  <span>{activeLibraryAsset.name}</span>
                   <small>已选中</small>
                 </div>
                 <button
                   className="apply-canvas"
                   onClick={() => {
-                    const source = selectedTeacher === 6 ? "/assets/brand-logo-kcle.png" : selectedTeacher === 2 ? "/assets/feng-mengfei.png" : `/assets/teacher-${selectedTeacher}.svg`;
-                    const name = selectedTeacher === 6 ? "洋葱学园" : ["以诺老师", "冯梦飞", "李颖", "憨爸", "临风"][selectedTeacher - 1];
+                    const source = activeLibraryAsset.url;
+                    const name = activeLibraryAsset.name;
                     const nextId = Math.max(0, ...canvasNodes.map((node) => node.id)) + 1;
                     const nextX = canvasNodes.length ? Math.max(...canvasNodes.map((node) => node.x)) + 390 : 0;
                     setCanvasNodes((nodes) => [...nodes, { id: nextId, url: source, x: nextX, y: 0, name }]);
@@ -4690,8 +4693,10 @@ function AssetLibrary({
 }) {
   const [scope, setScope] = useState<"个人" | "团队">("团队");
   const [query, setQuery] = useState("");
-  const [teachers, setTeachers] = useState(["以诺老师", "冯梦飞", "李颖", "憨爸", "临风"]);
-  const [folderNames, setFolderNames] = useState({ root: "素材库", teachers: "教师形象照", logo: "logo" });
+  const [teachers, setTeachers] = useState(["冯梦飞", "李颖", "憨爸", "临风"]);
+  const teacherImages = ["/assets/feng-mengfei.png", "/assets/teacher-liying.png", "/assets/teacher-hanba.png", "/assets/teacher-linfeng.png"];
+  const [folderNames, setFolderNames] = useState({ root: "海报", teachers: "教师形象照", logo: "logo" });
+  const [posterName, setPosterName] = useState("孩子开学抢跑必备神器");
   const [logoName, setLogoName] = useState("洋葱学园");
   const [collapsed, setCollapsed] = useState({ root: false, teachers: false, logo: false });
   const [editing, setEditing] = useState<string | null>(null);
@@ -4701,6 +4706,7 @@ function AssetLibrary({
     const value=renameDraft.trim(); const key=editing;
     if (value && key) {
       if (key.startsWith("teacher-")) { const index=Number(key.split("-")[1]); setTeachers((items)=>items.map((item,i)=>i===index?value:item)); }
+      else if (key === "poster-file") setPosterName(value);
       else if (key === "logo-file") setLogoName(value);
       else if (["root","teachers","logo"].includes(key)) setFolderNames((names)=>({...names,[key]:value}));
     }
@@ -4735,6 +4741,10 @@ function AssetLibrary({
           {editing==="root"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("root",folderNames.root)}>{folderNames.root}</b>}
         </div>
         {!collapsed.root && <>
+        <div role="button" tabIndex={0} className={`asset-tree-entry asset-poster-file ${selected===5?"selected":""}`} onClick={()=>onSelect(5)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("poster-file",posterName);}}>
+          <img src="/assets/school-kickoff-poster.png" />
+          {editing==="poster-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{posterName}</span>}
+        </div>
         <div className="tree-row expanded">
           <img className={`tree-chevron ${collapsed.teachers ? "collapsed" : ""}`} src="/assets/asset-chevron.svg" onClick={() => setCollapsed((value)=>({...value,teachers:!value.teachers}))} />
           <i className="folder-icon blue" />
@@ -4749,7 +4759,7 @@ function AssetLibrary({
             onDoubleClick={(event) => { event.preventDefault(); event.stopPropagation(); beginInlineRename(`teacher-${i}`, v); }}
             key={v}
           >
-            <img src={i === 1 ? "/assets/feng-mengfei.png" : `/assets/teacher-${i + 1}.svg`} />
+            <img src={teacherImages[i]} />
             {editing===`teacher-${i}`?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{v}</span>}
           </div>
         ))}
