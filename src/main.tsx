@@ -5354,6 +5354,14 @@ function Assets({
         </div>
       ) : (
         <div className="asset-content-grid">
+          <button
+            className="asset-upload-entry"
+            onClick={() => fileRef.current?.click()}
+            aria-label={tab === "live" ? "上传直播间素材" : "上传海报素材"}
+          >
+            <div aria-hidden="true">＋</div>
+            <strong>{tab === "live" ? "上传直播间素材" : "上传海报"}</strong>
+          </button>
           {activeAssets.map((item) => (
             <button key={item.url} onContextMenu={(event)=>{event.preventDefault();event.stopPropagation();setAssetContext({x:Math.min(event.clientX,window.innerWidth-304),y:Math.min(event.clientY,window.innerHeight-330),item});}}>
               <img src={item.url} />
@@ -5366,8 +5374,6 @@ function Assets({
       {assetContext && <div className="asset-context-menu" style={{left:assetContext.x,top:assetContext.y}} onClick={(event)=>event.stopPropagation()}>
         <button className="primary-action" onClick={()=>onSendToCanvas(assetContext.item)}><span>＋</span>发送到画布</button>
         <button onClick={()=>{const name=window.prompt("请输入新名称",assetContext.item.name)?.trim();if(name)setUploaded((items)=>items.map((item)=>item.url===assetContext.item.url?{...item,name}:item));setAssetContext(null);}}><span>✎</span>重命名</button>
-        <button onClick={()=>setAssetContext(null)}><span>□</span>移动到</button>
-        <button onClick={()=>{setUploaded((items)=>[...items,{...assetContext.item,name:`${assetContext.item.name} 副本`,url:`${assetContext.item.url}#copy-${Date.now()}`}]);setAssetContext(null);}}><span>↥</span>创建副本</button>
         <button onClick={()=>{const link=document.createElement("a");link.href=assetContext.item.url;link.download=`${assetContext.item.name}.png`;link.click();setAssetContext(null);}}><span>⇩</span>下载</button>
         <button onClick={()=>{setUploaded((items)=>items.filter((item)=>item.url!==assetContext.item.url));setAssetContext(null);}}><span>♙</span>删除</button>
       </div>}

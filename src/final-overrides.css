@@ -9099,6 +9099,11 @@ button > img {
 .asset-content-grid{grid-template-columns:repeat(auto-fill,minmax(180px,220px))!important;align-items:start!important}
 .asset-content-grid button{overflow:hidden!important}
 .asset-content-grid img{display:block!important;width:100%!important;height:auto!important;aspect-ratio:9/16!important;object-fit:contain!important;background:#f3f4f6!important}
+.asset-content-grid .asset-upload-entry{padding:0 0 12px!important;border:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
+.asset-content-grid .asset-upload-entry>div{display:grid!important;place-items:center!important;width:100%!important;aspect-ratio:9/16!important;border-radius:12px!important;background:#f1f2f4!important;color:#65788d!important;font-size:30px!important;font-weight:300!important;line-height:1!important;transition:background .16s ease,transform .16s ease,box-shadow .16s ease!important}
+.asset-content-grid .asset-upload-entry>strong{margin:8px 6px 0!important;color:#17191f!important;font-size:14px!important;font-weight:500!important}
+.asset-content-grid .asset-upload-entry:hover>div,.asset-content-grid .asset-upload-entry:focus-visible>div{background:#ebe9ff!important;box-shadow:0 10px 22px rgba(91,76,196,.14)!important;transform:translateY(-3px)!important}
+.asset-content-grid .asset-upload-entry:focus-visible{outline:0!important}
 
 /* 画布素材树支持折叠与双击内联重命名。 */
 .asset-library-panel .asset-tree{max-height:380px;overflow-y:auto;overflow-x:hidden;padding-right:3px}
