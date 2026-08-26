@@ -2897,7 +2897,6 @@ function Canvas({
           <span className="canvas-brand-mark">
             <img src="/assets/brand-logo.svg" />
           </span>
-          <img src="/assets/project-dropdown.svg" />
         </button>
         <div>
           <strong>{projectTitle}</strong>
@@ -4868,6 +4867,7 @@ function CanvasDrawer({ mode }: { mode: "assets" | "history" | "comments" }) {
 
 function HistoryDrawer({ onClose }: { onClose: () => void }) {
   const [selected, setSelected] = useState([0, 1]);
+  const [tab, setTab] = useState<"海报" | "直播间" | "PPT">("海报");
   const toggle = (i: number) =>
     setSelected((v) => (v.includes(i) ? v.filter((n) => n !== i) : [...v, i]));
   return (
@@ -4887,9 +4887,15 @@ function HistoryDrawer({ onClose }: { onClose: () => void }) {
         </button>
       </div>
       <div className="figma-history-tabs">
-        <button className="active">海报</button>
-        <button>直播间</button>
-        <button>PPT</button>
+        {(["海报", "直播间", "PPT"] as const).map((item) => (
+          <button
+            key={item}
+            className={tab === item ? "active" : ""}
+            onClick={() => setTab(item)}
+          >
+            {item}
+          </button>
+        ))}
       </div>
       <div className="figma-history-search">
         <img src="/assets/history-search.svg" />
@@ -5314,15 +5320,6 @@ function Assets({
           </button>
           <strong>素材库</strong>
         </div>
-        <button
-          data-popover-trigger
-          onClick={() => {
-            setAddOpen((v) => !v);
-            setFolderMenu(false);
-          }}
-        >
-          添加
-        </button>
       </header>
       <nav className="asset-page-tabs">
         <button
@@ -5365,18 +5362,6 @@ function Assets({
           直播间
         </button>
       </nav>
-      {addOpen && (
-        <div className="asset-add-menu">
-          <button className="selected" onClick={() => fileRef.current?.click()}>
-            <img src="/assets/upload.svg" />
-            上传文件<span>✓</span>
-          </button>
-          <button onClick={addFolder}>
-            <img src="/assets/new.svg" />
-            新建文件
-          </button>
-        </div>
-      )}
       {folderMenu && (
         <div className="asset-folder-menu">
           <button className="selected" onClick={addFolder}>

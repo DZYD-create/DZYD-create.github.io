@@ -9183,3 +9183,39 @@ button > img {
   transform:none!important;
 }
 .rail-items .nav-glyph-assets .nav-motion{display:none!important}
+
+/* Completed-comment reply field uses legible black text and caret. */
+.canvas-comment-card .canvas-comment-reply input{
+  color:#000!important;
+  caret-color:#000!important;
+  opacity:1!important;
+}
+.canvas-comment-card .canvas-comment-reply input::placeholder{
+  color:#000!important;
+  opacity:.7!important;
+}
+
+/* Center the complete dock group so the first and last tools have equal edge space. */
+.canvas-bottom-dock{
+  justify-content:center!important;
+  padding-left:20px!important;
+  padding-right:20px!important;
+  column-gap:14px!important;
+}
+.canvas-bottom-dock>i{margin-left:0!important;margin-right:0!important}
+
+/* Canvas history categories are real selectable tabs with a visible hover state. */
+.figma-history-tabs>button{
+  cursor:pointer!important;
+  transition:background .16s ease,color .16s ease,box-shadow .16s ease!important;
+}
+.figma-history-tabs>button:hover,.figma-history-tabs>button:focus-visible{
+  background:#f0edff!important;
+  color:#5e50d8!important;
+  box-shadow:inset 0 0 0 1px #c4baf7!important;
+  outline:0!important;
+}
+.figma-history-tabs>button.active{
+  background:#ebe8ff!important;
+  color:#5144c8!important;
+}
