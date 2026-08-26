@@ -2287,6 +2287,39 @@ function Canvas({
       })
       .map((n) => n.id);
     setSelectedNodeIds(ids);
+    if (ids.length) {
+      const selectedBounds = canvasNodes
+        .filter((node) => ids.includes(node.id))
+        .map((node) => {
+          const geometry = getNodeGeometry(node);
+          const left = w / 2 + node.x - geometry.cardWidth / 2;
+          const top = 32 + node.y;
+          return {
+            left,
+            top,
+            right: left + geometry.cardWidth,
+            bottom: top + geometry.cardHeight,
+          };
+        });
+      const snapped = {
+        x: Math.min(...selectedBounds.map((bound) => bound.left)),
+        y: Math.min(...selectedBounds.map((bound) => bound.top)),
+        width:
+          Math.max(...selectedBounds.map((bound) => bound.right)) -
+          Math.min(...selectedBounds.map((bound) => bound.left)),
+        height:
+          Math.max(...selectedBounds.map((bound) => bound.bottom)) -
+          Math.min(...selectedBounds.map((bound) => bound.top)),
+      };
+      if (
+        Math.abs(selection.x - snapped.x) > 0.5 ||
+        Math.abs(selection.y - snapped.y) > 0.5 ||
+        Math.abs(selection.width - snapped.width) > 0.5 ||
+        Math.abs(selection.height - snapped.height) > 0.5
+      ) {
+        setSelection(snapped);
+      }
+    }
     setSelectedCommentIds(
       canvasComments
         .filter(
@@ -3637,7 +3670,7 @@ function Canvas({
                 <em>导入本地图片、参考图或素材</em>
               </span>
             </button>
-            <button className="selected" onClick={() => switchMode("history")}>
+            <button onClick={() => switchMode("history")}>
               <img src="/assets/canvas-nav-history.svg" />
               <span>
                 <b>从生成历史选择</b>
