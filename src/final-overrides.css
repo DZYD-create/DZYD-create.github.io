@@ -9219,3 +9219,14 @@ button > img {
   background:#ebe8ff!important;
   color:#5144c8!important;
 }
+
+/* Extracted folder previews always render above the folder carousel and controls. */
+.folder-result.folder-browser .folder-expanded-images{
+  position:absolute!important;
+  z-index:10020!important;
+  isolation:isolate!important;
+}
+.folder-result.folder-browser .folder-expanded-images>button{
+  position:relative!important;
+  z-index:10021!important;
+}

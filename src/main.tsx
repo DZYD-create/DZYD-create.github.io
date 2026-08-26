@@ -4051,7 +4051,7 @@ function Canvas({
             >
               <img src="/assets/zoom-minus.svg" />
             </button>
-            <b>{canvasZoom}%</b>
+            <b>{Math.round(canvasZoom)}%</b>
             <button
               aria-label="放大画布"
               onClick={(event) => zoomCanvasAtPoint(canvasZoom + 10, event.clientX, event.clientY)}
