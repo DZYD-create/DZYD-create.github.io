@@ -2024,6 +2024,7 @@ function Canvas({
     "#EDECFF",
   ]);
   const [folderColorOpen, setFolderColorOpen] = useState<number | null>(null);
+  const [folderDeleteIndex, setFolderDeleteIndex] = useState<number | null>(null);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(
     null,
   );
@@ -3809,6 +3810,12 @@ function Canvas({
                     key={index}
                     className={`folder-carousel-item ${position} ${offset === 0 ? "center" : ""}`}
                     aria-label={`文件夹 ${index + 1}`}
+                    onContextMenu={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      setFolderDeleteIndex(index);
+                      setFolderColorOpen(null);
+                    }}
                     onClick={() => {
                       if (offset === 0) setFolderExpanded((v) => !v);
                       else {
@@ -3934,6 +3941,41 @@ function Canvas({
                 </button>
               )}
             </div>
+          </div>
+        )}
+        {mode === "folder" && folderDeleteIndex !== null && (
+          <div className="folder-delete-backdrop" role="presentation">
+            <section
+              className="folder-delete-dialog"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="folder-delete-title"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <header>
+                <h2 id="folder-delete-title">确认删除</h2>
+                <button aria-label="关闭" onClick={() => setFolderDeleteIndex(null)}>×</button>
+              </header>
+              <p>文件夹“{folderNames[folderDeleteIndex]}”删除后将无法找回</p>
+              <footer>
+                <button className="cancel" onClick={() => setFolderDeleteIndex(null)}>取消</button>
+                <button
+                  className="confirm"
+                  onClick={() => {
+                    const removing = folderDeleteIndex;
+                    const nextNames = folderNames.filter((_, index) => index !== removing);
+                    const nextColors = folderColors.filter((_, index) => index !== removing);
+                    setFolderNames(nextNames);
+                    setFolderColors(nextColors);
+                    setFolderIndex(Math.max(0, Math.min(removing, nextNames.length - 1)));
+                    setFolderExpanded(false);
+                    setFolderDeleteIndex(null);
+                  }}
+                >
+                  删除
+                </button>
+              </footer>
+            </section>
           </div>
         )}
         {mode === "assets" && (

@@ -9170,7 +9170,7 @@ button > img {
   top:50%!important;
   transform:translate(-50%,-50%)!important;
   zoom:1!important;
-  overflow:hidden!important;
+  overflow:visible!important;
   overscroll-behavior:none!important;
   touch-action:none!important;
 }
@@ -9230,3 +9230,34 @@ button > img {
   position:relative!important;
   z-index:10021!important;
 }
+
+/* Folder deletion confirmation follows the supplied modal and stays over all canvas content. */
+.folder-delete-backdrop{
+  position:fixed;
+  inset:60px 0 0;
+  z-index:20000;
+  display:grid;
+  place-items:center;
+  background:rgba(54,58,76,.38);
+  backdrop-filter:blur(3px);
+}
+.folder-delete-dialog{
+  width:min(598px,calc(100vw - 48px));
+  min-height:234px;
+  padding:28px 38px 30px;
+  box-sizing:border-box;
+  border:1px solid #ded8fb;
+  border-radius:24px;
+  background:#fff;
+  box-shadow:0 20px 52px rgba(52,48,82,.18);
+  color:#202432;
+}
+.folder-delete-dialog header{display:flex;align-items:center;justify-content:space-between}
+.folder-delete-dialog h2{margin:0;font-size:20px;line-height:28px;font-weight:500}
+.folder-delete-dialog header button{width:32px;height:32px;padding:0;border:0;background:transparent;color:#4b5260;font-size:28px;cursor:pointer}
+.folder-delete-dialog p{margin:28px 0 36px;color:#788297;font-size:14px;line-height:22px}
+.folder-delete-dialog footer{display:flex;justify-content:flex-end;gap:14px}
+.folder-delete-dialog footer button{width:94px;height:42px;border-radius:12px;font-size:14px;cursor:pointer}
+.folder-delete-dialog .cancel{border:1px solid #dedcef;background:#f8f8fb;color:#343947}
+.folder-delete-dialog .confirm{border:0;background:linear-gradient(135deg,#8777f5,#7561ed);color:#fff;box-shadow:0 8px 18px rgba(117,97,237,.24)}
+.folder-delete-dialog footer button:hover{transform:translateY(-1px);filter:brightness(.98)}
