@@ -9130,3 +9130,32 @@ button > img {
 .asset-tree>.asset-tree-entry>span{font-size:14px;color:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .asset-inline-rename{border:2px solid #806af2!important;color:#332a7b!important;box-shadow:0 0 0 2px rgba(128,106,242,.12)!important}
 .asset-inline-rename::selection{background:#806af2;color:#fff}
+
+/* Canvas asset library is fixed UI chrome: it neither scales nor scrolls with the canvas. */
+.figma-infinite-canvas>.asset-library-panel{
+  position:fixed!important;
+  left:20px!important;
+  top:158px!important;
+  width:292px!important;
+  height:584px!important;
+  overflow:hidden!important;
+  transform:none!important;
+  zoom:1!important;
+}
+.asset-library-panel .asset-tree{
+  max-height:none!important;
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+  touch-action:none!important;
+}
+.figma-infinite-canvas>.apply-popover{
+  position:fixed!important;
+  left:324px!important;
+  width:304px!important;
+  transform:none!important;
+  zoom:1!important;
+}
+.figma-infinite-canvas>.apply-popover .selected-teacher small{
+  white-space:nowrap!important;
+  flex:0 0 auto!important;
+}

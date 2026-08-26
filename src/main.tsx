@@ -880,12 +880,7 @@ function NewCreationPage({
   const [modelOpen, setModelOpen] = useState(false);
   const [sizeOpen, setSizeOpen] = useState(false);
   const [assetsOpen, setAssetsOpen] = useState(false);
-  const [greetingFinished, setGreetingFinished] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    const timer = window.setTimeout(() => setGreetingFinished(true), 1790);
-    return () => window.clearTimeout(timer);
-  }, []);
   useEffect(() => {
     const dismiss = () => {
       setUploadOpen(false);
@@ -907,8 +902,8 @@ function NewCreationPage({
       </header>
       <div className="new-creation-intro">
         <img
-          className={greetingFinished ? "greeting-settled" : "greeting-playing"}
-          src={greetingFinished ? "/assets/dog-greeting-ears.png" : "/assets/dog-greeting-public.gif"}
+          className="greeting-playing"
+          src="/assets/dog-greeting-public.gif"
           alt="打招呼的小狗"
         />
         <p>你好，我是你的 AI 设计助手</p>
@@ -2106,6 +2101,27 @@ function Canvas({
   const [activeNodeId, setActiveNodeId] = useState<number | null>(null);
   const [cropClosing, setCropClosing] = useState(false);
   const [canvasZoom, setCanvasZoom] = useState(75);
+  const zoomCanvasAtPoint = (nextZoom: number, clientX?: number, clientY?: number) => {
+    const canvas = canvasRef.current;
+    const boundedZoom = Math.max(25, Math.min(200, nextZoom));
+    if (!canvas) {
+      setCanvasZoom(boundedZoom);
+      return;
+    }
+    const box = canvas.getBoundingClientRect();
+    const pointerX = (clientX ?? box.left + box.width / 2) - box.left;
+    const pointerY = (clientY ?? box.top + box.height / 2) - box.top;
+    const oldScale = canvasZoom / 75;
+    const newScale = boundedZoom / 75;
+    const originX = canvas.clientWidth / 2;
+    const worldX = originX + (canvas.scrollLeft + pointerX - originX) / oldScale;
+    const worldY = (canvas.scrollTop + pointerY) / oldScale;
+    setCanvasZoom(boundedZoom);
+    window.requestAnimationFrame(() => {
+      canvas.scrollLeft = originX + (worldX - originX) * newScale - pointerX;
+      canvas.scrollTop = worldY * newScale - pointerY;
+    });
+  };
   const [promptPopover, setPromptPopover] = useState<"model" | "size" | null>(
     null,
   );
@@ -2492,9 +2508,7 @@ function Canvas({
           return;
         event.preventDefault();
         const direction = event.deltaY < 0 ? 1 : -1;
-        setCanvasZoom((value) =>
-          Math.max(25, Math.min(200, value + direction * 5)),
-        );
+        zoomCanvasAtPoint(canvasZoom + direction * 5, event.clientX, event.clientY);
         return;
       }
       if (!event.shiftKey) return;
@@ -2503,7 +2517,7 @@ function Canvas({
     };
     canvas.addEventListener("wheel", wheel, { passive: false });
     return () => canvas.removeEventListener("wheel", wheel);
-  }, []);
+  }, [canvasZoom]);
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -3986,16 +4000,14 @@ function Canvas({
           <div className="figma-zoom">
             <button
               aria-label="缩小画布"
-              onClick={() => setCanvasZoom((value) => Math.max(25, value - 10))}
+              onClick={(event) => zoomCanvasAtPoint(canvasZoom - 10, event.clientX, event.clientY)}
             >
               <img src="/assets/zoom-minus.svg" />
             </button>
             <b>{canvasZoom}%</b>
             <button
               aria-label="放大画布"
-              onClick={() =>
-                setCanvasZoom((value) => Math.min(200, value + 10))
-              }
+              onClick={(event) => zoomCanvasAtPoint(canvasZoom + 10, event.clientX, event.clientY)}
             >
               <img src="/assets/zoom-plus.svg" />
             </button>
@@ -4695,10 +4707,10 @@ function AssetLibrary({
   const [query, setQuery] = useState("");
   const [teachers, setTeachers] = useState(["冯梦飞", "李颖", "憨爸", "临风"]);
   const teacherImages = ["/assets/feng-mengfei.png", "/assets/teacher-liying.png", "/assets/teacher-hanba.png", "/assets/teacher-linfeng.png"];
-  const [folderNames, setFolderNames] = useState({ root: "海报", teachers: "教师形象照", logo: "logo" });
+  const [folderNames, setFolderNames] = useState({ poster: "海报", teachers: "教师形象照", logo: "logo" });
   const [posterName, setPosterName] = useState("孩子开学抢跑必备神器");
   const [logoName, setLogoName] = useState("洋葱学园");
-  const [collapsed, setCollapsed] = useState({ root: false, teachers: false, logo: false });
+  const [collapsed, setCollapsed] = useState({ poster: false, teachers: false, logo: false });
   const [editing, setEditing] = useState<string | null>(null);
   const [renameDraft, setRenameDraft] = useState("");
   const beginInlineRename = (key: string, current: string) => { setEditing(key); setRenameDraft(current); };
@@ -4708,7 +4720,7 @@ function AssetLibrary({
       if (key.startsWith("teacher-")) { const index=Number(key.split("-")[1]); setTeachers((items)=>items.map((item,i)=>i===index?value:item)); }
       else if (key === "poster-file") setPosterName(value);
       else if (key === "logo-file") setLogoName(value);
-      else if (["root","teachers","logo"].includes(key)) setFolderNames((names)=>({...names,[key]:value}));
+      else if (["poster","teachers","logo"].includes(key)) setFolderNames((names)=>({...names,[key]:value}));
     }
     setEditing(null);
   };
@@ -4736,15 +4748,15 @@ function AssetLibrary({
       <small className="folder-label">文件夹</small>
       <div className="asset-tree">
         <div className="tree-row">
-          <img className={`tree-chevron ${collapsed.root ? "collapsed" : ""}`} src="/assets/asset-chevron.svg" onClick={() => setCollapsed((value)=>({...value,root:!value.root}))} />
+          <img className={`tree-chevron ${collapsed.poster ? "collapsed" : ""}`} src="/assets/asset-chevron.svg" onClick={() => setCollapsed((value)=>({...value,poster:!value.poster}))} />
           <i className="folder-icon cyan" />
-          {editing==="root"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("root",folderNames.root)}>{folderNames.root}</b>}
+          {editing==="poster"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("poster",folderNames.poster)}>{folderNames.poster}</b>}
         </div>
-        {!collapsed.root && <>
+        {!collapsed.poster &&
         <div role="button" tabIndex={0} className={`asset-tree-entry asset-poster-file ${selected===5?"selected":""}`} onClick={()=>onSelect(5)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("poster-file",posterName);}}>
           <img src="/assets/school-kickoff-poster.png" />
           {editing==="poster-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{posterName}</span>}
-        </div>
+        </div>}
         <div className="tree-row expanded">
           <img className={`tree-chevron ${collapsed.teachers ? "collapsed" : ""}`} src="/assets/asset-chevron.svg" onClick={() => setCollapsed((value)=>({...value,teachers:!value.teachers}))} />
           <i className="folder-icon blue" />
@@ -4770,7 +4782,6 @@ function AssetLibrary({
           {editing==="logo"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("logo",folderNames.logo)}>{folderNames.logo}</b>}
         </div>
         {!collapsed.logo && <div role="button" tabIndex={0} className={`asset-tree-entry asset-logo-file ${selected===6?"selected":""}`} onClick={()=>onSelect(6)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("logo-file",logoName);}}><img src="/assets/brand-logo-kcle.png" />{editing==="logo-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{logoName}</span>}</div>}
-        </>}
       </div>
     </aside>
   );
