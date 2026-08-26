@@ -6779,14 +6779,17 @@ button > img {
 .figma-infinite-canvas > .canvas-link-actions {
   transform: scale(var(--canvas-scale, 1));
   transform-origin: 50% 0;
-  transition: transform 0.22s ease;
+  transition: transform 80ms linear;
 }
 .figma-infinite-canvas > .canvas-home-guide,
-.figma-infinite-canvas > .folder-result,
-.figma-infinite-canvas > .global-folder-selection,
-.figma-infinite-canvas > .create-folder-button {
+.figma-infinite-canvas > .folder-result {
   zoom: var(--canvas-scale, 1);
-  transition: zoom 0.22s ease;
+  transition: zoom 80ms linear;
+}
+.figma-infinite-canvas > .global-folder-selection,
+.figma-infinite-canvas > .create-folder-button{
+  zoom:1!important;
+  transition:left 80ms linear,top 80ms linear,width 80ms linear,height 80ms linear!important;
 }
 .canvas-vertical-nav {
   position: fixed !important;
@@ -9159,3 +9162,24 @@ button > img {
   white-space:nowrap!important;
   flex:0 0 auto!important;
 }
+
+/* Folder browser is modal canvas chrome: fixed and immune to canvas pan/zoom shortcuts. */
+.figma-infinite-canvas>.folder-result.folder-browser{
+  position:fixed!important;
+  left:50%!important;
+  top:50%!important;
+  transform:translate(-50%,-50%)!important;
+  zoom:1!important;
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+  touch-action:none!important;
+}
+
+/* Home asset icon matches the supplied stacked-layer reference at visible size. */
+.rail-items .nav-glyph-assets>img{
+  width:28px!important;
+  height:28px!important;
+  object-fit:contain!important;
+  transform:none!important;
+}
+.rail-items .nav-glyph-assets .nav-motion{display:none!important}

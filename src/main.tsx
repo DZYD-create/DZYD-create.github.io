@@ -2480,6 +2480,8 @@ function Canvas({
     const clearSelection = (event: PointerEvent) => {
       if ((event.target as HTMLElement).closest(".create-folder-button"))
         return;
+      if ((event.target as HTMLElement).closest(".canvas-node-card[data-selected]"))
+        return;
       setSelection(null);
     };
     canvas.addEventListener("pointerdown", clearSelection, { capture: true });
@@ -2531,6 +2533,10 @@ function Canvas({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const wheel = (event: WheelEvent) => {
+      if (mode === "folder") {
+        event.preventDefault();
+        return;
+      }
       if (event.ctrlKey || event.metaKey) {
         const target = event.target as HTMLElement;
         if (
@@ -2540,8 +2546,8 @@ function Canvas({
         )
           return;
         event.preventDefault();
-        const direction = event.deltaY < 0 ? 1 : -1;
-        zoomCanvasAtPoint(canvasZoom + direction * 5, event.clientX, event.clientY);
+        const nextZoom = canvasZoom * Math.exp(-event.deltaY * 0.0015);
+        zoomCanvasAtPoint(nextZoom, event.clientX, event.clientY);
         return;
       }
       if (!event.shiftKey) return;
@@ -2550,7 +2556,7 @@ function Canvas({
     };
     canvas.addEventListener("wheel", wheel, { passive: false });
     return () => canvas.removeEventListener("wheel", wheel);
-  }, [canvasZoom]);
+  }, [canvasZoom, mode]);
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -3724,18 +3730,27 @@ function Canvas({
               <div
                 className="global-folder-selection"
                 style={{
-                  left: selection.x,
-                  top: selection.y,
-                  width: selection.width,
-                  height: selection.height,
+                  left:
+                    (canvasRef.current?.clientWidth || 1000) / 2 +
+                    (selection.x - (canvasRef.current?.clientWidth || 1000) / 2) *
+                      (canvasZoom / 75),
+                  top: selection.y * (canvasZoom / 75),
+                  width: selection.width * (canvasZoom / 75),
+                  height: selection.height * (canvasZoom / 75),
                 }}
               />
               {!dragStart && selectedNodeIds.length > 0 && (
                 <button
                   className="create-folder-button"
                   style={{
-                    left: selection.x + selection.width + 16,
-                    top: selection.y + selection.height - 27,
+                    left:
+                      (canvasRef.current?.clientWidth || 1000) / 2 +
+                      (selection.x + selection.width -
+                        (canvasRef.current?.clientWidth || 1000) / 2) *
+                        (canvasZoom / 75) +
+                      16,
+                    top:
+                      (selection.y + selection.height) * (canvasZoom / 75) - 27,
                   }}
                   onClick={() => {
                     setMode("folder");
@@ -3743,7 +3758,7 @@ function Canvas({
                     setSelection(null);
                   }}
                 >
-                  ＋ 新建文件夹
+                  ＋ 添加到文件夹
                 </button>
               )}
             </>
