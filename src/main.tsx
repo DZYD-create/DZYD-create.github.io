@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 import "./overrides.css";
@@ -18,6 +19,8 @@ type CanvasNode = {
   placeholder?: boolean;
   mediaWidth?: number;
   mediaHeight?: number;
+  generated?: boolean;
+  generationPrompt?: string;
 };
 type eastWest = "left" | "right";
 type CanvasLink = {
@@ -296,6 +299,11 @@ function App() {
               if (prompt === previous) setPrompt(next);
             }}
             onNewWork={newCreation}
+            onClear={() => {
+              setConversations([]);
+              setActiveConversation(null);
+              newCreation();
+            }}
             onOpenConversation={(title) => {
               setPrompt(title);
               setActiveConversation(title);
@@ -430,9 +438,11 @@ function App() {
               setStudioView("home");
               setConversationCollapsed(false);
             }}
-            onCanvas={() => {
+            onCanvas={(image, name) => {
               setSection("canvas");
-              setCanvasImage(null);
+              setPendingCanvasAssets([]);
+              setCanvasImage(image || null);
+              if (name) setCanvasImageName(name);
             }}
           />
         )}
@@ -502,11 +512,13 @@ function GenerationPage({
   const [sizeOpen, setSizeOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [assetsOpen, setAssetsOpen] = useState(false);
+  const [invocationOpen, setInvocationOpen] = useState(false);
   const generationFile = useRef<HTMLInputElement>(null);
   const composerInput = useRef<HTMLTextAreaElement>(null);
   const [progress, setProgress] = useState(generating ? 0 : 100);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteRound, setDeleteRound] = useState<number | null>(null);
+  const [moreRound, setMoreRound] = useState<number | null>(null);
   const [deletedRounds, setDeletedRounds] = useState<number[]>([]);
   const [resultRound, setResultRound] = useState(0);
   const [roundPrompts, setRoundPrompts] = useState([
@@ -527,6 +539,7 @@ function GenerationPage({
       setSizeOpen(false);
       setUploadOpen(false);
       setAssetsOpen(false);
+      setInvocationOpen(false);
     };
     document.addEventListener("dismiss-popovers", dismiss);
     return () => document.removeEventListener("dismiss-popovers", dismiss);
@@ -624,15 +637,34 @@ function GenerationPage({
                       window.setTimeout(() => composerInput.current?.focus(), 0);
                     }}
                   >
-                    <img src="/assets/magic.svg" />重新编辑
+                    <img src="/assets/action-reedit-figma.svg" />重新编辑
                   </button>
                   <button className="action-regenerate" onClick={() => startNewRound(roundPrompts[round])}>
-                    <img src="/assets/figma-redo.svg" />再次生成
+                    <img src="/assets/action-regenerate.svg" />再次生成
                   </button>
-                  <button className="action-more" aria-label={`第 ${round + 1} 轮更多`}>•••</button>
-                  <button className="batch-delete" onClick={() => { setDeleteRound(round); setDeleteOpen(true); }}>
-                    <span className="batch-delete-icon" />批量删除
-                  </button>
+                  <div className="generation-more-wrap">
+                    <button
+                      className="action-more"
+                      aria-label={`第 ${round + 1} 轮更多`}
+                      aria-expanded={moreRound === round}
+                      onClick={() => setMoreRound((current) => current === round ? null : round)}
+                    >•••</button>
+                    {moreRound === round && (
+                      <div className="generation-more-menu" role="menu">
+                        <button
+                          className="batch-delete"
+                          role="menuitem"
+                          onClick={() => {
+                            setMoreRound(null);
+                            setDeleteRound(round);
+                            setDeleteOpen(true);
+                          }}
+                        >
+                          <img className="batch-delete-icon" src="/assets/action-trash.svg" alt="" />批量删除
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -680,17 +712,18 @@ function GenerationPage({
           </section>
         </div>
       )}
-      <div className="generation-composer new-creation-composer">
+      <div className="composer figma-composer generation-composer new-creation-composer">
         <textarea
           ref={composerInput}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="描述你的设计需求，输入 @ 可引用素材或 Skill"
         />
-        <footer>
+        <footer className="composer-actions">
           <button
             data-popover-trigger
-            className="new-upload"
+            className="new-upload home-upload-trigger"
+            aria-expanded={uploadOpen}
             onClick={() => {
               setUploadOpen((v) => !v);
               setModelOpen(false);
@@ -702,6 +735,8 @@ function GenerationPage({
           </button>
           <button
             data-popover-trigger
+            className="home-model-trigger"
+            aria-expanded={modelOpen}
             title={`当前模型：${model}`}
             onClick={() => {
               setModelOpen((v) => !v);
@@ -715,6 +750,8 @@ function GenerationPage({
           </button>
           <button
             data-popover-trigger
+            className="home-size-trigger"
+            aria-expanded={sizeOpen}
             title={`当前尺寸：${ratio}`}
             onClick={() => {
               setSizeOpen((v) => !v);
@@ -728,6 +765,8 @@ function GenerationPage({
           </button>
           <button
             data-popover-trigger
+            className="home-assets-trigger"
+            aria-expanded={assetsOpen}
             onClick={() => {
               setAssetsOpen((v) => !v);
               setUploadOpen(false);
@@ -739,7 +778,19 @@ function GenerationPage({
             资产库
           </button>
           <i />
-          <button className="new-model">⌘</button>
+          <button
+            data-popover-trigger
+            className="new-model invocation-trigger"
+            aria-label="大模型调用"
+            aria-expanded={invocationOpen}
+            onClick={() => {
+              setInvocationOpen((value) => !value);
+              setUploadOpen(false);
+              setModelOpen(false);
+              setSizeOpen(false);
+              setAssetsOpen(false);
+            }}
+          ><img src="/assets/figma-invocation-chip.svg" alt="" /></button>
           <button className="new-generate" onClick={() => startNewRound(draft)}>
             {preparing || generating ? "生成中…" : "立即生成"}
           </button>
@@ -747,10 +798,10 @@ function GenerationPage({
         {uploadOpen && (
           <div className="popover upload-pop new-upload-pop">
             <button onClick={() => generationFile.current?.click()}>
-              <img src="/assets/upload.svg" /> 上传文档
+              <img src="/assets/upload-document.svg" /> 上传文档
             </button>
             <button onClick={() => generationFile.current?.click()}>
-              <img src="/assets/upload.svg" /> 上传图片
+              <FigmaUploadImageIcon /> 上传图片
             </button>
           </div>
         )}
@@ -764,6 +815,7 @@ function GenerationPage({
             }}
           />
         )}
+        {invocationOpen && <ModelInvocationPopover />}
         <input
           ref={generationFile}
           hidden
@@ -776,22 +828,34 @@ function GenerationPage({
   );
 }
 
+function summarizeConversationTitle(title: string) {
+  const cleaned = title.replace(/\s+/g, " ").trim().replace(/[。！？!?，,；;：:…]+$/g, "");
+  for (let size = 2; size <= Math.min(14, Math.floor(cleaned.length / 2)); size += 1) {
+    const phrase = cleaned.slice(0, size);
+    if (cleaned.startsWith(phrase + phrase)) return phrase;
+  }
+  return cleaned.length > 14 ? `${cleaned.slice(0, 13)}…` : cleaned;
+}
+
 function StudioSidebar({
   conversations,
   activeConversation,
   onRename,
   onNewWork,
+  onClear,
   onOpenConversation,
 }: {
   conversations: Array<[string, string]>;
   activeConversation: string | null;
   onRename: (previous: string, next: string) => void;
   onNewWork: () => void;
+  onClear: () => void;
   onOpenConversation: (title: string) => void;
 }) {
   const [query, setQuery] = useState("");
   const [renaming, setRenaming] = useState<string | null>(null);
   const [renameDraft, setRenameDraft] = useState("");
+  const [clearOpen, setClearOpen] = useState(false);
   const renameOriginal = useRef("");
   const renamePrevious = useRef("");
   const visible = conversations.filter(([title]) =>
@@ -800,7 +864,8 @@ function StudioSidebar({
   return (
     <aside className="conversation-panel">
       <button className="new-work" onClick={onNewWork}>
-        <img src="/assets/creation-ai.svg" /> <span>新建创作</span>
+        <span className="new-work-main"><img src="/assets/figma-new-work-left.svg" alt="" /><b>新建创作</b></span>
+        <img className="new-work-stars" src="/assets/figma-new-work-right.svg" alt="" />
       </button>
       <label className="search conversation-search">
         <img src="/assets/search.svg" />
@@ -826,11 +891,27 @@ function StudioSidebar({
             }}
             key={a}
           >
-            <strong>{a}</strong><small>{b}</small>
+            <strong title={a}>{summarizeConversationTitle(a)}</strong><small>{b}</small>
           </button>
         ))}
       </div>
-      <div className="panel-footer">清空记录　　设置</div>
+      <div className="panel-footer">
+        <button onClick={() => setClearOpen(true)}>清空记录</button>
+        <button>设置</button>
+      </div>
+      {clearOpen && (
+        <div className="conversation-clear-backdrop" role="presentation">
+          <section className="conversation-clear-dialog" role="dialog" aria-modal="true" aria-labelledby="clear-conversation-title">
+            <button className="conversation-clear-close" aria-label="关闭" onClick={() => setClearOpen(false)}>×</button>
+            <h2 id="clear-conversation-title">确认清空记录</h2>
+            <p>清空后，侧边栏中的全部过往对话将无法找回。</p>
+            <footer>
+              <button className="cancel" onClick={() => setClearOpen(false)}>取消</button>
+              <button className="confirm" onClick={() => { setClearOpen(false); onClear(); }}>确认清空</button>
+            </footer>
+          </section>
+        </div>
+      )}
       {renaming && (
         <div className="conversation-rename-backdrop" onClick={(event) => event.stopPropagation()}>
           <section className="conversation-rename-dialog" role="dialog" aria-modal="true" aria-labelledby="rename-title">
@@ -880,6 +961,8 @@ function NewCreationPage({
   const [modelOpen, setModelOpen] = useState(false);
   const [sizeOpen, setSizeOpen] = useState(false);
   const [assetsOpen, setAssetsOpen] = useState(false);
+  const [invocationOpen, setInvocationOpen] = useState(false);
+  const [greetingLook, setGreetingLook] = useState({ x: 0, y: 0 });
   const fileRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     const dismiss = () => {
@@ -887,12 +970,23 @@ function NewCreationPage({
       setModelOpen(false);
       setSizeOpen(false);
       setAssetsOpen(false);
+      setInvocationOpen(false);
     };
     document.addEventListener("dismiss-popovers", dismiss);
     return () => document.removeEventListener("dismiss-popovers", dismiss);
   }, []);
   return (
-    <section className="new-creation-page">
+    <section
+      className="new-creation-page"
+      onPointerMove={(event) => {
+        const rect = event.currentTarget.getBoundingClientRect();
+        setGreetingLook({
+          x: Math.max(-1, Math.min(1, (event.clientX - rect.left) / rect.width * 2 - 1)),
+          y: Math.max(-1, Math.min(1, (event.clientY - rect.top) / rect.height * 2 - 1)),
+        });
+      }}
+      onPointerLeave={() => setGreetingLook({ x: 0, y: 0 })}
+    >
       <header className="new-creation-header">
         <button onClick={onBack} aria-label="返回首页">
           <img src="/assets/history-back.svg" />
@@ -901,11 +995,12 @@ function NewCreationPage({
         <button>收起对话</button>
       </header>
       <div className="new-creation-intro">
-        <img
-          className="greeting-playing"
-          src="/assets/dog-greeting-public.gif"
-          alt="打招呼的小狗"
-        />
+        <span
+          className="greeting-look-stage"
+          style={{ "--look-x": greetingLook.x, "--look-y": greetingLook.y } as React.CSSProperties}
+        >
+          <img className="greeting-playing" src="/assets/group-48-character.png" alt="视线跟随鼠标的小狗" />
+        </span>
         <p>你好，我是你的 AI 设计助手</p>
         <h1>
           今天想聊点什么<span>✦</span>
@@ -920,7 +1015,8 @@ function NewCreationPage({
         <footer>
           <button
             data-popover-trigger
-            className="new-upload"
+            className="new-upload home-upload-trigger"
+            aria-expanded={uploadOpen}
             onClick={() => {
               setUploadOpen((v) => !v);
               setModelOpen(false);
@@ -932,6 +1028,8 @@ function NewCreationPage({
           </button>
           <button
             data-popover-trigger
+            className="home-model-trigger"
+            aria-expanded={modelOpen}
             onClick={() => {
               setModelOpen((v) => !v);
               setUploadOpen(false);
@@ -944,6 +1042,8 @@ function NewCreationPage({
           </button>
           <button
             data-popover-trigger
+            className="home-size-trigger"
+            aria-expanded={sizeOpen}
             onClick={() => {
               setSizeOpen((v) => !v);
               setUploadOpen(false);
@@ -951,10 +1051,13 @@ function NewCreationPage({
               setAssetsOpen(false);
             }}
           >
+            <img src="/assets/figma-home-size.svg" />
             尺寸选择
           </button>
           <button
             data-popover-trigger
+            className="home-assets-trigger"
+            aria-expanded={assetsOpen}
             onClick={() => {
               setAssetsOpen((v) => !v);
               setUploadOpen(false);
@@ -966,7 +1069,19 @@ function NewCreationPage({
             资产库
           </button>
           <i />
-          <button className="new-model">⌘</button>
+          <button
+            data-popover-trigger
+            className="new-model invocation-trigger"
+            aria-label="大模型调用"
+            aria-expanded={invocationOpen}
+            onClick={() => {
+              setInvocationOpen((value) => !value);
+              setUploadOpen(false);
+              setModelOpen(false);
+              setSizeOpen(false);
+              setAssetsOpen(false);
+            }}
+          ><img src="/assets/figma-invocation-chip.svg" alt="" /></button>
           <button className="new-generate" onClick={generate}>
             立即生成
           </button>
@@ -974,10 +1089,10 @@ function NewCreationPage({
         {uploadOpen && (
           <div className="popover upload-pop new-upload-pop">
             <button onClick={() => fileRef.current?.click()}>
-              <img src="/assets/upload.svg" /> 上传文档
+              <img src="/assets/upload-document.svg" /> 上传文档
             </button>
             <button onClick={() => fileRef.current?.click()}>
-              <img src="/assets/upload.svg" /> 上传图片
+              <FigmaUploadImageIcon /> 上传图片
             </button>
           </div>
         )}
@@ -991,6 +1106,7 @@ function NewCreationPage({
             }}
           />
         )}
+        {invocationOpen && <ModelInvocationPopover />}
         <input
           ref={fileRef}
           hidden
@@ -1083,9 +1199,12 @@ function Studio({
         <div className="composer-actions">
           <button
             data-popover-trigger
-            className="icon-button"
+            className="icon-button home-upload-trigger"
+            aria-expanded={uploadOpen}
             onClick={() => {
               setUploadOpen(!uploadOpen);
+              setModelOpen(false);
+              setSizeOpen(false);
               setAssetsOpen(false);
               setInvocationOpen(false);
             }}
@@ -1099,6 +1218,7 @@ function Studio({
             aria-expanded={modelOpen}
             onClick={() => {
               setModelOpen(!modelOpen);
+              setUploadOpen(false);
               setSizeOpen(false);
               setAssetsOpen(false);
               setInvocationOpen(false);
@@ -1111,8 +1231,11 @@ function Studio({
           </button>
           <button
             data-popover-trigger
+            className="home-size-trigger"
+            aria-expanded={sizeOpen}
             onClick={() => {
               setSizeOpen(!sizeOpen);
+              setUploadOpen(false);
               setModelOpen(false);
               setAssetsOpen(false);
               setInvocationOpen(false);
@@ -1123,6 +1246,8 @@ function Studio({
           </button>
           <button
             data-popover-trigger
+            className="home-assets-trigger"
+            aria-expanded={assetsOpen}
             onClick={() => {
               setAssetsOpen((v) => !v);
               setUploadOpen(false);
@@ -1148,7 +1273,7 @@ function Studio({
               setAssetsOpen(false);
             }}
           >
-            ⌘
+            <img src="/assets/figma-invocation-chip.svg" alt="" />
           </button>
           <button className="generate" onClick={generate} disabled={generating}>
             {generating ? "生成中…" : "立即生成"}
@@ -1157,10 +1282,10 @@ function Studio({
         {uploadOpen && (
           <div className="popover upload-pop">
             <button onClick={() => studioFile.current?.click()}>
-              <img src="/assets/upload.svg" /> 上传文档
+              <img src="/assets/upload-document.svg" /> 上传文档
             </button>
             <button onClick={() => studioFile.current?.click()}>
-              <img src="/assets/upload.svg" /> 上传图片
+              <FigmaUploadImageIcon /> 上传图片
             </button>
           </div>
         )}
@@ -1241,7 +1366,7 @@ function ModelInvocationPopover() {
 }
 
 function HomeAssetPopover({ onChoose }: { onChoose: () => void }) {
-  const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useState<Set<number>>(() => new Set());
   const [tab, setTab] = useState("海报");
   const [query, setQuery] = useState("");
   return (
@@ -1268,8 +1393,13 @@ function HomeAssetPopover({ onChoose }: { onChoose: () => void }) {
       <div className="composer-assets-grid">
         {samples.slice(0, 2).map((src, i) => (
           <button
-            className={selected === i ? "active" : ""}
-            onClick={() => setSelected(i)}
+            className={selected.has(i) ? "active" : ""}
+            onClick={() => setSelected((current) => {
+              const next = new Set(current);
+              if (next.has(i)) next.delete(i);
+              else next.add(i);
+              return next;
+            })}
             key={src}
           >
             <span>
@@ -1277,35 +1407,38 @@ function HomeAssetPopover({ onChoose }: { onChoose: () => void }) {
             </span>
             <strong>{tab === "PPT" ? "课程演示稿" : "小学全科卡"}</strong>
             <small>图片 · 今天</small>
-            {selected === i && <b>✓</b>}
+            {selected.has(i) && <b>✓</b>}
           </button>
         ))}
       </div>
       <footer>
-        <button className="assets-clear" onClick={() => setSelected(-1)}>
+        <button className="assets-clear" onClick={() => setSelected(new Set())}>
           ×
         </button>
-        <span>已选 {selected < 0 ? 0 : 1} 个</span>
-        <i />
-        <button
-          aria-label="添加所选素材"
-          disabled={selected < 0}
-          onClick={onChoose}
-        >
-          ▣
+        <span>已选 {selected.size} 个</span>
+        <button className="assets-download" aria-label="下载" onClick={onChoose}>
+          <img src="/assets/figma-download-tray.svg" alt="" />
         </button>
-        <button aria-label="下载">↓</button>
       </footer>
     </div>
   );
 }
 
-function ModelPopover({ onClose }: { onClose: () => void }) {
-  const [selected, setSelected] = useState("图片 4.5");
+function ModelPopover({
+  onClose: _onClose,
+  selectedValue,
+  onSelect,
+}: {
+  onClose: () => void;
+  selectedValue?: string | null;
+  onSelect?: (value: string) => void;
+}) {
+  const [internalSelected, setInternalSelected] = useState<string | null>(null);
+  const selected = selectedValue === undefined ? internalSelected : selectedValue;
   const models = [
-    ["图片 5.0 Pro", "商业设计与高密度图文表现", "figma-model-pro.svg"],
-    ["图片 5.0 Lite", "响应更精准，生成效果更智能", "figma-model-lite.svg"],
-    ["图片 4.5", "风格稳定，图文响应均衡", "figma-model-45.svg"],
+    ["图片 5.0 Pro", "商业设计与高密度图文表现", "figma-model-unified.svg"],
+    ["图片 5.0 Lite", "响应更精准，生成效果更智能", "figma-model-unified.svg"],
+    ["图片 4.5", "风格稳定，图文响应均衡", "figma-model-unified.svg"],
   ];
   return (
     <div className="model-selector-popover">
@@ -1314,8 +1447,8 @@ function ModelPopover({ onClose }: { onClose: () => void }) {
         <button
           className={selected === name ? "active" : ""}
           onClick={() => {
-            setSelected(name);
-            setTimeout(onClose, 120);
+            if (onSelect) onSelect(name);
+            else setInternalSelected(name);
           }}
           key={name}
         >
@@ -1330,6 +1463,19 @@ function ModelPopover({ onClose }: { onClose: () => void }) {
         </button>
       ))}
     </div>
+  );
+}
+
+function FigmaUploadImageIcon() {
+  return (
+    <span className="figma-upload-image-icon upload-image-icon-v2" aria-hidden="true">
+      <svg viewBox="0 0 32 32" role="presentation">
+        <path d="M15 5H8.5A3.5 3.5 0 0 0 5 8.5v15A3.5 3.5 0 0 0 8.5 27h15a3.5 3.5 0 0 0 3.5-3.5V17" />
+        <path d="m7.5 23 6.25-6.2 4.2 4.15 3.15-3.1 4.4 4.35" />
+        <circle cx="21" cy="10.5" r="1.7" />
+        <path className="upload-plus" d="M25 3v8M21 7h8" />
+      </svg>
+    </span>
   );
 }
 
@@ -1401,7 +1547,17 @@ function SizePopover({ onClose }: { onClose: () => void }) {
 }
 
 function TemplateGallery({ onSelect }: { onSelect: (index: number) => void }) {
-  const [query, setQuery] = useState("预热海报");
+  const [query, setQuery] = useState("");
+  const recommendations = ["预热海报", "小红书海报", "PPT优化"];
+  const [recommendationIndex, setRecommendationIndex] = useState(0);
+  useEffect(() => {
+    const timer = window.setInterval(
+      () => setRecommendationIndex((current) => (current + 1) % recommendations.length),
+      2200,
+    );
+    return () => window.clearInterval(timer);
+  }, []);
+  const recommendation = recommendations[recommendationIndex];
   const gallery = [...samples, ...samples];
   return (
     <div className="templates">
@@ -1415,11 +1571,12 @@ function TemplateGallery({ onSelect }: { onSelect: (index: number) => void }) {
         </span>
         <label className="mini-search">
           <img src="/assets/search.svg" />
+          {!query && <span className="template-search-suggestion" key={recommendation}>{recommendation}</span>}
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             aria-label="搜索模板"
-            placeholder="搜索模板"
+            placeholder=""
           />
         </label>
       </div>
@@ -1982,7 +2139,7 @@ function Canvas({
   const [applied, setApplied] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [quickOpen, setQuickOpen] = useState(false);
-  const [canvasTool, setCanvasTool] = useState("上传");
+  const [canvasTool, setCanvasTool] = useState("移动");
   const [redrawMode, setRedrawMode] = useState("画笔");
   const [redrawBrushSize, setRedrawBrushSize] = useState(48);
   type RedrawStroke = { nodeId: number; size: number; kind: "brush" | "box" | "erase"; points: Array<{ x: number; y: number }> };
@@ -2036,11 +2193,13 @@ function Canvas({
   } | null>(null);
   const [canvasNodes, setCanvasNodes] = useState<CanvasNode[]>(() =>
     initialAssets.length
-      ? initialAssets.map((asset,index)=>({id:index+1,url:asset.url,name:asset.name,x:(index%3-1)*390,y:Math.floor(index/3)*460}))
+      ? initialAssets.map((asset,index)=>({id:index+1,url:asset.url,name:asset.name,x:(index-(initialAssets.length-1)/2)*390,y:0}))
       : canvasImage
         ? [{ id: 1, url: canvasImage, x: 0, y: 0, name: canvasImageName }]
       : [],
   );
+  const CANVAS_WORLD_SIZE = 6000;
+  const CANVAS_WORLD_CENTER = CANVAS_WORLD_SIZE / 2;
   const getNodeGeometry = (node: CanvasNode) => {
     const mediaWidth = node.mediaWidth ?? 298;
     const mediaHeight = node.mediaHeight ?? 310;
@@ -2049,7 +2208,7 @@ function Canvas({
       mediaHeight,
       cardWidth: mediaWidth + 22,
       cardHeight: mediaHeight + 88,
-      centerY: 42 + node.y + mediaHeight / 2,
+      centerY: CANVAS_WORLD_CENTER + node.y - 34,
     };
   };
   const updateNodeImageSize = (id: number, naturalWidth: number, naturalHeight: number) => {
@@ -2068,13 +2227,19 @@ function Canvas({
     if (!canvas) return { x: clientX, y: clientY };
     const box = canvas.getBoundingClientRect();
     const scale = canvasZoom / 75;
-    const centerX = canvas.clientWidth / 2;
     const localX = clientX - box.left + canvas.scrollLeft;
     const localY = clientY - box.top + canvas.scrollTop;
     return {
-      x: centerX + (localX - centerX) / scale,
+      x: localX / scale,
       y: localY / scale,
     };
+  };
+  const getViewportCenterOffset = () => {
+    const canvas = canvasRef.current;
+    if (!canvas || canvasNodes.length === 0) return { x: 0, y: 0 };
+    const box = canvas.getBoundingClientRect();
+    const point = getCanvasPoint(box.left + box.width / 2, box.top + box.height / 2);
+    return { x: point.x - CANVAS_WORLD_CENTER, y: point.y - CANVAS_WORLD_CENTER };
   };
   const [imageDrag, setImageDrag] = useState<{
     id: number;
@@ -2086,6 +2251,8 @@ function Canvas({
   } | null>(null);
   const [canvasLinks, setCanvasLinks] = useState<CanvasLink[]>([]);
   const [hdProgress, setHdProgress] = useState<Record<number, number>>({});
+  const [keywordPopoverNodeId, setKeywordPopoverNodeId] = useState<number | null>(null);
+  const [copiedKeywordNodeId, setCopiedKeywordNodeId] = useState<number | null>(null);
   const [expandFrame, setExpandFrame] = useState<{ id: number; width: number; height: number } | null>(null);
   const [expandResize, setExpandResize] = useState<{ pointerId: number; startX: number; startY: number; width: number; height: number; axis: string } | null>(null);
   const [linkDraft, setLinkDraft] = useState<{
@@ -2102,9 +2269,15 @@ function Canvas({
   const [activeNodeId, setActiveNodeId] = useState<number | null>(null);
   const [cropClosing, setCropClosing] = useState(false);
   const [canvasZoom, setCanvasZoom] = useState(75);
+  const zoomTargetRef = useRef(75);
+  const zoomAppliedRef = useRef(75);
+  const zoomFrameRef = useRef<number | null>(null);
+  const zoomPointerRef = useRef<{ x: number; y: number } | null>(null);
+  const canvasWasEmpty = useRef(true);
   const zoomCanvasAtPoint = (nextZoom: number, clientX?: number, clientY?: number) => {
     const canvas = canvasRef.current;
     const boundedZoom = Math.max(25, Math.min(200, nextZoom));
+    zoomTargetRef.current = boundedZoom;
     if (!canvas) {
       setCanvasZoom(boundedZoom);
       return;
@@ -2112,17 +2285,39 @@ function Canvas({
     const box = canvas.getBoundingClientRect();
     const pointerX = (clientX ?? box.left + box.width / 2) - box.left;
     const pointerY = (clientY ?? box.top + box.height / 2) - box.top;
-    const oldScale = canvasZoom / 75;
+    const oldScale = zoomAppliedRef.current / 75;
     const newScale = boundedZoom / 75;
-    const originX = canvas.clientWidth / 2;
-    const worldX = originX + (canvas.scrollLeft + pointerX - originX) / oldScale;
+    const worldX = (canvas.scrollLeft + pointerX) / oldScale;
     const worldY = (canvas.scrollTop + pointerY) / oldScale;
-    setCanvasZoom(boundedZoom);
-    window.requestAnimationFrame(() => {
-      canvas.scrollLeft = originX + (worldX - originX) * newScale - pointerX;
-      canvas.scrollTop = worldY * newScale - pointerY;
-    });
+    zoomAppliedRef.current = boundedZoom;
+    flushSync(() => setCanvasZoom(boundedZoom));
+    canvas.scrollLeft = worldX * newScale - pointerX;
+    canvas.scrollTop = worldY * newScale - pointerY;
   };
+  useEffect(() => () => {
+    if (zoomFrameRef.current !== null) cancelAnimationFrame(zoomFrameRef.current);
+  }, []);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    if (!canvasNodes.length) {
+      canvasWasEmpty.current = true;
+      zoomAppliedRef.current = 75;
+      zoomTargetRef.current = 75;
+      setCanvasZoom(75);
+      canvas.scrollTo({ left: 0, top: 0 });
+      return;
+    }
+    if (!canvasWasEmpty.current) return;
+    canvasWasEmpty.current = false;
+    window.requestAnimationFrame(() => {
+      const scale = canvasZoom / 75;
+      canvas.scrollTo({
+        left: CANVAS_WORLD_CENTER * scale - canvas.clientWidth / 2,
+        top: CANVAS_WORLD_CENTER * scale - canvas.clientHeight / 2,
+      });
+    });
+  }, [canvasNodes.length]);
   const [promptPopover, setPromptPopover] = useState<"model" | "size" | null>(
     null,
   );
@@ -2130,6 +2325,9 @@ function Canvas({
   const [promptQuality, setPromptQuality] = useState("高");
   const [promptRatio, setPromptRatio] = useState("9:16");
   const [focusEdit, setFocusEdit] = useState(false);
+  const [referenceSelect, setReferenceSelect] = useState(false);
+  const [focusRecenterVisible, setFocusRecenterVisible] = useState(true);
+  const suppressFocusScroll = useRef(false);
   const [focusNodeId, setFocusNodeId] = useState<number | null>(null);
   const [focusMasterId, setFocusMasterId] = useState<number | null>(null);
   const [focusPicks, setFocusPicks] = useState<
@@ -2147,7 +2345,8 @@ function Canvas({
     }>
   >([]);
   const [activeFocusTagId, setActiveFocusTagId] = useState<number | null>(null);
-  const [canvasPromptText, setCanvasPromptText] = useState("");
+  const [canvasPromptTexts, setCanvasPromptTexts] = useState<Record<number, string>>({});
+  const [canvasToolPromptText, setCanvasToolPromptText] = useState("");
   const [focusTrailingText, setFocusTrailingText] = useState<
     Record<number, string>
   >({});
@@ -2172,7 +2371,11 @@ function Canvas({
   const removeFocusPick = (id: number) => {
     const index = focusPicks.findIndex((pick) => pick.id === id);
     const tail = focusTrailingText[id] || "";
-    if (index <= 0) setCanvasPromptText((text) => text + tail);
+    if (index <= 0) {
+      const ownerId = focusNodeId ?? activeNodeId;
+      if (ownerId !== null)
+        setCanvasPromptTexts((values) => ({ ...values, [ownerId]: (values[ownerId] || "") + tail }));
+    }
     else {
       const previousId = focusPicks[index - 1].id;
       setFocusTrailingText((values) => ({
@@ -2233,8 +2436,8 @@ function Canvas({
         {
           id: Date.now(),
           url: canvasImage,
-          x: (v.length % 3) * 360,
-          y: Math.floor(v.length / 3) * 480,
+          x: 0,
+          y: 0,
           name: canvasImageName,
         },
       ]);
@@ -2271,12 +2474,11 @@ function Canvas({
       return;
     }
     if (dragStart) return;
-    const w = canvasRef.current?.clientWidth || 1000;
     const ids = canvasNodes
       .filter((node) => {
         const geometry = getNodeGeometry(node);
-        const left = w / 2 + node.x - geometry.cardWidth / 2,
-          top = 32 + node.y,
+        const left = CANVAS_WORLD_CENTER + node.x - geometry.cardWidth / 2,
+          top = CANVAS_WORLD_CENTER + node.y - geometry.cardHeight / 2,
           right = left + geometry.cardWidth,
           bottom = top + geometry.cardHeight;
         return (
@@ -2293,8 +2495,8 @@ function Canvas({
         .filter((node) => ids.includes(node.id))
         .map((node) => {
           const geometry = getNodeGeometry(node);
-          const left = w / 2 + node.x - geometry.cardWidth / 2;
-          const top = 32 + node.y;
+          const left = CANVAS_WORLD_CENTER + node.x - geometry.cardWidth / 2;
+          const top = CANVAS_WORLD_CENTER + node.y - geometry.cardHeight / 2;
           return {
             left,
             top,
@@ -2379,13 +2581,16 @@ function Canvas({
         )
           .filter((element) => {
             const rect = element.getBoundingClientRect();
+            const scale = canvasZoom / 75;
             const left =
-                rect.left - canvasBox.left + canvasRef.current!.scrollLeft,
-              top = rect.top - canvasBox.top + canvasRef.current!.scrollTop;
+                (rect.left - canvasBox.left + canvasRef.current!.scrollLeft) / scale,
+              top = (rect.top - canvasBox.top + canvasRef.current!.scrollTop) / scale,
+              width = rect.width / scale,
+              height = rect.height / scale;
             return (
-              selection.x < left + rect.width &&
+              selection.x < left + width &&
               selection.x + selection.width > left &&
-              selection.y < top + rect.height &&
+              selection.y < top + height &&
               selection.y + selection.height > top
             );
           })
@@ -2534,6 +2739,10 @@ function Canvas({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const wheel = (event: WheelEvent) => {
+      if (!canvasNodes.length) {
+        event.preventDefault();
+        return;
+      }
       if (mode === "folder") {
         event.preventDefault();
         return;
@@ -2543,21 +2752,28 @@ function Canvas({
         if (
           target.closest(
             'input,textarea,button,select,[contenteditable="true"],.canvas-node-prompt,.canvas-bottom-dock,.canvas-vertical-nav,.figma-zoom,.canvas-add-popover,.canvas-model-popover,.canvas-size-popover,.canvas-comment-panel,.figma-history-panel,.asset-library-panel,.canvas-search-modal,.canvas-crop-workspace',
-          ) && !target.closest(".canvas-placeholder-upload")
+          ) && !target.closest(".canvas-placeholder-upload") && !target.closest(".canvas-node-prompt")
         )
           return;
         event.preventDefault();
-        const nextZoom = canvasZoom * Math.exp(-event.deltaY * 0.0015);
-        zoomCanvasAtPoint(nextZoom, event.clientX, event.clientY);
+        zoomTargetRef.current = Math.max(25, Math.min(200, zoomTargetRef.current * Math.exp(-event.deltaY * 0.00072)));
+        zoomPointerRef.current = { x: event.clientX, y: event.clientY };
+        if (zoomFrameRef.current === null) {
+          zoomFrameRef.current = window.requestAnimationFrame(() => {
+            const point = zoomPointerRef.current;
+            zoomFrameRef.current = null;
+            zoomCanvasAtPoint(zoomTargetRef.current, point?.x, point?.y);
+          });
+        }
         return;
       }
-      if (!event.shiftKey) return;
       event.preventDefault();
-      canvas.scrollLeft += event.deltaY || event.deltaX;
+      canvas.scrollLeft += event.shiftKey ? event.deltaY : event.deltaX;
+      canvas.scrollTop += event.shiftKey ? event.deltaX : event.deltaY;
     };
     canvas.addEventListener("wheel", wheel, { passive: false });
     return () => canvas.removeEventListener("wheel", wheel);
-  }, [canvasZoom, mode]);
+  }, [canvasZoom, mode, canvasNodes.length]);
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -2597,9 +2813,33 @@ function Canvas({
       });
   }, []);
   useEffect(() => {
-    canvasRef.current?.classList.toggle("canvas-focus-edit-mode", focusEdit);
+    canvasRef.current?.classList.toggle("canvas-focus-edit-mode", focusEdit || referenceSelect);
     return () => canvasRef.current?.classList.remove("canvas-focus-edit-mode");
-  }, [focusEdit]);
+  }, [focusEdit, referenceSelect]);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !referenceSelect || focusMasterId === null) return;
+    const chooseReference = (event: MouseEvent) => {
+      const card = (event.target as HTMLElement).closest<HTMLElement>(".canvas-node-card");
+      if (!card) return;
+      const targetId = Number(card.dataset.nodeId);
+      if (!targetId || targetId === focusMasterId) return;
+      const main = canvasNodes.find((node) => node.id === focusMasterId);
+      const target = canvasNodes.find((node) => node.id === targetId);
+      if (!main || !target) return;
+      const sides = target.x >= main.x
+        ? { side: "right" as const, targetSide: "left" as const }
+        : { side: "left" as const, targetSide: "right" as const };
+      setCanvasLinks((links) => links.some((link) =>
+        (link.from === main.id && link.to === target.id) ||
+        (link.from === target.id && link.to === main.id)
+      ) ? links : [...links, { id: Date.now(), from: main.id, to: target.id, ...sides }]);
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    canvas.addEventListener("click", chooseReference, { capture: true });
+    return () => canvas.removeEventListener("click", chooseReference, { capture: true });
+  }, [referenceSelect, focusMasterId, canvasNodes]);
   useEffect(() => {
     if (!focusEdit) return;
     const exit = (event: KeyboardEvent) => {
@@ -2718,6 +2958,7 @@ function Canvas({
       setFocusNodeId(activeNodeId);
       setFocusMasterId(activeNodeId);
       setFocusEdit(true);
+      setFocusRecenterVisible(true);
       setPromptPopover(null);
       setAddOpen(false);
     };
@@ -2761,26 +3002,7 @@ function Canvas({
     }
     if (label === "高清画质") {
       const source = canvasNodes.find((node) => node.id === activeNodeId) || canvasNodes[0];
-      if (!source) return;
-      const nextId = Math.max(0, ...canvasNodes.map((node) => node.id)) + 1;
-      const sourceWidth = getNodeGeometry(source).mediaWidth;
-      const nextNode: CanvasNode = { ...source, id: nextId, x: source.x + sourceWidth + 190, y: source.y, name: `${source.name} · 高清` };
-      setCanvasNodes((nodes) => [...nodes, nextNode]);
-      setCanvasLinks((links) => [...links, { id: Date.now(), from: source.id, side: "right", to: nextId, targetSide: "left" }]);
-      setHdProgress((items) => ({ ...items, [nextId]: 6 }));
-      const timer = window.setInterval(() => {
-        setHdProgress((items) => {
-          const current = items[nextId];
-          if (current === undefined) { window.clearInterval(timer); return items; }
-          const next = Math.min(100, current + Math.max(5, Math.round(Math.random() * 13)));
-          if (next >= 100) {
-            window.clearInterval(timer);
-            window.setTimeout(() => setHdProgress((values) => { const copy = { ...values }; delete copy[nextId]; return copy; }), 360);
-          }
-          return { ...items, [nextId]: next };
-        });
-      }, 190);
-      setActiveNodeId(nextId);
+      if (source) generateFromCanvasNode(source);
       setCanvasTool(label);
       return;
     }
@@ -2791,8 +3013,63 @@ function Canvas({
       setActiveNodeId(source.id);
       setExpandFrame({ id: source.id, width: geometry.mediaWidth + 48, height: geometry.mediaHeight + 48 });
     }
+    if (label === "裁剪") {
+      const source = canvasNodes.find((node) => node.id === activeNodeId) || canvasNodes.find((node) => !node.placeholder);
+      if (!source) return;
+      setActiveNodeId(source.id);
+    }
     setCanvasTool(label);
     if (label === "上传") ref.current?.click();
+  };
+  const generateFromCanvasNode = (source: CanvasNode, keywordOverride?: string) => {
+    const nextId = Math.max(0, ...canvasNodes.map((node) => node.id)) + 1;
+    const sourceGeometry = getNodeGeometry(source);
+    const nextNode: CanvasNode = {
+      ...source,
+      id: nextId,
+      x: source.x + sourceGeometry.cardWidth + 96,
+      y: source.y,
+      name: `${source.name} · 生成结果`,
+      mediaWidth: sourceGeometry.mediaWidth,
+      mediaHeight: sourceGeometry.mediaHeight,
+      generated: true,
+      generationPrompt: (keywordOverride ?? (canvasTool === "移动" ? (canvasPromptTexts[source.id] || "") : canvasToolPromptText)).trim() || "基于原图继续生成",
+    };
+    setCanvasNodes((nodes) => [...nodes, nextNode]);
+    setCanvasLinks((links) => [
+      ...links,
+      { id: Date.now(), from: source.id, side: "right", to: nextId, targetSide: "left" },
+    ]);
+    setHdProgress((items) => ({ ...items, [nextId]: 1 }));
+    setPromptPopover(null);
+    window.requestAnimationFrame(() => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      canvas.scrollBy({
+        left: (nextNode.x - source.x) * (canvasZoom / 75) / 2,
+        top: 0,
+        behavior: "smooth",
+      });
+    });
+    const timer = window.setInterval(() => {
+      setHdProgress((items) => {
+        const current = items[nextId];
+        if (current === undefined) {
+          window.clearInterval(timer);
+          return items;
+        }
+        const next = Math.min(100, current + Math.max(3, Math.round(Math.random() * 9)));
+        if (next >= 100) {
+          window.clearInterval(timer);
+          window.setTimeout(() => setHdProgress((values) => {
+            const copy = { ...values };
+            delete copy[nextId];
+            return copy;
+          }), 500);
+        }
+        return { ...items, [nextId]: next };
+      });
+    }, 150);
   };
   const cropNode = canvasNodes.find((node) => node.id === activeNodeId);
   const selectedLibraryAsset: Record<number, { name: string; url: string; group: string; description: string }> = {
@@ -2832,9 +3109,13 @@ function Canvas({
       ),
     };
   };
+  const getNearestLinkSides = (from: CanvasNode, to: CanvasNode) =>
+    to.x >= from.x
+      ? { side: "right" as const, targetSide: "left" as const }
+      : { side: "left" as const, targetSide: "right" as const };
   return (
     <section
-      className={`canvas-page figma-canvas-page ${mode === "comments" ? "canvas-comments-mode" : ""} ${canvasTool === "裁剪" && cropNode ? "canvas-crop-mode" : ""}`}
+      className={`canvas-page figma-canvas-page ${canvasNodes.length === 0 ? "canvas-empty-state" : "canvas-populated-state"} ${mode === "comments" ? "canvas-comments-mode" : ""} ${canvasTool === "裁剪" && cropNode ? "canvas-crop-mode" : ""}`}
       onPointerDownCapture={(e) => {
         if (!pendingLink) return;
         const hit = (e.target as HTMLElement).closest<HTMLElement>(
@@ -2908,15 +3189,48 @@ function Canvas({
         ref={canvasRef}
         className="figma-infinite-canvas"
         style={{ "--canvas-scale": canvasZoom / 75 } as React.CSSProperties}
+        onScroll={() => {
+          if ((focusEdit || referenceSelect) && !suppressFocusScroll.current)
+            setFocusRecenterVisible(true);
+        }}
         onClick={() => {
           setImageMenu(null);
           setPromptPopover(null);
+        }}
+        onDragOver={(event) => {
+          if (event.dataTransfer.types.includes("application/x-canvas-asset")) {
+            event.preventDefault();
+            setDragStart(null);
+            setSelection(null);
+          }
+        }}
+        onDrop={(event) => {
+          const raw = event.dataTransfer.getData("application/x-canvas-asset");
+          if (!raw) return;
+          event.preventDefault();
+          try {
+            const asset = JSON.parse(raw) as { name: string; url: string };
+            const point = getCanvasPoint(event.clientX, event.clientY);
+            const id = Date.now();
+            setCanvasNodes((nodes) => [
+              ...nodes,
+              {
+                id,
+                url: asset.url,
+                name: asset.name,
+                x: point.x - CANVAS_WORLD_CENTER,
+                y: point.y - CANVAS_WORLD_CENTER,
+              },
+            ]);
+            setCanvasImage(asset.url);
+            setActiveNodeId(id);
+          } catch {}
         }}
         onMouseDown={(e) => {
           if (
             canvasNodes.length === 0 ||
             (e.target as HTMLElement).closest(
-              "button,input,textarea,nav,.canvas-prompt,.canvas-add-popover,.folder-result,.canvas-node-card",
+              "button,input,textarea,nav,.canvas-prompt,.canvas-add-popover,.folder-result,.canvas-node-card,.asset-library-panel,.figma-history-panel",
             )
           )
             return;
@@ -2925,17 +3239,9 @@ function Canvas({
           selectionPointer.current = p;
           if (selectionHoldTimer.current)
             window.clearTimeout(selectionHoldTimer.current);
-          selectionHoldTimer.current = window.setTimeout(() => {
-            const current = selectionPointer.current || p;
-            setDragStart(p);
-            setSelection({
-              x: Math.min(current.x, p.x),
-              y: Math.min(current.y, p.y),
-              width: Math.abs(current.x - p.x),
-              height: Math.abs(current.y - p.y),
-            });
-            selectionHoldTimer.current = null;
-          }, 320);
+          selectionHoldTimer.current = null;
+          setDragStart(p);
+          setSelection({ x: p.x, y: p.y, width: 0, height: 0 });
         }}
         onMouseMove={(e) => {
           const { x, y } = getCanvasPoint(e.clientX, e.clientY);
@@ -2987,8 +3293,8 @@ function Canvas({
               const from = canvasNodes.find(
                 (node) => node.id === linkDraft.from,
               );
-              const x = dropX - e.currentTarget.clientWidth / 2,
-                y = Math.max(-20, dropY - 231);
+              const x = dropX - CANVAS_WORLD_CENTER,
+                y = dropY - CANVAS_WORLD_CENTER;
               setCanvasNodes((nodes) => [
                 ...nodes,
                 { id, url: "", x, y, name: "点击上传图片", placeholder: true },
@@ -3007,11 +3313,10 @@ function Canvas({
             setLinkDraft(null);
           }
           if (selection && dragStart) {
-            const w = e.currentTarget.clientWidth;
             const overlaps = canvasNodes.some((node) => {
               const geometry = getNodeGeometry(node);
-              const left = w / 2 + node.x - geometry.cardWidth / 2,
-                top = 32 + node.y,
+              const left = CANVAS_WORLD_CENTER + node.x - geometry.cardWidth / 2,
+                top = CANVAS_WORLD_CENTER + node.y - geometry.cardHeight / 2,
                 right = left + geometry.cardWidth,
                 bottom = top + geometry.cardHeight;
               return (
@@ -3082,15 +3387,15 @@ function Canvas({
               const from = canvasNodes.find((n) => n.id === link.from),
                 to = canvasNodes.find((n) => n.id === link.to);
               if (!from || !to) return null;
-              const w = canvasRef.current?.clientWidth || 1000;
+              const nearest = getNearestLinkSides(from, to);
               const fromGeometry = getNodeGeometry(from);
               const toGeometry = getNodeGeometry(to);
-              const sx = w / 2 + from.x + (link.side === "left" ? -fromGeometry.mediaWidth / 2 : fromGeometry.mediaWidth / 2),
+              const sx = CANVAS_WORLD_CENTER + from.x + (nearest.side === "left" ? -fromGeometry.mediaWidth / 2 : fromGeometry.mediaWidth / 2),
                 sy = fromGeometry.centerY;
               const ex =
-                  w / 2 + to.x + (link.targetSide === "left" ? -toGeometry.mediaWidth / 2 : toGeometry.mediaWidth / 2),
+                  CANVAS_WORLD_CENTER + to.x + (nearest.targetSide === "left" ? -toGeometry.mediaWidth / 2 : toGeometry.mediaWidth / 2),
                 ey = toGeometry.centerY;
-              const d = `M ${sx} ${sy} C ${sx + (link.side === "left" ? -90 : 90)} ${sy}, ${ex + (link.targetSide === "left" ? -90 : 90)} ${ey}, ${ex} ${ey}`;
+              const d = `M ${sx} ${sy} C ${sx + (nearest.side === "left" ? -90 : 90)} ${sy}, ${ex + (nearest.targetSide === "left" ? -90 : 90)} ${ey}, ${ex} ${ey}`;
               const active =
                 selectedNodeIds.includes(from.id) &&
                 selectedNodeIds.includes(to.id);
@@ -3123,19 +3428,19 @@ function Canvas({
                 const from = canvasNodes.find((n) => n.id === link.from);
                 const to = canvasNodes.find((n) => n.id === link.to);
                 if (!from) return null;
-                const w = canvasRef.current?.clientWidth || 1000;
+                const nearest = to ? getNearestLinkSides(from, to) : { side: link.side, targetSide: link.targetSide };
                 const fromGeometry = getNodeGeometry(from);
                 const toGeometry = to ? getNodeGeometry(to) : null;
-                const sx = w / 2 + from.x + (link.side === "left" ? -fromGeometry.mediaWidth / 2 : fromGeometry.mediaWidth / 2),
+                const sx = CANVAS_WORLD_CENTER + from.x + (nearest.side === "left" ? -fromGeometry.mediaWidth / 2 : fromGeometry.mediaWidth / 2),
                   sy = fromGeometry.centerY;
                 const ex = to
-                    ? w / 2 + to.x + (link.targetSide === "left" ? -(toGeometry?.mediaWidth ?? 298) / 2 : (toGeometry?.mediaWidth ?? 298) / 2)
+                    ? CANVAS_WORLD_CENTER + to.x + (nearest.targetSide === "left" ? -(toGeometry?.mediaWidth ?? 298) / 2 : (toGeometry?.mediaWidth ?? 298) / 2)
                     : link.endX,
                   ey = to ? toGeometry!.centerY : link.endY;
                 return (
                   <path
                     key={link.id}
-                    d={`M ${sx} ${sy} C ${sx + (link.side === "left" ? -90 : 90)} ${sy}, ${ex + (link.side === "left" ? 90 : -90)} ${ey}, ${ex} ${ey}`}
+                    d={`M ${sx} ${sy} C ${sx + (nearest.side === "left" ? -90 : 90)} ${sy}, ${ex + (nearest.targetSide === "left" ? -90 : 90)} ${ey}, ${ex} ${ey}`}
                   />
                 );
               })}
@@ -3143,9 +3448,8 @@ function Canvas({
                 (() => {
                   const from = canvasNodes.find((n) => n.id === linkDraft.from);
                   if (!from) return null;
-                  const w = canvasRef.current?.clientWidth || 1000;
                   const geometry = getNodeGeometry(from);
-                  const sx = w / 2 + from.x + (linkDraft.side === "left" ? -geometry.mediaWidth / 2 : geometry.mediaWidth / 2),
+                  const sx = CANVAS_WORLD_CENTER + from.x + (linkDraft.side === "left" ? -geometry.mediaWidth / 2 : geometry.mediaWidth / 2),
                     sy = geometry.centerY;
                   return (
                     <path
@@ -3165,7 +3469,7 @@ function Canvas({
                     height: `${getNodeGeometry(node).cardHeight}px`,
                     "--node-media-width": `${getNodeGeometry(node).mediaWidth}px`,
                     "--node-media-height": `${getNodeGeometry(node).mediaHeight}px`,
-                    transform: `translate(calc(-50% + ${node.x}px),${node.y}px)`,
+                    transform: `translate(calc(-50% + ${node.x}px),calc(-50% + ${node.y}px))`,
                   } as React.CSSProperties}
                   key={node.id}
                   onPointerDown={(e) => {
@@ -3269,6 +3573,37 @@ function Canvas({
                         onLoad={(event) => updateNodeImageSize(node.id, event.currentTarget.naturalWidth, event.currentTarget.naturalHeight)}
                       />
                     )}
+                    {node.generated && hdProgress[node.id] === undefined && (
+                      <>
+                        <button
+                          className="canvas-generated-copy"
+                          aria-label="查看并复制生成关键词"
+                          onPointerDown={(event) => event.stopPropagation()}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setKeywordPopoverNodeId((current) => current === node.id ? null : node.id);
+                          }}
+                        >
+                          <img src="/assets/copy.svg" />
+                        </button>
+                        {keywordPopoverNodeId === node.id && (
+                          <aside className="canvas-keyword-popover" onPointerDown={(event) => event.stopPropagation()} onClick={(event) => event.stopPropagation()}>
+                            <img src={node.url} alt="生成图片缩略图" />
+                            <div>
+                              <small>生成关键词</small>
+                              <p>{node.generationPrompt}</p>
+                            </div>
+                            <button
+                              onClick={async () => {
+                                await navigator.clipboard.writeText(node.generationPrompt || "");
+                                setCopiedKeywordNodeId(node.id);
+                                window.setTimeout(() => setCopiedKeywordNodeId(null), 1200);
+                              }}
+                            >{copiedKeywordNodeId === node.id ? "已复制" : "一键复制"}</button>
+                          </aside>
+                        )}
+                      </>
+                    )}
                     {!node.placeholder && ["局部重绘", "擦除"].includes(canvasTool) && (
                       <svg
                         className={`canvas-redraw-layer redraw-mode-${redrawMode} ${canvasTool === "擦除" ? "canvas-erase-editor" : ""}`}
@@ -3299,8 +3634,10 @@ function Canvas({
                             return <mask key={drawIndex} id={`redraw-mask-${node.id}-${drawIndex}`} maskUnits="userSpaceOnUse" x="0" y="0" width={getNodeGeometry(node).mediaWidth} height={getNodeGeometry(node).mediaHeight}><rect className="redraw-mask-base" width="100%" height="100%" />{nodeActions.slice(actualIndex+1).filter((stroke)=>stroke.kind==="erase").map((stroke,index)=><polyline className="redraw-erase-path" key={index} points={stroke.points.map((point)=>`${point.x},${point.y}`).join(" ")} strokeWidth={stroke.size} />)}{activeRedrawStroke?.nodeId===node.id&&activeRedrawStroke.kind==="erase"&&<polyline className="redraw-erase-path" points={activeRedrawStroke.points.map((point)=>`${point.x},${point.y}`).join(" ")} strokeWidth={activeRedrawStroke.size} />}</mask>;
                           })}
                         </defs>
-                        {(()=>{let drawIndex=0;return redrawStrokes.filter((stroke)=>stroke.nodeId===node.id).map((stroke,index)=>{if(stroke.kind==="erase")return null;const mask=`url(#redraw-mask-${node.id}-${drawIndex++})`;const checker=`url(#erase-checker-${node.id})`;return stroke.kind==="box"?<rect key={index} mask={mask} style={canvasTool==="擦除"?{fill:checker}:undefined} x={Math.min(stroke.points[0].x,stroke.points[1].x)} y={Math.min(stroke.points[0].y,stroke.points[1].y)} width={Math.abs(stroke.points[1].x-stroke.points[0].x)} height={Math.abs(stroke.points[1].y-stroke.points[0].y)} />:<polyline key={index} mask={mask} style={canvasTool==="擦除"?{stroke:checker}:undefined} points={stroke.points.map((point)=>`${point.x},${point.y}`).join(" ")} strokeWidth={stroke.size} />;});})()}
-                        {activeRedrawStroke?.nodeId===node.id&&activeRedrawStroke.kind!=="erase"&&(activeRedrawStroke.kind==="box"?<rect style={canvasTool==="擦除"?{fill:`url(#erase-checker-${node.id})`}:undefined} x={Math.min(activeRedrawStroke.points[0].x,activeRedrawStroke.points[1].x)} y={Math.min(activeRedrawStroke.points[0].y,activeRedrawStroke.points[1].y)} width={Math.abs(activeRedrawStroke.points[1].x-activeRedrawStroke.points[0].x)} height={Math.abs(activeRedrawStroke.points[1].y-activeRedrawStroke.points[0].y)} />:<polyline style={canvasTool==="擦除"?{stroke:`url(#erase-checker-${node.id})`}:undefined} points={activeRedrawStroke.points.map((point)=>`${point.x},${point.y}`).join(" ")} strokeWidth={activeRedrawStroke.size} />)}
+                        <g className="redraw-stroke-composite">
+                          {(()=>{let drawIndex=0;return redrawStrokes.filter((stroke)=>stroke.nodeId===node.id).map((stroke,index)=>{if(stroke.kind==="erase")return null;const mask=`url(#redraw-mask-${node.id}-${drawIndex++})`;const checker=`url(#erase-checker-${node.id})`;return stroke.kind==="box"?<rect key={index} mask={mask} style={canvasTool==="擦除"?{fill:checker}:undefined} x={Math.min(stroke.points[0].x,stroke.points[1].x)} y={Math.min(stroke.points[0].y,stroke.points[1].y)} width={Math.abs(stroke.points[1].x-stroke.points[0].x)} height={Math.abs(stroke.points[1].y-stroke.points[0].y)} />:<polyline key={index} mask={mask} style={canvasTool==="擦除"?{stroke:checker}:undefined} points={stroke.points.map((point)=>`${point.x},${point.y}`).join(" ")} strokeWidth={stroke.size} />;});})()}
+                          {activeRedrawStroke?.nodeId===node.id&&activeRedrawStroke.kind!=="erase"&&(activeRedrawStroke.kind==="box"?<rect style={canvasTool==="擦除"?{fill:`url(#erase-checker-${node.id})`}:undefined} x={Math.min(activeRedrawStroke.points[0].x,activeRedrawStroke.points[1].x)} y={Math.min(activeRedrawStroke.points[0].y,activeRedrawStroke.points[1].y)} width={Math.abs(activeRedrawStroke.points[1].x-activeRedrawStroke.points[0].x)} height={Math.abs(activeRedrawStroke.points[1].y-activeRedrawStroke.points[0].y)} />:<polyline style={canvasTool==="擦除"?{stroke:`url(#erase-checker-${node.id})`}:undefined} points={activeRedrawStroke.points.map((point)=>`${point.x},${point.y}`).join(" ")} strokeWidth={activeRedrawStroke.size} />)}
+                        </g>
                         {redrawMode!=="框选"&&redrawCursor?.nodeId===node.id&&<circle className="redraw-cursor-ring" cx={redrawCursor.x} cy={redrawCursor.y} r={redrawBrushSize/2} />}
                       </svg>
                     )}
@@ -3411,16 +3748,40 @@ function Canvas({
               </div>
             );
           })}
-        {focusEdit && (
+        {(focusEdit || referenceSelect) && (
           <section className="canvas-focus-toast">
             <div>
-              <strong>焦点编辑</strong>
-              <small>点击其他节点以提取元素</small>
+              <strong>{referenceSelect ? "请选择参考" : "焦点编辑"}</strong>
+              <small>{referenceSelect ? "点击其他图片建立参考连线" : "点击其他节点以提取元素"}</small>
             </div>
-            <span className="canvas-focus-target" aria-hidden="true">
-              <img src="/assets/canvas-smart.svg" />
-            </span>
-            <button onClick={exitFocusEdit}>退出</button>
+            {focusRecenterVisible && (
+              <button
+                className="canvas-focus-target"
+                aria-label="回到主图中心"
+                onClick={() => {
+                  const master = canvasNodes.find((node) => node.id === focusMasterId) || canvasNodes[0];
+                  const canvas = canvasRef.current;
+                  if (!master || !canvas) return;
+                  const scale = canvasZoom / 75;
+                  suppressFocusScroll.current = true;
+                  canvas.scrollTo({
+                    left: (CANVAS_WORLD_CENTER + master.x) * scale - canvas.clientWidth / 2,
+                    top: (CANVAS_WORLD_CENTER + master.y) * scale - canvas.clientHeight / 2,
+                    behavior: "auto",
+                  });
+                  setFocusRecenterVisible(false);
+                  window.setTimeout(() => { suppressFocusScroll.current = false; }, 100);
+                }}
+              >
+                <img src="/assets/focus-recenter.svg" />
+              </button>
+            )}
+            <button onClick={() => {
+              if (referenceSelect) {
+                setReferenceSelect(false);
+                setFocusMasterId(null);
+              } else exitFocusEdit();
+            }}>退出</button>
           </section>
         )}
         {imageMenu && (
@@ -3442,7 +3803,7 @@ function Canvas({
         )}
         {promptOwnerId !== null &&
           imageDrag === null &&
-          canvasTool !== "裁剪" &&
+          canvasTool === "移动" &&
           (() => {
             const node = canvasNodes.find((item) => item.id === promptOwnerId);
             if (!node || (mode === "folder" && folderDone)) return null;
@@ -3450,9 +3811,9 @@ function Canvas({
               <section
                 className="canvas-node-prompt"
                 style={{
-                  left: `calc(50% + ${node.x * (canvasZoom / 75)}px)`,
+                  left: (CANVAS_WORLD_CENTER + node.x) * (canvasZoom / 75),
                   top:
-                    (32 + node.y + getNodeGeometry(node).cardHeight) *
+                    (CANVAS_WORLD_CENTER + node.y + getNodeGeometry(node).cardHeight / 2) *
                       (canvasZoom / 75) +
                     14,
                 }}
@@ -3464,34 +3825,40 @@ function Canvas({
                     <img src="/assets/canvas-smart.svg" />
                   </button>
                   <i />
-                  <button aria-label="添加素材">＋</button>
+                  <button
+                    aria-label="添加素材"
+                    onClick={() => {
+                      setFocusMasterId(node.id);
+                      setReferenceSelect(true);
+                      setFocusEdit(false);
+                      setFocusRecenterVisible(true);
+                    }}
+                  >＋</button>
+                  {canvasLinks
+                    .filter((link) => link.from === node.id || link.to === node.id)
+                    .map((link) => canvasNodes.find((item) => item.id === (link.from === node.id ? link.to : link.from)))
+                    .filter((item): item is CanvasNode => Boolean(item && item.url))
+                    .map((item) => (
+                      <span className="canvas-reference-thumb" key={item.id}>
+                        <img src={item.url} alt={item.name} />
+                        <b><img src={item.url} alt="" /></b>
+                      </span>
+                    ))}
                 </div>
                 <div className="canvas-prompt-inline-content">
-                  <input
+                  <textarea
                     className="canvas-inline-text"
                     aria-label="描述生成内容"
-                    value={canvasPromptText}
-                    onChange={(e) => setCanvasPromptText(e.target.value)}
-                    style={{
-                      width: canvasPromptText
-                        ? Math.min(520, canvasPromptText.length * 14 + 18)
-                        : focusPicks.length
-                          ? 10
-                          : 260,
+                    rows={1}
+                    value={canvasPromptTexts[node.id] || ""}
+                    onChange={(e) => {
+                      setCanvasPromptTexts((values) => ({ ...values, [node.id]: e.target.value }));
+                      e.currentTarget.style.height = "auto";
+                      e.currentTarget.style.height = String(e.currentTarget.scrollHeight) + "px";
                     }}
                     placeholder={
                       focusPicks.length ? "" : "描述任何你想要生成的内容"
                     }
-                    onKeyDown={(e) => {
-                      if (
-                        (e.key === "Backspace" || e.key === "Delete") &&
-                        !e.currentTarget.value &&
-                        activeFocusTagId !== null
-                      ) {
-                        e.preventDefault();
-                        removeFocusPick(activeFocusTagId);
-                      }
-                    }}
                   />
                   {focusPicks.map((pick) => (
                     <React.Fragment key={pick.id}>
@@ -3499,12 +3866,6 @@ function Canvas({
                         type="button"
                         className={`canvas-inline-focus-tag ${activeFocusTagId === pick.id ? "active" : ""}`}
                         onClick={() => setActiveFocusTagId(pick.id)}
-                        onKeyDown={(e) => {
-                          if (e.key !== "Delete" && e.key !== "Backspace")
-                            return;
-                          e.preventDefault();
-                          removeFocusPick(pick.id);
-                        }}
                       >
                         <b>✦</b>
                         {focusChoices[pick.choice].name}
@@ -3527,12 +3888,6 @@ function Canvas({
                               )
                             : 10,
                         }}
-                        onKeyDown={(e) => {
-                          if (e.key === "Backspace" && !e.currentTarget.value) {
-                            e.preventDefault();
-                            removeFocusPick(pick.id);
-                          }
-                        }}
                       />
                     </React.Fragment>
                   ))}
@@ -3547,6 +3902,7 @@ function Canvas({
                         )
                       }
                     >
+                      <img src="/assets/figma-home-model.svg" />
                       模型选择
                     </button>
                     <button
@@ -3555,21 +3911,22 @@ function Canvas({
                         setPromptPopover((v) => (v === "size" ? null : "size"))
                       }
                     >
+                      <img src="/assets/figma-home-size.svg" />
                       尺寸选择
                     </button>
                   </div>
-                  <button className="canvas-node-prompt-send" aria-label="发送">
+                  <button className="canvas-node-prompt-send" aria-label="发送" onClick={() => generateFromCanvasNode(node)}>
                     <img src="/assets/canvas-send.svg" />
                   </button>
                 </div>
                 {promptPopover === "model" && (
-                  <CanvasModelPopover
-                    value={promptModel}
-                    onChange={(value) => {
-                      setPromptModel(value);
-                      setPromptPopover(null);
-                    }}
-                  />
+                  <div className="canvas-shared-model-popover">
+                    <ModelPopover
+                      onClose={() => setPromptPopover(null)}
+                      selectedValue={promptModel}
+                      onSelect={setPromptModel}
+                    />
+                  </div>
                 )}
                 {promptPopover === "size" && (
                   <CanvasSizePopover
@@ -3606,22 +3963,22 @@ function Canvas({
           </button>
           <button
             data-popover-trigger
-            className={mode === "folder" ? "active" : ""}
-            aria-label="文件夹"
-            onClick={() => switchMode("folder")}
+            className={mode === "comments" ? "active" : ""}
+            aria-label="评论"
+            onClick={() => switchMode("comments")}
           >
-            <img src="/assets/canvas-nav-folder.svg" />
+            <img src="/assets/canvas-nav-chat.svg" />
           </button>
           <button data-popover-trigger className={mode === "assets" ? "active" : ""} aria-label="素材库" onClick={() => switchMode("assets")}>
             <img src="/assets/canvas-nav-assets-linear.svg" />
           </button>
           <button
             data-popover-trigger
-            className={mode === "comments" ? "active" : ""}
-            aria-label="评论"
-            onClick={() => switchMode("comments")}
+            className={mode === "folder" ? "active" : ""}
+            aria-label="文件夹"
+            onClick={() => switchMode("folder")}
           >
-            <img src="/assets/canvas-nav-chat.svg" />
+            <img src="/assets/canvas-nav-folder.svg" />
           </button>
           <button
             data-popover-trigger
@@ -3730,10 +4087,7 @@ function Canvas({
               <div
                 className="global-folder-selection"
                 style={{
-                  left:
-                    (canvasRef.current?.clientWidth || 1000) / 2 +
-                    (selection.x - (canvasRef.current?.clientWidth || 1000) / 2) *
-                      (canvasZoom / 75),
+                  left: selection.x * (canvasZoom / 75),
                   top: selection.y * (canvasZoom / 75),
                   width: selection.width * (canvasZoom / 75),
                   height: selection.height * (canvasZoom / 75),
@@ -3743,12 +4097,7 @@ function Canvas({
                 <button
                   className="create-folder-button"
                   style={{
-                    left:
-                      (canvasRef.current?.clientWidth || 1000) / 2 +
-                      (selection.x + selection.width -
-                        (canvasRef.current?.clientWidth || 1000) / 2) *
-                        (canvasZoom / 75) +
-                      16,
+                    left: (selection.x + selection.width) * (canvasZoom / 75) + 16,
                     top:
                       (selection.y + selection.height) * (canvasZoom / 75) - 27,
                   }}
@@ -4009,8 +4358,8 @@ function Canvas({
                     const source = activeLibraryAsset.url;
                     const name = activeLibraryAsset.name;
                     const nextId = Math.max(0, ...canvasNodes.map((node) => node.id)) + 1;
-                    const nextX = canvasNodes.length ? Math.max(...canvasNodes.map((node) => node.x)) + 390 : 0;
-                    setCanvasNodes((nodes) => [...nodes, { id: nextId, url: source, x: nextX, y: 0, name }]);
+                    const center = getViewportCenterOffset();
+                    setCanvasNodes((nodes) => [...nodes, { id: nextId, url: source, x: center.x, y: center.y, name }]);
                     setCanvasImage(source);
                     setActiveNodeId(nextId);
                     setApplied(true);
@@ -4086,7 +4435,7 @@ function Canvas({
           />
         )}
         {mode !== "comments" && (
-          <div className="figma-zoom">
+          <div className="figma-zoom" aria-hidden={canvasNodes.length === 0}>
             <button
               aria-label="缩小画布"
               onClick={(event) => zoomCanvasAtPoint(canvasZoom - 10, event.clientX, event.clientY)}
@@ -4102,11 +4451,14 @@ function Canvas({
             </button>
             <button
               onClick={() => {
+                zoomAppliedRef.current = 75;
+                zoomTargetRef.current = 75;
                 setCanvasZoom(75);
                 if (canvasRef.current) {
+                  const canvas = canvasRef.current;
                   canvasRef.current.scrollTo({
-                    left: 0,
-                    top: 0,
+                    left: CANVAS_WORLD_CENTER - canvas.clientWidth / 2,
+                    top: CANVAS_WORLD_CENTER - canvas.clientHeight / 2,
                     behavior: "smooth",
                   });
                 }
@@ -4117,33 +4469,46 @@ function Canvas({
           </div>
         )}
         {mode !== "comments" &&
-          canvasImage &&
-          canvasTool !== "上传" &&
-          canvasTool !== "移动" &&
-          canvasTool !== "裁剪" && (
-            <div className="canvas-tool-prompt">
-              <span>
-                {canvasTool === "擦除内容"
-                  ? "绘制蒙版以擦除"
-                  : canvasTool === "局部重绘"
-                    ? "绘制蒙版以重绘"
-                    : canvasTool === "高清"
-                      ? "选择画质增强区域"
-                      : canvasTool === "修改文字"
-                        ? "点击图片中的文字进行修改"
-                        : `${canvasTool}当前区域`}
-              </span>
-              <button aria-label="执行">
-                <img src="/assets/canvas-send.svg" />
-              </button>
-            </div>
+          redrawNode &&
+          ["局部重绘", "擦除", "扩图"].includes(canvasTool) && (
+            <section
+              className="canvas-node-prompt canvas-tool-node-prompt"
+              style={{
+                left: (CANVAS_WORLD_CENTER + redrawNode.x) * (canvasZoom / 75),
+                top: (CANVAS_WORLD_CENTER + redrawNode.y + getNodeGeometry(redrawNode).cardHeight / 2) * (canvasZoom / 75) + 14,
+              }}
+            >
+              <div className="canvas-tool-prompt-heading">
+                <img src={canvasTool === "局部重绘" ? "/assets/canvas-dock-redraw.svg" : canvasTool === "擦除" ? "/assets/canvas-dock-erase.svg" : "/assets/canvas-dock-text.svg"} />
+                <strong>{canvasTool}</strong>
+              </div>
+              <input
+                className="canvas-tool-prompt-input"
+                aria-label={`${canvasTool}生成描述`}
+                value={canvasToolPromptText}
+                onChange={(event) => setCanvasToolPromptText(event.target.value)}
+                placeholder={canvasTool === "擦除" ? "描述擦除后的画面内容" : canvasTool === "局部重绘" ? "描述需要重新生成的内容" : "描述希望扩展的画面内容"}
+              />
+              <div className="canvas-tool-prompt-footer">
+                <span>{canvasTool === "擦除" ? "绘制蒙版后生成" : canvasTool === "局部重绘" ? "绘制需要重绘的区域" : `应用${canvasTool}`}</span>
+                <button aria-label={`执行${canvasTool}`} onClick={() => {
+                  generateFromCanvasNode(redrawNode);
+                  if (canvasTool === "扩图") {
+                    setCanvasTool("移动");
+                    setExpandFrame(null);
+                  }
+                }}>
+                  <img src="/assets/canvas-send.svg" />
+                </button>
+              </div>
+            </section>
           )}
         {["局部重绘", "擦除"].includes(canvasTool) && redrawNode && mode !== "comments" && (
           <div
             className="canvas-redraw-toolbar"
             style={{
-              left: `calc(50% + ${redrawNode.x * (canvasZoom / 75)}px)`,
-              top: Math.max(8, (32 + redrawNode.y) * (canvasZoom / 75) - 62),
+              left: (CANVAS_WORLD_CENTER + redrawNode.x) * (canvasZoom / 75),
+              top: (CANVAS_WORLD_CENTER + redrawNode.y - getNodeGeometry(redrawNode).cardHeight / 2) * (canvasZoom / 75) - 62,
             }}
           >
             <button className="redraw-close" aria-label={`关闭${canvasTool}`} onClick={() => setCanvasTool("移动")}>×</button>
@@ -4166,6 +4531,11 @@ function Canvas({
           <CanvasCropWorkspace
             src={cropNode.url}
             closing={cropClosing}
+            onGenerate={(keyword) => {
+              generateFromCanvasNode(cropNode, keyword);
+              setCanvasTool("移动");
+              setCropClosing(false);
+            }}
             onClose={() => {
               setCropClosing(true);
               if (cropExitTimer.current)
@@ -4213,6 +4583,7 @@ function Canvas({
           const files = Array.from(e.target.files || []);
           if (!files.length) return;
           const stamp = Date.now();
+          const center = getViewportCenterOffset();
           if (uploadTargetNodeId !== null) {
             const first = files[0],
               url = URL.createObjectURL(first);
@@ -4237,8 +4608,8 @@ function Canvas({
                 .map((file, i) => ({
                   id: stamp + i,
                   url: URL.createObjectURL(file),
-                  x: (canvasNodes.length + i) * 360,
-                  y: 0,
+                  x: center.x + (i + 1) * 390,
+                  y: center.y,
                   name:
                     file.name.replace(/\.[^.]+$/, "") ||
                     "AI 视觉创作 · 未命名项目",
@@ -4250,8 +4621,8 @@ function Canvas({
             const added = files.map((file, i) => ({
               id: stamp + i,
               url: URL.createObjectURL(file),
-              x: (canvasNodes.length + i) * 360,
-              y: 0,
+              x: center.x + i * 390,
+              y: center.y,
               name:
                 file.name.replace(/\.[^.]+$/, "") || "AI 视觉创作 · 未命名项目",
             }));
@@ -4384,10 +4755,12 @@ function CanvasCropWorkspace({
   src,
   closing,
   onClose,
+  onGenerate,
 }: {
   src: string;
   closing: boolean;
   onClose: () => void;
+  onGenerate: (keyword: string) => void;
 }) {
   type CropRect = { x: number; y: number; width: number; height: number };
   const [rect, setRect] = useState<CropRect>({
@@ -4398,6 +4771,7 @@ function CanvasCropWorkspace({
   });
   const [ratio, setRatio] = useState("原图比例");
   const [ratioOpen, setRatioOpen] = useState(false);
+  const [prompt, setPrompt] = useState("");
   const drag = useRef<{
     kind: string;
     startX: number;
@@ -4557,12 +4931,12 @@ function CanvasCropWorkspace({
             className={`crop-ratio-button ${ratioOpen ? "active" : ""}`}
             onClick={() => setRatioOpen((v) => !v)}
           >
-            ▣　宽高比
+            <img src="/assets/crop-ratio.svg" />宽高比
           </button>
           <i />
-          <span>拖动裁剪框调整裁剪范围</span>
+          <input value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="描述裁剪后希望生成的画面" />
           <button className="crop-quality">4K</button>
-          <button className="crop-submit" aria-label="确认裁剪">
+          <button className="crop-submit" aria-label="确认裁剪并生成" onClick={() => onGenerate(prompt)}>
             <img src="/assets/canvas-send.svg" />
           </button>
         </footer>
@@ -4814,6 +5188,10 @@ function AssetLibrary({
     setEditing(null);
   };
   const visibleTeachers = teachers.map((name, index) => ({ name, index })).filter(({ name }) => name.toLowerCase().includes(query.trim().toLowerCase()));
+  const beginAssetDrag = (event: React.DragEvent, name: string, url: string) => {
+    event.dataTransfer.effectAllowed = "copy";
+    event.dataTransfer.setData("application/x-canvas-asset", JSON.stringify({ name, url }));
+  };
   return (
     <aside className="asset-library-panel" onDoubleClick={(event) => event.stopPropagation()}>
       <div className="asset-title">
@@ -4831,7 +5209,6 @@ function AssetLibrary({
       </label>
       <div className="subject-title">
         <strong>主体库</strong>
-        <img src="/assets/asset-help.svg" />
       </div>
       <div className="asset-divider" />
       <small className="folder-label">文件夹</small>
@@ -4842,7 +5219,7 @@ function AssetLibrary({
           {editing==="poster"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("poster",folderNames.poster)}>{folderNames.poster}</b>}
         </div>
         {!collapsed.poster &&
-        <div role="button" tabIndex={0} className={`asset-tree-entry asset-poster-file ${selected===5?"selected":""}`} onClick={()=>onSelect(5)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("poster-file",posterName);}}>
+        <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,posterName,"/assets/school-kickoff-poster.png")} className={`asset-tree-entry asset-poster-file ${selected===5?"selected":""}`} onClick={()=>onSelect(5)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("poster-file",posterName);}}>
           <img src="/assets/school-kickoff-poster.png" />
           {editing==="poster-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{posterName}</span>}
         </div>}
@@ -4855,6 +5232,8 @@ function AssetLibrary({
           <div
             role="button"
             tabIndex={0}
+            draggable
+            onDragStart={(event)=>beginAssetDrag(event,v,teacherImages[i])}
             className={`asset-tree-entry ${selected === i + 1 ? "selected" : ""}`}
             onClick={() => onSelect(i + 1)}
             onDoubleClick={(event) => { event.preventDefault(); event.stopPropagation(); beginInlineRename(`teacher-${i}`, v); }}
@@ -4870,7 +5249,7 @@ function AssetLibrary({
           <i className="folder-icon green" />
           {editing==="logo"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("logo",folderNames.logo)}>{folderNames.logo}</b>}
         </div>
-        {!collapsed.logo && <div role="button" tabIndex={0} className={`asset-tree-entry asset-logo-file ${selected===6?"selected":""}`} onClick={()=>onSelect(6)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("logo-file",logoName);}}><img src="/assets/brand-logo-kcle.png" />{editing==="logo-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{logoName}</span>}</div>}
+        {!collapsed.logo && <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,logoName,"/assets/brand-logo-kcle.png")} className={`asset-tree-entry asset-logo-file ${selected===6?"selected":""}`} onClick={()=>onSelect(6)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("logo-file",logoName);}}><img src="/assets/brand-logo-kcle.png" />{editing==="logo-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{logoName}</span>}</div>}
       </div>
     </aside>
   );
@@ -4908,10 +5287,7 @@ function CanvasDrawer({ mode }: { mode: "assets" | "history" | "comments" }) {
 }
 
 function HistoryDrawer({ onClose }: { onClose: () => void }) {
-  const [selected, setSelected] = useState([0, 1]);
   const [tab, setTab] = useState<"海报" | "直播间" | "PPT">("海报");
-  const toggle = (i: number) =>
-    setSelected((v) => (v.includes(i) ? v.filter((n) => n !== i) : [...v, i]));
   return (
     <aside className="figma-history-panel">
       <div className="figma-history-title">
@@ -4948,39 +5324,22 @@ function HistoryDrawer({ onClose }: { onClose: () => void }) {
         {[0, 1].map((i) => (
           <button
             className="figma-history-card"
-            onClick={() => toggle(i)}
+            draggable
+            onDragStart={(event) => {
+              event.dataTransfer.effectAllowed = "copy";
+              event.dataTransfer.setData("application/x-canvas-asset", JSON.stringify({
+                name: "小学全科卡",
+                url: "/assets/template-" + (i + 2) + ".png",
+              }));
+            }}
             key={i}
           >
             <div className="history-image-area"><img src={`/assets/template-${i + 2}.png`} alt="历史图片缩略图" /></div>
             <strong>小学全科卡</strong>
             <small>图片 · 今天</small>
-            {selected.includes(i) && (
-              <span className="history-check">
-                <img src="/assets/history-check-badge.svg" />
-                <img src="/assets/history-check.svg" />
-              </span>
-            )}
           </button>
         ))}
       </div>
-      {selected.length > 0 && (
-        <div className="history-action-bar">
-          <button
-            className="history-clear"
-            onClick={() => setSelected([])}
-            aria-label="取消选择"
-          />
-          <span>已选 {selected.length} 个</span>
-          <i />
-          <button className="history-copy" aria-label="复制">
-            <b />
-            <b />
-          </button>
-          <button aria-label="下载">
-            <img src="/assets/history-download.svg" />
-          </button>
-        </div>
-      )}
     </aside>
   );
 }
@@ -4992,7 +5351,7 @@ function History({
 }: {
   onEdit: () => void;
   onBack: () => void;
-  onCanvas: () => void;
+  onCanvas: (image?: string, name?: string) => void;
 }) {
   const [tab] = useState<"subject" | "canvas">("canvas");
   const [popup, setPopup] = useState<"filter" | "time" | "sort" | null>(null);
@@ -5184,46 +5543,51 @@ function History({
         <div className="history-cards">
           <button
             className="history-record history-create-record"
-            onClick={tab === "subject" ? () => setSubjectOpen(true) : onCanvas}
+            onClick={tab === "subject" ? () => setSubjectOpen(true) : () => onCanvas()}
           >
             <div className="history-record-preview"><span>＋</span></div>
             <strong>{tab === "subject" ? "新建主体" : "新建画布"}</strong>
           </button>
-          {cards.map((name, i) => (
-            <button
-              className={`history-record ${batch ? "batching" : ""}`}
-              onClick={() => {
-                if (batch) {
-                  setSelectedHistory((items) =>
-                    items.includes(name) ? items.filter((item) => item !== name) : [...items, name],
-                  );
-                } else if (tab === "subject") {
-                  setSubjectName(name);
-                  setSubjectDescription("");
-                  setSubjectPreview(samples[i % samples.length]);
-                  setSubjectOpen(true);
-                } else onEdit();
-              }}
-              key={name}
-            >
-              <div className="history-record-preview">
-                {tab === "subject" && <img src={samples[i % samples.length]} alt={name} />}
-                {tab === "canvas" && <img src={`/assets/template-${(i % 5) + 1}.png`} alt={name} />}
-                {batch && (
-                  <i className={`batch-check ${selectedHistory.includes(name) ? "selected" : ""}`}>
-                    {selectedHistory.includes(name) ? "✓" : ""}
-                  </i>
-                )}
-                {favoriteHistory.includes(name) && <i className="history-favorite-star">★</i>}
+          {cards.map((name, i) => {
+            const image = `/assets/template-${(i % 5) + 1}.png`;
+            const favorite = favoriteHistory.includes(name);
+            return (
+              <div className="history-record-shell" key={name}>
+                <button
+                  className={`history-record ${batch ? "batching" : ""}`}
+                  onClick={() => {
+                    if (batch) {
+                      setSelectedHistory((items) =>
+                        items.includes(name) ? items.filter((item) => item !== name) : [...items, name],
+                      );
+                    } else if (tab === "subject") {
+                      setSubjectName(name);
+                      setSubjectDescription("");
+                      setSubjectPreview(samples[i % samples.length]);
+                      setSubjectOpen(true);
+                    } else onCanvas(image, name);
+                  }}
+                >
+                  <div className="history-record-preview">
+                    {tab === "subject" && <img src={samples[i % samples.length]} alt={name} />}
+                    {tab === "canvas" && <img src={image} alt={name} />}
+                    {batch && (
+                      <i className={`batch-check ${selectedHistory.includes(name) ? "selected" : ""}`}>
+                        {selectedHistory.includes(name) ? "✓" : ""}
+                      </i>
+                    )}
+                  </div>
+                  <strong>{name}</strong>
+                  {i > 0 && <small>{i === 1 ? "编辑于 6 分钟前" : "编辑于 17 小时前"}</small>}
+                </button>
+                <button
+                  className={`history-pin ${favorite ? "active" : ""}`}
+                  aria-label={favorite ? `取消置顶${name}` : `置顶${name}`}
+                  onClick={() => setFavoriteHistory((items) => favorite ? items.filter((item) => item !== name) : [...items, name])}
+                ><span>置顶</span>★</button>
               </div>
-              <strong>{name}</strong>
-              {i > 0 && (
-                <small>
-                  {i === 1 ? "编辑于 6 分钟前" : "编辑于 17 小时前"}
-                </small>
-              )}
-            </button>
-          ))}
+            );
+          })}
         </div>
       </div>
       {subjectOpen && (
@@ -5320,6 +5684,7 @@ function Assets({
   const [subjectName, setSubjectName] = useState("");
   const [subjectImages, setSubjectImages] = useState<string[]>([]);
   const [subjects, setSubjects] = useState(["夏日新品预热海报", "课程价格板设计", "新品种草海报", "直播间活动主视觉"]);
+  const [favoriteAssets, setFavoriteAssets] = useState<string[]>([]);
   const subjectFile = useRef<HTMLInputElement>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [folderMenu, setFolderMenu] = useState(false);
@@ -5347,7 +5712,9 @@ function Assets({
       ]);
     setAddOpen(false);
   };
-  const activeAssets = uploaded.filter((item) => item.category === (tab === "live" ? "live" : "assets"));
+  const activeAssets = uploaded
+    .filter((item) => item.category === (tab === "live" ? "live" : "assets"))
+    .sort((a, b) => Number(favoriteAssets.includes(b.url)) - Number(favoriteAssets.includes(a.url)));
   const empty = activeAssets.length === 0;
   return (
     <section className="asset-page-figma">
@@ -5428,7 +5795,10 @@ function Assets({
       )}
       {tab === "subject" ? (
         <div className="asset-subject-grid">
-          <button className="asset-subject-card create" onClick={() => { setSubjectName(""); setSubjectImages([]); setSubjectOpen(true); }}><div>＋</div><strong>新建主体</strong></button>
+          <button className="asset-subject-card create" onClick={() => { setSubjectName(""); setSubjectImages([]); setSubjectOpen(true); }}>
+            <div className="asset-create-single" aria-hidden="true"><i>＋</i></div>
+            <strong>新建主体</strong>
+          </button>
           {subjects.map((name, i) => (
             <button className="asset-subject-card" key={name} onClick={() => { setSubjectName(name); setSubjectImages([samples[i % samples.length]]); setSubjectOpen(true); }}>
               <div><img src={samples[i % samples.length]} alt={name} /></div><strong>{name}</strong><small>主体 · 最近修改</small>
@@ -5455,15 +5825,25 @@ function Assets({
             onClick={() => fileRef.current?.click()}
             aria-label={tab === "live" ? "上传直播间素材" : "上传海报素材"}
           >
-            <div aria-hidden="true">＋</div>
+            <div className="asset-create-single" aria-hidden="true"><i>＋</i></div>
             <strong>{tab === "live" ? "上传直播间素材" : "上传海报"}</strong>
           </button>
           {activeAssets.map((item) => (
-            <button key={item.url} onContextMenu={(event)=>{event.preventDefault();event.stopPropagation();setAssetContext({x:Math.min(event.clientX,window.innerWidth-304),y:Math.min(event.clientY,window.innerHeight-330),item});}}>
-              <img src={item.url} />
-              <strong>{item.name}</strong>
-              <small>刚刚上传</small>
-            </button>
+            <div className="asset-content-card" key={item.url} onContextMenu={(event)=>{event.preventDefault();event.stopPropagation();setAssetContext({x:Math.min(event.clientX,window.innerWidth-304),y:Math.min(event.clientY,window.innerHeight-330),item});}}>
+              <button className="asset-content-open" onClick={() => onSendToCanvas(item)}>
+                <img src={item.url} alt={item.name} />
+                <strong>{item.name}</strong>
+                <small>刚刚上传</small>
+              </button>
+              <button
+                className={`asset-pin ${favoriteAssets.includes(item.url) ? "active" : ""}`}
+                aria-label={favoriteAssets.includes(item.url) ? `取消置顶${item.name}` : `置顶${item.name}`}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setFavoriteAssets((items) => items.includes(item.url) ? items.filter((url) => url !== item.url) : [...items, item.url]);
+                }}
+              ><span>置顶</span>★</button>
+            </div>
           ))}
         </div>
       )}
@@ -5505,3 +5885,4 @@ createRoot(document.getElementById("root")!).render(
     <App />
   </React.StrictMode>,
 );
+

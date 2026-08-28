@@ -9064,6 +9064,311 @@ button > img {
 .conversation-history-scroll .history-row.active strong{font-weight:500!important;color:#4f49b8!important}
 .conversation-history-scroll .history-row.active small{color:#8d88c8!important}
 
+/* Keep every past-conversation state visually separated by the same rhythm. */
+.conversation-history-scroll {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+.conversation-history-scroll .history-row {
+  flex: 0 0 54px !important;
+  margin: 0 !important;
+}
+
+/* Batch delete is an overflow action, revealed only from the ellipsis button. */
+.generation-result-actions {
+  grid-template-columns: 138px 128px 72px !important;
+  width: 366px !important;
+  min-width: 366px !important;
+  overflow: visible !important;
+}
+.generation-more-wrap {
+  position: relative;
+  width: 72px;
+  height: 46px;
+  z-index: 20;
+}
+.generation-more-wrap > .action-more {
+  width: 72px !important;
+}
+.generation-more-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 120;
+  width: 150px;
+  padding: 6px;
+  border: 1px solid #e5e6ec;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(31, 35, 48, 0.14);
+}
+.generation-result-actions .generation-more-menu .batch-delete {
+  width: 100% !important;
+  height: 38px !important;
+  padding: 0 12px !important;
+  justify-content: flex-start !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  font-size: 14px !important;
+}
+
+/* Make the four upload cells fill the complete preview rectangle. */
+.asset-subject-card.create > .asset-create-quadrants,
+.asset-content-grid .asset-upload-entry > .asset-create-quadrants {
+  box-sizing: border-box !important;
+  padding: 0 !important;
+  gap: 6px !important;
+  background: #fff !important;
+}
+.asset-create-quadrants > span {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  border-radius: 12px !important;
+  background: #eff0f2 !important;
+}
+.asset-create-quadrants > span:hover { background: #e8e5ff !important; }
+
+/* History cards open their exact image in canvas and expose a fillable pin. */
+.history-record-shell {
+  position: relative;
+  min-width: 0;
+  align-self: start;
+}
+.history-record-shell > .history-record { width: 100% !important; }
+.history-pin {
+  position: absolute !important;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 34px !important;
+  height: 34px !important;
+  padding: 0 !important;
+  border: 1px solid #e2e4e9 !important;
+  border-radius: 9px !important;
+  background: rgba(255,255,255,.96) !important;
+  color: #7d8490 !important;
+  font: 400 22px/1 Arial,sans-serif !important;
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: opacity .15s ease,transform .15s ease,color .15s ease !important;
+}
+.history-record-shell:hover .history-pin,.history-pin:focus-visible,.history-pin.active { opacity: 1; transform: none; }
+.history-pin.active { color: #ffc400 !important; }
+.history-pin > span {
+  position: absolute;
+  right: 50%;
+  bottom: calc(100% + 7px);
+  transform: translateX(50%);
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #262933;
+  color: #fff;
+  font: 400 12px/16px inherit;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+}
+.history-pin:hover > span { opacity: 1; }
+
+/* Compact, optically balanced canvas dock. */
+.canvas-bottom-dock {
+  width: 500px !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  column-gap: 10px !important;
+}
+.canvas-bottom-dock > button > img,
+.canvas-bottom-dock > button:first-child > img {
+  width: 24px !important;
+  height: 24px !important;
+  transform: none !important;
+}
+.generation-result-actions .generation-more-menu .batch-delete:hover {
+  background: #f5f4ff !important;
+  color: #5f58e8 !important;
+}
+
+/* Four-part add entry shared by every asset category. */
+.asset-create-quadrants {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  padding: 12px !important;
+  background: #fff !important;
+}
+.asset-create-quadrants > span {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid #e1e3e7;
+  border-radius: 10px;
+  background: #f1f2f4;
+  transition: background .16s ease, box-shadow .16s ease;
+}
+.asset-create-quadrants > span > i {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #775dff;
+  color: #fff;
+  font: 400 24px/1 Arial, sans-serif;
+  opacity: 0;
+  transform: scale(.82);
+  transition: opacity .15s ease, transform .15s ease;
+}
+.asset-create-quadrants > span:hover {
+  background: #ebe9ff;
+  box-shadow: 0 5px 14px rgba(103, 83, 220, .12);
+}
+.asset-create-quadrants > span:hover > i {
+  opacity: 1;
+  transform: scale(1);
+}
+.asset-subject-card.create > .asset-create-quadrants {
+  height: 286px !important;
+}
+.asset-content-grid .asset-upload-entry > .asset-create-quadrants {
+  width: 100% !important;
+  aspect-ratio: 9 / 16 !important;
+  border-radius: 12px !important;
+}
+
+/* Image pin control: the add entry remains first; pinned items lead the assets. */
+.asset-content-card {
+  position: relative;
+  min-width: 0;
+}
+.asset-content-card > .asset-content-open {
+  width: 100%;
+  padding: 0 0 12px !important;
+  border: 0 !important;
+  background: transparent !important;
+  text-align: left;
+}
+.asset-content-card > .asset-content-open strong,
+.asset-content-card > .asset-content-open small {
+  display: block;
+  margin: 8px 6px 0;
+}
+.asset-content-card > .asset-content-open small { color: #9aa0aa; }
+.asset-pin {
+  position: absolute !important;
+  top: 8px;
+  right: 8px;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 34px !important;
+  height: 34px !important;
+  padding: 0 !important;
+  border: 1px solid #e2e4e9 !important;
+  border-radius: 9px !important;
+  background: rgba(255,255,255,.96) !important;
+  color: #7d8490 !important;
+  font-size: 25px !important;
+  line-height: 1 !important;
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: opacity .15s ease, transform .15s ease, color .15s ease !important;
+}
+.asset-content-card:hover .asset-pin,
+.asset-pin:focus-visible,
+.asset-pin.active { opacity: 1; transform: translateY(0); }
+.asset-pin.active { color: #ffc400 !important; }
+.asset-pin > span {
+  position: absolute;
+  right: 50%;
+  bottom: calc(100% + 7px);
+  transform: translateX(50%);
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #262933;
+  color: #fff;
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+}
+.asset-pin:hover > span { opacity: 1; }
+
+/* Compact the canvas rail and remove the oversized separator row. */
+.canvas-vertical-nav {
+  grid-template-rows: repeat(6, 44px) 1px 44px !important;
+  grid-auto-rows: unset !important;
+  row-gap: 6px !important;
+  height: 371px !important;
+  min-height: 371px !important;
+  padding: 10px !important;
+}
+
+/* The first conversation follows the same vertical rhythm as every row below. */
+.conversation-history-scroll { padding-top: 8px !important; }
+
+/* Pull completed results closer to their completion label. */
+.generation-round .assistant-message {
+  margin-bottom: 0 !important;
+}
+.generation-round .generated-gallery {
+  margin-top: 2px !important;
+}
+
+/* The four large cells fully divide the add-entry preview. */
+.asset-create-quadrants {
+  gap: 8px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+.asset-create-quadrants > span {
+  width: 100% !important;
+  border-radius: 12px !important;
+}
+.asset-create-quadrants > span > i {
+  width: 24px !important;
+  height: 24px !important;
+  font-size: 20px !important;
+}
+
+/* Use a filled star in both idle and pinned states. */
+.asset-pin {
+  font-family: Arial, sans-serif !important;
+  font-size: 22px !important;
+}
+
+/* Expanded batch delete occupies its original slot directly after ellipsis. */
+.generation-more-menu {
+  top: 0 !important;
+  right: auto !important;
+  left: calc(100% + 14px) !important;
+  width: 124px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.generation-result-actions .generation-more-menu .batch-delete {
+  width: 124px !important;
+  height: 46px !important;
+  padding: 0 16px !important;
+  justify-content: center !important;
+  gap: 9px !important;
+  border: 1px solid #dfe3ea !important;
+  border-radius: 14px !important;
+  background: #fff !important;
+  font-size: 16px !important;
+  box-shadow: 0 1px 3px rgba(45, 52, 70, .03) !important;
+}
+
 /* 对话结果操作按钮统一悬浮态。 */
 .generation-result-actions>button{cursor:pointer!important;transition:background .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease,transform .18s ease!important}
 .generation-result-actions>button:hover,.generation-result-actions>button:focus-visible{background:#edecff!important;border-color:#aaa0f2!important;color:#5749c8!important;box-shadow:0 5px 14px rgba(91,74,196,.13)!important;transform:translateY(-1px)!important;outline:0!important}
@@ -9103,6 +9408,473 @@ button > img {
 .asset-content-grid button{overflow:hidden!important}
 .asset-content-grid img{display:block!important;width:100%!important;height:auto!important;aspect-ratio:9/16!important;object-fit:contain!important;background:#f3f4f6!important}
 .asset-content-grid .asset-upload-entry{padding:0 0 12px!important;border:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
+
+/* Homepage composer popovers: persistent trigger state and panels below their buttons. */
+.studio-page .composer-actions .home-model-trigger[aria-expanded="true"],
+.studio-page .composer-actions .home-size-trigger[aria-expanded="true"],
+.studio-page .composer-actions .home-assets-trigger[aria-expanded="true"]{
+  transform:none!important;
+  border-color:#8a67f4!important;
+  background:#f2edff!important;
+  color:#694add!important;
+  box-shadow:inset 0 0 0 1px rgba(138,103,244,.16)!important;
+}
+.studio-page .composer-actions .home-model-trigger[aria-expanded="true"] img,
+.studio-page .composer-actions .home-size-trigger[aria-expanded="true"] img,
+.studio-page .composer-actions .home-assets-trigger[aria-expanded="true"] img{
+  filter:brightness(0) saturate(100%) invert(39%) sepia(44%) saturate(1964%) hue-rotate(221deg)!important;
+}
+.studio-page .model-selector-popover,
+.studio-page .size-selector-popover,
+.studio-page .home-asset-popover.figma-composer-assets{
+  right:auto!important;
+  bottom:auto!important;
+  top:calc(100% + 8px)!important;
+}
+.studio-page .model-selector-popover{left:58px!important}
+.studio-page .size-selector-popover{left:174px!important}
+.studio-page .home-asset-popover.figma-composer-assets{
+  left:294px!important;
+  width:468px!important;
+  height:252px!important;
+  padding:9px 16px!important;
+  overflow:hidden!important;
+}
+.studio-page .figma-composer-assets .composer-assets-tabs,
+.studio-page .figma-composer-assets .composer-assets-search{width:436px!important}
+.studio-page .figma-composer-assets .composer-assets-tabs{height:25px!important}
+.studio-page .figma-composer-assets .composer-assets-search{height:25px!important;margin:5px 0 12px!important}
+.studio-page .figma-composer-assets .composer-assets-grid{
+  width:422px!important;
+  height:126px!important;
+  margin:0 0 0 6px!important;
+  grid-template-columns:repeat(3,132px)!important;
+  gap:13px!important;
+  overflow:hidden!important;
+}
+.studio-page .figma-composer-assets .composer-assets-grid>button{width:132px!important;height:126px!important;padding:6px!important}
+.studio-page .figma-composer-assets .composer-assets-grid>button>span{width:118px!important;height:82px!important}
+.studio-page .figma-composer-assets>footer{left:50%!important;bottom:7px!important;transform:translateX(-50%)!important}
+
+/* Homepage size quality controls align with the left edge of all following fields. */
+.studio-page .size-selector-popover .size-quality{
+  justify-content:flex-start!important;
+  margin-left:0!important;
+  margin-right:0!important;
+}
+
+/* Reference-matched homepage size, invocation and new-creation artwork. */
+.studio-page .composer-actions .home-size-trigger img{
+  width:24px!important;
+  height:24px!important;
+  margin-right:6px!important;
+  filter:none!important;
+}
+.studio-page .composer-actions .invocation-trigger{
+  width:40px!important;
+  height:40px!important;
+  min-width:40px!important;
+  padding:4px!important;
+  border-radius:50%!important;
+  background:#fafafa!important;
+  display:grid!important;
+  place-items:center!important;
+}
+.studio-page .composer-actions .invocation-trigger>img{
+  width:30px!important;
+  height:30px!important;
+  display:block!important;
+  filter:none!important;
+}
+.studio-page .composer-actions .invocation-trigger[aria-expanded="true"]{
+  background:#f3efff!important;
+  box-shadow:inset 0 0 0 1px #b3a7f6!important;
+}
+.studio-page .model-invocation-popover{
+  left:auto!important;
+  right:0!important;
+  top:calc(100% + 8px)!important;
+  bottom:auto!important;
+  width:646px!important;
+  height:64px!important;
+  padding:0 14px!important;
+  border-radius:32px!important;
+  background-color:#f7f7f8!important;
+  background-image:linear-gradient(90deg,#e3e3e8 0 2px,transparent 2px)!important;
+  background-position:0 50%!important;
+  background-size:42px 8px!important;
+  background-repeat:repeat-x!important;
+  box-shadow:0 12px 28px rgba(41,37,68,.13)!important;
+  grid-template-columns:repeat(3,1fr)!important;
+  overflow:hidden!important;
+}
+.studio-page .model-invocation-popover button{
+  width:100%!important;
+  height:64px!important;
+  border-radius:32px!important;
+  font-size:16px!important;
+  color:#a5a6ad!important;
+  background-image:none!important;
+}
+.studio-page .model-invocation-popover button>i{display:none!important}
+.studio-page .model-invocation-popover button.active{
+  justify-self:center!important;
+  width:64px!important;
+  color:#fff!important;
+  background:linear-gradient(135deg,#278eff,#9d78f7)!important;
+  box-shadow:0 6px 14px rgba(92,92,239,.25)!important;
+}
+.new-work{
+  height:58px!important;
+  border:2px solid transparent!important;
+  border-radius:18px!important;
+  padding:0 58px 0 18px!important;
+  gap:10px!important;
+  background:linear-gradient(#f9f6ff,#f9f6ff) padding-box,linear-gradient(110deg,#f4bff6,#8d79ff,#198cf8) border-box!important;
+  color:#555866!important;
+  box-shadow:0 10px 24px rgba(116,105,219,.08)!important;
+}
+.new-work>img{width:40px!important;height:40px!important;flex:0 0 40px!important}
+.new-work>span{font-size:18px!important;font-weight:600!important;letter-spacing:.3px!important}
+.new-work::after{
+  content:"✦"!important;
+  display:block!important;
+  position:absolute!important;
+  right:20px!important;
+  top:12px!important;
+  color:#9e7df4!important;
+  font-size:28px!important;
+  line-height:30px!important;
+  opacity:1!important;
+  animation:none!important;
+}
+.new-work::before{
+  content:"✦"!important;
+  display:block!important;
+  position:absolute!important;
+  right:40px!important;
+  top:29px!important;
+  left:auto!important;
+  width:auto!important;
+  height:auto!important;
+  border-radius:0!important;
+  background:none!important;
+  color:#258bf7!important;
+  font-size:13px!important;
+  opacity:1!important;
+  animation:none!important;
+}
+
+/* Latest homepage references: compact asset composition, white popovers and scaled controls. */
+.studio-page .popover,
+.studio-page .model-selector-popover,
+.studio-page .size-selector-popover,
+.studio-page .home-asset-popover,
+.studio-page .model-invocation-popover{
+  background-color:#fff!important;
+  background-image:none!important;
+}
+.studio-page .home-asset-popover.figma-composer-assets{
+  left:274px!important;
+  width:520px!important;
+  height:330px!important;
+  padding:14px 16px!important;
+  border-radius:18px!important;
+  overflow:hidden!important;
+}
+.studio-page .figma-composer-assets .composer-assets-tabs,
+.studio-page .figma-composer-assets .composer-assets-search{width:488px!important}
+.studio-page .figma-composer-assets .composer-assets-tabs{height:30px!important}
+.studio-page .figma-composer-assets .composer-assets-search{height:30px!important;margin:8px 0 12px!important}
+.studio-page .figma-composer-assets .composer-assets-grid{
+  width:444px!important;
+  height:164px!important;
+  margin:0!important;
+  grid-template-columns:repeat(3,142px)!important;
+  gap:9px!important;
+  overflow:visible!important;
+}
+.studio-page .figma-composer-assets .composer-assets-grid>button{width:142px!important;height:164px!important;padding:7px!important}
+.studio-page .figma-composer-assets .composer-assets-grid>button>span{width:126px!important;height:112px!important}
+.studio-page .figma-composer-assets>footer{
+  left:50%!important;
+  bottom:12px!important;
+  width:auto!important;
+  min-width:190px!important;
+  height:38px!important;
+  padding:0 12px!important;
+  transform:translateX(-50%)!important;
+  gap:10px!important;
+}
+.studio-page .figma-composer-assets>footer .assets-download{
+  width:30px!important;
+  height:30px!important;
+  margin-left:6px!important;
+  padding:3px!important;
+  display:grid!important;
+  place-items:center!important;
+}
+.studio-page .figma-composer-assets>footer .assets-download img{width:22px!important;height:22px!important;filter:none!important}
+.studio-page .model-invocation-popover{
+  width:216px!important;
+  height:22px!important;
+  padding:0 5px!important;
+  border-radius:11px!important;
+  box-shadow:0 5px 10px rgba(41,37,68,.1)!important;
+}
+.studio-page .model-invocation-popover button{
+  height:22px!important;
+  border-radius:11px!important;
+  font-size:9px!important;
+}
+.studio-page .model-invocation-popover button.active{
+  width:22px!important;
+  height:22px!important;
+  border-radius:50%!important;
+  box-shadow:0 2px 5px rgba(92,92,239,.22)!important;
+}
+.new-work{
+  height:58px!important;
+  padding:0 52px 0 16px!important;
+  gap:10px!important;
+  border-radius:18px!important;
+}
+.new-work>img{width:32px!important;height:32px!important;flex-basis:32px!important}
+.new-work>span{font-size:17px!important;font-weight:600!important;color:#555866!important}
+.new-work::after{right:17px!important;top:14px!important;font-size:24px!important}
+.new-work::before{right:35px!important;top:31px!important;font-size:11px!important}
+
+/* Homepage open-state feedback for every composer popover trigger. */
+.studio-page .composer-actions .home-upload-trigger[aria-expanded="true"],
+.studio-page .composer-actions .home-model-trigger[aria-expanded="true"],
+.studio-page .composer-actions .home-size-trigger[aria-expanded="true"],
+.studio-page .composer-actions .home-assets-trigger[aria-expanded="true"],
+.studio-page .composer-actions .invocation-trigger[aria-expanded="true"]{
+  transform:none!important;
+  border-color:#8a67f4!important;
+  background:#f2edff!important;
+  color:#694add!important;
+  box-shadow:inset 0 0 0 1px rgba(138,103,244,.2)!important;
+}
+
+/* Homepage size panel: deliberate vertical rhythm matching the supplied reference. */
+.studio-page .size-selector-popover{
+  height:330px!important;
+  padding:14px 16px!important;
+}
+.studio-page .size-selector-popover>strong{
+  margin:0 0 8px!important;
+  line-height:24px!important;
+}
+.studio-page .size-selector-popover>.size-quality-label{
+  margin:0 0 7px!important;
+  line-height:18px!important;
+}
+.studio-page .size-selector-popover .size-quality{
+  margin:0 0 14px!important;
+}
+.studio-page .size-selector-popover>.size-section-label{
+  margin:0 0 7px!important;
+  line-height:18px!important;
+}
+.studio-page .size-selector-popover .size-fields{
+  margin:0 0 12px!important;
+}
+.studio-page .size-selector-popover>small{
+  margin:0 0 7px!important;
+  line-height:18px!important;
+}
+.studio-page .size-selector-popover .ratio-grid{
+  margin:0!important;
+}
+
+/* Selected asset badge sits inside the image instead of touching its edges. */
+.studio-page .figma-composer-assets .composer-assets-grid b{
+  top:10px!important;
+  right:10px!important;
+  width:20px!important;
+  height:20px!important;
+  font-size:11px!important;
+}
+
+/* One-piece reference artwork keeps the New Creation button visually exact at every scale. */
+.new-work{
+  height:51px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:hidden!important;
+}
+.new-work>img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:fill!important;
+  flex:none!important;
+}
+.new-work>span,.new-work::before,.new-work::after{display:none!important;content:none!important}
+
+/* Homepage hero breathes vertically instead of stacking tightly. */
+.studio-page .assistant-orb{margin-bottom:18px!important}
+.studio-page .assistant-copy{margin-bottom:12px!important}
+.studio-page h1{margin-top:0!important;margin-bottom:22px!important}
+.studio-page .skill-row{margin-bottom:20px!important}
+
+/* Give the first history item the same breathing room as the remaining rows. */
+.conversation-panel>.label{margin-bottom:14px!important}
+.conversation-history-scroll{padding-top:14px!important}
+.conversation-history-scroll .history-row strong{
+  display:block!important;
+  max-width:100%!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+
+/* Long prompts wrap naturally and make the conversation bubble taller. */
+.generation-thread .user-message{
+  width:fit-content!important;
+  min-width:395px!important;
+  max-width:433px!important;
+  height:auto!important;
+  min-height:56px!important;
+  padding:16px 20px!important;
+}
+
+/* The hollow sparkle in the size icon stays hollow in every trigger state. */
+.studio-page .composer-actions .home-size-trigger img,
+.studio-page .composer-actions .home-size-trigger[aria-expanded="true"] img{
+  filter:none!important;
+}
+
+/* Every size popover aligns High / Medium / Low from its left content edge. */
+.size-selector-popover .size-quality{
+  justify-content:flex-start!important;
+  margin-left:0!important;
+  margin-right:0!important;
+}
+.generation-page>.generation-composer.new-creation-composer .size-selector-popover .size-quality{
+  margin-left:0!important;
+  margin-right:0!important;
+}
+.canvas-size-popover .canvas-quality-row{
+  justify-content:flex-start!important;
+  margin-left:0!important;
+  margin-right:0!important;
+}
+
+/* Rotating homepage template recommendations slide into the real search field. */
+.template-head .mini-search{position:relative!important;overflow:hidden!important}
+.template-head .mini-search>input{position:relative!important;z-index:2!important;background:transparent!important}
+.template-search-suggestion{
+  position:absolute;
+  z-index:1;
+  left:36px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#a7abb5;
+  font-size:13px;
+  line-height:20px;
+  pointer-events:none;
+  animation:template-suggestion-roll .38s cubic-bezier(.2,.8,.25,1) both;
+}
+@keyframes template-suggestion-roll{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(-50%)}
+}
+
+/* Figma node 919:4 — exact 198×50 New Creation component. */
+.new-work{
+  width:198px!important;
+  height:50px!important;
+  min-height:50px!important;
+  padding:4px 6px!important;
+  border:1px solid #f3c3f7!important;
+  border-radius:10px!important;
+  background:linear-gradient(90deg,#f9f6ff 0%,#f5f0ff 100%)!important;
+  box-shadow:0 6px 8px rgba(99,92,255,.06)!important;
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  overflow:hidden!important;
+}
+.new-work>.new-work-main{
+  position:static!important;
+  width:96px!important;
+  height:32px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  opacity:1!important;
+  transform:none!important;
+  clip-path:none!important;
+}
+.new-work>.new-work-main>img{display:block!important;width:32px!important;height:32px!important;flex:0 0 32px!important}
+.new-work>.new-work-main>b{display:block!important;width:56px!important;height:22px!important;margin:0!important;color:#202432!important;font:400 14px/22px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif!important;white-space:nowrap!important}
+.new-work>.new-work-stars{display:block!important;width:24px!important;height:22px!important;flex:0 0 24px!important;object-fit:fill!important}
+.new-work::before,.new-work::after{display:none!important;content:none!important}
+
+/* The homepage wash spans the entire content area, matching Frame 134. */
+.studio-page{
+  background:
+    radial-gradient(ellipse 58% 62% at 14% 5%,rgba(218,231,255,.8) 0%,rgba(232,239,255,.48) 46%,transparent 78%),
+    radial-gradient(ellipse 58% 70% at 88% 10%,rgba(253,222,248,.72) 0%,rgba(244,230,255,.44) 48%,transparent 80%),
+    linear-gradient(112deg,#f5f9ff 0%,#f8f8ff 48%,#fff5fb 100%)!important;
+}
+
+/* Reference action glyphs and optically centered compact overflow button. */
+.generation-result-actions .action-edit img,.generation-result-actions .action-regenerate img{width:24px!important;height:24px!important;display:block!important;filter:none!important}
+.generation-more-wrap,.generation-result-actions .action-more{width:56px!important;min-width:56px!important}
+.generation-result-actions .action-more{height:44px!important;padding:0 0 5px!important;display:grid!important;place-items:center!important;text-align:center!important;font:700 17px/1 Arial,sans-serif!important;letter-spacing:2px!important}
+.generation-result-actions .generation-more-menu .batch-delete-icon{position:static!important;width:20px!important;height:20px!important;flex:0 0 20px!important;margin:0!important;display:block!important;filter:none!important}
+.generation-result-actions .generation-more-menu .batch-delete-icon::before,.generation-result-actions .generation-more-menu .batch-delete-icon::after{display:none!important;content:none!important}
+
+/* Selected model icon matches the supplied rounded white tile with gradient sparkles. */
+.model-selector-popover>button.active>img:first-child{content:url('/assets/figma-model-unified-active.svg')!important;padding:7px!important;border-radius:14px!important;background:#fff!important;box-shadow:0 2px 8px rgba(92,84,150,.05)!important}
+
+/* Conversation speed selector is the same compact component as the homepage selector. */
+.new-creation-composer footer .invocation-trigger{width:40px!important;height:40px!important;min-width:40px!important;padding:4px!important;border-radius:50%!important;display:grid!important;place-items:center!important}
+.new-creation-composer footer .invocation-trigger>img{display:block!important;width:30px!important;height:30px!important;filter:none!important}
+.new-creation-composer footer .invocation-trigger[aria-expanded="true"]{border-color:#8a67f4!important;background:#f2edff!important;box-shadow:inset 0 0 0 1px rgba(138,103,244,.2)!important}
+.new-creation-composer .model-invocation-popover{position:absolute!important;left:auto!important;right:0!important;top:auto!important;bottom:54px!important;width:216px!important;height:22px!important;padding:0 5px!important;border-radius:11px!important;background:#fff!important;background-image:none!important;box-shadow:0 5px 10px rgba(41,37,68,.1)!important;display:grid!important;grid-template-columns:repeat(3,1fr)!important;overflow:hidden!important;z-index:1800!important}
+.new-creation-composer .model-invocation-popover button{position:static!important;width:100%!important;height:22px!important;padding:0!important;border:0!important;border-radius:11px!important;background:transparent!important;color:#a5a6ad!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:9px!important}
+.new-creation-composer .model-invocation-popover button>i{display:none!important}
+.new-creation-composer .model-invocation-popover button.active{justify-self:center!important;width:22px!important;color:#fff!important;background:linear-gradient(135deg,#278eff,#9d78f7)!important}
+
+/* Homepage wash ends naturally in plain white through the lower half. */
+.studio-page{background:linear-gradient(to bottom,rgba(255,255,255,0) 0%,rgba(255,255,255,.1) 42%,#fff 78%),radial-gradient(ellipse 58% 62% at 14% 5%,rgba(218,231,255,.8) 0%,rgba(232,239,255,.48) 46%,transparent 78%),radial-gradient(ellipse 58% 70% at 88% 10%,rgba(253,222,248,.72) 0%,rgba(244,230,255,.44) 48%,transparent 80%),linear-gradient(112deg,#f5f9ff 0%,#f8f8ff 48%,#fff5fb 100%)!important}
+
+/* Size selected artwork changes to purple while preserving its white hollow sparkle. */
+.studio-page .home-size-trigger[aria-expanded="true"] img,
+.new-creation-composer .home-size-trigger[aria-expanded="true"] img{
+  content:url('/assets/figma-home-size-active.svg')!important;
+  filter:none!important;
+}
+
+/* Every conversation-composer popover trigger has the same persistent open state. */
+.new-creation-composer footer .home-upload-trigger[aria-expanded="true"],
+.new-creation-composer footer .home-model-trigger[aria-expanded="true"],
+.new-creation-composer footer .home-size-trigger[aria-expanded="true"],
+.new-creation-composer footer .home-assets-trigger[aria-expanded="true"]{
+  border-color:#8a67f4!important;
+  background:#f2edff!important;
+  color:#694add!important;
+  box-shadow:inset 0 0 0 1px rgba(138,103,244,.2)!important;
+}
+.new-creation-composer footer .home-model-trigger[aria-expanded="true"] img,
+.new-creation-composer footer .home-assets-trigger[aria-expanded="true"] img,
+.new-creation-composer footer .home-upload-trigger[aria-expanded="true"] img{
+  filter:brightness(0) saturate(100%) invert(39%) sepia(44%) saturate(1964%) hue-rotate(221deg)!important;
+}
+.generation-thread .user-message p{
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+  word-break:break-word!important;
+  line-height:22px!important;
+}
 .asset-content-grid .asset-upload-entry>div{display:grid!important;place-items:center!important;width:100%!important;aspect-ratio:9/16!important;border-radius:12px!important;background:#f1f2f4!important;color:#65788d!important;font-size:30px!important;font-weight:300!important;line-height:1!important;transition:background .16s ease,transform .16s ease,box-shadow .16s ease!important}
 .asset-content-grid .asset-upload-entry>strong{margin:8px 6px 0!important;color:#17191f!important;font-size:14px!important;font-weight:500!important}
 .asset-content-grid .asset-upload-entry:hover>div,.asset-content-grid .asset-upload-entry:focus-visible>div{background:#ebe9ff!important;box-shadow:0 10px 22px rgba(91,76,196,.14)!important;transform:translateY(-3px)!important}
@@ -9261,3 +10033,1123 @@ button > img {
 .folder-delete-dialog .cancel{border:1px solid #dedcef;background:#f8f8fb;color:#343947}
 .folder-delete-dialog .confirm{border:0;background:linear-gradient(135deg,#8777f5,#7561ed);color:#fff;box-shadow:0 8px 18px rgba(117,97,237,.24)}
 .folder-delete-dialog footer button:hover{transform:translateY(-1px);filter:brightness(.98)}
+
+/* Final dock geometry: compact container, equal edges, uniform optical icons. */
+.canvas-bottom-dock{
+  width:468px!important;
+  padding-left:16px!important;
+  padding-right:16px!important;
+  column-gap:8px!important;
+  justify-content:center!important;
+}
+.canvas-bottom-dock>i{margin-left:0!important;margin-right:0!important}
+.canvas-bottom-dock>button>img,
+.canvas-bottom-dock>button:first-child>img,
+.canvas-bottom-dock>button:nth-of-type(2)>img,
+.canvas-bottom-dock>button:nth-last-child(-n+2)>img{
+  display:block!important;
+  width:24px!important;
+  height:24px!important;
+  transform:none!important;
+  object-fit:contain!important;
+}
+
+/* Ensure every quadrant stretches to its full 50% grid track. */
+.asset-subject-card.create>div.asset-create-quadrants,
+.asset-content-grid .asset-upload-entry>div.asset-create-quadrants{
+  align-items:stretch!important;
+  justify-items:stretch!important;
+  place-items:stretch!important;
+}
+
+/* Canvas prompt controls sit lower inside the field and use the shared icons. */
+.canvas-node-prompt-footer>div{
+  transform:translateY(8px)!important;
+}
+.canvas-node-prompt-footer>div>button{
+  gap:8px!important;
+  padding:0 16px!important;
+}
+.canvas-node-prompt-footer>div>button>img{
+  display:block!important;
+  width:20px!important;
+  height:20px!important;
+  object-fit:contain!important;
+}
+
+/* Homepage and generation composer icon geometry follows the supplied controls. */
+.studio-page .composer-actions button>img,
+.studio-page .home-model-icon>img,
+.new-creation-composer footer>button>img{
+  width:22px!important;
+  height:22px!important;
+  object-fit:contain!important;
+}
+.studio-page .upload-pop button img,
+.new-creation-composer .new-upload-pop button img{
+  width:24px!important;
+  height:24px!important;
+  object-fit:contain!important;
+}
+
+/* Optically normalize every icon in the redraw/erase floating toolbar. */
+.canvas-redraw-toolbar>button,
+.canvas-redraw-toolbar .redraw-history-group>button{
+  display:grid!important;
+  place-items:center!important;
+  width:40px!important;
+  height:40px!important;
+  padding:9px!important;
+}
+.canvas-redraw-toolbar>button>img,
+.canvas-redraw-toolbar .redraw-history-group>button>img{
+  display:block!important;
+  width:22px!important;
+  height:22px!important;
+  object-fit:contain!important;
+  transform:none!important;
+}
+.canvas-redraw-toolbar>.redraw-close{
+  font:400 24px/1 Arial,sans-serif!important;
+}
+
+/* Final optical correction after browser inspection. */
+.studio-page .composer-actions .home-model-trigger .home-model-icon>img,
+.studio-page .composer-actions>button>img{
+  width:24px!important;
+  height:24px!important;
+}
+.canvas-redraw-toolbar>button[aria-label="画笔重绘"]>img,
+.canvas-redraw-toolbar>button[aria-label="框选重绘"]>img,
+.canvas-redraw-toolbar>button[aria-label="橡皮擦"]>img{
+  filter:drop-shadow(0 0 .28px #202432)!important;
+}
+.canvas-redraw-toolbar>button[aria-label="框选重绘"]>img{
+  transform:scale(1.16)!important;
+}
+.canvas-redraw-toolbar>button[aria-label="橡皮擦"]>img{
+  transform:scale(1.1)!important;
+}
+
+/* Compact pale-purple pin tooltip. */
+.history-pin>span{
+  bottom:calc(100% + 6px)!important;
+  height:22px!important;
+  padding:0 7px!important;
+  border:1px solid #ddd6ff!important;
+  border-radius:6px!important;
+  background:#f1edff!important;
+  color:#6e59dc!important;
+  box-shadow:0 4px 10px rgba(103,82,218,.12)!important;
+  font:400 11px/20px "Microsoft YaHei",sans-serif!important;
+}
+
+/* Crop ratio uses the supplied rounded-frame/corner-block icon. */
+.crop-ratio-button{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+}
+.crop-ratio-button>img{
+  display:block!important;
+  width:22px!important;
+  height:22px!important;
+  object-fit:contain!important;
+}
+
+/* Give the canvas brand and project copy a calmer horizontal rhythm. */
+.figma-canvas-page .project-bar{
+  gap:16px!important;
+}
+.figma-canvas-page .project-logo{
+  flex:0 0 auto!important;
+  margin:0!important;
+}
+
+/* Model selection: keep the original bare sparkle silhouette and only recolor it. */
+.model-selector-popover>button.active{
+  border:1.5px solid #2288ff!important;
+  background:#f2f2ff!important;
+  box-shadow:none!important;
+}
+.model-selector-popover>button.active>img:first-child{
+  content:url('/assets/figma-model-unified-active.svg')!important;
+  width:40px!important;
+  height:40px!important;
+  padding:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+/* The homepage color wash occupies only the upper half and dissolves into white. */
+.studio-page{
+  background:
+    linear-gradient(to bottom,rgba(255,255,255,0) 0%,rgba(255,255,255,.22) 18%,#fff 42%,#fff 100%),
+    radial-gradient(ellipse 58% 31% at 14% 2%,rgba(218,231,255,.8) 0%,rgba(232,239,255,.42) 48%,transparent 82%),
+    radial-gradient(ellipse 58% 35% at 88% 3%,rgba(253,222,248,.72) 0%,rgba(244,230,255,.38) 50%,transparent 84%),
+    linear-gradient(112deg,#f5f9ff 0%,#f8f8ff 48%,#fff5fb 100%)!important;
+}
+
+/* The rotating homepage template search becomes normal black editable text on focus. */
+.template-head .mini-search:focus-within .template-search-suggestion{
+  display:none!important;
+}
+.template-head .mini-search input,
+.template-head .mini-search input:focus{
+  color:#000!important;
+  caret-color:#000!important;
+  -webkit-text-fill-color:#000!important;
+  opacity:1!important;
+}
+
+/* Conversation generation now uses the exact homepage composer geometry and controls. */
+.generation-page>.composer.figma-composer.generation-composer{
+  width:820px!important;
+  height:156px!important;
+  padding:14px!important;
+  border-radius:16px!important;
+  box-shadow:0 6px 4px rgba(216,216,216,.25)!important;
+  overflow:visible!important;
+}
+.generation-page>.composer.figma-composer.generation-composer>textarea{
+  position:absolute!important;
+  left:14px!important;
+  right:14px!important;
+  top:14px!important;
+  width:calc(100% - 28px)!important;
+  height:72px!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  line-height:22px!important;
+  resize:none!important;
+}
+.generation-page>.composer.figma-composer.generation-composer>.composer-actions{
+  position:absolute!important;
+  left:14px!important;
+  right:14px!important;
+  bottom:13px!important;
+  width:auto!important;
+  height:40px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  margin:0!important;
+}
+.generation-page>.composer.figma-composer.generation-composer>.composer-actions>button{
+  position:static!important;
+  height:34px!important;
+  min-height:34px!important;
+  padding:0 13px!important;
+  border-radius:10px!important;
+  background:#fbfbfb!important;
+  color:#202432!important;
+  font-size:13px!important;
+}
+.generation-page>.composer.figma-composer.generation-composer>.composer-actions>.new-upload{
+  width:34px!important;
+  min-width:34px!important;
+  padding:5px!important;
+}
+.generation-page>.composer.figma-composer.generation-composer>.composer-actions>.invocation-trigger{
+  width:34px!important;
+  min-width:34px!important;
+  height:34px!important;
+  padding:0!important;
+  border-radius:999px!important;
+}
+.generation-page>.composer.figma-composer.generation-composer>.composer-actions>.new-generate{
+  width:108px!important;
+  min-width:108px!important;
+  height:40px!important;
+  padding:0!important;
+  border-radius:50px!important;
+  background:linear-gradient(110deg,#000 63%,#421a79 99%)!important;
+  color:#fff!important;
+  box-shadow:0 4px 4px rgba(167,132,248,.3)!important;
+}
+
+/* Exact Figma 924:6 upload-image artwork, assembled from its four exported layers. */
+.figma-upload-image-icon{
+  position:relative!important;
+  display:inline-block!important;
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  flex:0 0 24px!important;
+  overflow:visible!important;
+}
+.figma-upload-image-icon>.figma-upload-layer{
+  position:absolute!important;
+  display:block!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+  object-fit:fill!important;
+  filter:none!important;
+}
+.figma-upload-image-icon>.figma-upload-layer-picture{inset:48.65% 24.75% 32.67% 25.67%!important;width:auto!important;height:auto!important}
+.figma-upload-image-icon>.figma-upload-layer-spark{inset:26.7% 34.55% 61.21% 53.37%!important;width:auto!important;height:auto!important}
+.figma-upload-image-icon>.figma-upload-layer-frame{inset:17.71% 13.54%!important;width:auto!important;height:auto!important}
+.figma-upload-image-icon>.figma-upload-layer-plus{inset:16.67% 12.08% 66.25% 70.83%!important;width:auto!important;height:auto!important}
+
+/* New-creation character: subtle cursor-facing motion with a calm elastic return. */
+.new-creation-intro>.greeting-look-stage{
+  --look-x:0;
+  --look-y:0;
+  position:relative!important;
+  display:block!important;
+  width:92px!important;
+  height:92px!important;
+  margin:0 auto -5px!important;
+  perspective:520px!important;
+  transform:translate3d(calc(var(--look-x) * 2px),calc(var(--look-y) * 1.5px),0)!important;
+  transition:transform .32s cubic-bezier(.22,.75,.3,1)!important;
+}
+.new-creation-intro>.greeting-look-stage>.greeting-playing{
+  display:block!important;
+  width:92px!important;
+  height:92px!important;
+  object-fit:contain!important;
+  border-radius:0!important;
+  transform-origin:50% 72%!important;
+  transform:rotateY(calc(var(--look-x) * 5deg)) rotateX(calc(var(--look-y) * -3deg)) rotateZ(calc(var(--look-x) * .8deg))!important;
+  transition:transform .28s cubic-bezier(.2,.72,.28,1)!important;
+  filter:drop-shadow(0 5px 7px rgba(72,92,142,.09))!important;
+  animation:greeting-soft-breathe 3.8s ease-in-out infinite!important;
+}
+@keyframes greeting-soft-breathe{
+  0%,100%{scale:1}
+  50%{scale:1.018}
+}
+@media (prefers-reduced-motion:reduce){
+  .new-creation-intro>.greeting-look-stage,
+  .new-creation-intro>.greeting-look-stage>.greeting-playing{transition:none!important;animation:none!important;transform:none!important}
+}
+
+/* Asset picker typography now matches the model selector's readable scale. */
+.figma-composer-assets .composer-assets-tabs button,
+.figma-composer-assets .composer-assets-grid strong,
+.figma-composer-assets>footer span,
+.figma-composer-assets>footer button{
+  font-size:14px!important;
+  line-height:22px!important;
+}
+.figma-composer-assets .composer-assets-search input{
+  font-size:13px!important;
+  line-height:20px!important;
+}
+.figma-composer-assets .composer-assets-grid small{
+  font-size:10px!important;
+  line-height:14px!important;
+}
+
+/* The supplied blue circular character remains intact inside the cursor-follow stage. */
+.new-creation-intro>.greeting-look-stage{
+  width:92px!important;
+  height:92px!important;
+  border-radius:50%!important;
+  overflow:hidden!important;
+}
+.new-creation-intro>.greeting-look-stage>.greeting-playing{
+  width:92px!important;
+  height:92px!important;
+  border-radius:50%!important;
+}
+
+/* Size sparkle stays visually hollow on conversation hover/open states. */
+.generation-page .home-size-trigger:hover>img,
+.generation-page .home-size-trigger[aria-expanded="true"]>img,
+.new-creation-page .home-size-trigger:hover>img,
+.new-creation-page .home-size-trigger[aria-expanded="true"]>img{
+  content:url('/assets/figma-home-size-active.svg')!important;
+  filter:none!important;
+}
+
+/* Upload image icon: exact rounded image frame, landscape, dot and purple plus. */
+.figma-upload-image-icon.upload-image-icon-v2{
+  width:24px!important;
+  height:24px!important;
+  display:inline-grid!important;
+  place-items:center!important;
+  flex:0 0 24px!important;
+}
+.figma-upload-image-icon.upload-image-icon-v2>svg{
+  display:block!important;
+  width:24px!important;
+  height:24px!important;
+  overflow:visible!important;
+  fill:none!important;
+  stroke:#303345!important;
+  stroke-width:2.35!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+}
+.figma-upload-image-icon.upload-image-icon-v2>svg circle{fill:#303345!important;stroke:none!important}
+.figma-upload-image-icon.upload-image-icon-v2>svg .upload-plus{stroke:#9568ef!important;stroke-width:3.25!important}
+
+/* Empty canvas is a fixed landing surface; populated canvas becomes a vast four-way workspace. */
+.canvas-empty-state .figma-infinite-canvas{
+  overflow:hidden!important;
+  touch-action:none!important;
+}
+.canvas-empty-state .figma-infinite-canvas::before{display:none!important}
+.canvas-empty-state .figma-zoom{display:none!important}
+.canvas-empty-state .canvas-home-guide{
+  position:fixed!important;
+  left:50%!important;
+  top:50%!important;
+  transform:translate(-50%,-50%)!important;
+  zoom:1!important;
+}
+.canvas-populated-state .figma-infinite-canvas{
+  overflow:scroll!important;
+  scrollbar-width:none!important;
+  scroll-behavior:auto!important;
+  overscroll-behavior:none!important;
+}
+.canvas-populated-state .figma-infinite-canvas::-webkit-scrollbar{display:none!important}
+.canvas-populated-state .figma-infinite-canvas::before{
+  display:block!important;
+  width:6000px!important;
+  height:6000px!important;
+}
+.canvas-populated-state .figma-infinite-canvas>.canvas-node-layer,
+.canvas-populated-state .figma-infinite-canvas>.canvas-links,
+.canvas-populated-state .figma-infinite-canvas>.canvas-link-actions{
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  right:auto!important;
+  bottom:auto!important;
+  width:6000px!important;
+  height:6000px!important;
+  transform:scale(var(--canvas-scale,1))!important;
+  transform-origin:0 0!important;
+  transition:transform 130ms cubic-bezier(.2,.72,.28,1)!important;
+  will-change:transform!important;
+}
+.canvas-populated-state .canvas-node-card{
+  left:50%!important;
+  top:50%!important;
+}
+.canvas-populated-state .canvas-node-prompt{
+  position:absolute!important;
+  transform:translateX(-50%)!important;
+}
+
+/* Redraw and erase masks are composited once, so overlapping semi-transparent strokes do not darken. */
+.canvas-redraw-layer .redraw-stroke-composite{
+  opacity:.34!important;
+  isolation:isolate!important;
+}
+.canvas-redraw-layer .redraw-stroke-composite>polyline:not([style*="url"]){
+  stroke:#7567f2!important;
+  opacity:1!important;
+}
+.canvas-redraw-layer .redraw-stroke-composite>rect:not([style*="url"]){
+  fill:#7567f2!important;
+  opacity:1!important;
+}
+
+/* Canvas prompt uses equal 16px top/bottom control spacing; footer sits at the real bottom edge. */
+.canvas-node-prompt{
+  min-height:184px!important;
+  padding:16px 18px!important;
+  gap:10px!important;
+}
+.canvas-node-prompt-tools{flex:0 0 34px!important}
+.canvas-node-prompt-footer{
+  margin-top:auto!important;
+  transform:translateY(7px)!important;
+}
+.canvas-node-prompt-footer>div{transform:none!important}
+
+/* Canvas popovers are pure white; the model picker is the same component as the homepage. */
+.canvas-model-popover,
+.canvas-size-popover,
+.canvas-shared-model-popover>.model-selector-popover{
+  background:#fff!important;
+  background-image:none!important;
+}
+.canvas-shared-model-popover{
+  position:absolute!important;
+  z-index:40!important;
+  left:18px!important;
+  top:calc(100% + 8px)!important;
+  width:420px!important;
+  height:233px!important;
+}
+.canvas-shared-model-popover>.model-selector-popover{
+  position:static!important;
+  inset:auto!important;
+  width:420px!important;
+  height:233px!important;
+  margin:0!important;
+  padding:8px 12px!important;
+  border:0!important;
+  border-radius:10px!important;
+  box-shadow:0 10px 24px rgba(0,0,0,.02),0 2px 8px rgba(107,122,153,.05)!important;
+  transform:none!important;
+}
+.canvas-shared-model-popover>.model-selector-popover>button{
+  width:396px!important;
+  height:58px!important;
+  min-height:58px!important;
+}
+
+/* Subject library heading has no trailing help icon. */
+.asset-library-panel .subject-title{justify-content:flex-start!important}
+
+/* Frame-synchronised zoom should track the wheel directly instead of lagging behind it. */
+.canvas-populated-state .figma-infinite-canvas>.canvas-node-layer,
+.canvas-populated-state .figma-infinite-canvas>.canvas-links,
+.canvas-populated-state .figma-infinite-canvas>.canvas-link-actions{
+  transition:none!important;
+  backface-visibility:hidden!important;
+}
+
+/* Homepage asset upload entry: one uninterrupted gray field and one centered hover plus. */
+.asset-create-single{
+  position:relative!important;
+  display:grid!important;
+  place-items:center!important;
+  box-sizing:border-box!important;
+  width:100%!important;
+  border:1px solid #e1e3e7!important;
+  border-radius:12px!important;
+  background:#eff0f2!important;
+  overflow:hidden!important;
+  transition:background .16s ease,box-shadow .16s ease,transform .16s ease!important;
+}
+.asset-subject-card.create>.asset-create-single{height:286px!important}
+.asset-content-grid .asset-upload-entry>.asset-create-single{aspect-ratio:9/16!important}
+.asset-create-single>i{
+  display:grid!important;
+  place-items:center!important;
+  width:32px!important;
+  height:32px!important;
+  border-radius:50%!important;
+  background:#795cff!important;
+  color:#fff!important;
+  font:400 25px/1 Arial,sans-serif!important;
+  font-style:normal!important;
+  opacity:0!important;
+  transform:scale(.84)!important;
+  transition:opacity .16s ease,transform .18s ease!important;
+}
+.asset-subject-card.create:hover>.asset-create-single,
+.asset-content-grid .asset-upload-entry:hover>.asset-create-single{
+  background:#e9e7f7!important;
+  box-shadow:0 9px 22px rgba(91,76,196,.13)!important;
+  transform:translateY(-3px)!important;
+}
+.asset-subject-card.create:hover>.asset-create-single>i,
+.asset-content-grid .asset-upload-entry:hover>.asset-create-single>i{
+  opacity:1!important;
+  transform:scale(1)!important;
+}
+
+/* A selected dock tool replaces the normal prompt with a fully functional prompt at the same image gap. */
+.canvas-tool-node-prompt{
+  min-height:184px!important;
+  padding:16px 18px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:12px!important;
+  background:#fff!important;
+}
+.canvas-tool-prompt-heading{
+  flex:0 0 34px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  color:#2d3140!important;
+}
+.canvas-tool-prompt-heading>img{width:26px!important;height:26px!important;object-fit:contain!important}
+.canvas-tool-prompt-heading>strong{font-size:14px!important;line-height:22px!important;font-weight:500!important}
+.canvas-tool-prompt-input{
+  width:100%!important;
+  min-height:40px!important;
+  padding:0!important;
+  border:0!important;
+  outline:0!important;
+  background:transparent!important;
+  color:#202432!important;
+  font:400 14px/22px "Alibaba PuHuiTi","Microsoft YaHei",sans-serif!important;
+}
+.canvas-tool-prompt-input::placeholder{color:#a6a7ad!important}
+.canvas-tool-prompt-footer{
+  margin-top:auto!important;
+  transform:translateY(7px)!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+}
+.canvas-tool-prompt-footer>span{color:#8b92a1!important;font-size:12px!important;line-height:20px!important}
+.canvas-tool-prompt-footer>button{
+  width:34px!important;
+  height:34px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:transparent!important;
+  display:grid!important;
+  place-items:center!important;
+  cursor:pointer!important;
+}
+.canvas-tool-prompt-footer>button:hover{background:#eeebff!important;box-shadow:0 5px 14px rgba(105,83,222,.18)!important}
+.canvas-tool-prompt-footer>button>img{width:32px!important;height:34px!important;object-fit:contain!important}
+
+/* Dock tools keep only their compact native prompt; the large image prompt stays hidden. */
+.canvas-tool-node-prompt{
+  width:430px!important;
+  min-height:58px!important;
+  height:58px!important;
+  padding:8px 10px!important;
+  border-radius:14px!important;
+  display:grid!important;
+  grid-template-columns:auto minmax(0,1fr) 36px!important;
+  align-items:center!important;
+  gap:10px!important;
+}
+.canvas-tool-prompt-heading{
+  flex:none!important;
+  height:38px!important;
+  gap:7px!important;
+  padding-right:10px!important;
+  border-right:1px solid #ececf1!important;
+}
+.canvas-tool-prompt-heading>img{width:22px!important;height:22px!important}
+.canvas-tool-prompt-heading>strong{font-size:13px!important;white-space:nowrap!important}
+.canvas-tool-prompt-input{
+  min-width:0!important;
+  min-height:38px!important;
+  height:38px!important;
+  font-size:13px!important;
+}
+.canvas-tool-prompt-footer{
+  width:36px!important;
+  height:38px!important;
+  margin:0!important;
+  transform:none!important;
+  display:block!important;
+}
+.canvas-tool-prompt-footer>span{display:none!important}
+.canvas-tool-prompt-footer>button{width:36px!important;height:38px!important}
+
+/* The image-top redraw/erase chooser remains attached above the active image. */
+.canvas-redraw-toolbar{position:absolute!important;z-index:72!important}
+
+/* History creation entry mirrors the asset entry: one centered purple plus on hover. */
+.history-create-record .history-record-preview>span{
+  display:grid!important;
+  place-items:center!important;
+  width:32px!important;
+  height:32px!important;
+  border-radius:50%!important;
+  background:#795cff!important;
+  color:#fff!important;
+  font:400 25px/1 Arial,sans-serif!important;
+  opacity:0!important;
+  transform:scale(.84)!important;
+  transition:opacity .16s ease,transform .18s ease!important;
+}
+.history-create-record:hover .history-record-preview{
+  background:#e9e7f7!important;
+  box-shadow:0 9px 22px rgba(91,76,196,.13)!important;
+  transform:translateY(-3px)!important;
+}
+.history-create-record:hover .history-record-preview>span{
+  opacity:1!important;
+  transform:scale(1)!important;
+}
+
+/* Canvas upload placeholder is a clean white image container. */
+.canvas-node-card.is-placeholder .canvas-node-media,
+.canvas-placeholder-upload{
+  background:#fff!important;
+}
+.canvas-placeholder-upload:hover{background:#f8f7ff!important}
+
+/* Give the homepage asset picker clearer vertical rhythm without changing card proportions. */
+.studio-page .home-asset-popover.figma-composer-assets{
+  height:350px!important;
+  padding-top:16px!important;
+  padding-bottom:16px!important;
+}
+
+/* Focus edit: vertically balanced copy and the exact target/recenter control. */
+.canvas-focus-toast{
+  display:flex!important;
+  align-items:center!important;
+  padding:0 12px 0 18px!important;
+}
+.canvas-focus-toast>div{
+  position:static!important;
+  flex:1 1 auto!important;
+  min-width:0!important;
+  height:40px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  align-items:flex-start!important;
+  gap:3px!important;
+}
+.canvas-focus-toast strong,.canvas-focus-toast small{margin:0!important}
+.canvas-focus-toast .canvas-focus-target,
+.canvas-focus-toast>button{
+  position:static!important;
+  flex:0 0 auto!important;
+}
+.canvas-focus-toast .canvas-focus-target{
+  width:42px!important;
+  height:42px!important;
+  margin:0 8px 0 12px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:14px!important;
+  background:rgba(255,255,255,.17)!important;
+  display:grid!important;
+  place-items:center!important;
+  cursor:pointer!important;
+}
+.canvas-focus-toast .canvas-focus-target:hover{background:rgba(255,255,255,.28)!important}
+.canvas-focus-toast .canvas-focus-target img{width:24px!important;height:24px!important;filter:none!important}
+.canvas-focus-toast>button{width:58px!important;height:42px!important;border-radius:14px!important}
+
+/* Crop UI belongs to the visible viewport, not to the 16,000px canvas world. */
+.canvas-crop-workspace{
+  position:fixed!important;
+  inset:56px 0 0 0!important;
+  z-index:1100!important;
+  pointer-events:none!important;
+}
+.canvas-crop-stage{top:28px!important;pointer-events:auto!important}
+
+/* Compact redraw/erase toolbar with optically equal outer gutters. */
+.canvas-redraw-toolbar{
+  width:490px!important;
+  padding-left:8px!important;
+  padding-right:8px!important;
+  gap:6px!important;
+  justify-content:space-between!important;
+  box-sizing:border-box!important;
+}
+.canvas-redraw-toolbar>input{width:68px!important}
+.canvas-redraw-toolbar .redraw-history-group{flex-basis:82px!important;width:82px!important;gap:2px!important}
+
+/* Expansion uses the same compact image-attached prompt as redraw/crop tools. */
+.canvas-tool-node-prompt{z-index:74!important}
+
+/* Canvas prompt controls retain a persistent selected state after choosing values. */
+.canvas-node-prompt-footer>div>button.selected{
+  background:#eeecff!important;
+  color:#5f56df!important;
+  box-shadow:inset 0 0 0 1.5px #8a78f2!important;
+}
+.canvas-node-prompt-footer>div>button.selected>img{
+  filter:brightness(0) saturate(100%) invert(40%) sepia(73%) saturate(1378%) hue-rotate(220deg)!important;
+}
+.canvas-node-prompt-footer>div>button.active{
+  background:#eeecff!important;
+  color:#5f56df!important;
+  box-shadow:inset 0 0 0 1.5px #8a78f2!important;
+}
+.canvas-node-prompt-footer>div>button.active>img{
+  filter:brightness(0) saturate(100%) invert(40%) sepia(73%) saturate(1378%) hue-rotate(220deg)!important;
+}
+
+/* Crop prompt: usable text input and clear send action. */
+.canvas-crop-actions>input{
+  flex:1 1 auto!important;
+  min-width:150px!important;
+  height:34px!important;
+  padding:0 12px!important;
+  border:1px solid #e2e2ec!important;
+  border-radius:10px!important;
+  outline:0!important;
+  background:#f8f8fb!important;
+  color:#252936!important;
+  font:400 13px/34px "Microsoft YaHei",sans-serif!important;
+}
+.canvas-crop-actions>input:focus{border-color:#8a78f2!important;box-shadow:0 0 0 3px rgba(127,106,238,.12)!important;background:#fff!important}
+.canvas-crop-actions .crop-submit,
+.canvas-crop-actions .crop-submit:hover,
+.canvas-crop-actions .crop-submit:focus-visible{
+  width:38px!important;
+  height:38px!important;
+  min-width:38px!important;
+  padding:9px!important;
+  border:0!important;
+  border-radius:50%!important;
+  background:#050509!important;
+  box-shadow:none!important;
+  transform:none!important;
+  filter:none!important;
+}
+.canvas-crop-actions .crop-submit img{filter:brightness(0) invert(1)!important}
+
+/* Generated image provenance control and compact keyword popover. */
+.canvas-generated-copy{
+  position:absolute!important;
+  z-index:40!important;
+  top:10px!important;
+  right:10px!important;
+  width:34px!important;
+  height:34px!important;
+  padding:7px!important;
+  border:1px solid rgba(212,210,230,.9)!important;
+  border-radius:10px!important;
+  background:rgba(255,255,255,.94)!important;
+  color:#575d6b!important;
+  box-shadow:0 5px 14px rgba(47,50,72,.14)!important;
+  cursor:pointer!important;
+  display:grid!important;
+  place-items:center!important;
+}
+.canvas-generated-copy:hover{background:#eeecff!important;color:#6856e5!important;border-color:#b9aff2!important}
+.canvas-generated-copy img{display:block!important;width:20px!important;height:20px!important;object-fit:contain!important}
+.canvas-keyword-popover{
+  position:absolute!important;
+  z-index:60!important;
+  top:52px!important;
+  right:10px!important;
+  width:310px!important;
+  min-height:92px!important;
+  padding:12px!important;
+  box-sizing:border-box!important;
+  border:1px solid #dedaf2!important;
+  border-radius:16px!important;
+  background:#fff!important;
+  box-shadow:0 16px 38px rgba(44,42,70,.18)!important;
+  display:grid!important;
+  grid-template-columns:64px minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:11px!important;
+  color:#242837!important;
+}
+.canvas-keyword-popover>img{width:64px!important;height:64px!important;border-radius:10px!important;object-fit:cover!important;background:#f3f3f7!important}
+.canvas-keyword-popover>div{min-width:0!important}
+.canvas-keyword-popover small{display:block!important;margin-bottom:4px!important;color:#8a90a0!important;font-size:11px!important}
+.canvas-keyword-popover p{margin:0!important;display:-webkit-box!important;-webkit-line-clamp:3!important;-webkit-box-orient:vertical!important;overflow:hidden!important;color:#303442!important;font-size:13px!important;line-height:19px!important}
+.canvas-keyword-popover>button{height:32px!important;padding:0 10px!important;border:0!important;border-radius:9px!important;background:#eeeaff!important;color:#6653de!important;font-size:12px!important;white-space:nowrap!important;cursor:pointer!important}
+.canvas-keyword-popover>button:hover{background:#ded7ff!important}
+
+/* Connected references sit after the plus button and reveal only a subtly larger preview. */
+.canvas-reference-thumb{
+  position:relative!important;
+  flex:0 0 32px!important;
+  width:32px!important;
+  height:32px!important;
+  border:1px solid #d9d5f3!important;
+  border-radius:9px!important;
+  background:#fff!important;
+  overflow:visible!important;
+}
+.canvas-reference-thumb>img{display:block!important;width:100%!important;height:100%!important;border-radius:8px!important;object-fit:cover!important}
+.canvas-reference-thumb>b{
+  position:absolute!important;
+  z-index:90!important;
+  left:50%!important;
+  bottom:calc(100% + 7px)!important;
+  width:max-content!important;
+  height:max-content!important;
+  max-width:78px!important;
+  max-height:78px!important;
+  padding:3px!important;
+  border:1px solid #d9d4f3!important;
+  border-radius:11px!important;
+  background:#fff!important;
+  box-shadow:0 8px 20px rgba(48,45,75,.16)!important;
+  transform:translate(-50%,5px)!important;
+  opacity:0!important;
+  visibility:hidden!important;
+  transition:opacity .15s ease,transform .15s ease!important;
+}
+.canvas-reference-thumb>b>img{display:block!important;width:auto!important;height:auto!important;max-width:72px!important;max-height:72px!important;border-radius:8px!important;object-fit:contain!important}
+.canvas-reference-thumb:hover>b{opacity:1!important;visibility:visible!important;transform:translate(-50%,0)!important}
+.canvas-node-prompt-tools{overflow:visible!important}
+
+/* History and asset entries are drag sources; history has no selection badges or bottom action bar. */
+.figma-history-card,.asset-tree-entry{cursor:grab!important}
+.figma-history-card:active,.asset-tree-entry:active{cursor:grabbing!important}
+.figma-history-panel .history-action-bar,.figma-history-panel .history-check{display:none!important}
+
+/* Keyword provenance floats outside the generated image and grows with its text. */
+.canvas-node-card:has(.canvas-keyword-popover){z-index:90!important}
+.canvas-node-card:has(.canvas-keyword-popover) .canvas-node-media{overflow:visible!important}
+.canvas-node-card:has(.canvas-keyword-popover) .canvas-node-media>img{border-radius:15px!important}
+.canvas-keyword-popover{
+  top:0!important;
+  right:auto!important;
+  left:calc(100% + 16px)!important;
+  width:310px!important;
+  min-height:0!important;
+  height:auto!important;
+  align-items:start!important;
+}
+.canvas-keyword-popover p{
+  display:block!important;
+  -webkit-line-clamp:unset!important;
+  overflow:visible!important;
+  overflow-wrap:anywhere!important;
+}
+
+/* Conversation asset picker: restore comfortable vertical rhythm. */
+.generation-page>.generation-composer.new-creation-composer .home-asset-popover.figma-composer-assets{
+  height:286px!important;
+  padding-top:13px!important;
+  padding-bottom:13px!important;
+}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-tabs{
+  margin-bottom:7px!important;
+}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-search{
+  margin:0 0 17px!important;
+}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid{
+  row-gap:16px!important;
+}
+
+/* Search list: more air above/below the gray category header and project rows. */
+.canvas-search-modal .search-list{margin-top:15px!important}
+.canvas-search-modal .search-table-head{
+  height:54px!important;
+  padding-top:6px!important;
+  padding-bottom:6px!important;
+  box-sizing:border-box!important;
+  border-radius:10px!important;
+}
+.canvas-search-modal .search-list>button{
+  height:72px!important;
+  margin-top:7px!important;
+}
+
+/* Asset tree chevrons: expanded points down, collapsed points right. */
+.asset-library-panel .tree-row.expanded .tree-chevron,
+.asset-library-panel .tree-chevron:not(.collapsed){transform:none!important}
+.asset-library-panel .tree-chevron.collapsed{transform:rotate(-90deg)!important}
+
+/* Each canvas node owns a wrapping, content-height prompt instead of sharing one line. */
+.canvas-prompt-inline-content>.canvas-inline-text:first-child{
+  flex:1 0 100%!important;
+  width:100%!important;
+  min-width:100%!important;
+  min-height:30px!important;
+  height:auto;
+  max-height:150px!important;
+  padding:3px 0!important;
+  border:0!important;
+  resize:none!important;
+  overflow-y:auto!important;
+  white-space:pre-wrap!important;
+  overflow-wrap:anywhere!important;
+  line-height:22px!important;
+  box-sizing:border-box!important;
+}
+.canvas-prompt-inline-content{
+  min-height:34px!important;
+  height:auto!important;
+  overflow:visible!important;
+}
+.canvas-node-prompt{height:auto!important}
+.studio-page .figma-composer-assets .composer-assets-tabs{
+  margin-bottom:2px!important;
+}
+.studio-page .figma-composer-assets .composer-assets-search{
+  margin:10px 0 18px!important;
+}
+.studio-page .figma-composer-assets .composer-assets-grid strong{
+  margin-top:7px!important;
+  line-height:20px!important;
+}
+.studio-page .figma-composer-assets .composer-assets-grid small{
+  margin-top:3px!important;
+  line-height:15px!important;
+}
+
+/* A slightly larger, proportionally identical speed selector on every composer. */
+.studio-page .model-invocation-popover,
+.new-creation-composer .model-invocation-popover{
+  width:270px!important;
+  height:28px!important;
+  padding:0 6px!important;
+  border-radius:14px!important;
+}
+.studio-page .model-invocation-popover button,
+.new-creation-composer .model-invocation-popover button{
+  height:28px!important;
+  border-radius:14px!important;
+  font-size:11px!important;
+}
+.studio-page .model-invocation-popover button.active,
+.new-creation-composer .model-invocation-popover button.active{
+  width:28px!important;
+  height:28px!important;
+}
+
+/* Clear-history confirmation. */
+.panel-footer{display:flex!important;align-items:center!important;justify-content:space-between!important}
+.panel-footer>button{padding:0!important;border:0!important;background:transparent!important;color:inherit!important;font:inherit!important;cursor:pointer!important}
+.panel-footer>button:hover{color:#6f59dd!important}
+.conversation-clear-backdrop{position:fixed;inset:0;z-index:24000;display:grid;place-items:center;background:rgba(45,49,67,.35);backdrop-filter:blur(3px)}
+.conversation-clear-dialog{position:relative;width:480px;min-height:220px;padding:30px 34px 28px;box-sizing:border-box;border:1px solid #e0dcf4;border-radius:22px;background:#fff;box-shadow:0 22px 60px rgba(44,40,72,.2);color:#202432}
+.conversation-clear-dialog h2{margin:0;font-size:20px;line-height:28px;font-weight:500}
+.conversation-clear-dialog p{margin:26px 0 38px;color:#788297;font-size:14px;line-height:22px}
+.conversation-clear-close{position:absolute;right:24px;top:22px;width:32px;height:32px;padding:0;border:0;background:transparent;color:#4b5260;font-size:26px;line-height:30px;cursor:pointer}
+.conversation-clear-dialog footer{display:flex;justify-content:flex-end;gap:14px}
+.conversation-clear-dialog footer button{height:42px;padding:0 22px;border-radius:12px;font-size:14px;cursor:pointer}
+.conversation-clear-dialog .cancel{border:1px solid #dedcef;background:#f8f8fb;color:#343947}
+.conversation-clear-dialog .confirm{border:0;background:#806bf1;color:#fff;box-shadow:0 8px 18px rgba(117,97,237,.22)}
+
+/* Selected model keeps the exact Figma 40px geometry; only the black sparkle changes color. */
+.model-selector-popover>button.active>img:first-child{
+  width:40px!important;
+  height:40px!important;
+  padding:0!important;
+  transform:none!important;
+  content:url('/assets/figma-model-unified-active.svg')!important;
+}
+
+/* The blue avatar circle is a fixed backdrop; only the supplied character follows the pointer. */
+.new-creation-intro>.greeting-look-stage{
+  width:96px!important;
+  height:96px!important;
+  margin:0 auto 10px!important;
+  border-radius:50%!important;
+  overflow:hidden!important;
+  background:radial-gradient(circle at 32% 18%,#83d9ff 0%,#28a9f7 34%,#049af1 68%,#00b9eb 100%)!important;
+  box-shadow:inset 0 0 0 1px rgba(80,203,255,.72),0 5px 12px rgba(48,145,222,.12)!important;
+  transform:none!important;
+  transition:none!important;
+}
+.new-creation-intro>.greeting-look-stage>.greeting-playing{
+  width:94px!important;
+  height:94px!important;
+  margin:5px 0 0 1px!important;
+  border-radius:0!important;
+  object-fit:contain!important;
+  transform-origin:50% 66%!important;
+  transform:
+    translate3d(calc(var(--look-x) * 5px),calc(var(--look-y) * 4px),0)
+    rotateY(calc(var(--look-x) * 12deg))
+    rotateX(calc(var(--look-y) * -8deg))
+    rotateZ(calc(var(--look-x) * 1.8deg))!important;
+  transition:transform .22s cubic-bezier(.18,.72,.25,1)!important;
+  animation:greeting-lively-breathe 3.2s ease-in-out infinite!important;
+  filter:drop-shadow(0 3px 4px rgba(35,92,145,.08))!important;
+}
+.new-creation-intro p{
+  margin-top:0!important;
+}
+@keyframes greeting-lively-breathe{
+  0%,100%{scale:1;translate:0 0}
+  45%{scale:1.012;translate:0 -1px}
+  58%{scale:1.018;translate:0 -1px}
+}
+
+/* Articulated avatar: fixed torso, independently turning face, ears and eye glints. */
+.new-creation-intro>.greeting-look-stage>img{
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  width:94px!important;
+  height:94px!important;
+  margin:5px 0 0 1px!important;
+  object-fit:contain!important;
+  border-radius:0!important;
+  pointer-events:none!important;
+  filter:drop-shadow(0 2px 3px rgba(35,92,145,.06))!important;
+}
+.new-creation-intro .greeting-body-layer{
+  z-index:1!important;
+  clip-path:inset(55% 0 0 0)!important;
+  transform:none!important;
+}
+.new-creation-intro .greeting-face-layer{
+  z-index:3!important;
+  clip-path:ellipse(35% 37% at 50% 46%)!important;
+  transform-origin:50% 62%!important;
+  transform:
+    translate3d(calc(var(--look-x) * 7px),calc(var(--look-y) * 5px),0)
+    rotateY(calc(var(--look-x) * 17deg))
+    rotateX(calc(var(--look-y) * -11deg))
+    rotateZ(calc(var(--look-x) * 2.5deg))
+    skewX(calc(var(--look-x) * -2deg))!important;
+  transition:transform .24s cubic-bezier(.18,.75,.24,1)!important;
+}
+.new-creation-intro .greeting-ear-layer{
+  z-index:2!important;
+  transition:transform .27s cubic-bezier(.2,.82,.28,1)!important;
+}
+.new-creation-intro .greeting-ear-left{
+  clip-path:polygon(18% 0,48% 0,45% 39%,20% 38%)!important;
+  transform-origin:34% 34%!important;
+  transform:
+    translate3d(calc(var(--look-x) * 5px),calc(var(--look-y) * 3px),0)
+    rotate(calc(var(--look-x) * -10deg + var(--look-y) * 3deg))!important;
+}
+.new-creation-intro .greeting-ear-right{
+  clip-path:polygon(52% 0,82% 0,80% 38%,55% 39%)!important;
+  transform-origin:66% 34%!important;
+  transform:
+    translate3d(calc(var(--look-x) * 8px),calc(var(--look-y) * 3px),0)
+    rotate(calc(var(--look-x) * 10deg - var(--look-y) * 3deg))!important;
+}
+.greeting-eye-glints{
+  position:absolute!important;
+  inset:0!important;
+  z-index:5!important;
+  pointer-events:none!important;
+  transform:
+    translate3d(calc(var(--look-x) * 8.5px),calc(var(--look-y) * 6.5px),0)
+    rotateZ(calc(var(--look-x) * 2.5deg))!important;
+  transform-origin:50% 46%!important;
+  transition:transform .18s cubic-bezier(.16,.78,.24,1)!important;
+}
+.greeting-eye-glints>i{
+  position:absolute!important;
+  top:38px!important;
+  width:3px!important;
+  height:3px!important;
+  border-radius:50%!important;
+  background:rgba(255,255,255,.88)!important;
+  box-shadow:0 0 1px rgba(255,255,255,.65)!important;
+}
+.greeting-eye-glints>i:first-child{left:40px!important}
+.greeting-eye-glints>i:last-child{left:55px!important}
+@media (prefers-reduced-motion:reduce){
+  .new-creation-intro .greeting-face-layer,
+  .new-creation-intro .greeting-ear-layer,
+  .greeting-eye-glints{transition:none!important;transform:none!important}
+}
+
+/* Restore the original single-image gaze follow: no head-lift or articulated layers. */
+.new-creation-intro>.greeting-look-stage{
+  width:96px!important;
+  height:96px!important;
+  margin:0 auto 10px!important;
+  border-radius:50%!important;
+  overflow:hidden!important;
+  background:#19a7f5!important;
+  perspective:none!important;
+  transform:none!important;
+}
+.new-creation-intro>.greeting-look-stage>.greeting-playing{
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  width:96px!important;
+  height:96px!important;
+  margin:0!important;
+  border-radius:50%!important;
+  object-fit:contain!important;
+  transform-origin:50% 50%!important;
+  transform:translate3d(calc(var(--look-x) * 2.5px),calc(var(--look-y) * 2px),0)!important;
+  transition:transform .3s cubic-bezier(.22,.72,.28,1)!important;
+  animation:none!important;
+  filter:none!important;
+}

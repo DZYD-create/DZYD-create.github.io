@@ -1,0 +1,14 @@
+<svg width="668" height="168" viewBox="0 0 668 168" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="border" x1="0" y1="0" x2="668" y2="168" gradientUnits="userSpaceOnUse"><stop stop-color="#F6C5F7"/><stop offset=".53" stop-color="#9C83FF"/><stop offset="1" stop-color="#178CF7"/></linearGradient>
+    <linearGradient id="art" x1="40" y1="38" x2="632" y2="140" gradientUnits="userSpaceOnUse"><stop stop-color="#D2A8F8"/><stop offset=".5" stop-color="#8B75F9"/><stop offset="1" stop-color="#218AF6"/></linearGradient>
+  </defs>
+  <rect x="3" y="3" width="662" height="162" rx="33" fill="#F9F6FF" stroke="url(#border)" stroke-width="6"/>
+  <path d="M110 47C78 47 52 73 52 105s26 58 58 58" stroke="url(#art)" stroke-width="8" stroke-linecap="round"/>
+  <path d="m119 75-42 27c-5 3-3 11 3 12l23 5 11 20c3 6 11 4 12-2l9-54c1-8-8-13-16-8Z" fill="url(#art)"/>
+  <path d="M148 51c2 15 10 23 25 25-15 2-23 10-25 25-2-15-10-23-25-25 15-2 23-10 25-25Z" fill="url(#art)"/>
+  <text x="176" y="112" fill="#555866" font-size="45" font-weight="600" font-family="Microsoft YaHei, PingFang SC, sans-serif">新建创作</text>
+  <path d="M590 50c3 25 17 39 42 42-25 3-39 17-42 42-3-25-17-39-42-42 25-3 39-17 42-42Z" fill="url(#art)"/>
+  <path d="M638 39c1 10 7 16 17 17-10 1-16 7-17 17-1-10-7-16-17-17 10-1 16-7 17-17Z" fill="#D580EF"/>
+  <path d="M552 118c1 8 5 12 13 13-8 1-12 5-13 13-1-8-5-12-13-13 8-1 12-5 13-13Z" fill="#268AF7"/>
+</svg>
