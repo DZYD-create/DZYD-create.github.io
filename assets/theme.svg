@@ -1,0 +1,11 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icon / Light Theme">
+<path id="Vector" d="M12.0008 2.80005V4.90005M12.0008 19.1V21.2001M4.90078 4.90005L6.40078 6.40005M17.6008 17.6L19.1008 19.1M2.80078 12H4.90078M19.1008 12H21.2008M4.90078 19.1L6.40078 17.6M17.6008 6.40005L19.1008 4.90005M16.0008 12C16.0008 14.2092 14.2099 16 12.0008 16C9.79164 16 8.00078 14.2092 8.00078 12C8.00078 9.79091 9.79164 8.00005 12.0008 8.00005C14.2099 8.00005 16.0008 9.79091 16.0008 12Z" stroke="url(#paint0_linear_0_83)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_83" x1="2.80078" y1="20.3548" x2="22.7824" y2="18.1805" gradientUnits="userSpaceOnUse">
+<stop stop-color="#2288FF"/>
+<stop offset="1" stop-color="#A683F8"/>
+</linearGradient>
+</defs>
+</svg>

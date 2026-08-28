@@ -1,0 +1,15 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Frame 70">
+<circle id="Ellipse 32" cx="16" cy="16" r="16" fill="url(#paint0_linear_0_11)"/>
+<g id="Frame">
+<path id="Vector" d="M8 24.7443C8 24.7443 10.6046 19.7622 16.3455 20.0089C22.0864 20.2555 24 24.5964 24 24.5964C24 24.5964 20.3322 28 15.8671 28C11.402 28 8 24.7443 8 24.7443Z" fill="white"/>
+<path id="Vector_2" d="M16.4022 7.35649C16.7313 9.87934 18.1207 11.2687 20.6435 11.5978C21.1188 11.6563 21.1188 12.3437 20.6435 12.4022C18.1207 12.7313 16.7313 14.1207 16.4022 16.6435C16.3437 17.1188 15.6563 17.1188 15.5978 16.6435C15.2687 14.1207 13.8793 12.7313 11.3565 12.4022C10.8812 12.3437 10.8812 11.6563 11.3565 11.5978C13.8793 11.2687 15.2687 9.87934 15.5978 7.35649C15.6563 6.88117 16.3437 6.88117 16.4022 7.35649Z" fill="white"/>
+</g>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_11" x1="26.5" y1="28" x2="5.5" y2="4" gradientUnits="userSpaceOnUse">
+<stop stop-color="#C28FFF"/>
+<stop offset="1" stop-color="#677BFF"/>
+</linearGradient>
+</defs>
+</svg>
