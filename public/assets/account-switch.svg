@@ -1,0 +1,11 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icon / Selected Check">
+<path id="Vector" d="M4.76667 11.4583L8.70833 15.4L17.2333 6.875" stroke="url(#paint0_linear_0_8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_8" x1="4.76667" y1="15.0084" x2="18.127" y2="12.8824" gradientUnits="userSpaceOnUse">
+<stop stop-color="#2288FF"/>
+<stop offset="1" stop-color="#A683F8"/>
+</linearGradient>
+</defs>
+</svg>

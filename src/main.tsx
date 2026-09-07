@@ -3101,6 +3101,16 @@ function Canvas({
       setFolderExpanded(false);
     }
   };
+  useEffect(() => {
+    if (mode !== "account") return;
+    const closeAccount = (event: PointerEvent) => {
+      const target = event.target as HTMLElement;
+      if (target.closest('.canvas-account-popover,button[aria-label="账户"]')) return;
+      setMode(null);
+    };
+    window.addEventListener("pointerdown", closeAccount);
+    return () => window.removeEventListener("pointerdown", closeAccount);
+  }, [mode]);
   const handleDockAction = (label: string) => {
     setAddOpen(false);
     setQuickOpen(false);
@@ -4302,6 +4312,20 @@ function Canvas({
             <img src="/assets/canvas-nav-avatar.svg" />
           </button>
         </nav>
+        {mode === "account" && (
+          <aside className="canvas-account-popover" aria-label="账户菜单">
+            <img className="canvas-account-pointer" src="/assets/account-popover-pointer.svg" />
+            <button className="selected">
+              <img src="/assets/account-selected-check.svg" />
+              <span>切换账号</span>
+              <img className="canvas-account-check" src="/assets/account-switch.svg" />
+            </button>
+            <button>
+              <img src="/assets/account-logout.svg" />
+              <span>退出登录</span>
+            </button>
+          </aside>
+        )}
         {addOpen && (
           <section
             className="canvas-add-popover positioned"
@@ -4401,9 +4425,8 @@ function Canvas({
                 <div
                   className="selection-action-stack"
                   style={{
-                    left: (selection.x + selection.width) * (canvasZoom / 75) + 16,
-                    top:
-                      (selection.y + selection.height) * (canvasZoom / 75) - 27,
+                    left: (selection.x + selection.width / 2) * (canvasZoom / 75),
+                    top: selection.y * (canvasZoom / 75) - 14,
                   }}
                 >
                   {selectedNodeIds.length > 1 && (
@@ -4424,19 +4447,41 @@ function Canvas({
                         setSelection(null);
                       }}
                     >
+                      <span className="selection-group-icon" aria-hidden="true" />
                       打组
                     </button>
                   )}
-                  <button
-                    className="create-folder-button"
-                    onClick={() => {
-                      setMode("folder");
-                      setFolderDone(true);
-                      setSelection(null);
-                    }}
-                  >
-                    ＋ 添加到文件夹
-                  </button>
+                  <div className="selection-folder-wrap">
+                    <button
+                      className="create-folder-button"
+                      onClick={() => {
+                        setMode("folder");
+                        setFolderDone(true);
+                        setSelection(null);
+                      }}
+                    >
+                      <img src="/assets/canvas-nav-folder.svg" />
+                      添加到文件夹
+                      <span className="selection-folder-chevron" aria-hidden="true" />
+                    </button>
+                    <div className="selection-folder-popover" role="menu">
+                      {folderNames.map((name, index) => (
+                        <button
+                          key={`${name}-${index}`}
+                          role="menuitem"
+                          onClick={() => {
+                            setFolderIndex(index);
+                            setMode("folder");
+                            setFolderDone(true);
+                            setSelection(null);
+                          }}
+                        >
+                          <i style={{ background: folderColors[index] }} />
+                          <span>{name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
             </>

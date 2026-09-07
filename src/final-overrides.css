@@ -10878,25 +10878,36 @@ button > img {
   position:absolute!important;
   z-index:32!important;
   display:flex!important;
-  flex-direction:column!important;
-  align-items:stretch!important;
-  gap:8px!important;
-  transform:translateY(-100%)!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  gap:0!important;
+  height:48px!important;
+  padding:4px!important;
+  border:1px solid rgba(119,104,236,.2)!important;
+  border-radius:15px!important;
+  background:rgba(255,255,255,.96)!important;
+  box-shadow:0 10px 28px rgba(61,61,94,.12),0 2px 8px rgba(90,82,166,.06)!important;
+  transform:translate(-50%,-100%)!important;
 }
 .selection-action-stack .create-folder-button,
 .selection-action-stack .group-selection-button{
   position:static!important;
   transform:none!important;
-  width:168px!important;
-  height:46px!important;
-  padding:0 18px!important;
-  border:1px solid #7b72ef!important;
-  border-radius:23px!important;
-  background:#fff!important;
+  width:auto!important;
+  height:40px!important;
+  padding:0 14px!important;
+  border:0!important;
+  border-radius:11px!important;
+  background:transparent!important;
   color:#202432!important;
-  font-size:15px!important;
-  box-shadow:0 8px 20px rgba(63,68,104,.1)!important;
+  font-size:14px!important;
+  box-shadow:none!important;
   cursor:pointer!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  white-space:nowrap!important;
 }
 .selection-action-stack .group-selection-button:hover,
 .selection-action-stack .group-selection-button.active{
@@ -10904,6 +10915,76 @@ button > img {
   color:#6657df!important;
   border-color:#7568ec!important;
 }
+.selection-action-stack .group-selection-button{
+  min-width:88px!important;
+  border-right:1px solid #e8e6f2!important;
+  border-radius:11px 0 0 11px!important;
+}
+.selection-group-icon{
+  width:16px!important;
+  height:16px!important;
+  box-sizing:border-box!important;
+  border:1.5px solid #5e6280!important;
+  border-radius:4px!important;
+  position:relative!important;
+}
+.selection-group-icon::before,
+.selection-group-icon::after{
+  content:""!important;
+  position:absolute!important;
+  width:4px!important;
+  height:4px!important;
+  border:1.5px solid #5e6280!important;
+  border-radius:2px!important;
+  background:#fff!important;
+}
+.selection-group-icon::before{left:-4px!important;top:-4px!important}
+.selection-group-icon::after{right:-4px!important;bottom:-4px!important}
+.selection-folder-wrap{position:relative!important}
+.selection-action-stack .create-folder-button>img{width:18px!important;height:18px!important}
+.selection-folder-chevron{
+  width:7px!important;height:7px!important;border-right:1.5px solid #73788b!important;
+  border-bottom:1.5px solid #73788b!important;transform:rotate(45deg) translateY(-2px)!important;
+}
+.selection-folder-popover{
+  position:absolute!important;left:0!important;top:calc(100% + 8px)!important;width:190px!important;
+  padding:7px!important;border:1px solid #ebeaf4!important;border-radius:13px!important;background:#fff!important;
+  box-shadow:0 12px 30px rgba(43,45,70,.14)!important;opacity:0!important;visibility:hidden!important;
+  transform:translateY(-4px)!important;transition:opacity .16s ease,transform .16s ease,visibility .16s!important;
+}
+.selection-folder-wrap:hover .selection-folder-popover,
+.selection-folder-popover:hover{opacity:1!important;visibility:visible!important;transform:none!important}
+.selection-folder-popover>button{
+  width:100%!important;height:38px!important;padding:0 10px!important;border:0!important;border-radius:9px!important;
+  background:#fff!important;color:#303443!important;display:flex!important;align-items:center!important;gap:10px!important;
+  font-size:14px!important;text-align:left!important;
+}
+.selection-folder-popover>button:hover{background:#f2f0ff!important;color:#6557dc!important}
+.selection-folder-popover>button>i{width:22px!important;height:18px!important;border:1px solid #e1e1eb!important;border-radius:5px!important}
+
+/* Figma 935:7 — canvas account menu, positioned immediately to the avatar's right. */
+.canvas-account-popover{
+  position:fixed!important;left:94px!important;bottom:17px!important;z-index:140!important;
+  width:200px!important;height:104px!important;box-sizing:border-box!important;padding:6px!important;
+  border:0!important;border-radius:10px!important;background:#fff!important;
+  box-shadow:0 10px 24px rgba(0,0,0,.08),0 2px 8px rgba(107,122,153,.05)!important;
+}
+.canvas-account-pointer{
+  position:absolute!important;right:16px!important;top:-15px!important;width:18px!important;height:15px!important;
+  transform:rotate(-90deg)!important;transform-origin:center!important;
+}
+.canvas-account-popover>button{
+  width:188px!important;height:42px!important;padding:0 12px!important;border:0!important;border-radius:12px!important;
+  background:#fff!important;display:flex!important;align-items:center!important;gap:12px!important;color:#212429!important;
+  font:400 14px/22px "Alibaba PuHuiTi",sans-serif!important;text-align:left!important;
+}
+.canvas-account-popover>button:hover{background:#f7f6ff!important}
+.canvas-account-popover>button>img{width:20px!important;height:20px!important;flex:0 0 20px!important}
+.canvas-account-popover>button.selected>span{
+  background:linear-gradient(90deg,#8a67f4,#4f6cfa)!important;background-clip:text!important;
+  -webkit-background-clip:text!important;color:transparent!important;
+}
+.canvas-account-popover .canvas-account-check{margin-left:auto!important;width:22px!important;height:22px!important;flex-basis:22px!important}
 .canvas-node-card.is-grouped[data-selected]::after{
   opacity:.9!important;
 }
