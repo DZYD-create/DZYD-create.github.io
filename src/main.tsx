@@ -2377,9 +2377,17 @@ function Canvas({
     return () => window.removeEventListener("pointerdown", dismissUngroup);
   }, []);
   const [canvasComments, setCanvasComments] = useState<
-    Array<{ id: number; x: number; y: number; text: string }>
+    Array<{
+      id: number;
+      x: number;
+      y: number;
+      viewportX: number;
+      viewportY: number;
+      text: string;
+    }>
   >([]);
   const [selectedCommentIds, setSelectedCommentIds] = useState<number[]>([]);
+  const [, setCanvasViewportRevision] = useState(0);
   const cropExitTimer = useRef<number | null>(null);
   const selectionHoldTimer = useRef<number | null>(null);
   const selectionOrigin = useRef<{ x: number; y: number } | null>(null);
@@ -3321,6 +3329,7 @@ function Canvas({
         className="figma-infinite-canvas"
         style={{ "--canvas-scale": canvasZoom / 75 } as React.CSSProperties}
         onScroll={() => {
+          setCanvasViewportRevision((revision) => revision + 1);
           if ((focusEdit || referenceSelect) && !suppressFocusScroll.current)
             setFocusRecenterVisible(true);
         }}
@@ -3541,9 +3550,12 @@ function Canvas({
               const ex =
                   CANVAS_WORLD_CENTER + to.x + (nearest.targetSide === "left" ? -toGeometry.mediaWidth / 2 : toGeometry.mediaWidth / 2),
                 ey = toGeometry.centerY;
-              const d = `M ${sx} ${sy} C ${sx + (nearest.side === "left" ? -90 : 90)} ${sy}, ${ex + (nearest.targetSide === "left" ? -90 : 90)} ${ey}, ${ex} ${ey}`;
+              const curve = Math.max(72, Math.min(220, Math.abs(ex - sx) * 0.42));
+              const d = `M ${sx} ${sy} C ${sx + (nearest.side === "left" ? -curve : curve)} ${sy}, ${ex + (nearest.targetSide === "left" ? -curve : curve)} ${ey}, ${ex} ${ey}`;
               const active =
-                selectedNodeIds.includes(from.id) &&
+                activeNodeId === from.id ||
+                activeNodeId === to.id ||
+                selectedNodeIds.includes(from.id) ||
                 selectedNodeIds.includes(to.id);
               return (
                 <g
@@ -3735,13 +3747,10 @@ function Canvas({
                     setActiveGroupId(null);
                     setContextGroupId(null);
                     e.currentTarget.setPointerCapture(e.pointerId);
-                    const nodeGroup = canvasGroups.find((group) => group.nodeIds.includes(node.id));
                     const dragIds =
                       selection && selectedNodeIds.length > 1 && selectedNodeIds.includes(node.id)
                         ? selectedNodeIds
-                        : nodeGroup
-                          ? nodeGroup.nodeIds
-                          : [node.id];
+                        : [node.id];
                     const origins = Object.fromEntries(
                       canvasNodes
                         .filter((item) => dragIds.includes(item.id))
@@ -4652,10 +4661,20 @@ function Canvas({
           </>
         )}
         {mode === "history" && <HistoryDrawer onClose={() => setMode(null)} />}{" "}
-        {canvasComments.map((comment) => (
+        {mode !== "folder" && canvasComments.map((comment) => {
+          const canvas = canvasRef.current;
+          const canvasRect = canvas?.getBoundingClientRect();
+          const scale = canvasZoom / 75;
+          const left = canvasRect
+            ? canvasRect.left + comment.x * scale - canvas!.scrollLeft
+            : comment.viewportX;
+          const top = canvasRect
+            ? canvasRect.top + comment.y * scale - canvas!.scrollTop
+            : comment.viewportY;
+          return (
           <div
             className={`canvas-comment-marker-wrap ${selectedCommentIds.includes(comment.id) ? "selected" : ""}`}
-            style={{ left: comment.x, top: comment.y }}
+            style={{ left, top }}
             key={comment.id}
           >
             <button className="canvas-comment-marker" aria-label="查看评论">
@@ -4686,7 +4705,8 @@ function Canvas({
               </div>
             </aside>
           </div>
-        ))}{" "}
+          );
+        })}{" "}
         {mode === "comments" && commentPosition && (
           <CanvasCommentPanel
             position={commentPosition}
@@ -4697,6 +4717,8 @@ function Canvas({
                   id: Date.now(),
                   x: commentPosition.x,
                   y: commentPosition.y,
+                  viewportX: commentPosition.viewportX,
+                  viewportY: commentPosition.viewportY,
                   text,
                 },
               ]);

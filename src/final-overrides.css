@@ -6326,7 +6326,7 @@ button > img {
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: 7;
+  z-index: 1;
   overflow: visible;
   pointer-events: none;
 }
@@ -6336,8 +6336,8 @@ button > img {
 }
 .canvas-link-hit .visible-link {
   fill: none;
-  stroke: #65708a;
-  stroke-width: 2.2;
+  stroke: #949aa8;
+  stroke-width: 1.9;
   stroke-linecap: round;
   stroke-dasharray: none;
   transition:
@@ -6351,15 +6351,15 @@ button > img {
   pointer-events: stroke;
 }
 .canvas-link-hit.selected .visible-link {
-  stroke: #7674ff;
-  stroke-width: 2.4;
-  stroke-dasharray: none !important;
-  animation: none !important;
-  filter: drop-shadow(0 0 4px rgba(113, 111, 255, 0.32));
+  stroke: #827de9;
+  stroke-width: 2.15;
+  stroke-dasharray: 5 10 !important;
+  animation: canvas-link-flow 0.9s linear infinite !important;
+  filter: drop-shadow(0 0 4px rgba(113, 111, 255, 0.26));
 }
 @keyframes canvas-link-flow {
   to {
-    stroke-dashoffset: -14;
+    stroke-dashoffset: -30;
   }
 }
 .canvas-link-hit circle {
@@ -8464,7 +8464,7 @@ button > img {
   }
 }
 .canvas-comment-marker-wrap {
-  position: absolute;
+  position: fixed;
   z-index: 11;
   width: 38px;
   height: 38px;
@@ -10856,7 +10856,7 @@ button > img {
   z-index:5!important;
 }
 
-/* Comment composer is pinned to the viewport while only canvas content zooms. */
+/* Comment composer and completed markers keep a fixed visual size in the viewport. */
 .canvas-comment-panel.canvas-comment-at-point{
   position:fixed!important;
   left:var(--comment-viewport-x)!important;
@@ -10990,10 +10990,10 @@ button > img {
 }
 .figma-infinite-canvas>.figma-history-panel{
   position:fixed!important;
-  left:50%!important;
+  left:98px!important;
   top:calc(50% + 30px)!important;
   z-index:110!important;
-  transform:translate(-50%,-50%)!important;
+  transform:translateY(-50%)!important;
   zoom:1!important;
 }
 .nine-grid-icon{
@@ -11139,16 +11139,25 @@ button > img {
   filter:none!important;
 }
 
-/* Final viewport-centered history placement wins over its legacy side-panel rules. */
+/* History stays on the left side of the canvas instead of covering its center. */
 .canvas-page .figma-infinite-canvas>aside.figma-history-panel{
   position:fixed!important;
-  left:50vw!important;
+  left:98px!important;
   right:auto!important;
   top:calc(50vh + 30px)!important;
   bottom:auto!important;
   margin:0!important;
-  transform:translate(-50%,-50%)!important;
+  transform:translateY(-50%)!important;
   zoom:1!important;
+}
+
+/* Connectors always paint below group frames and image cards. */
+.figma-infinite-canvas>.canvas-links,
+.figma-infinite-canvas>.canvas-link-actions{
+  z-index:1!important;
+}
+.figma-infinite-canvas>.canvas-node-layer{
+  z-index:6!important;
 }
 
 /* Each canvas node owns a wrapping, content-height prompt instead of sharing one line. */
