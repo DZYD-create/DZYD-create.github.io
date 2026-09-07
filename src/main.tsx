@@ -22,6 +22,7 @@ type CanvasNode = {
   generated?: boolean;
   generationPrompt?: string;
 };
+let pendingCanvasAssetDrag: { name: string; url: string } | null = null;
 type eastWest = "left" | "right";
 type CanvasLink = {
   id: number;
@@ -2362,12 +2363,21 @@ function Canvas({
     viewportY: number;
   } | null>(null);
   const [canvasGroups, setCanvasGroups] = useState<
-    Array<{ id: number; nodeIds: number[]; name: string }>
+    Array<{ id: number; nodeIds: number[]; name: string; color?: string; layout?: "grid" | "horizontal" | "vertical" }>
   >([]);
   const [activeGroupId, setActiveGroupId] = useState<number | null>(null);
   const [contextGroupId, setContextGroupId] = useState<number | null>(null);
   const [groupNameEditing, setGroupNameEditing] = useState<number | null>(null);
   const [groupNameDraft, setGroupNameDraft] = useState("未命名组");
+  const [groupPopover, setGroupPopover] = useState<{
+    id: number;
+    kind: "color" | "layout";
+  } | null>(null);
+  useEffect(() => {
+    const clearPendingAssetDrag = () => { pendingCanvasAssetDrag = null; };
+    window.addEventListener("dragend", clearPendingAssetDrag);
+    return () => window.removeEventListener("dragend", clearPendingAssetDrag);
+  }, []);
   useEffect(() => {
     const dismissUngroup = (event: PointerEvent) => {
       if ((event.target as HTMLElement).closest(".canvas-ungroup-button")) return;
@@ -3260,6 +3270,52 @@ function Canvas({
       height: Math.max(...bounds.map((bound) => bound.bottom)) - top + padding,
     }];
   });
+  const arrangeCanvasGroup = (
+    groupId: number,
+    layout: "grid" | "horizontal" | "vertical",
+  ) => {
+    const group = canvasGroups.find((item) => item.id === groupId);
+    if (!group) return;
+    const members = canvasNodes.filter((node) => group.nodeIds.includes(node.id));
+    if (members.length < 2) return;
+    const centerX = members.reduce((sum, node) => sum + node.x, 0) / members.length;
+    const centerY = members.reduce((sum, node) => sum + node.y, 0) / members.length;
+    const maxWidth = Math.max(...members.map((node) => getNodeGeometry(node).cardWidth));
+    const maxHeight = Math.max(...members.map((node) => getNodeGeometry(node).cardHeight));
+    const gap = 28;
+    let positions: Array<{ id: number; x: number; y: number }> = [];
+    if (layout === "horizontal") {
+      const step = maxWidth + gap;
+      positions = members.map((node, index) => ({
+        id: node.id,
+        x: centerX + (index - (members.length - 1) / 2) * step,
+        y: centerY,
+      }));
+    } else if (layout === "vertical") {
+      const step = maxHeight + gap;
+      positions = members.map((node, index) => ({
+        id: node.id,
+        x: centerX,
+        y: centerY + (index - (members.length - 1) / 2) * step,
+      }));
+    } else {
+      const columns = Math.ceil(Math.sqrt(members.length));
+      const rows = Math.ceil(members.length / columns);
+      positions = members.map((node, index) => ({
+        id: node.id,
+        x: centerX + (index % columns - (columns - 1) / 2) * (maxWidth + gap),
+        y: centerY + (Math.floor(index / columns) - (rows - 1) / 2) * (maxHeight + gap),
+      }));
+    }
+    setCanvasNodes((nodes) => nodes.map((node) => {
+      const position = positions.find((item) => item.id === node.id);
+      return position ? { ...node, x: position.x, y: position.y } : node;
+    }));
+    setCanvasGroups((groups) => groups.map((item) =>
+      item.id === groupId ? { ...item, layout } : item,
+    ));
+    setGroupPopover(null);
+  };
 
   return (
     <section
@@ -3361,14 +3417,22 @@ function Canvas({
           setActiveNodeId(null);
         }}
         onDragOver={(event) => {
-          if (event.dataTransfer.types.includes("application/x-canvas-asset")) {
+          if (
+            pendingCanvasAssetDrag ||
+            event.dataTransfer.types.includes("application/x-canvas-asset") ||
+            event.dataTransfer.types.includes("text/plain")
+          ) {
             event.preventDefault();
+            event.dataTransfer.dropEffect = "copy";
             setDragStart(null);
             setSelection(null);
           }
         }}
         onDrop={(event) => {
-          const raw = event.dataTransfer.getData("application/x-canvas-asset");
+          const raw =
+            event.dataTransfer.getData("application/x-canvas-asset") ||
+            event.dataTransfer.getData("text/plain") ||
+            (pendingCanvasAssetDrag ? JSON.stringify(pendingCanvasAssetDrag) : "");
           if (!raw) return;
           event.preventDefault();
           try {
@@ -3387,6 +3451,7 @@ function Canvas({
             ]);
             setCanvasImage(asset.url);
             setActiveNodeId(id);
+            pendingCanvasAssetDrag = null;
           } catch {}
         }}
         onMouseDown={(e) => {
@@ -3677,7 +3742,8 @@ function Canvas({
                     top: `${group.top}px`,
                     width: `${group.width}px`,
                     height: `${group.height}px`,
-                  }}
+                    "--group-color": group.color || "rgba(128,116,239,.1)",
+                  } as React.CSSProperties}
                   key={group.id}
                   role="group"
                   aria-label={group.name}
@@ -3777,21 +3843,28 @@ function Canvas({
                       onPointerDown={(event) => event.stopPropagation()}
                       onClick={(event) => event.stopPropagation()}
                     >
-                      <button className="group-color-button" aria-label="组颜色"><i /></button>
-                      <button className="group-layout-button" aria-label="组布局">
+                      <button
+                        className="group-color-button"
+                        aria-label="组颜色"
+                        onClick={() => setGroupPopover((current) =>
+                          current?.id === group.id && current.kind === "color"
+                            ? null
+                            : { id: group.id, kind: "color" },
+                        )}
+                      ><i style={{ background: group.color || "rgba(128,116,239,.3)" }} /></button>
+                      <button
+                        className="group-layout-button"
+                        aria-label="组布局"
+                        onClick={() => setGroupPopover((current) =>
+                          current?.id === group.id && current.kind === "layout"
+                            ? null
+                            : { id: group.id, kind: "layout" },
+                        )}
+                      >
                         <span className="group-nine-grid" aria-hidden="true">
                           {Array.from({ length: 9 }).map((_, index) => <i key={index} />)}
                         </span>
                         <span className="group-toolbar-chevron" aria-hidden="true" />
-                      </button>
-                      <span className="group-toolbar-divider" />
-                      <button
-                        className="group-run-button"
-                        onClick={() => canvasNodes
-                          .filter((node) => group.nodeIds.includes(node.id) && !node.placeholder)
-                          .forEach((node) => generateFromCanvasNode(node))}
-                      >
-                        <span className="group-run-icon" aria-hidden="true" />整组执行
                       </button>
                       <span className="group-toolbar-divider" />
                       <button
@@ -3819,6 +3892,42 @@ function Canvas({
                       >
                         <img src="/assets/canvas-dock-download.svg" />
                       </button>
+                      {groupPopover?.id === group.id && groupPopover.kind === "color" && (
+                        <div className="group-color-popover" aria-label="选择组颜色">
+                          {[
+                            ["#8b8b8b", "rgba(139,139,139,.3)"],
+                            ["#f34b3f", "rgba(243,75,63,.3)"],
+                            ["#ff8a25", "rgba(255,138,37,.3)"],
+                            ["#ffb83c", "rgba(255,184,60,.3)"],
+                            ["#25cc79", "rgba(37,204,121,.3)"],
+                            ["#12b3d5", "rgba(18,179,213,.3)"],
+                            ["#367eee", "rgba(54,126,238,.3)"],
+                            ["#8752ea", "rgba(135,82,234,.3)"],
+                            ["#ef3284", "rgba(239,50,132,.3)"],
+                            ["#ededed", "rgba(237,237,237,.3)"],
+                          ].map(([solid, translucent]) => (
+                            <button
+                              key={solid}
+                              aria-label={`选择颜色 ${solid}`}
+                              className={group.color === translucent ? "selected" : ""}
+                              style={{ background: solid }}
+                              onClick={() => {
+                                setCanvasGroups((groups) => groups.map((item) =>
+                                  item.id === group.id ? { ...item, color: translucent } : item,
+                                ));
+                                setGroupPopover(null);
+                              }}
+                            />
+                          ))}
+                        </div>
+                      )}
+                      {groupPopover?.id === group.id && groupPopover.kind === "layout" && (
+                        <div className="group-layout-popover" aria-label="选择组排列方式">
+                          <button onClick={() => arrangeCanvasGroup(group.id, "grid")}><span className="layout-grid-icon" />宫格排列</button>
+                          <button onClick={() => arrangeCanvasGroup(group.id, "horizontal")}><span className="layout-horizontal-icon" />水平排列</button>
+                          <button onClick={() => arrangeCanvasGroup(group.id, "vertical")}><span className="layout-vertical-icon" />垂直排列</button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -5637,8 +5746,11 @@ function AssetLibrary({
   };
   const visibleTeachers = teachers.map((name, index) => ({ name, index })).filter(({ name }) => name.toLowerCase().includes(query.trim().toLowerCase()));
   const beginAssetDrag = (event: React.DragEvent, name: string, url: string) => {
+    pendingCanvasAssetDrag = { name, url };
     event.dataTransfer.effectAllowed = "copy";
-    event.dataTransfer.setData("application/x-canvas-asset", JSON.stringify({ name, url }));
+    const payload = JSON.stringify({ name, url });
+    event.dataTransfer.setData("application/x-canvas-asset", payload);
+    event.dataTransfer.setData("text/plain", payload);
   };
   return (
     <aside className="asset-library-panel" onDoubleClick={(event) => event.stopPropagation()}>
@@ -5774,11 +5886,14 @@ function HistoryDrawer({ onClose }: { onClose: () => void }) {
             className="figma-history-card"
             draggable
             onDragStart={(event) => {
-              event.dataTransfer.effectAllowed = "copy";
-              event.dataTransfer.setData("application/x-canvas-asset", JSON.stringify({
+              pendingCanvasAssetDrag = {
                 name: "小学全科卡",
                 url: "/assets/template-" + (i + 2) + ".png",
-              }));
+              };
+              event.dataTransfer.effectAllowed = "copy";
+              const payload = JSON.stringify(pendingCanvasAssetDrag);
+              event.dataTransfer.setData("application/x-canvas-asset", payload);
+              event.dataTransfer.setData("text/plain", payload);
             }}
             key={i}
           >
