@@ -6353,14 +6353,20 @@ button > img {
 .canvas-link-hit.selected .visible-link {
   stroke: #827de9;
   stroke-width: 2.15;
-  stroke-dasharray: 5 10 !important;
-  animation: canvas-link-flow 0.9s linear infinite !important;
-  filter: drop-shadow(0 0 4px rgba(113, 111, 255, 0.26));
+  stroke-dasharray: none !important;
+  animation: none !important;
+  filter: drop-shadow(0 0 3px rgba(113, 111, 255, 0.2));
 }
-@keyframes canvas-link-flow {
-  to {
-    stroke-dashoffset: -30;
-  }
+.canvas-link-hit .glow-link{
+  fill:none;
+  stroke-width:4.2;
+  stroke-linecap:round;
+  opacity:0;
+  pointer-events:none;
+  filter:blur(.35px) drop-shadow(0 0 4px rgba(135,127,246,.34));
+}
+.canvas-link-hit.selected .glow-link{
+  opacity:.9;
 }
 .canvas-link-hit circle {
   fill: #fff;
@@ -8464,11 +8470,12 @@ button > img {
   }
 }
 .canvas-comment-marker-wrap {
-  position: fixed;
+  position: absolute;
   z-index: 11;
   width: 38px;
   height: 38px;
-  transform: translate(-19px, -19px);
+  transform: translate(-19px, -19px) scale(var(--comment-inverse-scale, 1));
+  transform-origin:19px 19px;
   pointer-events: auto;
 }
 .canvas-comment-marker {
@@ -10990,7 +10997,7 @@ button > img {
 }
 .figma-infinite-canvas>.figma-history-panel{
   position:fixed!important;
-  left:98px!important;
+  left:112px!important;
   top:calc(50% + 30px)!important;
   z-index:110!important;
   transform:translateY(-50%)!important;
@@ -11142,7 +11149,7 @@ button > img {
 /* History stays on the left side of the canvas instead of covering its center. */
 .canvas-page .figma-infinite-canvas>aside.figma-history-panel{
   position:fixed!important;
-  left:98px!important;
+  left:112px!important;
   right:auto!important;
   top:calc(50vh + 30px)!important;
   bottom:auto!important;
@@ -11158,6 +11165,26 @@ button > img {
 }
 .figma-infinite-canvas>.canvas-node-layer{
   z-index:6!important;
+}
+
+/* Comments share the exact canvas transform, while each avatar counter-scales to stay crisp. */
+.figma-infinite-canvas>.canvas-comment-world-layer{
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  width:6000px!important;
+  height:6000px!important;
+  z-index:18!important;
+  pointer-events:none!important;
+  transform:scale(var(--canvas-scale,1))!important;
+  transform-origin:0 0!important;
+  transition:none!important;
+  backface-visibility:hidden!important;
+  will-change:transform!important;
+}
+.canvas-comment-world-layer>.canvas-comment-marker-wrap{
+  pointer-events:auto!important;
+  will-change:transform!important;
 }
 
 /* Each canvas node owns a wrapping, content-height prompt instead of sharing one line. */

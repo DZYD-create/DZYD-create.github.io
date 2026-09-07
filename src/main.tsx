@@ -2387,7 +2387,6 @@ function Canvas({
     }>
   >([]);
   const [selectedCommentIds, setSelectedCommentIds] = useState<number[]>([]);
-  const [, setCanvasViewportRevision] = useState(0);
   const cropExitTimer = useRef<number | null>(null);
   const selectionHoldTimer = useRef<number | null>(null);
   const selectionOrigin = useRef<{ x: number; y: number } | null>(null);
@@ -3329,7 +3328,6 @@ function Canvas({
         className="figma-infinite-canvas"
         style={{ "--canvas-scale": canvasZoom / 75 } as React.CSSProperties}
         onScroll={() => {
-          setCanvasViewportRevision((revision) => revision + 1);
           if ((focusEdit || referenceSelect) && !suppressFocusScroll.current)
             setFocusRecenterVisible(true);
         }}
@@ -3552,6 +3550,9 @@ function Canvas({
                 ey = toGeometry.centerY;
               const curve = Math.max(72, Math.min(220, Math.abs(ex - sx) * 0.42));
               const d = `M ${sx} ${sy} C ${sx + (nearest.side === "left" ? -curve : curve)} ${sy}, ${ex + (nearest.targetSide === "left" ? -curve : curve)} ${ey}, ${ex} ${ey}`;
+              const glowStart = Math.min(sx, ex) - 180;
+              const glowEnd = Math.max(sx, ex) + 180;
+              const glowWidth = Math.max(120, Math.abs(ex - sx) * 0.24);
               const active =
                 activeNodeId === from.id ||
                 activeNodeId === to.id ||
@@ -3568,7 +3569,42 @@ function Canvas({
                     );
                   }}
                 >
+                  <defs>
+                    <linearGradient
+                      id={`canvas-link-glow-${link.id}`}
+                      gradientUnits="userSpaceOnUse"
+                      x1={glowStart}
+                      y1={sy}
+                      x2={glowStart + glowWidth}
+                      y2={ey}
+                    >
+                      <stop offset="0" stopColor="#a9a6ff" stopOpacity="0" />
+                      <stop offset="0.38" stopColor="#aaa5ff" stopOpacity="0.55" />
+                      <stop offset="0.52" stopColor="#f1efff" stopOpacity="0.98" />
+                      <stop offset="0.68" stopColor="#aaa5ff" stopOpacity="0.55" />
+                      <stop offset="1" stopColor="#a9a6ff" stopOpacity="0" />
+                      <animate
+                        attributeName="x1"
+                        from={glowStart}
+                        to={glowEnd}
+                        dur="1.65s"
+                        repeatCount="indefinite"
+                      />
+                      <animate
+                        attributeName="x2"
+                        from={glowStart + glowWidth}
+                        to={glowEnd + glowWidth}
+                        dur="1.65s"
+                        repeatCount="indefinite"
+                      />
+                    </linearGradient>
+                  </defs>
                   <path className="visible-link" d={d} />
+                  <path
+                    className="glow-link"
+                    d={d}
+                    stroke={`url(#canvas-link-glow-${link.id})`}
+                  />
                   <path className="hit-link" d={d} />
                   <circle cx={(sx + ex) / 2} cy={(sy + ey) / 2} r="12" />
                   <text x={(sx + ex) / 2} y={(sy + ey) / 2}>
@@ -4661,20 +4697,16 @@ function Canvas({
           </>
         )}
         {mode === "history" && <HistoryDrawer onClose={() => setMode(null)} />}{" "}
-        {mode !== "folder" && canvasComments.map((comment) => {
-          const canvas = canvasRef.current;
-          const canvasRect = canvas?.getBoundingClientRect();
-          const scale = canvasZoom / 75;
-          const left = canvasRect
-            ? canvasRect.left + comment.x * scale - canvas!.scrollLeft
-            : comment.viewportX;
-          const top = canvasRect
-            ? canvasRect.top + comment.y * scale - canvas!.scrollTop
-            : comment.viewportY;
-          return (
+        {mode !== "folder" && (
+          <div className="canvas-comment-world-layer">
+            {canvasComments.map((comment) => (
           <div
             className={`canvas-comment-marker-wrap ${selectedCommentIds.includes(comment.id) ? "selected" : ""}`}
-            style={{ left, top }}
+            style={{
+              left: comment.x,
+              top: comment.y,
+              "--comment-inverse-scale": 75 / canvasZoom,
+            } as React.CSSProperties}
             key={comment.id}
           >
             <button className="canvas-comment-marker" aria-label="查看评论">
@@ -4705,8 +4737,9 @@ function Canvas({
               </div>
             </aside>
           </div>
-          );
-        })}{" "}
+            ))}
+          </div>
+        )}{" "}
         {mode === "comments" && commentPosition && (
           <CanvasCommentPanel
             position={commentPosition}
