@@ -10900,7 +10900,7 @@ button > img {
 }
 .canvas-group-frame{
   position:absolute!important;
-  z-index:4!important;
+  z-index:0!important;
   box-sizing:border-box!important;
   border:1.5px solid rgba(112,101,232,.58)!important;
   border-radius:24px!important;
@@ -10909,6 +10909,12 @@ button > img {
   pointer-events:auto!important;
   cursor:pointer!important;
   transition:left 80ms linear,top 80ms linear,width 80ms linear,height 80ms linear!important;
+}
+.canvas-node-layer>.canvas-node-card{
+  z-index:2;
+}
+.canvas-node-layer>.canvas-node-card.is-dragging{
+  z-index:20;
 }
 .canvas-group-frame.selected{
   border-color:rgba(104,89,226,.82)!important;

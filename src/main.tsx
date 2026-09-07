@@ -2358,10 +2358,12 @@ function Canvas({
     viewportX: number;
     viewportY: number;
   } | null>(null);
-  const [groupedNodeIds, setGroupedNodeIds] = useState<number[]>([]);
-  const [groupFrameSelected, setGroupFrameSelected] = useState(false);
-  const [groupName, setGroupName] = useState("未命名组");
-  const [groupNameEditing, setGroupNameEditing] = useState(false);
+  const [canvasGroups, setCanvasGroups] = useState<
+    Array<{ id: number; nodeIds: number[]; name: string }>
+  >([]);
+  const [activeGroupId, setActiveGroupId] = useState<number | null>(null);
+  const [contextGroupId, setContextGroupId] = useState<number | null>(null);
+  const [groupNameEditing, setGroupNameEditing] = useState<number | null>(null);
   const [groupNameDraft, setGroupNameDraft] = useState("未命名组");
   const [canvasComments, setCanvasComments] = useState<
     Array<{ id: number; x: number; y: number; text: string }>
@@ -2551,11 +2553,11 @@ function Canvas({
   }, [selection, dragStart, canvasNodes, canvasComments]);
   useEffect(() => {
     const ids = new Set(canvasNodes.map((node) => node.id));
-    setGroupedNodeIds((grouped) => {
-      const next = grouped.filter((id) => ids.has(id));
-      if (next.length < 2) setGroupFrameSelected(false);
-      return next;
-    });
+    setCanvasGroups((groups) =>
+      groups
+        .map((group) => ({ ...group, nodeIds: group.nodeIds.filter((id) => ids.has(id)) }))
+        .filter((group) => group.nodeIds.length >= 2),
+    );
     setCanvasLinks((links) =>
       links.filter((link) => ids.has(link.from) && ids.has(link.to)),
     );
@@ -2584,7 +2586,9 @@ function Canvas({
         )
       )
         return;
-      let ids = selectedNodeIds;
+      let ids = activeGroupId !== null
+        ? canvasGroups.find((group) => group.id === activeGroupId)?.nodeIds || []
+        : selectedNodeIds;
       if (selection && canvasRef.current) {
         const canvasBox = canvasRef.current.getBoundingClientRect();
         ids = Array.from(
@@ -2624,6 +2628,8 @@ function Canvas({
         ),
       );
       setActiveNodeId(null);
+      setActiveGroupId(null);
+      setContextGroupId(null);
       setSelectedNodeIds([]);
       setSelectedCommentIds([]);
       setSelection(null);
@@ -2633,6 +2639,8 @@ function Canvas({
     return () => window.removeEventListener("keydown", removeSelected);
   }, [
     activeNodeId,
+    activeGroupId,
+    canvasGroups,
     selectedNodeIds,
     selectedCommentIds,
     selection,
@@ -2750,6 +2758,9 @@ function Canvas({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const wheel = (event: WheelEvent) => {
+      const target = event.target as HTMLElement;
+      if (target.closest(".canvas-search-modal,.figma-history-panel,.asset-library-panel"))
+        return;
       if (!canvasNodes.length) {
         event.preventDefault();
         return;
@@ -2759,7 +2770,6 @@ function Canvas({
         return;
       }
       if (event.ctrlKey || event.metaKey) {
-        const target = event.target as HTMLElement;
         if (
           target.closest(
             'input,textarea,button,select,[contenteditable="true"],.canvas-node-prompt,.canvas-bottom-dock,.canvas-vertical-nav,.figma-zoom,.canvas-add-popover,.canvas-model-popover,.canvas-size-popover,.canvas-comment-panel,.figma-history-panel,.asset-library-panel,.canvas-search-modal,.canvas-crop-workspace',
@@ -3130,30 +3140,26 @@ function Canvas({
     to.x >= from.x
       ? { side: "right" as const, targetSide: "left" as const }
       : { side: "left" as const, targetSide: "right" as const };
-  const groupedBounds = (() => {
-    const nodes = canvasNodes.filter((node) => groupedNodeIds.includes(node.id));
-    if (nodes.length < 2) return null;
+  const groupedBounds = canvasGroups.flatMap((group) => {
+    const nodes = canvasNodes.filter((node) => group.nodeIds.includes(node.id));
+    if (nodes.length < 2) return [];
     const bounds = nodes.map((node) => {
       const geometry = getNodeGeometry(node);
       const left = CANVAS_WORLD_CENTER + node.x - geometry.cardWidth / 2;
       const top = CANVAS_WORLD_CENTER + node.y - geometry.cardHeight / 2;
-      return {
-        left,
-        top,
-        right: left + geometry.cardWidth,
-        bottom: top + geometry.cardHeight,
-      };
+      return { left, top, right: left + geometry.cardWidth, bottom: top + geometry.cardHeight };
     });
     const padding = 18;
     const left = Math.min(...bounds.map((bound) => bound.left)) - padding;
     const top = Math.min(...bounds.map((bound) => bound.top)) - padding;
-    return {
+    return [{
+      ...group,
       left,
       top,
       width: Math.max(...bounds.map((bound) => bound.right)) - left + padding,
       height: Math.max(...bounds.map((bound) => bound.bottom)) - top + padding,
-    };
-  })();
+    }];
+  });
 
   return (
     <section
@@ -3240,18 +3246,19 @@ function Canvas({
           setPromptPopover(null);
         }}
         onContextMenuCapture={(event) => {
-          if (!groupedBounds) return;
           const point = getCanvasPoint(event.clientX, event.clientY);
-          if (
-            point.x < groupedBounds.left ||
-            point.x > groupedBounds.left + groupedBounds.width ||
-            point.y < groupedBounds.top ||
-            point.y > groupedBounds.top + groupedBounds.height
-          )
-            return;
+          const group = [...groupedBounds].reverse().find((bound) =>
+            point.x >= bound.left &&
+            point.x <= bound.left + bound.width &&
+            point.y >= bound.top &&
+            point.y <= bound.top + bound.height,
+          );
+          if (!group) return;
           event.preventDefault();
           event.stopPropagation();
-          setGroupFrameSelected(true);
+          setContextGroupId(group.id);
+          setActiveGroupId(group.id);
+          setActiveNodeId(null);
         }}
         onDragOver={(event) => {
           if (event.dataTransfer.types.includes("application/x-canvas-asset")) {
@@ -3516,75 +3523,114 @@ function Canvas({
                 })()}
             </svg>
             <div className="canvas-node-layer">
-              {groupedBounds && (
+              {groupedBounds.map((group) => (
                 <div
-                  className={`canvas-group-frame ${groupFrameSelected ? "selected" : ""}`}
+                  className={`canvas-group-frame ${activeGroupId === group.id ? "selected" : ""}`}
                   style={{
-                    left: `${groupedBounds.left}px`,
-                    top: `${groupedBounds.top}px`,
-                    width: `${groupedBounds.width}px`,
-                    height: `${groupedBounds.height}px`,
+                    left: `${group.left}px`,
+                    top: `${group.top}px`,
+                    width: `${group.width}px`,
+                    height: `${group.height}px`,
                   }}
+                  key={group.id}
                   role="group"
-                  aria-label="已打组图片"
+                  aria-label={group.name}
                   onPointerDown={(event) => {
+                    if (event.button !== 0) return;
                     event.preventDefault();
                     event.stopPropagation();
+                    event.currentTarget.setPointerCapture(event.pointerId);
+                    const origins = Object.fromEntries(
+                      canvasNodes
+                        .filter((node) => group.nodeIds.includes(node.id))
+                        .map((node) => [node.id, { x: node.x, y: node.y }]),
+                    );
+                    setActiveGroupId(group.id);
+                    setActiveNodeId(null);
+                    setImageDrag({
+                      id: group.nodeIds[0],
+                      pointerId: event.pointerId,
+                      startX: event.clientX,
+                      startY: event.clientY,
+                      origins,
+                    });
+                  }}
+                  onPointerMove={(event) => {
+                    if (!imageDrag || imageDrag.pointerId !== event.pointerId || imageDrag.id !== group.nodeIds[0]) return;
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const dx = (event.clientX - imageDrag.startX) / (canvasZoom / 75);
+                    const dy = (event.clientY - imageDrag.startY) / (canvasZoom / 75);
+                    setCanvasNodes((nodes) => nodes.map((node) => {
+                      const origin = imageDrag.origins[node.id];
+                      return origin ? { ...node, x: origin.x + dx, y: origin.y + dy } : node;
+                    }));
+                  }}
+                  onPointerUp={(event) => {
+                    if (imageDrag?.pointerId !== event.pointerId || imageDrag.id !== group.nodeIds[0]) return;
+                    event.stopPropagation();
+                    event.currentTarget.releasePointerCapture(event.pointerId);
+                    setImageDrag(null);
                   }}
                   onClick={(event) => {
                     event.stopPropagation();
+                    setActiveGroupId(group.id);
+                    setActiveNodeId(null);
                   }}
                 >
                   <div
                     className="canvas-group-name"
+                    onPointerDown={(event) => event.stopPropagation()}
                     onDoubleClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
-                      setGroupNameDraft(groupName);
-                      setGroupNameEditing(true);
+                      setGroupNameDraft(group.name);
+                      setGroupNameEditing(group.id);
                     }}
                   >
-                    {groupNameEditing ? (
+                    {groupNameEditing === group.id ? (
                       <input
                         autoFocus
                         value={groupNameDraft}
                         onChange={(event) => setGroupNameDraft(event.target.value)}
                         onBlur={() => {
-                          setGroupName(groupNameDraft.trim() || "未命名组");
-                          setGroupNameEditing(false);
+                          const name = groupNameDraft.trim() || "未命名组";
+                          setCanvasGroups((groups) => groups.map((item) => item.id === group.id ? { ...item, name } : item));
+                          setGroupNameEditing(null);
                         }}
                         onKeyDown={(event) => {
                           if (event.key === "Enter") event.currentTarget.blur();
                           if (event.key === "Escape") {
-                            setGroupNameDraft(groupName);
-                            setGroupNameEditing(false);
+                            setGroupNameDraft(group.name);
+                            setGroupNameEditing(null);
                           }
                         }}
                         onPointerDown={(event) => event.stopPropagation()}
                       />
                     ) : (
-                      <span>{groupName}</span>
+                      <span>{group.name}</span>
                     )}
                   </div>
-                  {groupFrameSelected && (
+                  {contextGroupId === group.id && (
                     <button
                       className="canvas-ungroup-button"
                       onPointerDown={(event) => event.stopPropagation()}
                       onClick={(event) => {
                         event.stopPropagation();
-                        setGroupedNodeIds([]);
-                        setGroupFrameSelected(false);
+                        setCanvasGroups((groups) => groups.filter((item) => item.id !== group.id));
+                        setContextGroupId(null);
+                        setActiveGroupId(null);
                       }}
                     >
                       解组
                     </button>
                   )}
                 </div>
-              )}
+              ))}
               {canvasNodes.map((node) => (
                 <article
                   data-node-id={node.id}
-                  className={`canvas-node-card ${node.placeholder ? "is-placeholder" : ""} ${imageDrag?.origins[node.id] ? "is-dragging" : ""} ${groupedNodeIds.includes(node.id) ? "is-grouped" : ""} ${node.name.endsWith("· 高清") ? "is-hd-result" : ""} ${canvasTool === "扩图" && expandFrame?.id === node.id ? "is-expand-active" : ""}`}
+                  className={`canvas-node-card ${node.placeholder ? "is-placeholder" : ""} ${imageDrag?.origins[node.id] ? "is-dragging" : ""} ${canvasGroups.some((group) => group.nodeIds.includes(node.id)) ? "is-grouped" : ""} ${node.name.endsWith("· 高清") ? "is-hd-result" : ""} ${canvasTool === "扩图" && expandFrame?.id === node.id ? "is-expand-active" : ""}`}
                   style={{
                     width: `${getNodeGeometry(node).cardWidth}px`,
                     height: `${getNodeGeometry(node).cardHeight}px`,
@@ -3603,12 +3649,15 @@ function Canvas({
                       return;
                     e.preventDefault();
                     e.stopPropagation();
+                    setActiveGroupId(null);
+                    setContextGroupId(null);
                     e.currentTarget.setPointerCapture(e.pointerId);
+                    const nodeGroup = canvasGroups.find((group) => group.nodeIds.includes(node.id));
                     const dragIds =
                       selection && selectedNodeIds.length > 1 && selectedNodeIds.includes(node.id)
                         ? selectedNodeIds
-                        : groupedNodeIds.includes(node.id) && groupedNodeIds.length > 1
-                          ? groupedNodeIds
+                        : nodeGroup
+                          ? nodeGroup.nodeIds
                           : [node.id];
                     const origins = Object.fromEntries(
                       canvasNodes
@@ -4226,13 +4275,19 @@ function Canvas({
                 >
                   {selectedNodeIds.length > 1 && (
                     <button
-                      className={`group-selection-button ${selectedNodeIds.every((id) => groupedNodeIds.includes(id)) ? "active" : ""}`}
+                      className="group-selection-button"
                       onClick={() => {
-                        setGroupedNodeIds([...selectedNodeIds]);
-                        setGroupName("未命名组");
+                        const groupId = Date.now();
+                        setCanvasGroups((groups) => [
+                          ...groups
+                            .map((group) => ({ ...group, nodeIds: group.nodeIds.filter((id) => !selectedNodeIds.includes(id)) }))
+                            .filter((group) => group.nodeIds.length >= 2),
+                          { id: groupId, nodeIds: [...selectedNodeIds], name: "未命名组" },
+                        ]);
                         setGroupNameDraft("未命名组");
-                        setGroupNameEditing(false);
-                        setGroupFrameSelected(false);
+                        setGroupNameEditing(null);
+                        setContextGroupId(null);
+                        setActiveGroupId(groupId);
                         setSelection(null);
                       }}
                     >
@@ -5161,7 +5216,18 @@ function CanvasSearchModal({
     setSelected((v) => (v.includes(i) ? v.filter((n) => n !== i) : [...v, i]));
   return (
     <div className="canvas-search-backdrop">
-      <section className="canvas-search-modal">
+      <section
+        className="canvas-search-modal"
+        onWheelCapture={(event) => {
+          const scrollable = (event.target as HTMLElement).closest<HTMLElement>(
+            ".search-list,.search-grid,.search-empty",
+          );
+          if (!scrollable) return;
+          event.preventDefault();
+          event.stopPropagation();
+          scrollable.scrollTop += event.deltaY;
+        }}
+      >
         <header>
           <strong>选择图片</strong>
           <button onClick={onClose} aria-label="关闭">
