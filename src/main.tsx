@@ -2198,6 +2198,8 @@ function Canvas({
         ? [{ id: 1, url: canvasImage, x: 0, y: 0, name: canvasImageName }]
       : [],
   );
+  const canvasClipboardRef = useRef<CanvasNode[]>([]);
+  const canvasPasteOffsetRef = useRef(0);
   const CANVAS_WORLD_SIZE = 6000;
   const CANVAS_WORLD_CENTER = CANVAS_WORLD_SIZE / 2;
   const getNodeGeometry = (node: CanvasNode) => {
@@ -2647,6 +2649,51 @@ function Canvas({
     canvasNodes,
     setCanvasImage,
   ]);
+  useEffect(() => {
+    const copyPasteImages = (event: KeyboardEvent) => {
+      if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
+      const target = event.target as HTMLElement;
+      if (target.closest('input,textarea,[contenteditable="true"]')) return;
+      const key = event.key.toLowerCase();
+      if (key === "c") {
+        const ids = activeGroupId !== null
+          ? canvasGroups.find((group) => group.id === activeGroupId)?.nodeIds || []
+          : selectedNodeIds.length
+            ? selectedNodeIds
+            : activeNodeId !== null
+              ? [activeNodeId]
+              : [];
+        if (!ids.length) return;
+        canvasClipboardRef.current = canvasNodes
+          .filter((node) => ids.includes(node.id))
+          .map((node) => ({ ...node }));
+        canvasPasteOffsetRef.current = 0;
+        event.preventDefault();
+        return;
+      }
+      if (key !== "v" || !canvasClipboardRef.current.length) return;
+      event.preventDefault();
+      canvasPasteOffsetRef.current += 36;
+      const offset = canvasPasteOffsetRef.current;
+      const firstId = Math.max(Date.now(), Math.max(0, ...canvasNodes.map((node) => node.id)) + 1);
+      const pasted = canvasClipboardRef.current.map((node, index) => ({
+        ...node,
+        id: firstId + index,
+        x: node.x + offset,
+        y: node.y + offset,
+        name: `${node.name} 副本`,
+      }));
+      setCanvasNodes((nodes) => [...nodes, ...pasted]);
+      setCanvasImage(pasted[0]?.url || null);
+      setActiveNodeId(pasted[0]?.id || null);
+      setActiveGroupId(null);
+      setContextGroupId(null);
+      setSelection(null);
+      setSelectedNodeIds([]);
+    };
+    window.addEventListener("keydown", copyPasteImages);
+    return () => window.removeEventListener("keydown", copyPasteImages);
+  }, [activeGroupId, activeNodeId, canvasGroups, canvasNodes, selectedNodeIds, setCanvasImage]);
   useEffect(() => {
     canvasRef.current
       ?.querySelectorAll<HTMLElement>("[data-node-id]")
@@ -5272,7 +5319,9 @@ function CanvasSearchModal({
               onClick={() => setView("grid")}
               aria-label="卡片视图"
             >
-              ▦
+              <span className="nine-grid-icon" aria-hidden="true">
+                {Array.from({ length: 9 }, (_, index) => <i key={index} />)}
+              </span>
             </button>
             <button
               className={view === "list" ? "active" : ""}

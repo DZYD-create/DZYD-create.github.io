@@ -10984,15 +10984,35 @@ button > img {
 }
 .figma-infinite-canvas>.canvas-search-backdrop>.canvas-search-modal{
   position:absolute!important;
-  top:32px!important;
+  left:50%!important;
+  top:50%!important;
+  transform:translate(-50%,-50%)!important;
 }
 .figma-infinite-canvas>.figma-history-panel{
   position:fixed!important;
-  left:25px!important;
-  top:93px!important;
+  left:50%!important;
+  top:calc(50% + 30px)!important;
   z-index:110!important;
-  transform:none!important;
+  transform:translate(-50%,-50%)!important;
   zoom:1!important;
+}
+.nine-grid-icon{
+  width:18px!important;
+  height:18px!important;
+  display:grid!important;
+  grid-template-columns:repeat(3,4px)!important;
+  grid-template-rows:repeat(3,4px)!important;
+  gap:2px!important;
+  place-content:center!important;
+}
+.nine-grid-icon i{
+  display:block!important;
+  width:4px!important;
+  height:4px!important;
+  box-sizing:border-box!important;
+  border:1px solid #697180!important;
+  border-radius:1px!important;
+  background:transparent!important;
 }
 .canvas-keyword-popover{
   position:absolute!important;
