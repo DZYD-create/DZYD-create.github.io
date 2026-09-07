@@ -2133,6 +2133,8 @@ function Canvas({
 }) {
   const ref = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
+  const accountButtonRef = useRef<HTMLButtonElement>(null);
+  const [accountPopoverPosition, setAccountPopoverPosition] = useState({ left: 94, top: 0 });
   const [mode, setMode] = useState<
     "focus" | "assets" | "folder" | "history" | "comments" | "account" | null
   >(null);
@@ -3856,7 +3858,7 @@ function Canvas({
                             ? null
                             : { id: group.id, kind: "color" },
                         )}
-                      ><i style={{ background: group.color || "rgba(128,116,239,.12)" }} /></button>
+                      ><i style={{ background: group.color || "rgba(128,116,239,.06)" }} /></button>
                       <button
                         className="group-layout-button"
                         aria-label="组布局"
@@ -3900,16 +3902,16 @@ function Canvas({
                       {groupPopover?.id === group.id && groupPopover.kind === "color" && (
                         <div className="group-color-popover" aria-label="选择组颜色">
                           {[
-                            ["#8b8b8b", "rgba(139,139,139,.12)"],
-                            ["#f34b3f", "rgba(243,75,63,.12)"],
-                            ["#ff8a25", "rgba(255,138,37,.12)"],
-                            ["#ffb83c", "rgba(255,184,60,.12)"],
-                            ["#25cc79", "rgba(37,204,121,.12)"],
-                            ["#12b3d5", "rgba(18,179,213,.12)"],
-                            ["#367eee", "rgba(54,126,238,.12)"],
-                            ["#8752ea", "rgba(135,82,234,.12)"],
-                            ["#ef3284", "rgba(239,50,132,.12)"],
-                            ["#ededed", "rgba(237,237,237,.12)"],
+                            ["#8b8b8b", "rgba(139,139,139,.06)"],
+                            ["#f34b3f", "rgba(243,75,63,.06)"],
+                            ["#ff8a25", "rgba(255,138,37,.06)"],
+                            ["#ffb83c", "rgba(255,184,60,.06)"],
+                            ["#25cc79", "rgba(37,204,121,.06)"],
+                            ["#12b3d5", "rgba(18,179,213,.06)"],
+                            ["#367eee", "rgba(54,126,238,.06)"],
+                            ["#8752ea", "rgba(135,82,234,.06)"],
+                            ["#ef3284", "rgba(239,50,132,.06)"],
+                            ["#ededed", "rgba(237,237,237,.06)"],
                           ].map(([solid, translucent]) => (
                             <button
                               key={solid}
@@ -4468,16 +4470,28 @@ function Canvas({
           </button>
           <i />
           <button
+            ref={accountButtonRef}
             data-popover-trigger
             className={mode === "account" ? "active" : ""}
-            onClick={() => switchMode("account")}
+            onClick={() => {
+              const rect = accountButtonRef.current?.getBoundingClientRect();
+              if (rect) setAccountPopoverPosition({ left: rect.right + 10, top: rect.top });
+              switchMode("account");
+            }}
             aria-label="账户"
           >
             <img src="/assets/canvas-nav-avatar.svg" />
           </button>
         </nav>
         {mode === "account" && (
-          <aside className="canvas-account-popover" aria-label="账户菜单">
+          <aside
+            className="canvas-account-popover"
+            aria-label="账户菜单"
+            style={{
+              "--account-popover-left": `${accountPopoverPosition.left}px`,
+              "--account-popover-top": `${accountPopoverPosition.top}px`,
+            } as React.CSSProperties}
+          >
             <button className="selected">
               <img src="/assets/account-selected-check.svg" />
               <span>切换账号</span>
