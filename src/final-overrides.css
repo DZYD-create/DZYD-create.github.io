@@ -6337,8 +6337,9 @@ button > img {
 .canvas-link-hit .visible-link {
   fill: none;
   stroke: #949aa8;
-  stroke-width: 1.9;
+  stroke-width: 1.8;
   stroke-linecap: round;
+  stroke-linejoin: round;
   stroke-dasharray: none;
   transition:
     stroke-width 160ms ease,
@@ -6359,11 +6360,12 @@ button > img {
 }
 .canvas-link-hit .glow-link{
   fill:none;
-  stroke-width:4.2;
+  stroke-width:3.8;
   stroke-linecap:round;
+  stroke-linejoin:round;
   opacity:0;
   pointer-events:none;
-  filter:blur(.35px) drop-shadow(0 0 4px rgba(135,127,246,.34));
+  filter:blur(.3px) drop-shadow(0 0 4px rgba(255,255,255,.72));
 }
 .canvas-link-hit.selected .glow-link{
   opacity:.9;
@@ -10997,7 +10999,7 @@ button > img {
 }
 .figma-infinite-canvas>.figma-history-panel{
   position:fixed!important;
-  left:112px!important;
+  left:20px!important;
   top:calc(50% + 30px)!important;
   z-index:110!important;
   transform:translateY(-50%)!important;
@@ -11149,7 +11151,7 @@ button > img {
 /* History stays on the left side of the canvas instead of covering its center. */
 .canvas-page .figma-infinite-canvas>aside.figma-history-panel{
   position:fixed!important;
-  left:112px!important;
+  left:20px!important;
   right:auto!important;
   top:calc(50vh + 30px)!important;
   bottom:auto!important;

@@ -3548,7 +3548,12 @@ function Canvas({
               const ex =
                   CANVAS_WORLD_CENTER + to.x + (nearest.targetSide === "left" ? -toGeometry.mediaWidth / 2 : toGeometry.mediaWidth / 2),
                 ey = toGeometry.centerY;
-              const curve = Math.max(72, Math.min(220, Math.abs(ex - sx) * 0.42));
+              const linkDistance = Math.hypot(ex - sx, ey - sy);
+              const horizontalDistance = Math.abs(ex - sx);
+              const curve = Math.max(
+                54,
+                Math.min(188, linkDistance * 0.3 + horizontalDistance * 0.12),
+              );
               const d = `M ${sx} ${sy} C ${sx + (nearest.side === "left" ? -curve : curve)} ${sy}, ${ex + (nearest.targetSide === "left" ? -curve : curve)} ${ey}, ${ex} ${ey}`;
               const glowStart = Math.min(sx, ex) - 180;
               const glowEnd = Math.max(sx, ex) + 180;
@@ -3578,11 +3583,11 @@ function Canvas({
                       x2={glowStart + glowWidth}
                       y2={ey}
                     >
-                      <stop offset="0" stopColor="#a9a6ff" stopOpacity="0" />
-                      <stop offset="0.38" stopColor="#aaa5ff" stopOpacity="0.55" />
-                      <stop offset="0.52" stopColor="#f1efff" stopOpacity="0.98" />
-                      <stop offset="0.68" stopColor="#aaa5ff" stopOpacity="0.55" />
-                      <stop offset="1" stopColor="#a9a6ff" stopOpacity="0" />
+                      <stop offset="0" stopColor="#ffffff" stopOpacity="0" />
+                      <stop offset="0.34" stopColor="#ffffff" stopOpacity="0.2" />
+                      <stop offset="0.5" stopColor="#ffffff" stopOpacity="1" />
+                      <stop offset="0.66" stopColor="#ffffff" stopOpacity="0.2" />
+                      <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
                       <animate
                         attributeName="x1"
                         from={glowStart}
