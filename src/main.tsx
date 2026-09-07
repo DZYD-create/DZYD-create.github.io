@@ -3771,6 +3771,56 @@ function Canvas({
                       解组
                     </button>
                   )}
+                  {activeGroupId === group.id && (
+                    <div
+                      className="canvas-group-toolbar"
+                      onPointerDown={(event) => event.stopPropagation()}
+                      onClick={(event) => event.stopPropagation()}
+                    >
+                      <button className="group-color-button" aria-label="组颜色"><i /></button>
+                      <button className="group-layout-button" aria-label="组布局">
+                        <span className="group-nine-grid" aria-hidden="true">
+                          {Array.from({ length: 9 }).map((_, index) => <i key={index} />)}
+                        </span>
+                        <span className="group-toolbar-chevron" aria-hidden="true" />
+                      </button>
+                      <span className="group-toolbar-divider" />
+                      <button
+                        className="group-run-button"
+                        onClick={() => canvasNodes
+                          .filter((node) => group.nodeIds.includes(node.id) && !node.placeholder)
+                          .forEach((node) => generateFromCanvasNode(node))}
+                      >
+                        <span className="group-run-icon" aria-hidden="true" />整组执行
+                      </button>
+                      <span className="group-toolbar-divider" />
+                      <button
+                        className="group-toolbar-ungroup"
+                        onClick={() => {
+                          setCanvasGroups((groups) => groups.filter((item) => item.id !== group.id));
+                          setContextGroupId(null);
+                          setActiveGroupId(null);
+                        }}
+                      >
+                        <span className="group-ungroup-icon" aria-hidden="true" />解组
+                      </button>
+                      <span className="group-toolbar-divider" />
+                      <button
+                        className="group-download-button"
+                        aria-label="下载组内图片"
+                        onClick={() => canvasNodes
+                          .filter((node) => group.nodeIds.includes(node.id) && node.url)
+                          .forEach((node, index) => {
+                            const link = document.createElement("a");
+                            link.href = node.url;
+                            link.download = `${group.name}-${index + 1}.png`;
+                            link.click();
+                          })}
+                      >
+                        <img src="/assets/canvas-dock-download.svg" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
               {canvasNodes.map((node) => (
@@ -4314,7 +4364,6 @@ function Canvas({
         </nav>
         {mode === "account" && (
           <aside className="canvas-account-popover" aria-label="账户菜单">
-            <img className="canvas-account-pointer" src="/assets/account-popover-pointer.svg" />
             <button className="selected">
               <img src="/assets/account-selected-check.svg" />
               <span>切换账号</span>

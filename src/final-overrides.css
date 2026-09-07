@@ -10918,28 +10918,34 @@ button > img {
 .selection-action-stack .group-selection-button{
   min-width:88px!important;
   border-right:1px solid #e8e6f2!important;
-  border-radius:11px 0 0 11px!important;
+  border-radius:11px!important;
 }
 .selection-group-icon{
   width:16px!important;
   height:16px!important;
   box-sizing:border-box!important;
-  border:1.5px solid #5e6280!important;
-  border-radius:4px!important;
+  border:0!important;
+  border-radius:0!important;
   position:relative!important;
 }
 .selection-group-icon::before,
 .selection-group-icon::after{
   content:""!important;
   position:absolute!important;
-  width:4px!important;
-  height:4px!important;
-  border:1.5px solid #5e6280!important;
-  border-radius:2px!important;
-  background:#fff!important;
+  width:12px!important;
+  height:12px!important;
+  border:1.5px solid #45495d!important;
+  border-radius:4px!important;
+  background:transparent!important;
 }
-.selection-group-icon::before{left:-4px!important;top:-4px!important}
-.selection-group-icon::after{right:-4px!important;bottom:-4px!important}
+.selection-group-icon::before{left:0!important;top:0!important;clip-path:polygon(0 0,55% 0,55% 20%,20% 20%,20% 55%,0 55%)!important}
+.selection-group-icon::after{right:0!important;bottom:0!important;clip-path:polygon(45% 80%,80% 80%,80% 45%,100% 45%,100% 100%,45% 100%)!important}
+.selection-action-stack .group-selection-button:hover,
+.selection-action-stack .create-folder-button:hover{
+  border-radius:11px!important;
+  background:#eeecff!important;
+  color:#6657df!important;
+}
 .selection-folder-wrap{position:relative!important}
 .selection-action-stack .create-folder-button>img{width:18px!important;height:18px!important}
 .selection-folder-chevron{
@@ -10985,6 +10991,37 @@ button > img {
   -webkit-background-clip:text!important;color:transparent!important;
 }
 .canvas-account-popover .canvas-account-check{margin-left:auto!important;width:22px!important;height:22px!important;flex-basis:22px!important}
+
+/* Selected group toolbar: light-site counterpart of the provided horizontal control strip. */
+.canvas-group-toolbar{
+  position:absolute!important;left:50%!important;bottom:calc(100% + 12px)!important;z-index:35!important;
+  height:48px!important;padding:4px 6px!important;box-sizing:border-box!important;border:1px solid #e5e3ef!important;
+  border-radius:15px!important;background:rgba(255,255,255,.97)!important;
+  box-shadow:0 10px 28px rgba(54,55,82,.13),0 2px 7px rgba(93,83,163,.06)!important;
+  display:flex!important;align-items:center!important;gap:4px!important;transform:translateX(-50%)!important;
+  white-space:nowrap!important;pointer-events:auto!important;
+}
+.canvas-group-toolbar>button{
+  position:static!important;height:40px!important;padding:0 12px!important;border:0!important;border-radius:10px!important;
+  background:transparent!important;color:#292d3d!important;display:flex!important;align-items:center!important;
+  justify-content:center!important;gap:8px!important;font-size:14px!important;cursor:pointer!important;
+}
+.canvas-group-toolbar>button:hover{background:#eeecff!important;color:#6557dc!important}
+.canvas-group-toolbar .group-color-button{width:40px!important;padding:0!important}
+.group-color-button>i{width:24px!important;height:24px!important;border-radius:50%!important;background:#d8d9df!important;box-shadow:inset 0 0 0 1px #cfd0d7!important}
+.canvas-group-toolbar .group-layout-button{padding:0 9px!important;gap:7px!important}
+.group-nine-grid{width:20px!important;height:20px!important;display:grid!important;grid-template-columns:repeat(3,5px)!important;grid-template-rows:repeat(3,5px)!important;gap:2px!important}
+.group-nine-grid>i{width:5px!important;height:5px!important;border-radius:1.5px!important;background:#707484!important}
+.group-toolbar-chevron{width:6px!important;height:6px!important;border-right:1.5px solid #777b8b!important;border-bottom:1.5px solid #777b8b!important;transform:rotate(45deg) translateY(-2px)!important}
+.group-toolbar-divider{width:1px!important;height:25px!important;margin:0 2px!important;background:#e5e4ec!important;flex:0 0 1px!important}
+.canvas-group-toolbar .group-run-button{min-width:112px!important}
+.group-run-icon{width:14px!important;height:18px!important;border:1.7px solid #474b5c!important;border-radius:7px 2px 2px 7px!important;clip-path:polygon(0 0,100% 50%,0 100%)!important}
+.canvas-group-toolbar .group-toolbar-ungroup{min-width:78px!important}
+.group-ungroup-icon{width:20px!important;height:20px!important;border:1.5px dashed #5d6172!important;border-radius:4px!important;position:relative!important}
+.group-ungroup-icon::after{content:""!important;position:absolute!important;left:-3px!important;top:9px!important;width:25px!important;height:1.5px!important;background:#5d6172!important;transform:rotate(-45deg)!important}
+.canvas-group-toolbar .group-download-button{width:40px!important;padding:0!important}
+.group-download-button>img{width:20px!important;height:20px!important}
+.canvas-group-frame:has(.canvas-group-toolbar)>.canvas-group-name{bottom:calc(100% + 68px)!important}
 .canvas-node-card.is-grouped[data-selected]::after{
   opacity:.9!important;
 }
