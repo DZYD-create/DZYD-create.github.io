@@ -2360,6 +2360,9 @@ function Canvas({
   } | null>(null);
   const [groupedNodeIds, setGroupedNodeIds] = useState<number[]>([]);
   const [groupFrameSelected, setGroupFrameSelected] = useState(false);
+  const [groupName, setGroupName] = useState("未命名组");
+  const [groupNameEditing, setGroupNameEditing] = useState(false);
+  const [groupNameDraft, setGroupNameDraft] = useState("未命名组");
   const [canvasComments, setCanvasComments] = useState<
     Array<{ id: number; x: number; y: number; text: string }>
   >([]);
@@ -3236,6 +3239,20 @@ function Canvas({
           setImageMenu(null);
           setPromptPopover(null);
         }}
+        onContextMenuCapture={(event) => {
+          if (!groupedBounds) return;
+          const point = getCanvasPoint(event.clientX, event.clientY);
+          if (
+            point.x < groupedBounds.left ||
+            point.x > groupedBounds.left + groupedBounds.width ||
+            point.y < groupedBounds.top ||
+            point.y > groupedBounds.top + groupedBounds.height
+          )
+            return;
+          event.preventDefault();
+          event.stopPropagation();
+          setGroupFrameSelected(true);
+        }}
         onDragOver={(event) => {
           if (event.dataTransfer.types.includes("application/x-canvas-asset")) {
             event.preventDefault();
@@ -3516,9 +3533,39 @@ function Canvas({
                   }}
                   onClick={(event) => {
                     event.stopPropagation();
-                    setGroupFrameSelected(true);
                   }}
                 >
+                  <div
+                    className="canvas-group-name"
+                    onDoubleClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      setGroupNameDraft(groupName);
+                      setGroupNameEditing(true);
+                    }}
+                  >
+                    {groupNameEditing ? (
+                      <input
+                        autoFocus
+                        value={groupNameDraft}
+                        onChange={(event) => setGroupNameDraft(event.target.value)}
+                        onBlur={() => {
+                          setGroupName(groupNameDraft.trim() || "未命名组");
+                          setGroupNameEditing(false);
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") event.currentTarget.blur();
+                          if (event.key === "Escape") {
+                            setGroupNameDraft(groupName);
+                            setGroupNameEditing(false);
+                          }
+                        }}
+                        onPointerDown={(event) => event.stopPropagation()}
+                      />
+                    ) : (
+                      <span>{groupName}</span>
+                    )}
+                  </div>
                   {groupFrameSelected && (
                     <button
                       className="canvas-ungroup-button"
@@ -4182,6 +4229,10 @@ function Canvas({
                       className={`group-selection-button ${selectedNodeIds.every((id) => groupedNodeIds.includes(id)) ? "active" : ""}`}
                       onClick={() => {
                         setGroupedNodeIds([...selectedNodeIds]);
+                        setGroupName("未命名组");
+                        setGroupNameDraft("未命名组");
+                        setGroupNameEditing(false);
+                        setGroupFrameSelected(false);
                         setSelection(null);
                       }}
                     >
@@ -5306,7 +5357,7 @@ function AssetLibrary({
       <small className="folder-label">文件夹</small>
       <div className="asset-tree">
         <div className="tree-row">
-          <img className={`tree-chevron ${collapsed.poster ? "collapsed" : ""}`} src="/assets/asset-chevron.svg" onClick={() => setCollapsed((value)=>({...value,poster:!value.poster}))} />
+          <img className="tree-chevron" src={collapsed.poster ? "/assets/asset-chevron-right.svg" : "/assets/asset-chevron.svg"} onClick={() => setCollapsed((value)=>({...value,poster:!value.poster}))} />
           <i className="folder-icon cyan" />
           {editing==="poster"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("poster",folderNames.poster)}>{folderNames.poster}</b>}
         </div>
@@ -5316,7 +5367,7 @@ function AssetLibrary({
           {editing==="poster-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{posterName}</span>}
         </div>}
         <div className={`tree-row ${collapsed.teachers ? "" : "expanded"}`}>
-          <img className={`tree-chevron ${collapsed.teachers ? "collapsed" : ""}`} src="/assets/asset-chevron.svg" onClick={() => setCollapsed((value)=>({...value,teachers:!value.teachers}))} />
+          <img className="tree-chevron" src={collapsed.teachers ? "/assets/asset-chevron-right.svg" : "/assets/asset-chevron.svg"} onClick={() => setCollapsed((value)=>({...value,teachers:!value.teachers}))} />
           <i className="folder-icon blue" />
           {editing==="teachers"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("teachers",folderNames.teachers)}>{folderNames.teachers}</b>}
         </div>
@@ -5337,7 +5388,7 @@ function AssetLibrary({
         ))}
         {!visibleTeachers.length && <p className="asset-search-empty">未找到“{query}”</p>}
         <div className="tree-row logo-row">
-          <img className={`tree-chevron ${collapsed.logo ? "collapsed" : ""}`} src="/assets/asset-chevron.svg" onClick={() => setCollapsed((value)=>({...value,logo:!value.logo}))} />
+          <img className="tree-chevron" src={collapsed.logo ? "/assets/asset-chevron-right.svg" : "/assets/asset-chevron.svg"} onClick={() => setCollapsed((value)=>({...value,logo:!value.logo}))} />
           <i className="folder-icon green" />
           {editing==="logo"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("logo",folderNames.logo)}>{folderNames.logo}</b>}
         </div>

@@ -10914,6 +10914,41 @@ button > img {
   border-color:rgba(104,89,226,.82)!important;
   background:rgba(128,116,239,.1)!important;
 }
+.canvas-group-name{
+  position:absolute!important;
+  left:0!important;
+  bottom:calc(100% + 10px)!important;
+  min-width:88px!important;
+  max-width:220px!important;
+  height:30px!important;
+  padding:0 11px!important;
+  box-sizing:border-box!important;
+  border:1px solid rgba(117,104,236,.45)!important;
+  border-radius:10px!important;
+  background:rgba(255,255,255,.92)!important;
+  color:#4f47a9!important;
+  box-shadow:0 5px 14px rgba(63,68,104,.09)!important;
+  display:flex!important;
+  align-items:center!important;
+  pointer-events:auto!important;
+  user-select:none!important;
+}
+.canvas-group-name span{
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  font-size:13px!important;
+}
+.canvas-group-name input{
+  width:100%!important;
+  min-width:64px!important;
+  border:0!important;
+  outline:0!important;
+  background:transparent!important;
+  color:#292560!important;
+  font:13px/28px inherit!important;
+  user-select:text!important;
+}
 .canvas-ungroup-button{
   position:absolute!important;
   right:0!important;
@@ -11070,9 +11105,7 @@ button > img {
 }
 
 /* Asset tree chevrons: expanded points down, collapsed points right. */
-.asset-library-panel .tree-row.expanded .tree-chevron,
-.asset-library-panel .tree-chevron:not(.collapsed){transform:none!important}
-.asset-library-panel .tree-chevron.collapsed{transform:rotate(-90deg)!important}
+.asset-library-panel .tree-chevron{transform:none!important}
 
 /* Each canvas node owns a wrapping, content-height prompt instead of sharing one line. */
 .canvas-prompt-inline-content>.canvas-inline-text:first-child{
