@@ -2359,6 +2359,7 @@ function Canvas({
     viewportY: number;
   } | null>(null);
   const [groupedNodeIds, setGroupedNodeIds] = useState<number[]>([]);
+  const [groupFrameSelected, setGroupFrameSelected] = useState(false);
   const [canvasComments, setCanvasComments] = useState<
     Array<{ id: number; x: number; y: number; text: string }>
   >([]);
@@ -2547,7 +2548,11 @@ function Canvas({
   }, [selection, dragStart, canvasNodes, canvasComments]);
   useEffect(() => {
     const ids = new Set(canvasNodes.map((node) => node.id));
-    setGroupedNodeIds((grouped) => grouped.filter((id) => ids.has(id)));
+    setGroupedNodeIds((grouped) => {
+      const next = grouped.filter((id) => ids.has(id));
+      if (next.length < 2) setGroupFrameSelected(false);
+      return next;
+    });
     setCanvasLinks((links) =>
       links.filter((link) => ids.has(link.from) && ids.has(link.to)),
     );
@@ -3264,7 +3269,7 @@ function Canvas({
           if (
             canvasNodes.length === 0 ||
             (e.target as HTMLElement).closest(
-              "button,input,textarea,nav,.canvas-prompt,.canvas-add-popover,.folder-result,.canvas-node-card,.asset-library-panel,.figma-history-panel",
+              "button,input,textarea,nav,.canvas-prompt,.canvas-add-popover,.folder-result,.canvas-node-card,.canvas-group-frame,.asset-library-panel,.figma-history-panel",
             )
           )
             return;
@@ -3496,15 +3501,38 @@ function Canvas({
             <div className="canvas-node-layer">
               {groupedBounds && (
                 <div
-                  className="canvas-group-frame"
+                  className={`canvas-group-frame ${groupFrameSelected ? "selected" : ""}`}
                   style={{
                     left: `${groupedBounds.left}px`,
                     top: `${groupedBounds.top}px`,
                     width: `${groupedBounds.width}px`,
                     height: `${groupedBounds.height}px`,
                   }}
-                  aria-hidden="true"
-                />
+                  role="group"
+                  aria-label="已打组图片"
+                  onPointerDown={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                  }}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setGroupFrameSelected(true);
+                  }}
+                >
+                  {groupFrameSelected && (
+                    <button
+                      className="canvas-ungroup-button"
+                      onPointerDown={(event) => event.stopPropagation()}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setGroupedNodeIds([]);
+                        setGroupFrameSelected(false);
+                      }}
+                    >
+                      解组
+                    </button>
+                  )}
+                </div>
               )}
               {canvasNodes.map((node) => (
                 <article
@@ -5287,7 +5315,7 @@ function AssetLibrary({
           <img src="/assets/school-kickoff-poster.png" />
           {editing==="poster-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{posterName}</span>}
         </div>}
-        <div className="tree-row expanded">
+        <div className={`tree-row ${collapsed.teachers ? "" : "expanded"}`}>
           <img className={`tree-chevron ${collapsed.teachers ? "collapsed" : ""}`} src="/assets/asset-chevron.svg" onClick={() => setCollapsed((value)=>({...value,teachers:!value.teachers}))} />
           <i className="folder-icon blue" />
           {editing==="teachers"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("teachers",folderNames.teachers)}>{folderNames.teachers}</b>}

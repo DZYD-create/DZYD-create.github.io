@@ -10906,8 +10906,52 @@ button > img {
   border-radius:24px!important;
   background:rgba(128,116,239,.075)!important;
   box-shadow:0 0 0 1px rgba(255,255,255,.72) inset,0 8px 26px rgba(84,73,188,.08)!important;
-  pointer-events:none!important;
+  pointer-events:auto!important;
+  cursor:pointer!important;
   transition:left 80ms linear,top 80ms linear,width 80ms linear,height 80ms linear!important;
+}
+.canvas-group-frame.selected{
+  border-color:rgba(104,89,226,.82)!important;
+  background:rgba(128,116,239,.1)!important;
+}
+.canvas-ungroup-button{
+  position:absolute!important;
+  right:0!important;
+  top:calc(100% + 12px)!important;
+  width:92px!important;
+  height:38px!important;
+  border:1px solid #7568ec!important;
+  border-radius:19px!important;
+  background:#fff!important;
+  color:#5547ce!important;
+  font-size:14px!important;
+  box-shadow:0 8px 20px rgba(63,68,104,.13)!important;
+  pointer-events:auto!important;
+  cursor:pointer!important;
+}
+.canvas-ungroup-button:hover{
+  background:#eeecff!important;
+}
+
+/* Search and generation-history panels are fixed canvas chrome, not world content. */
+.figma-infinite-canvas>.canvas-search-backdrop{
+  position:fixed!important;
+  inset:60px 0 0!important;
+  z-index:120!important;
+  transform:none!important;
+  zoom:1!important;
+}
+.figma-infinite-canvas>.canvas-search-backdrop>.canvas-search-modal{
+  position:absolute!important;
+  top:32px!important;
+}
+.figma-infinite-canvas>.figma-history-panel{
+  position:fixed!important;
+  left:25px!important;
+  top:93px!important;
+  z-index:110!important;
+  transform:none!important;
+  zoom:1!important;
 }
 .canvas-keyword-popover{
   position:absolute!important;
