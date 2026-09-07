@@ -3869,7 +3869,7 @@ function Canvas({
                         )}
                       >
                         <span className="group-nine-grid" aria-hidden="true">
-                          {Array.from({ length: 9 }).map((_, index) => <i key={index} />)}
+                          {Array.from({ length: 4 }).map((_, index) => <i key={index} />)}
                         </span>
                         <span className="group-toolbar-chevron" aria-hidden="true" />
                       </button>
@@ -4348,7 +4348,24 @@ function Canvas({
                         onClick={() => setActiveFocusTagId(pick.id)}
                       >
                         <b>✦</b>
-                        {focusChoices[pick.choice].name}
+                        <span>{focusChoices[pick.choice].name}</span>
+                        <i
+                          className="canvas-inline-focus-remove"
+                          role="button"
+                          aria-label={`删除焦点${focusChoices[pick.choice].name}`}
+                          tabIndex={0}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            removeFocusPick(pick.id);
+                          }}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault();
+                              event.stopPropagation();
+                              removeFocusPick(pick.id);
+                            }
+                          }}
+                        >×</i>
                       </button>
                       <input
                         className="canvas-inline-text"
@@ -4475,7 +4492,7 @@ function Canvas({
             className={mode === "account" ? "active" : ""}
             onClick={() => {
               const rect = accountButtonRef.current?.getBoundingClientRect();
-              if (rect) setAccountPopoverPosition({ left: rect.right + 10, top: rect.top });
+              if (rect) setAccountPopoverPosition({ left: rect.right + 20, top: rect.top });
               switchMode("account");
             }}
             aria-label="账户"
@@ -5951,6 +5968,8 @@ function History({
     "新品种草海报",
     "直播间活动主视觉",
   ]);
+  const [trashOpen, setTrashOpen] = useState(false);
+  const [recycledCards, setRecycledCards] = useState<Array<{ name: string; image: string }>>([]);
   const [subjectOpen, setSubjectOpen] = useState(false);
   const [subjectClosing, setSubjectClosing] = useState(false);
   const [subjectName, setSubjectName] = useState("");
@@ -5960,7 +5979,7 @@ function History({
   const choose = (kind: "filter" | "time" | "sort") =>
     setPopup((v) => (v === kind ? null : kind));
   return (
-    <section className="history-page" onClick={() => popup && setPopup(null)}>
+    <section className="history-page" onClick={() => { if (popup) setPopup(null); if (trashOpen) setTrashOpen(false); }}>
       <div className="history-heading">
         <button
           className="history-heading-back"
@@ -5990,6 +6009,12 @@ function History({
                 <button
                   disabled={!selectedHistory.length}
                   onClick={() => {
+                    setRecycledCards((existing) => [
+                      ...cards.flatMap((name, index) => selectedHistory.includes(name)
+                        ? [{ name, image: `/assets/template-${(index % 5) + 1}.png` }]
+                        : []),
+                      ...existing,
+                    ]);
                     setCards((items) => items.filter((name) => !selectedHistory.includes(name)));
                     setSelectedHistory([]);
                   }}
@@ -6005,9 +6030,36 @@ function History({
                 <button className="history-cancel-batch" onClick={() => { setBatch(false); setSelectedHistory([]); }}>× 取消选择</button>
               </div>
             ) : (
-              <button className="history-batch" onClick={() => setBatch(true)}>
-                <img src="/assets/history-search.svg" /><i />批量选择
-              </button>
+              <div className="history-default-actions" onClick={(event) => event.stopPropagation()}>
+                <div className="history-trash-wrap">
+                  <button
+                    className={`history-trash-button ${trashOpen ? "active" : ""}`}
+                    onClick={() => setTrashOpen((open) => !open)}
+                    aria-label="回收站"
+                    title="回收站"
+                  >
+                    <img src="/assets/action-trash.svg" alt="" />
+                  </button>
+                  {trashOpen && (
+                    <aside className="history-trash-popover" aria-label="回收站内容">
+                      <header><strong>回收站</strong><span>{recycledCards.length} 项</span></header>
+                      {recycledCards.length ? recycledCards.map((item, index) => (
+                        <div className="history-trash-item" key={`${item.name}-${index}`}>
+                          <img src={item.image} alt="" />
+                          <span>{item.name}</span>
+                          <button onClick={() => {
+                            setCards((items) => [...items, item.name]);
+                            setRecycledCards((items) => items.filter((_, itemIndex) => itemIndex !== index));
+                          }}>恢复</button>
+                        </div>
+                      )) : <p>回收站暂无内容</p>}
+                    </aside>
+                  )}
+                </div>
+                <button className="history-batch" onClick={() => { setTrashOpen(false); setBatch(true); }}>
+                  <img src="/assets/history-search.svg" /><i />批量选择
+                </button>
+              </div>
             )}
           </div>
         </div>
