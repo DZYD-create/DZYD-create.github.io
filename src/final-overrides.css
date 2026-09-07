@@ -10970,7 +10970,7 @@ button > img {
 
 /* Figma 935:7 — canvas account menu, positioned immediately to the avatar's right. */
 .canvas-account-popover{
-  position:fixed!important;left:94px!important;bottom:17px!important;z-index:140!important;
+  position:fixed!important;left:94px!important;bottom:65px!important;z-index:140!important;
   width:200px!important;height:104px!important;box-sizing:border-box!important;padding:6px!important;
   border:0!important;border-radius:10px!important;background:#fff!important;
   box-shadow:0 10px 24px rgba(0,0,0,.08),0 2px 8px rgba(107,122,153,.05)!important;
@@ -11021,8 +11021,8 @@ button > img {
 .group-ungroup-icon::after{content:""!important;position:absolute!important;left:-3px!important;top:9px!important;width:25px!important;height:1.5px!important;background:#5d6172!important;transform:rotate(-45deg)!important}
 .canvas-group-toolbar .group-download-button{width:40px!important;padding:0!important}
 .group-download-button>img{width:20px!important;height:20px!important}
-.canvas-group-frame:has(.canvas-group-toolbar)>.canvas-group-name{bottom:calc(100% + 68px)!important}
-.group-color-popover,.group-layout-popover{position:absolute!important;left:0!important;top:calc(100% + 10px)!important;z-index:50!important;border:1px solid #e4e3ec!important;border-radius:14px!important;background:#fff!important;box-shadow:0 12px 30px rgba(45,47,69,.14),0 2px 8px rgba(93,83,163,.06)!important}
+.canvas-group-frame:has(.canvas-group-toolbar)>.canvas-group-name{bottom:calc(100% + 10px)!important}
+.group-color-popover,.group-layout-popover{position:absolute!important;left:0!important;bottom:calc(100% + 10px)!important;top:auto!important;z-index:50!important;border:1px solid #e4e3ec!important;border-radius:14px!important;background:#fff!important;box-shadow:0 12px 30px rgba(45,47,69,.14),0 2px 8px rgba(93,83,163,.06)!important}
 .group-color-popover{width:316px!important;padding:13px!important;box-sizing:border-box!important;display:grid!important;grid-template-columns:repeat(5,44px)!important;gap:12px 14px!important}
 .canvas-group-toolbar .group-color-popover>button{width:38px!important;height:38px!important;padding:0!important;border:3px solid transparent!important;border-radius:50%!important;box-shadow:0 0 0 1px rgba(46,49,61,.04)!important;cursor:pointer!important;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease!important}
 .canvas-group-toolbar .group-color-popover>button:hover{transform:scale(1.08)!important;box-shadow:0 0 0 3px rgba(110,101,220,.16)!important}

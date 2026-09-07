@@ -3438,6 +3438,11 @@ function Canvas({
           try {
             const asset = JSON.parse(raw) as { name: string; url: string };
             const point = getCanvasPoint(event.clientX, event.clientY);
+            const canvasBox = event.currentTarget.getBoundingClientRect();
+            const firstDropOffset = {
+              x: (event.clientX - canvasBox.left - canvasBox.width / 2) / (canvasZoom / 75),
+              y: (event.clientY - canvasBox.top - canvasBox.height / 2) / (canvasZoom / 75),
+            };
             const id = Date.now();
             setCanvasNodes((nodes) => [
               ...nodes,
@@ -3445,8 +3450,8 @@ function Canvas({
                 id,
                 url: asset.url,
                 name: asset.name,
-                x: point.x - CANVAS_WORLD_CENTER,
-                y: point.y - CANVAS_WORLD_CENTER,
+                x: nodes.length === 0 ? firstDropOffset.x : point.x - CANVAS_WORLD_CENTER,
+                y: nodes.length === 0 ? firstDropOffset.y : point.y - CANVAS_WORLD_CENTER,
               },
             ]);
             setCanvasImage(asset.url);
@@ -3851,7 +3856,7 @@ function Canvas({
                             ? null
                             : { id: group.id, kind: "color" },
                         )}
-                      ><i style={{ background: group.color || "rgba(128,116,239,.3)" }} /></button>
+                      ><i style={{ background: group.color || "rgba(128,116,239,.12)" }} /></button>
                       <button
                         className="group-layout-button"
                         aria-label="组布局"
@@ -3895,16 +3900,16 @@ function Canvas({
                       {groupPopover?.id === group.id && groupPopover.kind === "color" && (
                         <div className="group-color-popover" aria-label="选择组颜色">
                           {[
-                            ["#8b8b8b", "rgba(139,139,139,.3)"],
-                            ["#f34b3f", "rgba(243,75,63,.3)"],
-                            ["#ff8a25", "rgba(255,138,37,.3)"],
-                            ["#ffb83c", "rgba(255,184,60,.3)"],
-                            ["#25cc79", "rgba(37,204,121,.3)"],
-                            ["#12b3d5", "rgba(18,179,213,.3)"],
-                            ["#367eee", "rgba(54,126,238,.3)"],
-                            ["#8752ea", "rgba(135,82,234,.3)"],
-                            ["#ef3284", "rgba(239,50,132,.3)"],
-                            ["#ededed", "rgba(237,237,237,.3)"],
+                            ["#8b8b8b", "rgba(139,139,139,.12)"],
+                            ["#f34b3f", "rgba(243,75,63,.12)"],
+                            ["#ff8a25", "rgba(255,138,37,.12)"],
+                            ["#ffb83c", "rgba(255,184,60,.12)"],
+                            ["#25cc79", "rgba(37,204,121,.12)"],
+                            ["#12b3d5", "rgba(18,179,213,.12)"],
+                            ["#367eee", "rgba(54,126,238,.12)"],
+                            ["#8752ea", "rgba(135,82,234,.12)"],
+                            ["#ef3284", "rgba(239,50,132,.12)"],
+                            ["#ededed", "rgba(237,237,237,.12)"],
                           ].map(([solid, translucent]) => (
                             <button
                               key={solid}
