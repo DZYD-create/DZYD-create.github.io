@@ -2199,6 +2199,7 @@ function Canvas({
       : [],
   );
   const canvasClipboardRef = useRef<CanvasNode[]>([]);
+  const canvasClipboardGroupRef = useRef<{ name: string; nodeIds: number[] } | null>(null);
   const canvasPasteOffsetRef = useRef(0);
   const CANVAS_WORLD_SIZE = 6000;
   const CANVAS_WORLD_CENTER = CANVAS_WORLD_SIZE / 2;
@@ -2367,6 +2368,14 @@ function Canvas({
   const [contextGroupId, setContextGroupId] = useState<number | null>(null);
   const [groupNameEditing, setGroupNameEditing] = useState<number | null>(null);
   const [groupNameDraft, setGroupNameDraft] = useState("未命名组");
+  useEffect(() => {
+    const dismissUngroup = (event: PointerEvent) => {
+      if ((event.target as HTMLElement).closest(".canvas-ungroup-button")) return;
+      setContextGroupId(null);
+    };
+    window.addEventListener("pointerdown", dismissUngroup);
+    return () => window.removeEventListener("pointerdown", dismissUngroup);
+  }, []);
   const [canvasComments, setCanvasComments] = useState<
     Array<{ id: number; x: number; y: number; text: string }>
   >([]);
@@ -2656,8 +2665,11 @@ function Canvas({
       if (target.closest('input,textarea,[contenteditable="true"]')) return;
       const key = event.key.toLowerCase();
       if (key === "c") {
-        const ids = activeGroupId !== null
-          ? canvasGroups.find((group) => group.id === activeGroupId)?.nodeIds || []
+        const copiedGroup = activeGroupId !== null
+          ? canvasGroups.find((group) => group.id === activeGroupId) || null
+          : null;
+        const ids = copiedGroup
+          ? copiedGroup.nodeIds
           : selectedNodeIds.length
             ? selectedNodeIds
             : activeNodeId !== null
@@ -2667,6 +2679,9 @@ function Canvas({
         canvasClipboardRef.current = canvasNodes
           .filter((node) => ids.includes(node.id))
           .map((node) => ({ ...node }));
+        canvasClipboardGroupRef.current = copiedGroup
+          ? { name: copiedGroup.name, nodeIds: [...copiedGroup.nodeIds] }
+          : null;
         canvasPasteOffsetRef.current = 0;
         event.preventDefault();
         return;
@@ -2676,17 +2691,38 @@ function Canvas({
       canvasPasteOffsetRef.current += 36;
       const offset = canvasPasteOffsetRef.current;
       const firstId = Math.max(Date.now(), Math.max(0, ...canvasNodes.map((node) => node.id)) + 1);
+      const idMap = new Map<number, number>();
       const pasted = canvasClipboardRef.current.map((node, index) => ({
         ...node,
-        id: firstId + index,
+        id: (() => {
+          const id = firstId + index;
+          idMap.set(node.id, id);
+          return id;
+        })(),
         x: node.x + offset,
         y: node.y + offset,
         name: `${node.name} 副本`,
       }));
       setCanvasNodes((nodes) => [...nodes, ...pasted]);
+      const copiedGroup = canvasClipboardGroupRef.current;
+      if (copiedGroup) {
+        const pastedGroupId = firstId + pasted.length + 1;
+        setCanvasGroups((groups) => [
+          ...groups,
+          {
+            id: pastedGroupId,
+            nodeIds: copiedGroup.nodeIds
+              .map((id) => idMap.get(id))
+              .filter((id): id is number => id !== undefined),
+            name: `${copiedGroup.name} 副本`,
+          },
+        ]);
+        setActiveGroupId(pastedGroupId);
+      } else {
+        setActiveGroupId(null);
+      }
       setCanvasImage(pasted[0]?.url || null);
       setActiveNodeId(pasted[0]?.id || null);
-      setActiveGroupId(null);
       setContextGroupId(null);
       setSelection(null);
       setSelectedNodeIds([]);

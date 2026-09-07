@@ -10908,7 +10908,7 @@ button > img {
   box-shadow:0 0 0 1px rgba(255,255,255,.72) inset,0 8px 26px rgba(84,73,188,.08)!important;
   pointer-events:auto!important;
   cursor:pointer!important;
-  transition:left 80ms linear,top 80ms linear,width 80ms linear,height 80ms linear!important;
+  transition:none!important;
 }
 .canvas-node-layer>.canvas-node-card{
   z-index:2;
@@ -11132,6 +11132,24 @@ button > img {
 
 /* Asset tree chevrons: expanded points down, collapsed points right. */
 .asset-library-panel .tree-chevron{transform:none!important}
+
+/* Canvas size selection changes color without filling its hollow sparkle. */
+.canvas-node-prompt-footer>div>button.active>img[src$="figma-home-size.svg"]{
+  content:url('/assets/figma-home-size-active.svg')!important;
+  filter:none!important;
+}
+
+/* Final viewport-centered history placement wins over its legacy side-panel rules. */
+.canvas-page .figma-infinite-canvas>aside.figma-history-panel{
+  position:fixed!important;
+  left:50vw!important;
+  right:auto!important;
+  top:calc(50vh + 30px)!important;
+  bottom:auto!important;
+  margin:0!important;
+  transform:translate(-50%,-50%)!important;
+  zoom:1!important;
+}
 
 /* Each canvas node owns a wrapping, content-height prompt instead of sharing one line. */
 .canvas-prompt-inline-content>.canvas-inline-text:first-child{
