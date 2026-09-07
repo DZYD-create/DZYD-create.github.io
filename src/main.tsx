@@ -2246,8 +2246,7 @@ function Canvas({
     pointerId: number;
     startX: number;
     startY: number;
-    originX: number;
-    originY: number;
+    origins: Record<number, { x: number; y: number }>;
   } | null>(null);
   const [canvasLinks, setCanvasLinks] = useState<CanvasLink[]>([]);
   const [hdProgress, setHdProgress] = useState<Record<number, number>>({});
@@ -2356,7 +2355,10 @@ function Canvas({
   const [commentPosition, setCommentPosition] = useState<{
     x: number;
     y: number;
+    viewportX: number;
+    viewportY: number;
   } | null>(null);
+  const [groupedNodeIds, setGroupedNodeIds] = useState<number[]>([]);
   const [canvasComments, setCanvasComments] = useState<
     Array<{ id: number; x: number; y: number; text: string }>
   >([]);
@@ -2545,6 +2547,7 @@ function Canvas({
   }, [selection, dragStart, canvasNodes, canvasComments]);
   useEffect(() => {
     const ids = new Set(canvasNodes.map((node) => node.id));
+    setGroupedNodeIds((grouped) => grouped.filter((id) => ids.has(id)));
     setCanvasLinks((links) =>
       links.filter((link) => ids.has(link.from) && ids.has(link.to)),
     );
@@ -2684,7 +2687,7 @@ function Canvas({
     const canvas = canvasRef.current;
     if (!canvas || !selection || dragStart) return;
     const clearSelection = (event: PointerEvent) => {
-      if ((event.target as HTMLElement).closest(".create-folder-button"))
+      if ((event.target as HTMLElement).closest(".selection-action-stack,.create-folder-button"))
         return;
       if ((event.target as HTMLElement).closest(".canvas-node-card[data-selected]"))
         return;
@@ -2919,14 +2922,20 @@ function Canvas({
       )
         return;
       const box = canvas.getBoundingClientRect();
-      const x = event.clientX - box.left + canvas.scrollLeft;
-      const y = event.clientY - box.top + canvas.scrollTop;
-      setCommentPosition({ x, y });
+      const scale = canvasZoom / 75;
+      const x = (event.clientX - box.left + canvas.scrollLeft) / scale;
+      const y = (event.clientY - box.top + canvas.scrollTop) / scale;
+      setCommentPosition({
+        x,
+        y,
+        viewportX: event.clientX,
+        viewportY: event.clientY,
+      });
     };
     canvas.addEventListener("click", placeComment, { capture: true });
     return () =>
       canvas.removeEventListener("click", placeComment, { capture: true });
-  }, [mode]);
+  }, [mode, canvasZoom]);
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -3113,6 +3122,31 @@ function Canvas({
     to.x >= from.x
       ? { side: "right" as const, targetSide: "left" as const }
       : { side: "left" as const, targetSide: "right" as const };
+  const groupedBounds = (() => {
+    const nodes = canvasNodes.filter((node) => groupedNodeIds.includes(node.id));
+    if (nodes.length < 2) return null;
+    const bounds = nodes.map((node) => {
+      const geometry = getNodeGeometry(node);
+      const left = CANVAS_WORLD_CENTER + node.x - geometry.cardWidth / 2;
+      const top = CANVAS_WORLD_CENTER + node.y - geometry.cardHeight / 2;
+      return {
+        left,
+        top,
+        right: left + geometry.cardWidth,
+        bottom: top + geometry.cardHeight,
+      };
+    });
+    const padding = 18;
+    const left = Math.min(...bounds.map((bound) => bound.left)) - padding;
+    const top = Math.min(...bounds.map((bound) => bound.top)) - padding;
+    return {
+      left,
+      top,
+      width: Math.max(...bounds.map((bound) => bound.right)) - left + padding,
+      height: Math.max(...bounds.map((bound) => bound.bottom)) - top + padding,
+    };
+  })();
+
   return (
     <section
       className={`canvas-page figma-canvas-page ${canvasNodes.length === 0 ? "canvas-empty-state" : "canvas-populated-state"} ${mode === "comments" ? "canvas-comments-mode" : ""} ${canvasTool === "裁剪" && cropNode ? "canvas-crop-mode" : ""}`}
@@ -3460,10 +3494,22 @@ function Canvas({
                 })()}
             </svg>
             <div className="canvas-node-layer">
+              {groupedBounds && (
+                <div
+                  className="canvas-group-frame"
+                  style={{
+                    left: `${groupedBounds.left}px`,
+                    top: `${groupedBounds.top}px`,
+                    width: `${groupedBounds.width}px`,
+                    height: `${groupedBounds.height}px`,
+                  }}
+                  aria-hidden="true"
+                />
+              )}
               {canvasNodes.map((node) => (
                 <article
                   data-node-id={node.id}
-                  className={`canvas-node-card ${node.placeholder ? "is-placeholder" : ""} ${imageDrag?.id === node.id ? "is-dragging" : ""} ${node.name.endsWith("· 高清") ? "is-hd-result" : ""} ${canvasTool === "扩图" && expandFrame?.id === node.id ? "is-expand-active" : ""}`}
+                  className={`canvas-node-card ${node.placeholder ? "is-placeholder" : ""} ${imageDrag?.origins[node.id] ? "is-dragging" : ""} ${groupedNodeIds.includes(node.id) ? "is-grouped" : ""} ${node.name.endsWith("· 高清") ? "is-hd-result" : ""} ${canvasTool === "扩图" && expandFrame?.id === node.id ? "is-expand-active" : ""}`}
                   style={{
                     width: `${getNodeGeometry(node).cardWidth}px`,
                     height: `${getNodeGeometry(node).cardHeight}px`,
@@ -3483,13 +3529,23 @@ function Canvas({
                     e.preventDefault();
                     e.stopPropagation();
                     e.currentTarget.setPointerCapture(e.pointerId);
+                    const dragIds =
+                      selection && selectedNodeIds.length > 1 && selectedNodeIds.includes(node.id)
+                        ? selectedNodeIds
+                        : groupedNodeIds.includes(node.id) && groupedNodeIds.length > 1
+                          ? groupedNodeIds
+                          : [node.id];
+                    const origins = Object.fromEntries(
+                      canvasNodes
+                        .filter((item) => dragIds.includes(item.id))
+                        .map((item) => [item.id, { x: item.x, y: item.y }]),
+                    );
                     setImageDrag({
                       id: node.id,
                       pointerId: e.pointerId,
                       startX: e.clientX,
                       startY: e.clientY,
-                      originX: node.x,
-                      originY: node.y,
+                      origins,
                     });
                   }}
                   onPointerMove={(e) => {
@@ -3501,22 +3557,13 @@ function Canvas({
                       return;
                     e.preventDefault();
                     e.stopPropagation();
+                    const dx = (e.clientX - imageDrag.startX) / (canvasZoom / 75);
+                    const dy = (e.clientY - imageDrag.startY) / (canvasZoom / 75);
                     setCanvasNodes((v) =>
-                      v.map((n) =>
-                        n.id === node.id
-                          ? {
-                              ...n,
-                              x:
-                                imageDrag.originX +
-                                (e.clientX - imageDrag.startX) /
-                                  (canvasZoom / 75),
-                              y:
-                                imageDrag.originY +
-                                (e.clientY - imageDrag.startY) /
-                                  (canvasZoom / 75),
-                            }
-                          : n,
-                      ),
+                      v.map((n) => {
+                        const origin = imageDrag.origins[n.id];
+                        return origin ? { ...n, x: origin.x + dx, y: origin.y + dy } : n;
+                      }),
                     );
                   }}
                   onPointerUp={(e) => {
@@ -3584,7 +3631,7 @@ function Canvas({
                             setKeywordPopoverNodeId((current) => current === node.id ? null : node.id);
                           }}
                         >
-                          <img src="/assets/copy.svg" />
+                          <img src="/assets/figma-model-unified.svg" />
                         </button>
                         {keywordPopoverNodeId === node.id && (
                           <aside className="canvas-keyword-popover" onPointerDown={(event) => event.stopPropagation()} onClick={(event) => event.stopPropagation()}>
@@ -4094,21 +4141,36 @@ function Canvas({
                 }}
               />
               {!dragStart && selectedNodeIds.length > 0 && (
-                <button
-                  className="create-folder-button"
+                <div
+                  className="selection-action-stack"
                   style={{
                     left: (selection.x + selection.width) * (canvasZoom / 75) + 16,
                     top:
                       (selection.y + selection.height) * (canvasZoom / 75) - 27,
                   }}
-                  onClick={() => {
-                    setMode("folder");
-                    setFolderDone(true);
-                    setSelection(null);
-                  }}
                 >
-                  ＋ 添加到文件夹
-                </button>
+                  {selectedNodeIds.length > 1 && (
+                    <button
+                      className={`group-selection-button ${selectedNodeIds.every((id) => groupedNodeIds.includes(id)) ? "active" : ""}`}
+                      onClick={() => {
+                        setGroupedNodeIds([...selectedNodeIds]);
+                        setSelection(null);
+                      }}
+                    >
+                      打组
+                    </button>
+                  )}
+                  <button
+                    className="create-folder-button"
+                    onClick={() => {
+                      setMode("folder");
+                      setFolderDone(true);
+                      setSelection(null);
+                    }}
+                  >
+                    ＋ 添加到文件夹
+                  </button>
+                </div>
               )}
             </>
           )}
@@ -4949,7 +5011,7 @@ function CanvasCommentPanel({
   position,
   onSubmit,
 }: {
-  position: { x: number; y: number };
+  position: { x: number; y: number; viewportX: number; viewportY: number };
   onSubmit: (text: string) => void;
 }) {
   const [comment, setComment] = useState("");
@@ -4960,6 +5022,8 @@ function CanvasCommentPanel({
         {
           "--comment-x": `${position.x}px`,
           "--comment-y": `${position.y}px`,
+          "--comment-viewport-x": `${position.viewportX}px`,
+          "--comment-viewport-y": `${position.viewportY}px`,
         } as React.CSSProperties
       }
     >

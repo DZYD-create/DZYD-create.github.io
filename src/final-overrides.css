@@ -10812,6 +10812,103 @@ button > img {
 }
 .canvas-generated-copy:hover{background:#eeecff!important;color:#6856e5!important;border-color:#b9aff2!important}
 .canvas-generated-copy img{display:block!important;width:20px!important;height:20px!important;object-fit:contain!important}
+
+/* The generated-image provenance trigger uses the exact saved Figma sparkle asset. */
+.canvas-generated-copy{
+  width:38px!important;
+  height:38px!important;
+  padding:0!important;
+  overflow:hidden!important;
+}
+.canvas-generated-copy img{
+  width:32px!important;
+  height:32px!important;
+}
+
+/* Search content stays clipped and scrolls inside the white modal surface. */
+.canvas-search-modal{
+  display:flex!important;
+  flex-direction:column!important;
+  max-height:calc(100vh - 86px)!important;
+  overflow:hidden!important;
+}
+.canvas-search-modal>header,
+.canvas-search-modal>.canvas-search-toolbar,
+.canvas-search-modal>.search-selected-count{
+  flex:0 0 auto!important;
+}
+.canvas-search-modal .search-list,
+.canvas-search-modal .search-grid,
+.canvas-search-modal .search-empty{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow:auto!important;
+  margin-bottom:52px!important;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+}
+.canvas-search-modal .search-list{
+  padding-bottom:10px!important;
+}
+.canvas-search-modal .search-confirm{
+  right:16px!important;
+  bottom:16px!important;
+  z-index:5!important;
+}
+
+/* Comment composer is pinned to the viewport while only canvas content zooms. */
+.canvas-comment-panel.canvas-comment-at-point{
+  position:fixed!important;
+  left:var(--comment-viewport-x)!important;
+  top:var(--comment-viewport-y)!important;
+  max-width:calc(100vw - var(--comment-viewport-x) - 20px)!important;
+}
+
+/* Multi-selection actions and collective drag controls. */
+.selection-action-stack{
+  position:absolute!important;
+  z-index:32!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:8px!important;
+  transform:translateY(-100%)!important;
+}
+.selection-action-stack .create-folder-button,
+.selection-action-stack .group-selection-button{
+  position:static!important;
+  transform:none!important;
+  width:168px!important;
+  height:46px!important;
+  padding:0 18px!important;
+  border:1px solid #7b72ef!important;
+  border-radius:23px!important;
+  background:#fff!important;
+  color:#202432!important;
+  font-size:15px!important;
+  box-shadow:0 8px 20px rgba(63,68,104,.1)!important;
+  cursor:pointer!important;
+}
+.selection-action-stack .group-selection-button:hover,
+.selection-action-stack .group-selection-button.active{
+  background:#eeecff!important;
+  color:#6657df!important;
+  border-color:#7568ec!important;
+}
+.canvas-node-card.is-grouped[data-selected]::after{
+  opacity:.9!important;
+}
+.canvas-group-frame{
+  position:absolute!important;
+  z-index:4!important;
+  box-sizing:border-box!important;
+  border:1.5px solid rgba(112,101,232,.58)!important;
+  border-radius:24px!important;
+  background:rgba(128,116,239,.075)!important;
+  box-shadow:0 0 0 1px rgba(255,255,255,.72) inset,0 8px 26px rgba(84,73,188,.08)!important;
+  pointer-events:none!important;
+  transition:left 80ms linear,top 80ms linear,width 80ms linear,height 80ms linear!important;
+}
 .canvas-keyword-popover{
   position:absolute!important;
   z-index:60!important;
