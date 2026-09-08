@@ -12554,3 +12554,69 @@ button > img {
 .canvas-group-toolbar .group-nine-grid{
   top:5px!important;
 }
+
+/* Single-image action strip uses content width and equal visible edge spacing. */
+.selection-action-stack:not(:has(>.group-selection-button)){
+  width:max-content!important;
+  min-width:0!important;
+  padding:6px 12px!important;
+}
+.selection-action-stack:not(:has(>.group-selection-button))>.selection-folder-wrap{
+  padding:0!important;
+}
+.selection-action-stack:not(:has(>.group-selection-button)) .create-folder-button{
+  padding-left:14px!important;
+  padding-right:14px!important;
+}
+
+/* Center the visible four-square glyph inside its own button. */
+.canvas-search-modal .search-controls>button>.four-grid-icon{
+  position:static!important;
+  width:24px!important;
+  height:24px!important;
+  margin:auto!important;
+  transform:none!important;
+}
+.canvas-search-modal .search-controls>button>.four-grid-icon>svg{
+  display:block!important;
+  width:20px!important;
+  height:20px!important;
+  margin:auto!important;
+  transform:translate(-1px,-1px)!important;
+}
+
+/* Reference-matched group / ungroup glyphs share the same 24px optical box. */
+.selection-group-icon::before,.group-ungroup-icon::after{content:none!important}
+.selection-group-icon>svg,.group-ungroup-icon>svg{
+  display:block!important;
+  width:24px!important;
+  height:24px!important;
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:1.6!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+}
+.group-ungroup-icon{
+  border:0!important;
+  border-radius:0!important;
+  transform:none!important;
+}
+
+/* The selected color controls both the solid dot and the group frame. */
+.canvas-group-frame{
+  border-color:color-mix(in srgb,var(--group-solid) 68%,transparent)!important;
+}
+.canvas-group-frame.selected{
+  border-color:color-mix(in srgb,var(--group-solid) 86%,#5144d8 14%)!important;
+}
+
+/* Collapse control now lives opposite Clear History in the footer. */
+.conversation-panel>.panel-footer>.conversation-collapse-button{
+  position:static!important;
+  width:32px!important;
+  height:32px!important;
+  flex:0 0 32px!important;
+  display:grid!important;
+  place-items:center!important;
+}

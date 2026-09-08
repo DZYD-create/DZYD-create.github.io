@@ -874,7 +874,6 @@ function StudioSidebar({
           <span className="new-work-main"><img src="/assets/figma-new-work-left.svg" alt="" /><b>新建创作</b></span>
           <img className="new-work-stars" src="/assets/figma-new-work-right.svg" alt="" />
         </button>
-        <button className="conversation-collapse-button" aria-label="折叠侧边栏" onClick={onCollapse}><span aria-hidden="true" /></button>
       </div>
       <label className="search conversation-search">
         <img src="/assets/search.svg" />
@@ -906,7 +905,7 @@ function StudioSidebar({
       </div>
       <div className="panel-footer">
         <button onClick={() => setClearOpen(true)}>清空记录</button>
-        <button>设置</button>
+        <button className="conversation-collapse-button" aria-label="折叠侧边栏" onClick={onCollapse}><span aria-hidden="true" /></button>
       </div>
       {clearOpen && (
         <div className="conversation-clear-backdrop" role="presentation">
@@ -2370,7 +2369,7 @@ function Canvas({
     viewportY: number;
   } | null>(null);
   const [canvasGroups, setCanvasGroups] = useState<
-    Array<{ id: number; nodeIds: number[]; name: string; color?: string; layout?: "grid" | "horizontal" | "vertical" }>
+    Array<{ id: number; nodeIds: number[]; name: string; color?: string; colorSolid?: string; layout?: "grid" | "horizontal" | "vertical" }>
   >([]);
   const [activeGroupId, setActiveGroupId] = useState<number | null>(null);
   const [contextGroupId, setContextGroupId] = useState<number | null>(null);
@@ -3815,6 +3814,7 @@ function Canvas({
                     width: `${group.width}px`,
                     height: `${group.height}px`,
                     "--group-color": group.color || "rgba(128,116,239,.1)",
+                    "--group-solid": group.colorSolid || "#8b8b8b",
                   } as React.CSSProperties}
                   key={group.id}
                   role="group"
@@ -3923,7 +3923,7 @@ function Canvas({
                             ? null
                             : { id: group.id, kind: "color" },
                         )}
-                      ><i style={{ background: group.color || "rgba(128,116,239,.06)" }} /></button>
+                      ><i style={{ background: group.colorSolid || "#d8d9df" }} /></button>
                       <button
                         className="group-layout-button"
                         aria-label="组布局"
@@ -3947,7 +3947,7 @@ function Canvas({
                           setActiveGroupId(null);
                         }}
                       >
-                        <span className="group-ungroup-icon" aria-hidden="true" />解组
+                        <span className="group-ungroup-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 9V5h4M15 5h4v4M19 15v4h-4M9 19H5v-4M4 20 20 4" /></svg></span>解组
                       </button>
                       <span className="group-toolbar-divider" />
                       <button
@@ -3985,7 +3985,7 @@ function Canvas({
                               style={{ background: solid }}
                               onClick={() => {
                                 setCanvasGroups((groups) => groups.map((item) =>
-                                  item.id === group.id ? { ...item, color: translucent } : item,
+                                  item.id === group.id ? { ...item, color: translucent, colorSolid: solid } : item,
                                 ));
                                 setGroupPopover(null);
                               }}
@@ -4687,7 +4687,7 @@ function Canvas({
                         setSelection(null);
                       }}
                     >
-                      <span className="selection-group-icon" aria-hidden="true" />
+                      <span className="selection-group-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4"/><rect x="8" y="8" width="8" height="8" rx="2"/></svg></span>
                       打组
                     </button>
                   )}
