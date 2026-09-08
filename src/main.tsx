@@ -652,7 +652,7 @@ function GenerationPage({
                       aria-label={`第 ${round + 1} 轮更多`}
                       aria-expanded={moreRound === round}
                       onClick={() => setMoreRound((current) => current === round ? null : round)}
-                    >•••</button>
+                    ><span className="more-dots-icon" aria-hidden="true"><i /><i /><i /></span></button>
                     {moreRound === round && (
                       <div className="generation-more-menu" role="menu">
                         <button
