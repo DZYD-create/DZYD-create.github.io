@@ -10437,6 +10437,59 @@ button > img {
   box-shadow:none!important;
 }
 
+/* Pixel-stable shared grid glyph: one SVG coordinate system prevents uneven cells. */
+.group-nine-grid,.four-grid-icon{
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  flex:0 0 24px!important;
+  display:grid!important;
+  place-items:center!important;
+  background:none!important;
+}
+.group-nine-grid>svg,.four-grid-icon>svg{
+  display:block!important;
+  width:24px!important;
+  height:24px!important;
+  overflow:visible!important;
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:1.5!important;
+  vector-effect:non-scaling-stroke!important;
+  shape-rendering:geometricPrecision!important;
+}
+.group-nine-grid>i,.four-grid-icon>i{display:none!important}
+.canvas-search-modal .search-controls>button>.four-grid-icon{width:24px!important;height:24px!important;flex-basis:24px!important}
+
+/* Both selected-group actions use the same 24px box and 18px perceived glyph. */
+.group-ungroup-icon{
+  width:24px!important;
+  height:24px!important;
+  flex:0 0 24px!important;
+  transform:scale(.82)!important;
+  transform-origin:center!important;
+}
+.selection-action-stack .selection-group-icon,
+.selection-action-stack .create-folder-button>img{
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  flex:0 0 24px!important;
+}
+.selection-action-stack .create-folder-button>img{transform:scale(1.15)!important;transform-origin:center!important}
+
+/* Homepage conversation search follows the 198px New Creation width. */
+.conversation-panel>.conversation-search{
+  width:198px!important;
+  max-width:198px!important;
+  box-sizing:border-box!important;
+}
+
+/* History and Assets use the same stronger page-title weight. */
+.history-heading h1,.asset-page-header strong{
+  font-weight:700!important;
+}
+
 /* Upload image icon: exact rounded image frame, landscape, dot and purple plus. */
 .figma-upload-image-icon.upload-image-icon-v2{
   width:24px!important;

@@ -3934,7 +3934,7 @@ function Canvas({
                         )}
                       >
                         <span className="group-nine-grid" aria-hidden="true">
-                          {Array.from({ length: 4 }).map((_, index) => <i key={index} />)}
+                          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="6.5" height="6.5" rx="1"/><rect x="14.5" y="3" width="6.5" height="6.5" rx="1"/><rect x="3" y="14.5" width="6.5" height="6.5" rx="1"/><rect x="14.5" y="14.5" width="6.5" height="6.5" rx="1"/></svg>
                         </span>
                         <span className="group-toolbar-chevron" aria-hidden="true" />
                       </button>
@@ -3995,7 +3995,7 @@ function Canvas({
                       )}
                       {groupPopover?.id === group.id && groupPopover.kind === "layout" && (
                         <div className="group-layout-popover" aria-label="选择组排列方式">
-                          <button onClick={() => arrangeCanvasGroup(group.id, "grid")}><span className="layout-grid-icon four-grid-icon" aria-hidden="true">{Array.from({ length: 4 }, (_, index) => <i key={index} />)}</span>宫格排列</button>
+                          <button onClick={() => arrangeCanvasGroup(group.id, "grid")}><span className="layout-grid-icon four-grid-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="6.5" height="6.5" rx="1"/><rect x="14.5" y="3" width="6.5" height="6.5" rx="1"/><rect x="3" y="14.5" width="6.5" height="6.5" rx="1"/><rect x="14.5" y="14.5" width="6.5" height="6.5" rx="1"/></svg></span>宫格排列</button>
                           <button onClick={() => arrangeCanvasGroup(group.id, "horizontal")}><span className="layout-horizontal-icon" />水平排列</button>
                           <button onClick={() => arrangeCanvasGroup(group.id, "vertical")}><span className="layout-vertical-icon" />垂直排列</button>
                         </div>
@@ -5701,7 +5701,7 @@ function CanvasSearchModal({
               aria-label="卡片视图"
             >
               <span className="four-grid-icon" aria-hidden="true">
-                {Array.from({ length: 4 }, (_, index) => <i key={index} />)}
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="6.5" height="6.5" rx="1"/><rect x="14.5" y="3" width="6.5" height="6.5" rx="1"/><rect x="3" y="14.5" width="6.5" height="6.5" rx="1"/><rect x="14.5" y="14.5" width="6.5" height="6.5" rx="1"/></svg>
               </span>
             </button>
             <button
