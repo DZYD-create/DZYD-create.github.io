@@ -300,6 +300,7 @@ function App() {
               if (prompt === previous) setPrompt(next);
             }}
             onNewWork={newCreation}
+            onCollapse={() => setConversationCollapsed(true)}
             onClear={() => {
               setConversations([]);
               setActiveConversation(null);
@@ -315,6 +316,11 @@ function App() {
             }}
           />
         )}
+      {section === "studio" && !editing && conversationCollapsed && studioView !== "detail" && (
+        <button className="conversation-expand-button" aria-label="展开侧边栏" onClick={() => setConversationCollapsed(false)}>
+          <span aria-hidden="true" />
+        </button>
+      )}
       <main
         className={`main ${section === "studio" && !editing && !conversationCollapsed && studioView !== "detail" ? "with-panel" : ""} ${isCanvas ? "canvas-main" : ""}`}
       >
@@ -843,6 +849,7 @@ function StudioSidebar({
   activeConversation,
   onRename,
   onNewWork,
+  onCollapse,
   onClear,
   onOpenConversation,
 }: {
@@ -850,6 +857,7 @@ function StudioSidebar({
   activeConversation: string | null;
   onRename: (previous: string, next: string) => void;
   onNewWork: () => void;
+  onCollapse: () => void;
   onClear: () => void;
   onOpenConversation: (title: string) => void;
 }) {
@@ -864,10 +872,13 @@ function StudioSidebar({
   );
   return (
     <aside className="conversation-panel">
-      <button className="new-work" onClick={onNewWork}>
-        <span className="new-work-main"><img src="/assets/figma-new-work-left.svg" alt="" /><b>新建创作</b></span>
-        <img className="new-work-stars" src="/assets/figma-new-work-right.svg" alt="" />
-      </button>
+      <div className="conversation-panel-head">
+        <button className="new-work" onClick={onNewWork}>
+          <span className="new-work-main"><img src="/assets/figma-new-work-left.svg" alt="" /><b>新建创作</b></span>
+          <img className="new-work-stars" src="/assets/figma-new-work-right.svg" alt="" />
+        </button>
+        <button className="conversation-collapse-button" aria-label="折叠侧边栏" onClick={onCollapse}><span aria-hidden="true" /></button>
+      </div>
       <label className="search conversation-search">
         <img src="/assets/search.svg" />
         <input
@@ -2133,10 +2144,8 @@ function Canvas({
 }) {
   const ref = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
-  const accountButtonRef = useRef<HTMLButtonElement>(null);
-  const [accountPopoverPosition, setAccountPopoverPosition] = useState({ left: 94, top: 0 });
   const [mode, setMode] = useState<
-    "focus" | "assets" | "folder" | "history" | "comments" | "account" | null
+    "focus" | "assets" | "folder" | "history" | "comments" | null
   >(null);
   const [selectedTeacher, setSelectedTeacher] = useState(0);
   const [applied, setApplied] = useState(false);
@@ -3169,7 +3178,7 @@ function Canvas({
     };
   }, [activeNodeId]);
   const switchMode = (
-    next: "focus" | "assets" | "folder" | "history" | "comments" | "account",
+    next: "focus" | "assets" | "folder" | "history" | "comments",
   ) => {
     setMode((v) => (v === next ? null : next));
     setCommentPosition(null);
@@ -3183,16 +3192,6 @@ function Canvas({
       setFolderExpanded(false);
     }
   };
-  useEffect(() => {
-    if (mode !== "account") return;
-    const closeAccount = (event: PointerEvent) => {
-      const target = event.target as HTMLElement;
-      if (target.closest('.canvas-account-popover,button[aria-label="账户"]')) return;
-      setMode(null);
-    };
-    window.addEventListener("pointerdown", closeAccount);
-    return () => window.removeEventListener("pointerdown", closeAccount);
-  }, [mode]);
   const handleDockAction = (label: string) => {
     setAddOpen(false);
     setQuickOpen(false);
@@ -4563,41 +4562,14 @@ function Canvas({
           </button>
           <i />
           <button
-            ref={accountButtonRef}
-            data-popover-trigger
-            className={mode === "account" ? "active" : ""}
-            onClick={() => {
-              const rect = accountButtonRef.current?.getBoundingClientRect();
-              if (rect) setAccountPopoverPosition({ left: rect.right + 20, top: rect.top });
-              switchMode("account");
-            }}
+            disabled
             aria-label="账户"
           >
             <span className="canvas-account-avatar" aria-hidden="true">
               <img className="avatar-idle" src="/assets/canvas-nav-avatar.svg" />
-              <img className="avatar-selected" src="/assets/canvas-nav-avatar-active.svg" />
             </span>
           </button>
         </nav>
-        {mode === "account" && (
-          <aside
-            className="canvas-account-popover"
-            aria-label="账户菜单"
-            style={{
-              "--account-popover-left": `${accountPopoverPosition.left}px`,
-              "--account-popover-top": `${accountPopoverPosition.top}px`,
-            } as React.CSSProperties}
-          >
-            <button>
-              <img src="/assets/account-selected-check.svg" />
-              <span>切换账号</span>
-            </button>
-            <button>
-              <img src="/assets/account-logout.svg" />
-              <span>退出登录</span>
-            </button>
-          </aside>
-        )}
         {addOpen && (
           <section
             className="canvas-add-popover positioned"

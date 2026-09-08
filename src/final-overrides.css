@@ -11196,6 +11196,102 @@ button > img {
 .canvas-account-avatar>.avatar-selected{opacity:0!important}
 .canvas-vertical-nav>button.active[aria-label="账户"] .canvas-account-avatar>.avatar-idle{opacity:0!important}
 .canvas-vertical-nav>button.active[aria-label="账户"] .canvas-account-avatar>.avatar-selected{opacity:1!important}
+
+/* Collapsible homepage conversation rail. */
+.conversation-panel-head{
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  width:100%!important;
+}
+.conversation-panel-head>.new-work{
+  position:relative!important;
+  flex:1 1 auto!important;
+  width:auto!important;
+  min-width:0!important;
+  padding-right:42px!important;
+}
+.conversation-panel-head>.new-work>.new-work-stars{
+  position:absolute!important;
+  right:12px!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+}
+.conversation-collapse-button,.conversation-expand-button{
+  box-sizing:border-box!important;
+  width:32px!important;
+  height:32px!important;
+  min-width:32px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:8px!important;
+  background:#fff!important;
+  display:grid!important;
+  place-items:center!important;
+  cursor:pointer!important;
+  box-shadow:none!important;
+}
+.conversation-collapse-button:hover,.conversation-expand-button:hover{background:#f3f1ff!important}
+.conversation-collapse-button>span,.conversation-expand-button>span{
+  position:relative!important;
+  display:block!important;
+  width:17px!important;
+  height:17px!important;
+  border:1.7px solid #74777e!important;
+  border-radius:4px!important;
+}
+.conversation-collapse-button>span::before,.conversation-expand-button>span::before{
+  content:""!important;
+  position:absolute!important;
+  left:5px!important;
+  top:-1.7px!important;
+  bottom:-1.7px!important;
+  width:1.7px!important;
+  background:#74777e!important;
+}
+.conversation-expand-button{
+  position:fixed!important;
+  left:102px!important;
+  top:76px!important;
+  z-index:20!important;
+  box-shadow:0 4px 14px rgba(64,67,82,.09)!important;
+}
+
+/* Folder naming is a white input surface. */
+.folder-browser .folder-create input{background:#fff!important}
+
+/* Canvas logo is the exact homepage artwork, uniformly scaled down. */
+.figma-canvas-page .canvas-brand-mark{
+  width:26px!important;
+  height:26px!important;
+  border:0!important;
+  border-radius:7px!important;
+  background:#202120!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:hidden!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)!important;
+}
+.figma-canvas-page .canvas-brand-mark>img{
+  display:block!important;
+  width:20.16px!important;
+  height:20.16px!important;
+  object-fit:contain!important;
+}
+
+/* Canvas avatar is intentionally display-only. */
+.canvas-vertical-nav>button[aria-label="账户"]:disabled{
+  opacity:1!important;
+  cursor:default!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  filter:none!important;
+}
+.canvas-vertical-nav>button[aria-label="账户"]:disabled:hover{
+  background:transparent!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
 .canvas-group-frame{
   position:absolute!important;
   z-index:0!important;
