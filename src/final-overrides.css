@@ -12671,3 +12671,117 @@ button > img {
   display:grid!important;
   place-items:center!important;
 }
+
+/* History menus must float above cards, action bars and hover layers. */
+.history-page,
+.history-workspace,
+.history-filter-row{overflow:visible!important}
+.history-filter-anchor:has(>.history-pop){z-index:10001!important}
+.history-filter-anchor>.history-pop{
+  z-index:10002!important;
+  isolation:isolate!important;
+}
+
+/* History option feedback: black label with the reference purple outline. */
+.history-pop>button,
+.history-pop>.history-date-row>button{
+  box-sizing:border-box!important;
+  border:1px solid transparent!important;
+  color:#17191f!important;
+  -webkit-text-fill-color:#17191f!important;
+  background:#fff!important;
+  border-radius:12px!important;
+}
+.history-pop>button:hover,
+.history-pop>button:focus-visible,
+.history-pop>button.selected,
+.history-pop>.history-date-row>button:hover,
+.history-pop>.history-date-row>button:focus-visible{
+  border-color:#755cff!important;
+  background:#f8f7ff!important;
+  color:#17191f!important;
+  -webkit-text-fill-color:#17191f!important;
+  outline:0!important;
+}
+
+/* Assets receives the same zoom/search/batch/trash action group as History. */
+.asset-page-header{overflow:visible!important;position:relative!important;z-index:40!important}
+.asset-page-header>.asset-top-actions{
+  margin-left:auto!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:10px!important;
+  height:44px!important;
+}
+.asset-page-header>.asset-top-actions .asset-zoom{margin:0!important}
+.asset-page-header>.asset-top-actions img{width:18px!important;height:18px!important;object-fit:contain!important}
+.asset-page-header>.asset-top-actions .history-trash-button img{width:16px!important;height:16px!important}
+.asset-page-header>.asset-top-actions .history-trash-popover{z-index:10020!important}
+.asset-subject-grid,
+.asset-content-grid{
+  grid-template-columns:repeat(auto-fill,minmax(var(--asset-card-width,220px),1fr))!important;
+}
+.asset-subject-card.batching,
+.asset-content-open.batching{position:relative!important}
+.asset-subject-card>.batch-check,
+.asset-content-open>.batch-check{
+  position:absolute!important;
+  top:12px!important;
+  right:12px!important;
+  margin:0!important;
+}
+
+/* The fold divider exactly spans its outline, without overshoot or undershoot. */
+.conversation-collapse-button>span::before,
+.conversation-expand-button>span::before{
+  top:-1.7px!important;
+  bottom:-1.7px!important;
+  height:auto!important;
+  border-radius:999px!important;
+  transform:none!important;
+}
+.conversation-collapse-button>span,
+.conversation-expand-button>span{overflow:hidden!important}
+
+/* One optical center line for every visible glyph in the selected-group bar. */
+.canvas-group-toolbar>button{
+  display:grid!important;
+  place-items:center!important;
+  line-height:1!important;
+}
+.canvas-group-toolbar>.group-layout-button{
+  display:grid!important;
+  grid-template-columns:24px 8px!important;
+  place-content:center!important;
+  align-items:center!important;
+  gap:7px!important;
+}
+.canvas-group-toolbar>.group-toolbar-ungroup{
+  display:grid!important;
+  grid-template-columns:24px auto!important;
+  place-content:center!important;
+  align-items:center!important;
+  gap:7px!important;
+}
+.canvas-group-toolbar .group-color-button>i,
+.canvas-group-toolbar .group-nine-grid,
+.canvas-group-toolbar .group-ungroup-icon,
+.canvas-group-toolbar .group-download-button>img{
+  position:static!important;
+  display:block!important;
+  margin:0!important;
+  align-self:center!important;
+  transform:none!important;
+}
+.canvas-group-toolbar .group-nine-grid>svg,
+.canvas-group-toolbar .group-ungroup-icon>svg{
+  display:block!important;
+  width:24px!important;
+  height:24px!important;
+  margin:0!important;
+}
+.canvas-group-toolbar .group-toolbar-chevron{
+  align-self:center!important;
+  margin:0 0 3px!important;
+}

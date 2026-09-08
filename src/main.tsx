@@ -6402,6 +6402,13 @@ function Assets({
   const [folderMenu, setFolderMenu] = useState(false);
   const [assetMoreUrl, setAssetMoreUrl] = useState<string | null>(null);
   const [assetContext, setAssetContext] = useState<{ x: number; y: number; item: { name: string; url: string; category: "assets" | "live" } } | null>(null);
+  const [assetZoom, setAssetZoom] = useState(42);
+  const [assetSearchOpen, setAssetSearchOpen] = useState(false);
+  const [assetQuery, setAssetQuery] = useState("");
+  const [assetBatch, setAssetBatch] = useState(false);
+  const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
+  const [assetTrashOpen, setAssetTrashOpen] = useState(false);
+  const [recycledAssets, setRecycledAssets] = useState<Array<{ kind: "subject" | "upload"; name: string; url: string; category?: "assets" | "live" }>>([]);
   useEffect(() => {
     const dismiss = () => {
       setAddOpen(false);
@@ -6425,9 +6432,13 @@ function Assets({
       ]);
     setAddOpen(false);
   };
+  const normalizedAssetQuery = assetQuery.trim().toLowerCase();
   const activeAssets = uploaded
     .filter((item) => item.category === (tab === "live" ? "live" : "assets"))
+    .filter((item) => item.name.toLowerCase().includes(normalizedAssetQuery))
     .sort((a, b) => Number(favoriteAssets.includes(b.url)) - Number(favoriteAssets.includes(a.url)));
+  const activeSubjects = [...uploadedPeople, ...subjects.map((name, i) => ({ name, url: samples[i % samples.length] }))]
+    .filter((item) => item.name.toLowerCase().includes(normalizedAssetQuery));
   const empty = activeAssets.length === 0;
   return (
     <section className="asset-page-figma">
@@ -6441,6 +6452,48 @@ function Assets({
             <img src="/assets/history-back.svg" />
           </button>
           <strong>素材库</strong>
+        </div>
+        <div className={`asset-top-actions ${assetSearchOpen ? "search-open" : ""}`} onClick={(event) => event.stopPropagation()}>
+          <label className="history-zoom asset-zoom">
+            <input type="range" min="10" max="100" value={assetZoom} onChange={(event) => setAssetZoom(Number(event.target.value))} />
+          </label>
+          {assetBatch ? <div className="history-batch-actions asset-batch-actions">
+            <span>已选择 {selectedAssets.length} 项内容</span>
+            <button disabled={!selectedAssets.length} onClick={() => {
+              const subjectItems = activeSubjects.filter((item) => selectedAssets.includes(`subject:${item.url}`));
+              const uploadItems = uploaded.filter((item) => selectedAssets.includes(`upload:${item.url}`));
+              setRecycledAssets((items) => [
+                ...subjectItems.map((item) => ({ kind: "subject" as const, ...item })),
+                ...uploadItems.map((item) => ({ kind: "upload" as const, ...item })),
+                ...items,
+              ]);
+              setUploadedPeople((items) => items.filter((item) => !selectedAssets.includes(`subject:${item.url}`)));
+              setSubjects((items) => items.filter((name, index) => !selectedAssets.includes(`subject:${samples[index % samples.length]}`)));
+              setUploaded((items) => items.filter((item) => !selectedAssets.includes(`upload:${item.url}`)));
+              setSelectedAssets([]);
+            }}><img src="/assets/action-trash.svg" alt="" />删除</button>
+            <i />
+            <button className="history-cancel-batch" onClick={() => { setAssetBatch(false); setSelectedAssets([]); }}>× 取消选择</button>
+          </div> : <div className="history-default-actions asset-default-actions">
+            <label className={`history-search-action ${assetSearchOpen ? "open" : ""}`} onClick={() => setAssetSearchOpen(true)} title="搜索">
+              <img src="/assets/history-search.svg" alt="" />
+              <input autoFocus={assetSearchOpen} aria-label="搜索素材" value={assetQuery} onChange={(event) => setAssetQuery(event.target.value)} onBlur={() => { if (!assetQuery.trim()) setAssetSearchOpen(false); }} placeholder="搜索" />
+            </label>
+            <button className="history-batch" onClick={() => { setAssetTrashOpen(false); setAssetBatch(true); }}>批量选择</button>
+            <div className="history-trash-wrap">
+              <button className={`history-trash-button ${assetTrashOpen ? "active" : ""}`} onClick={() => setAssetTrashOpen((open) => !open)} aria-label="素材回收站" title="回收站"><img src="/assets/action-trash.svg" alt="" /></button>
+              {assetTrashOpen && <aside className="history-trash-popover asset-trash-popover" aria-label="素材回收站内容">
+                <header><strong>回收站</strong><span>{recycledAssets.length} 项</span></header>
+                {recycledAssets.length ? recycledAssets.map((item, index) => <div className="history-trash-item" key={`${item.kind}-${item.url}-${index}`}>
+                  <img src={item.url} alt="" /><span>{item.name}</span><button onClick={() => {
+                    if (item.kind === "upload") setUploaded((items) => [{ name: item.name, url: item.url, category: item.category || "assets" }, ...items]);
+                    else setUploadedPeople((items) => [{ name: item.name, url: item.url }, ...items]);
+                    setRecycledAssets((items) => items.filter((_, itemIndex) => itemIndex !== index));
+                  }}>恢复</button>
+                </div>) : <p>回收站暂无内容</p>}
+              </aside>}
+            </div>
+          </div>}
         </div>
       </header>
       <nav className="asset-page-tabs">
@@ -6507,15 +6560,16 @@ function Assets({
         </div>
       )}
       {tab === "subject" ? (
-        <div className="asset-subject-grid">
+        <div className="asset-subject-grid" style={{ "--asset-card-width": `${210 + assetZoom * 1.25}px` } as React.CSSProperties}>
           <button className="asset-subject-card create" onClick={() => personFile.current?.click()}>
             <div className="asset-create-single" aria-hidden="true"><i>＋</i></div>
             <strong>上传人物</strong>
           </button>
-          {[...uploadedPeople, ...subjects.map((name, i) => ({ name, url: samples[i % samples.length] }))].map((person) => (
+          {activeSubjects.map((person) => (
             <div className="asset-subject-shell" key={person.url}>
-              <button className="asset-subject-card" onClick={() => onSendToCanvas({ name: person.name, url: person.url, category: "assets" })}>
+              <button className={`asset-subject-card ${assetBatch ? "batching" : ""}`} onClick={() => assetBatch ? setSelectedAssets((items) => items.includes(`subject:${person.url}`) ? items.filter((key) => key !== `subject:${person.url}`) : [...items, `subject:${person.url}`]) : onSendToCanvas({ name: person.name, url: person.url, category: "assets" })}>
                 <div><img src={person.url} alt={person.name} /></div><strong>{person.name}</strong><small>人物 · 最近修改</small>
+                {assetBatch && <i className={`batch-check ${selectedAssets.includes(`subject:${person.url}`) ? "selected" : ""}`}>{selectedAssets.includes(`subject:${person.url}`) ? "✓" : ""}</i>}
               </button>
               <button className={`asset-pin ${favoriteAssets.includes(person.url) ? "active" : ""}`} aria-label={favoriteAssets.includes(person.url) ? `取消置顶${person.name}` : `置顶${person.name}`} onClick={(event) => { event.stopPropagation(); setFavoriteAssets((items) => items.includes(person.url) ? items.filter((url) => url !== person.url) : [...items, person.url]); }}><span>置顶</span>★</button>
               <div className="card-more-wrap">
@@ -6543,7 +6597,7 @@ function Assets({
           </div>
         </div>
       ) : (
-        <div className="asset-content-grid">
+        <div className="asset-content-grid" style={{ "--asset-card-width": `${210 + assetZoom * 1.25}px` } as React.CSSProperties}>
           <button
             className="asset-upload-entry"
             onClick={() => fileRef.current?.click()}
@@ -6554,10 +6608,11 @@ function Assets({
           </button>
           {activeAssets.map((item) => (
             <div className="asset-content-card" key={item.url} onContextMenu={(event)=>{event.preventDefault();event.stopPropagation();setAssetContext({x:Math.min(event.clientX,window.innerWidth-304),y:Math.min(event.clientY,window.innerHeight-330),item});}}>
-              <button className="asset-content-open" onClick={() => onSendToCanvas(item)}>
+              <button className={`asset-content-open ${assetBatch ? "batching" : ""}`} onClick={() => assetBatch ? setSelectedAssets((items) => items.includes(`upload:${item.url}`) ? items.filter((key) => key !== `upload:${item.url}`) : [...items, `upload:${item.url}`]) : onSendToCanvas(item)}>
                 <img src={item.url} alt={item.name} />
                 <strong>{item.name}</strong>
                 <small>刚刚上传</small>
+                {assetBatch && <i className={`batch-check ${selectedAssets.includes(`upload:${item.url}`) ? "selected" : ""}`}>{selectedAssets.includes(`upload:${item.url}`) ? "✓" : ""}</i>}
               </button>
               <button
                 className={`asset-pin ${favoriteAssets.includes(item.url) ? "active" : ""}`}
