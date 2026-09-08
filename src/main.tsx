@@ -6012,6 +6012,8 @@ function History({
   const [order, setOrder] = useState("近-远");
   const [sortBy, setSortBy] = useState("修改时间");
   const [zoom, setZoom] = useState(42);
+  const [historySearchOpen, setHistorySearchOpen] = useState(false);
+  const [historyQuery, setHistoryQuery] = useState("");
   const [batch, setBatch] = useState(false);
   const [historyMenu, setHistoryMenu] = useState<string | null>(null);
   const [selectedHistory, setSelectedHistory] = useState<string[]>([]);
@@ -6047,7 +6049,7 @@ function History({
       <div className="history-workspace">
         <div className="history-top-row">
           <div className="history-tabs"><button className="active">画布</button></div>
-          <div className="history-top-actions">
+          <div className={`history-top-actions ${historySearchOpen ? "search-open" : ""}`}>
             <label className="history-zoom">
               <input
                 type="range"
@@ -6078,9 +6080,10 @@ function History({
               </div>
             ) : (
               <div className="history-default-actions" onClick={(event) => event.stopPropagation()}>
-                <button className="history-search-action" aria-label="搜索历史" title="搜索">
+                <label className={`history-search-action ${historySearchOpen ? "open" : ""}`} onClick={() => setHistorySearchOpen(true)} title="搜索">
                   <img src="/assets/history-search.svg" alt="" />
-                </button>
+                  <input autoFocus={historySearchOpen} aria-label="搜索历史" value={historyQuery} onChange={(event) => setHistoryQuery(event.target.value)} placeholder="搜索" />
+                </label>
                 <button className="history-batch" onClick={() => { setTrashOpen(false); setBatch(true); }}>
                   批量选择
                 </button>
@@ -6224,7 +6227,7 @@ function History({
             )}
           </div>
         </div>
-        <div className="history-cards" style={{ "--history-columns": zoom < 35 ? 5 : zoom < 68 ? 4 : 3, "--history-card-height": `${150 + zoom * 1.4}px` } as React.CSSProperties}>
+        <div className="history-cards" style={{ "--history-columns": zoom < 35 ? 5 : zoom < 68 ? 4 : 3, "--history-card-height": `${227 + zoom * 1.4}px` } as React.CSSProperties}>
           <button
             className="history-record history-create-record"
             onClick={tab === "subject" ? () => setSubjectOpen(true) : () => onCanvas()}
@@ -6232,7 +6235,7 @@ function History({
             <div className="history-record-preview"><span>＋</span></div>
             <strong>{tab === "subject" ? "新建主体" : "新建画布"}</strong>
           </button>
-          {cards.map((name, i) => {
+          {cards.map((name, i) => ({ name, i })).filter(({ name }) => name.toLowerCase().includes(historyQuery.trim().toLowerCase())).map(({ name, i }) => {
             const image = `/assets/template-${(i % 5) + 1}.png`;
             const favorite = favoriteHistory.includes(name);
             return (
@@ -6288,6 +6291,7 @@ function History({
               </div>
             );
           })}
+          {historyQuery.trim() && !cards.some((name) => name.toLowerCase().includes(historyQuery.trim().toLowerCase())) && <p className="history-search-empty">未找到相关内容</p>}
         </div>
       </div>
       {subjectOpen && (

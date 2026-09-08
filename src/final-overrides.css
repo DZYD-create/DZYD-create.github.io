@@ -11517,6 +11517,76 @@ button > img {
   opacity:0!important;
 }
 
+/* History starts at the same preview geometry as Assets (42 => 286px). */
+.history-cards .history-record-preview,
+.history-cards .history-create-record>.history-record-preview{
+  height:var(--history-card-height,286px)!important;
+  min-height:var(--history-card-height,286px)!important;
+}
+
+/* One consistent whole-card hover motion across History and every Assets category. */
+.history-create-record,
+.asset-subject-card,
+.asset-content-card,
+.asset-upload-entry{
+  transform-origin:center!important;
+  transition:transform .22s cubic-bezier(.2,.75,.25,1),filter .22s ease!important;
+}
+.history-create-record:hover,
+.asset-subject-card:hover,
+.asset-content-card:hover,
+.asset-upload-entry:hover{
+  transform:scale(1.022)!important;
+  z-index:20!important;
+}
+.history-create-record:hover .history-record-preview,
+.asset-subject-card:hover>div,
+.asset-upload-entry:hover>.asset-create-single{
+  transform:none!important;
+  box-shadow:0 8px 18px rgba(50,57,86,.1)!important;
+}
+.asset-content-card:hover>.asset-content-open{filter:drop-shadow(0 8px 12px rgba(50,57,86,.1))!important}
+
+/* Expanding History search keeps equal icon insets and shifts the zoom rail left naturally. */
+.history-top-actions{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  transition:width .22s cubic-bezier(.2,.75,.25,1)!important;
+}
+.history-default-actions{flex:0 0 auto!important}
+.history-search-action{
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  width:42px!important;
+  min-width:42px!important;
+  height:42px!important;
+  padding:0 11px!important;
+  gap:8px!important;
+  overflow:hidden!important;
+  cursor:text!important;
+  transition:width .24s cubic-bezier(.2,.8,.25,1),border-color .18s ease,background .18s ease!important;
+}
+.history-search-action.open{width:190px!important}
+.history-search-action>img{flex:0 0 19px!important;width:19px!important;height:19px!important;margin:0!important}
+.history-search-action>input{
+  width:0!important;
+  min-width:0!important;
+  height:30px!important;
+  padding:0!important;
+  border:0!important;
+  outline:0!important;
+  background:transparent!important;
+  color:#303441!important;
+  font-size:13px!important;
+  opacity:0!important;
+  transition:width .24s ease,opacity .15s ease!important;
+}
+.history-search-action.open>input{width:138px!important;opacity:1!important}
+.history-search-empty{grid-column:1/-1!important;margin:28px 0!important;text-align:center!important;color:#989dab!important;font-size:13px!important}
+
 /* Batch history uses the shared trash glyph and no favorite action. */
 .history-batch-actions>button>img{
   display:block!important;
