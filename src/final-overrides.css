@@ -12546,3 +12546,11 @@ button > img {
   padding-bottom:0!important;
   line-height:24px!important;
 }
+
+/* Screenshot-measured optical correction: visible edges, not nominal icon boxes. */
+.canvas-group-toolbar>.group-download-button{
+  transform:translateX(-5px)!important;
+}
+.canvas-group-toolbar .group-nine-grid{
+  top:5px!important;
+}
