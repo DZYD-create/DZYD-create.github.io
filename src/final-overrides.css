@@ -10381,6 +10381,14 @@ button > img {
   filter:none!important;
 }
 
+/* Final crop field parity: retain the same rounded outlined surface as Expand. */
+.canvas-crop-actions>input{
+  border:1px solid #e2e2ec!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  box-shadow:none!important;
+}
+
 /* Upload image icon: exact rounded image frame, landscape, dot and purple plus. */
 .figma-upload-image-icon.upload-image-icon-v2{
   width:24px!important;
@@ -11829,6 +11837,44 @@ button > img {
   border:1px solid #697180!important;
   border-radius:1px!important;
   background:transparent!important;
+}
+
+/* The search and group menus share the exact four-cell layout glyph. */
+.four-grid-icon{
+  width:24px!important;
+  height:24px!important;
+  flex:0 0 24px!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,7px)!important;
+  grid-template-rows:repeat(2,7px)!important;
+  place-content:center!important;
+  gap:4px!important;
+  color:currentColor!important;
+  background:none!important;
+}
+.four-grid-icon i{
+  display:block!important;
+  width:7px!important;
+  height:7px!important;
+  box-sizing:border-box!important;
+  border:1.6px solid currentColor!important;
+  border-radius:1.5px!important;
+  background:transparent!important;
+}
+.layout-grid-icon::before,.layout-grid-icon::after{content:none!important}
+.canvas-search-modal .search-controls>button>.four-grid-icon{
+  width:20px!important;
+  height:20px!important;
+  flex-basis:20px!important;
+  margin:0!important;
+}
+
+/* Crop description field uses the same outlined 14px shell as Expand. */
+.canvas-crop-actions>input{
+  border:1px solid #e2e2ec!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  box-shadow:none!important;
 }
 .canvas-keyword-popover{
   position:absolute!important;

@@ -3999,7 +3999,7 @@ function Canvas({
                       )}
                       {groupPopover?.id === group.id && groupPopover.kind === "layout" && (
                         <div className="group-layout-popover" aria-label="选择组排列方式">
-                          <button onClick={() => arrangeCanvasGroup(group.id, "grid")}><span className="layout-grid-icon" />宫格排列</button>
+                          <button onClick={() => arrangeCanvasGroup(group.id, "grid")}><span className="layout-grid-icon four-grid-icon" aria-hidden="true">{Array.from({ length: 4 }, (_, index) => <i key={index} />)}</span>宫格排列</button>
                           <button onClick={() => arrangeCanvasGroup(group.id, "horizontal")}><span className="layout-horizontal-icon" />水平排列</button>
                           <button onClick={() => arrangeCanvasGroup(group.id, "vertical")}><span className="layout-vertical-icon" />垂直排列</button>
                         </div>
@@ -5704,8 +5704,8 @@ function CanvasSearchModal({
               onClick={() => setView("grid")}
               aria-label="卡片视图"
             >
-              <span className="nine-grid-icon" aria-hidden="true">
-                {Array.from({ length: 9 }, (_, index) => <i key={index} />)}
+              <span className="four-grid-icon" aria-hidden="true">
+                {Array.from({ length: 4 }, (_, index) => <i key={index} />)}
               </span>
             </button>
             <button
