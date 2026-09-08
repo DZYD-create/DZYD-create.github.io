@@ -10552,6 +10552,60 @@ button > img {
   background:#171b2d!important;
 }
 
+/* Optical alignment pass based on the rendered controls, not just box metrics. */
+.group-layout-popover .four-grid-icon{
+  position:relative!important;
+  top:1px!important;
+}
+.group-layout-popover>button{
+  display:grid!important;
+  grid-template-columns:24px minmax(0,1fr)!important;
+  align-items:center!important;
+  column-gap:12px!important;
+  padding-top:0!important;
+  padding-bottom:0!important;
+  text-align:left!important;
+}
+.group-layout-popover .layout-horizontal-icon,
+.group-layout-popover .layout-vertical-icon{top:1px!important;align-self:center!important}
+
+/* The layout glyph itself stays centered; its chevron does not shift that center. */
+.canvas-group-toolbar .group-layout-button{
+  position:relative!important;
+  width:72px!important;
+  min-width:72px!important;
+  flex:0 0 72px!important;
+  padding:0!important;
+  display:grid!important;
+  place-items:center!important;
+}
+.canvas-group-toolbar .group-layout-button>.group-nine-grid{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  transform:translate(-50%,-50%)!important;
+}
+.canvas-group-toolbar .group-layout-button>.group-toolbar-chevron{
+  position:absolute!important;
+  right:9px!important;
+  top:50%!important;
+  margin:0!important;
+  transform:translateY(-65%) rotate(45deg)!important;
+}
+
+/* Width follows actual children: identical 12px shell padding yields equal visual edge gaps. */
+.canvas-group-toolbar{
+  display:inline-flex!important;
+  width:fit-content!important;
+  min-width:0!important;
+  max-width:none!important;
+  inline-size:fit-content!important;
+  padding:6px 12px!important;
+  justify-content:flex-start!important;
+}
+.canvas-group-toolbar>.group-color-button{margin-left:0!important}
+.canvas-group-toolbar>.group-download-button{margin-right:0!important}
+
 /* Upload image icon: exact rounded image frame, landscape, dot and purple plus. */
 .figma-upload-image-icon.upload-image-icon-v2{
   width:24px!important;
