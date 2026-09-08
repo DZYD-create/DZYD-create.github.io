@@ -2399,6 +2399,65 @@ function Canvas({
     }>
   >([]);
   const [selectedCommentIds, setSelectedCommentIds] = useState<number[]>([]);
+  type CanvasUndoSnapshot = {
+    nodes: CanvasNode[];
+    links: CanvasLink[];
+    groups: Array<{ id: number; nodeIds: number[]; name: string; color?: string; layout?: "grid" | "horizontal" | "vertical" }>;
+    comments: typeof canvasComments;
+  };
+  const canvasUndoStack = useRef<CanvasUndoSnapshot[]>([]);
+  const canvasUndoBaseline = useRef<CanvasUndoSnapshot | null>(null);
+  const canvasUndoTimer = useRef<number | null>(null);
+  const canvasUndoApplying = useRef(false);
+  useEffect(() => {
+    const current: CanvasUndoSnapshot = {
+      nodes: canvasNodes.map((node) => ({ ...node })),
+      links: canvasLinks.map((link) => ({ ...link })),
+      groups: canvasGroups.map((group) => ({ ...group, nodeIds: [...group.nodeIds] })),
+      comments: canvasComments.map((comment) => ({ ...comment })),
+    };
+    if (!canvasUndoBaseline.current || canvasUndoApplying.current) {
+      canvasUndoBaseline.current = current;
+      canvasUndoApplying.current = false;
+      return;
+    }
+    if (canvasUndoTimer.current !== null) window.clearTimeout(canvasUndoTimer.current);
+    canvasUndoTimer.current = window.setTimeout(() => {
+      const previous = canvasUndoBaseline.current;
+      if (previous && JSON.stringify(previous) !== JSON.stringify(current)) {
+        canvasUndoStack.current = [...canvasUndoStack.current.slice(-49), previous];
+        canvasUndoBaseline.current = current;
+      }
+      canvasUndoTimer.current = null;
+    }, 180);
+    return () => { if (canvasUndoTimer.current !== null) window.clearTimeout(canvasUndoTimer.current); };
+  }, [canvasNodes, canvasLinks, canvasGroups, canvasComments]);
+  useEffect(() => {
+    const undoCanvasAction = (event: KeyboardEvent) => {
+      if (!(event.ctrlKey || event.metaKey) || event.altKey || event.key.toLowerCase() !== "z") return;
+      if (["局部重绘", "擦除"].includes(canvasTool)) return;
+      const target = event.target as HTMLElement;
+      if (target.closest('input,textarea,[contenteditable="true"]')) return;
+      const baseline = canvasUndoBaseline.current;
+      const currentChanged = baseline && JSON.stringify({ nodes: canvasNodes, links: canvasLinks, groups: canvasGroups, comments: canvasComments }) !== JSON.stringify(baseline);
+      const previous = currentChanged ? baseline : canvasUndoStack.current.pop();
+      if (!previous) return;
+      event.preventDefault();
+      if (canvasUndoTimer.current !== null) window.clearTimeout(canvasUndoTimer.current);
+      canvasUndoTimer.current = null;
+      canvasUndoApplying.current = true;
+      canvasUndoBaseline.current = previous;
+      setCanvasNodes(previous.nodes);
+      setCanvasLinks(previous.links);
+      setCanvasGroups(previous.groups);
+      setCanvasComments(previous.comments);
+      setSelection(null);
+      setActiveNodeId(null);
+      setActiveGroupId(null);
+    };
+    window.addEventListener("keydown", undoCanvasAction);
+    return () => window.removeEventListener("keydown", undoCanvasAction);
+  }, [canvasNodes, canvasLinks, canvasGroups, canvasComments, canvasTool]);
   const cropExitTimer = useRef<number | null>(null);
   const selectionHoldTimer = useRef<number | null>(null);
   const selectionOrigin = useRef<{ x: number; y: number } | null>(null);
@@ -2429,6 +2488,17 @@ function Canvas({
     setFocusPicks((items) => items.filter((item) => item.id !== id));
     setActiveFocusTagId((current) => (current === id ? null : current));
   };
+  useEffect(() => {
+    const removeSelectedFocus = (event: KeyboardEvent) => {
+      if (activeFocusTagId === null || !["Backspace", "Delete"].includes(event.key)) return;
+      const target = event.target as HTMLElement;
+      if (target.closest('input,textarea,[contenteditable="true"]')) return;
+      event.preventDefault();
+      removeFocusPick(activeFocusTagId);
+    };
+    window.addEventListener("keydown", removeSelectedFocus);
+    return () => window.removeEventListener("keydown", removeSelectedFocus);
+  }, [activeFocusTagId, focusPicks, focusTrailingText, focusNodeId, activeNodeId]);
   const exitFocusEdit = () => {
     if (focusNodeId !== null) {
       const targets = [
@@ -3958,9 +4028,9 @@ function Canvas({
                       const dx = event.clientX - (rect.left + rect.width / 2);
                       const dy = event.clientY - (rect.top + rect.height / 2);
                       const distance = Math.hypot(dx, dy);
-                      const influence = Math.max(0, 1 - distance / 315);
-                      port.style.setProperty("--port-dx", `${Math.max(-19.5, Math.min(19.5, dx * influence * .3))}px`);
-                      port.style.setProperty("--port-dy", `${Math.max(-16.5, Math.min(16.5, dy * influence * .3))}px`);
+                      const influence = Math.max(0, 1 - distance / 390);
+                      port.style.setProperty("--port-dx", `${Math.max(-26, Math.min(26, dx * influence * .36))}px`);
+                      port.style.setProperty("--port-dy", `${Math.max(-22, Math.min(22, dy * influence * .36))}px`);
                     });
                   }}
                   onMouseLeave={(event) => event.currentTarget.querySelectorAll<HTMLElement>(".canvas-node-port").forEach((port) => {
@@ -4342,20 +4412,6 @@ function Canvas({
                     ))}
                 </div>
                 <div className="canvas-prompt-inline-content">
-                  <textarea
-                    className="canvas-inline-text"
-                    aria-label="描述生成内容"
-                    rows={1}
-                    value={canvasPromptTexts[node.id] || ""}
-                    onChange={(e) => {
-                      setCanvasPromptTexts((values) => ({ ...values, [node.id]: e.target.value }));
-                      e.currentTarget.style.height = "auto";
-                      e.currentTarget.style.height = String(e.currentTarget.scrollHeight) + "px";
-                    }}
-                    placeholder={
-                      focusPicks.length ? "" : "描述任何你想要生成的内容"
-                    }
-                  />
                   {focusPicks.map((pick) => (
                     <React.Fragment key={pick.id}>
                       <button
@@ -4370,15 +4426,10 @@ function Canvas({
                           role="button"
                           aria-label={`删除焦点${focusChoices[pick.choice].name}`}
                           tabIndex={0}
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            removeFocusPick(pick.id);
-                          }}
+                          onClick={(event) => { event.stopPropagation(); removeFocusPick(pick.id); }}
                           onKeyDown={(event) => {
                             if (event.key === "Enter" || event.key === " ") {
-                              event.preventDefault();
-                              event.stopPropagation();
-                              removeFocusPick(pick.id);
+                              event.preventDefault(); event.stopPropagation(); removeFocusPick(pick.id);
                             }
                           }}
                         >×</i>
@@ -4387,23 +4438,25 @@ function Canvas({
                         className="canvas-inline-text"
                         aria-label={`在${focusChoices[pick.choice].name}后输入文字`}
                         value={focusTrailingText[pick.id] || ""}
-                        onChange={(e) =>
-                          setFocusTrailingText((values) => ({
-                            ...values,
-                            [pick.id]: e.target.value,
-                          }))
-                        }
-                        style={{
-                          width: focusTrailingText[pick.id]
-                            ? Math.min(
-                                420,
-                                focusTrailingText[pick.id].length * 14 + 14,
-                              )
-                            : 10,
-                        }}
+                        onChange={(e) => setFocusTrailingText((values) => ({ ...values, [pick.id]: e.target.value }))}
+                        style={{ width: focusTrailingText[pick.id] ? Math.min(420, focusTrailingText[pick.id].length * 14 + 14) : 10 }}
                       />
                     </React.Fragment>
                   ))}
+                  <textarea
+                    className="canvas-inline-text canvas-primary-prompt-text"
+                    aria-label="描述生成内容"
+                    rows={1}
+                    value={canvasPromptTexts[node.id] || ""}
+                    onChange={(e) => {
+                      setCanvasPromptTexts((values) => ({ ...values, [node.id]: e.target.value }));
+                      e.currentTarget.style.height = "auto";
+                      e.currentTarget.style.height = String(e.currentTarget.scrollHeight) + "px";
+                    }}
+                    placeholder={
+                      focusPicks.length ? "" : "描述任何你想要生成的内容"
+                    }
+                  />
                 </div>
                 <div className="canvas-node-prompt-footer">
                   <div>

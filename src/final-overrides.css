@@ -11042,7 +11042,7 @@ button > img {
 .layout-horizontal-icon::before{left:2px!important;top:7px!important}.layout-horizontal-icon::after{right:2px!important;top:3px!important;background:transparent!important}
 .layout-vertical-icon{background:none!important}
 .layout-vertical-icon::before{content:""!important;position:absolute!important;left:9px!important;top:5px!important;width:13px!important;height:1.5px!important;border-radius:2px!important;background:#17191f!important;box-shadow:0 7px #17191f,0 14px #17191f!important}
-.layout-vertical-icon::after{content:""!important;position:absolute!important;left:2px!important;top:4px!important;width:3.5px!important;height:3.5px!important;border:1.5px solid #17191f!important;box-sizing:border-box!important;border-radius:50%!important;background:transparent!important;box-shadow:0 7px 0 -1.5px #fff,0 7px 0 0 #17191f,0 14px 0 -1.5px #fff,0 14px 0 0 #17191f!important}
+.layout-vertical-icon::after{content:""!important;position:absolute!important;left:2px!important;top:4px!important;width:4px!important;height:4px!important;border:0!important;border-radius:50%!important;background:#17191f!important;box-shadow:0 7px #17191f,0 14px #17191f!important}
 .canvas-node-card.is-grouped[data-selected]::after{
   opacity:.9!important;
 }
@@ -11068,9 +11068,9 @@ button > img {
 /* Give every rail hover halo its own breathing room. */
 .canvas-vertical-nav{
   grid-auto-rows:44px!important;
-  row-gap:16px!important;
-  height:484px!important;
-  min-height:484px!important;
+  row-gap:14px!important;
+  height:427px!important;
+  min-height:427px!important;
 }
 
 .history-default-actions{position:relative!important;display:flex!important;align-items:center!important;gap:10px!important}
@@ -11437,7 +11437,7 @@ button > img {
 }
 
 /* Each canvas node owns a wrapping, content-height prompt instead of sharing one line. */
-.canvas-prompt-inline-content>.canvas-inline-text:first-child{
+.canvas-prompt-inline-content>.canvas-primary-prompt-text{
   flex:1 0 100%!important;
   width:100%!important;
   min-width:100%!important;
