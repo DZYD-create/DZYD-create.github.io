@@ -11292,6 +11292,103 @@ button > img {
   box-shadow:none!important;
   transform:none!important;
 }
+
+/* Canvas history keeps one functional list-view control. */
+.figma-history-title>button.active{
+  background:#efedff!important;
+  color:#6556db!important;
+}
+.figma-history-cards.list-view{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:10px!important;
+  padding-right:4px!important;
+}
+.figma-history-cards.list-view>.figma-history-card{
+  display:grid!important;
+  grid-template-columns:72px minmax(0,1fr)!important;
+  grid-template-rows:24px 20px!important;
+  column-gap:12px!important;
+  align-items:center!important;
+  width:100%!important;
+  min-height:72px!important;
+  padding:7px!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  text-align:left!important;
+}
+.figma-history-cards.list-view>.figma-history-card:hover{background:#f6f4ff!important;transform:none!important}
+.figma-history-cards.list-view .history-image-area{
+  grid-row:1/3!important;
+  width:72px!important;
+  height:58px!important;
+  border-radius:8px!important;
+}
+.figma-history-cards.list-view .figma-history-card>strong,
+.figma-history-cards.list-view .figma-history-card>small{
+  display:block!important;
+  min-width:0!important;
+  margin:0!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+
+/* Homepage history slider controls real card scale: 5, 4, then at most 3 columns. */
+.history-cards{
+  grid-template-columns:repeat(var(--history-columns,4),minmax(0,1fr))!important;
+  transition:grid-template-columns .18s ease!important;
+}
+.history-cards .history-record-preview,
+.history-cards .history-create-record>.history-record-preview{
+  height:var(--history-card-height,209px)!important;
+  min-height:var(--history-card-height,209px)!important;
+  transition:height .18s ease,min-height .18s ease!important;
+}
+
+/* Search, batch selection, and recycle bin are three independent controls. */
+.history-default-actions{gap:10px!important}
+.history-search-action,.history-trash-button{
+  width:42px!important;
+  min-width:42px!important;
+  height:42px!important;
+  padding:0!important;
+  border:1px solid #e0dff0!important;
+  border-radius:12px!important;
+  background:#fff!important;
+  display:grid!important;
+  place-items:center!important;
+  cursor:pointer!important;
+}
+.history-search-action:hover,.history-trash-button:hover,.history-trash-button.active{
+  border-color:#8b77f1!important;
+  background:#f2efff!important;
+}
+.history-search-action>img,.history-trash-button>img{
+  display:block!important;
+  width:19px!important;
+  height:19px!important;
+  opacity:.76!important;
+}
+.history-batch{
+  width:auto!important;
+  min-width:96px!important;
+  height:42px!important;
+  padding:0 16px!important;
+  border:1px solid #e0dff0!important;
+  border-radius:12px!important;
+  background:#fff!important;
+  display:grid!important;
+  place-items:center!important;
+  color:#303441!important;
+  font-size:14px!important;
+  cursor:pointer!important;
+}
+.history-batch:hover{border-color:#8b77f1!important;background:#f2efff!important;color:#6557dc!important}
+
+/* Rounder canvas folder-name field. */
+.folder-browser .folder-create input{border-radius:14px!important}
 .canvas-group-frame{
   position:absolute!important;
   z-index:0!important;

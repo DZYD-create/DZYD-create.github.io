@@ -5934,6 +5934,7 @@ function CanvasDrawer({ mode }: { mode: "assets" | "history" | "comments" }) {
 
 function HistoryDrawer({ onClose }: { onClose: () => void }) {
   const [tab, setTab] = useState<"海报" | "直播间" | "PPT">("海报");
+  const [listView, setListView] = useState(false);
   return (
     <aside className="figma-history-panel">
       <div className="figma-history-title">
@@ -5942,12 +5943,8 @@ function HistoryDrawer({ onClose }: { onClose: () => void }) {
         </button>
         <h2>历史</h2>
         <span />
-        <button className="select-action">选择</button>
-        <button aria-label="列表视图">
+        <button className={listView ? "active" : ""} aria-label="条目式排列" aria-pressed={listView} onClick={() => setListView((value) => !value)}>
           <img src="/assets/history-list.svg" />
-        </button>
-        <button aria-label="展开">
-          <img src="/assets/history-expand.svg" />
         </button>
       </div>
       <div className="figma-history-tabs">
@@ -5966,7 +5963,7 @@ function HistoryDrawer({ onClose }: { onClose: () => void }) {
         <span>搜索</span>
       </div>
       <h3>2026-08-03</h3>
-      <div className="figma-history-cards">
+      <div className={`figma-history-cards ${listView ? "list-view" : ""}`}>
         {[0, 1].map((i) => (
           <button
             className="figma-history-card"
@@ -6082,6 +6079,12 @@ function History({
               </div>
             ) : (
               <div className="history-default-actions" onClick={(event) => event.stopPropagation()}>
+                <button className="history-search-action" aria-label="搜索历史" title="搜索">
+                  <img src="/assets/history-search.svg" alt="" />
+                </button>
+                <button className="history-batch" onClick={() => { setTrashOpen(false); setBatch(true); }}>
+                  批量选择
+                </button>
                 <div className="history-trash-wrap">
                   <button
                     className={`history-trash-button ${trashOpen ? "active" : ""}`}
@@ -6089,7 +6092,7 @@ function History({
                     aria-label="回收站"
                     title="回收站"
                   >
-                    <img src="/assets/action-trash.svg" alt="" /><i /><span>回收站</span>
+                    <img src="/assets/action-trash.svg" alt="" />
                   </button>
                   {trashOpen && (
                     <aside className="history-trash-popover" aria-label="回收站内容">
@@ -6107,9 +6110,6 @@ function History({
                     </aside>
                   )}
                 </div>
-                <button className="history-batch" onClick={() => { setTrashOpen(false); setBatch(true); }}>
-                  <img src="/assets/history-search.svg" /><i />批量选择
-                </button>
               </div>
             )}
           </div>
@@ -6225,7 +6225,7 @@ function History({
             )}
           </div>
         </div>
-        <div className="history-cards">
+        <div className="history-cards" style={{ "--history-columns": zoom < 35 ? 5 : zoom < 68 ? 4 : 3, "--history-card-height": `${150 + zoom * 1.4}px` } as React.CSSProperties}>
           <button
             className="history-record history-create-record"
             onClick={tab === "subject" ? () => setSubjectOpen(true) : () => onCanvas()}
