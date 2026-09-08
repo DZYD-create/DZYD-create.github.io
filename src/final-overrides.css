@@ -12500,3 +12500,41 @@ button > img {
   animation:none!important;
   filter:none!important;
 }
+
+/* FINAL optical alignment — intentionally last so legacy group rules cannot override it. */
+.canvas-group-toolbar{
+  width:286px!important;
+  min-width:286px!important;
+  max-width:286px!important;
+  padding:6px 12px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:3px!important;
+}
+.canvas-group-toolbar>.group-color-button,
+.canvas-group-toolbar>.group-download-button{
+  width:40px!important;
+  min-width:40px!important;
+  flex:0 0 40px!important;
+  padding:0!important;
+}
+.canvas-group-toolbar>.group-color-button{margin-left:0!important}
+.canvas-group-toolbar>.group-download-button{margin-left:auto!important;margin-right:0!important}
+.canvas-group-toolbar .group-nine-grid{
+  position:relative!important;
+  top:2px!important;
+  transform:none!important;
+}
+.group-layout-popover .four-grid-icon{
+  position:relative!important;
+  top:3px!important;
+  transform:translateX(5px)!important;
+}
+.group-layout-popover>button{
+  align-items:center!important;
+  padding-top:0!important;
+  padding-bottom:0!important;
+  line-height:24px!important;
+}
