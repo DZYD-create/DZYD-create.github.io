@@ -575,9 +575,6 @@ function GenerationPage({
           <img src="/assets/history-back.svg" />
         </button>
         <strong>与跃动的对话</strong>
-        <button className="collapse-chat" onClick={onToggleCollapsed}>
-          {collapsed ? "展开对话" : "收起对话"}
-        </button>
       </div>
       <div
         className={`generation-thread ${!preparing && !generating && !generated ? "idle" : ""}`}
@@ -1004,7 +1001,6 @@ function NewCreationPage({
           <img src="/assets/history-back.svg" />
         </button>
         <strong>与跃动的对话</strong>
-        <button>收起对话</button>
       </header>
       <div className="new-creation-intro">
         <span
@@ -6035,7 +6031,11 @@ function History({
   const choose = (kind: "filter" | "time" | "sort") =>
     setPopup((v) => (v === kind ? null : kind));
   return (
-    <section className="history-page" onClick={() => { if (popup) setPopup(null); if (trashOpen) setTrashOpen(false); }}>
+    <section className="history-page" onClick={() => {
+      if (popup) setPopup(null);
+      if (trashOpen) setTrashOpen(false);
+      if (historySearchOpen && !historyQuery.trim()) setHistorySearchOpen(false);
+    }}>
       <div className="history-heading">
         <button
           className="history-heading-back"

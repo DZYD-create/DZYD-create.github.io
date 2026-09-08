@@ -10389,6 +10389,54 @@ button > img {
   box-shadow:none!important;
 }
 
+/* Empty history searches collapse when the page receives the next outside click. */
+.history-top-actions,.history-zoom,.history-search-action{
+  transition:width .24s cubic-bezier(.2,.8,.25,1),transform .24s cubic-bezier(.2,.8,.25,1)!important;
+}
+
+/* Compact group strip matching the reference while retaining equal edge padding. */
+.canvas-group-toolbar{
+  width:306px!important;
+  min-width:306px!important;
+  padding-left:12px!important;
+  padding-right:12px!important;
+  gap:3px!important;
+}
+.canvas-group-toolbar>button{padding-left:10px!important;padding-right:10px!important}
+.canvas-group-toolbar .group-toolbar-divider{margin-left:2px!important;margin-right:2px!important}
+.canvas-group-toolbar .group-toolbar-ungroup{min-width:72px!important}
+
+/* Filter options have independent hover surfaces and a roomier menu. */
+.search-filter-wrap>div{
+  top:46px!important;
+  width:132px!important;
+  min-height:126px!important;
+  padding:8px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:4px!important;
+  border-radius:12px!important;
+}
+.search-filter-wrap>div>button{
+  flex:0 0 34px!important;
+  height:34px!important;
+  padding:0 10px!important;
+  border-radius:7px!important;
+}
+
+/* Crop uses the Expand prompt's actual shell: 1px violet stroke and 14px radius. */
+.canvas-crop-actions{
+  border:1px solid #7472ff!important;
+  border-radius:14px!important;
+}
+.canvas-crop-actions>input{
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
 /* Upload image icon: exact rounded image frame, landscape, dot and purple plus. */
 .figma-upload-image-icon.upload-image-icon-v2{
   width:24px!important;
