@@ -4023,7 +4023,14 @@ function Canvas({
                   key={node.id}
                   onMouseMove={(event) => {
                     const card = event.currentTarget;
+                    const cardRect = card.getBoundingClientRect();
+                    const activeSide = event.clientX < cardRect.left + cardRect.width / 2 ? "left" : "right";
                     card.querySelectorAll<HTMLElement>(".canvas-node-port").forEach((port) => {
+                      if (!port.classList.contains(activeSide)) {
+                        port.style.setProperty("--port-dx", "0px");
+                        port.style.setProperty("--port-dy", "0px");
+                        return;
+                      }
                       const rect = port.getBoundingClientRect();
                       const dx = event.clientX - (rect.left + rect.width / 2);
                       const dy = event.clientY - (rect.top + rect.height / 2);
@@ -4566,7 +4573,10 @@ function Canvas({
             }}
             aria-label="账户"
           >
-            <img src={mode === "account" ? "/assets/canvas-nav-avatar-active.svg" : "/assets/canvas-nav-avatar.svg"} />
+            <span className="canvas-account-avatar" aria-hidden="true">
+              <img className="avatar-idle" src="/assets/canvas-nav-avatar.svg" />
+              <img className="avatar-selected" src="/assets/canvas-nav-avatar-active.svg" />
+            </span>
           </button>
         </nav>
         {mode === "account" && (
@@ -6403,8 +6413,10 @@ function Assets({
   const [subjectName, setSubjectName] = useState("");
   const [subjectImages, setSubjectImages] = useState<string[]>([]);
   const [subjects, setSubjects] = useState(["夏日新品预热海报", "课程价格板设计", "新品种草海报", "直播间活动主视觉"]);
+  const [uploadedPeople, setUploadedPeople] = useState<{ name: string; url: string }[]>([]);
   const [favoriteAssets, setFavoriteAssets] = useState<string[]>([]);
   const subjectFile = useRef<HTMLInputElement>(null);
+  const personFile = useRef<HTMLInputElement>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [folderMenu, setFolderMenu] = useState(false);
   const [assetMoreUrl, setAssetMoreUrl] = useState<string | null>(null);
@@ -6515,21 +6527,22 @@ function Assets({
       )}
       {tab === "subject" ? (
         <div className="asset-subject-grid">
-          <button className="asset-subject-card create" onClick={() => { setSubjectName(""); setSubjectImages([]); setSubjectOpen(true); }}>
+          <button className="asset-subject-card create" onClick={() => personFile.current?.click()}>
             <div className="asset-create-single" aria-hidden="true"><i>＋</i></div>
-            <strong>新建主体</strong>
+            <strong>上传人物</strong>
           </button>
-          {subjects.map((name, i) => (
-            <div className="asset-subject-shell" key={name}>
-              <button className="asset-subject-card" onClick={() => { setSubjectName(name); setSubjectImages([samples[i % samples.length]]); setSubjectOpen(true); }}>
-                <div><img src={samples[i % samples.length]} alt={name} /></div><strong>{name}</strong><small>主体 · 最近修改</small>
+          {[...uploadedPeople, ...subjects.map((name, i) => ({ name, url: samples[i % samples.length] }))].map((person) => (
+            <div className="asset-subject-shell" key={person.url}>
+              <button className="asset-subject-card" onClick={() => onSendToCanvas({ name: person.name, url: person.url, category: "assets" })}>
+                <div><img src={person.url} alt={person.name} /></div><strong>{person.name}</strong><small>人物 · 最近修改</small>
               </button>
+              <button className={`asset-pin ${favoriteAssets.includes(person.url) ? "active" : ""}`} aria-label={favoriteAssets.includes(person.url) ? `取消置顶${person.name}` : `置顶${person.name}`} onClick={(event) => { event.stopPropagation(); setFavoriteAssets((items) => items.includes(person.url) ? items.filter((url) => url !== person.url) : [...items, person.url]); }}><span>置顶</span>★</button>
               <div className="card-more-wrap">
-                <button className="card-more-button" aria-label={`${name}更多操作`} onClick={(event) => { event.stopPropagation(); setAssetMoreUrl((current) => current === `subject:${name}` ? null : `subject:${name}`); }}>•••</button>
-                {assetMoreUrl === `subject:${name}` && <div className="card-more-menu" onClick={(event) => event.stopPropagation()}>
-                  <button onClick={() => { setAssetMoreUrl(null); setSubjectName(name); setSubjectImages([samples[i % samples.length]]); setSubjectOpen(true); }}>打开</button>
-                  <button onClick={() => { const next = window.prompt("请输入新名称", name)?.trim(); if (next) setSubjects((items) => items.map((value) => value === name ? next : value)); setAssetMoreUrl(null); }}>重命名</button>
-                  <button className="danger" onClick={() => { setSubjects((items) => items.filter((value) => value !== name)); setAssetMoreUrl(null); }}>删除项目</button>
+                <button className="card-more-button" aria-label={`${person.name}更多操作`} onClick={(event) => { event.stopPropagation(); setAssetMoreUrl((current) => current === `subject:${person.url}` ? null : `subject:${person.url}`); }}>•••</button>
+                {assetMoreUrl === `subject:${person.url}` && <div className="card-more-menu" onClick={(event) => event.stopPropagation()}>
+                  <button onClick={() => { setAssetMoreUrl(null); onSendToCanvas({ name: person.name, url: person.url, category: "assets" }); }}>打开</button>
+                  <button onClick={() => { const next = window.prompt("请输入新名称", person.name)?.trim(); if (next) { setUploadedPeople((items) => items.map((value) => value.url === person.url ? { ...value, name: next } : value)); setSubjects((items) => items.map((value) => value === person.name ? next : value)); } setAssetMoreUrl(null); }}>重命名</button>
+                  <button className="danger" onClick={() => { setUploadedPeople((items) => items.filter((value) => value.url !== person.url)); setSubjects((items) => items.filter((value) => value !== person.name)); setAssetMoreUrl(null); }}>删除项目</button>
                 </div>}
               </div>
             </div>
@@ -6598,6 +6611,7 @@ function Assets({
         accept="image/*"
         onChange={(e) => uploadFile(e.target.files?.[0])}
       />
+      <input ref={personFile} hidden type="file" accept="image/*" onChange={(event) => { const file = event.target.files?.[0]; if (file) setUploadedPeople((items) => [{ name: file.name.replace(/\.[^.]+$/, ""), url: URL.createObjectURL(file) }, ...items]); event.currentTarget.value = ""; }} />
       {subjectOpen && (
         <div className="history-subject-backdrop">
           <section className="history-subject-dialog" role="dialog" aria-modal="true" aria-labelledby="asset-subject-title">
