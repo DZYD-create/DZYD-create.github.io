@@ -5935,6 +5935,11 @@ function CanvasDrawer({ mode }: { mode: "assets" | "history" | "comments" }) {
 function HistoryDrawer({ onClose }: { onClose: () => void }) {
   const [tab, setTab] = useState<"海报" | "直播间" | "PPT">("海报");
   const [listView, setListView] = useState(false);
+  const [query, setQuery] = useState("");
+  const historyItems = [
+    { name: "小学全科卡", url: "/assets/template-2.png" },
+    { name: "课程价格展示", url: "/assets/template-3.png" },
+  ].filter((item) => item.name.toLowerCase().includes(query.trim().toLowerCase()));
   return (
     <aside className="figma-history-panel">
       <div className="figma-history-title">
@@ -5958,33 +5963,34 @@ function HistoryDrawer({ onClose }: { onClose: () => void }) {
           </button>
         ))}
       </div>
-      <div className="figma-history-search">
+      <label className="figma-history-search">
         <img src="/assets/history-search.svg" />
-        <span>搜索</span>
-      </div>
+        <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索" aria-label="搜索历史图片" />
+      </label>
       <h3>2026-08-03</h3>
       <div className={`figma-history-cards ${listView ? "list-view" : ""}`}>
-        {[0, 1].map((i) => (
+        {historyItems.map((item) => (
           <button
             className="figma-history-card"
             draggable
             onDragStart={(event) => {
               pendingCanvasAssetDrag = {
-                name: "小学全科卡",
-                url: "/assets/template-" + (i + 2) + ".png",
+                name: item.name,
+                url: item.url,
               };
               event.dataTransfer.effectAllowed = "copy";
               const payload = JSON.stringify(pendingCanvasAssetDrag);
               event.dataTransfer.setData("application/x-canvas-asset", payload);
               event.dataTransfer.setData("text/plain", payload);
             }}
-            key={i}
+            key={item.url}
           >
-            <div className="history-image-area"><img src={`/assets/template-${i + 2}.png`} alt="历史图片缩略图" /></div>
-            <strong>小学全科卡</strong>
+            <div className="history-image-area"><img src={item.url} alt="历史图片缩略图" /></div>
+            <strong>{item.name}</strong>
             <small>图片 · 今天</small>
           </button>
         ))}
+        {!historyItems.length && <p className="figma-history-empty">未找到相关图片</p>}
       </div>
     </aside>
   );
@@ -6066,14 +6072,7 @@ function History({
                     setCards((items) => items.filter((name) => !selectedHistory.includes(name)));
                     setSelectedHistory([]);
                   }}
-                >♜ 删除</button>
-                <button
-                  disabled={!selectedHistory.length}
-                  onClick={() => {
-                    setFavoriteHistory((items) => [...new Set([...items, ...selectedHistory])]);
-                    setSelectedHistory([]);
-                  }}
-                >☆ 收藏</button>
+                ><img src="/assets/action-trash.svg" alt="" />删除</button>
                 <i />
                 <button className="history-cancel-batch" onClick={() => { setBatch(false); setSelectedHistory([]); }}>× 取消选择</button>
               </div>

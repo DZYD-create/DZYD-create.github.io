@@ -11516,6 +11516,131 @@ button > img {
 .canvas-crop-actions:has(>input:placeholder-shown) .crop-submit>img{
   opacity:0!important;
 }
+
+/* Batch history uses the shared trash glyph and no favorite action. */
+.history-batch-actions>button>img{
+  display:block!important;
+  width:18px!important;
+  height:18px!important;
+  margin-right:7px!important;
+  object-fit:contain!important;
+}
+
+/* Canvas history search is a real text field. */
+.figma-history-search{
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+}
+.figma-history-search>img{flex:0 0 18px!important;width:18px!important;height:18px!important}
+.figma-history-search>input{
+  flex:1 1 auto!important;
+  min-width:0!important;
+  height:100%!important;
+  padding:0!important;
+  border:0!important;
+  outline:0!important;
+  background:transparent!important;
+  color:#272b37!important;
+  font-size:13px!important;
+}
+.figma-history-search>input::placeholder{color:#a0a4ae!important}
+.figma-history-empty{margin:20px 0!important;color:#9a9fab!important;font-size:13px!important;text-align:center!important}
+
+/* Roomier selection and group toolbars with hover fills clear of their dividers. */
+.selection-action-stack{
+  min-width:300px!important;
+  height:58px!important;
+  padding:6px 14px!important;
+}
+.selection-action-stack .create-folder-button,
+.selection-action-stack .group-selection-button{
+  height:44px!important;
+  padding-left:18px!important;
+  padding-right:18px!important;
+}
+.selection-action-stack .group-selection-button{margin-right:5px!important}
+.group-selection-button+.selection-folder-wrap{padding-left:6px!important}
+.group-selection-button+.selection-folder-wrap::before{left:0!important}
+.canvas-group-toolbar{
+  min-width:360px!important;
+  height:58px!important;
+  padding:6px 16px!important;
+  gap:6px!important;
+}
+.canvas-group-toolbar>button{height:44px!important;padding-left:15px!important;padding-right:15px!important}
+.canvas-group-toolbar .group-toolbar-divider{margin-left:5px!important;margin-right:5px!important}
+
+/* Upload choices use identical 20px icon boxes. */
+.upload-pop>button>img,
+.upload-pop>button>.figma-upload-image-icon{
+  display:grid!important;
+  place-items:center!important;
+  width:20px!important;
+  height:20px!important;
+  min-width:20px!important;
+  flex:0 0 20px!important;
+  margin:0!important;
+}
+.upload-pop>button>.figma-upload-image-icon>svg{display:block!important;width:20px!important;height:20px!important}
+
+/* Figma-style four hollow squares for grid arrangement. */
+.layout-grid-icon{background:none!important}
+.layout-grid-icon::before,.layout-grid-icon::after{
+  content:""!important;
+  position:absolute!important;
+  left:3px!important;
+  width:6px!important;
+  height:6px!important;
+  box-sizing:border-box!important;
+  border:1.6px solid #17191f!important;
+  border-radius:1.5px!important;
+  background:transparent!important;
+  box-shadow:12px 0 0 -1.6px #fff,12px 0 0 0 #17191f!important;
+}
+.layout-grid-icon::before{top:3px!important}
+.layout-grid-icon::after{top:15px!important}
+
+/* Crop prompt and submit now match the compact Expand controls. */
+.canvas-crop-actions>input{
+  min-width:0!important;
+  height:38px!important;
+  min-height:38px!important;
+  padding:0 10px!important;
+  border:0!important;
+  border-radius:9px!important;
+  background:#fff!important;
+  box-shadow:none!important;
+  font-size:13px!important;
+  line-height:38px!important;
+}
+.canvas-crop-actions .crop-submit,
+.canvas-crop-actions .crop-submit:hover,
+.canvas-crop-actions .crop-submit:focus-visible,
+.canvas-crop-actions:has(>input:placeholder-shown) .crop-submit,
+.canvas-crop-actions:has(>input:placeholder-shown) .crop-submit:hover,
+.canvas-crop-actions:has(>input:placeholder-shown) .crop-submit:focus-visible{
+  width:36px!important;
+  height:38px!important;
+  min-width:36px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:transparent!important;
+  display:grid!important;
+  place-items:center!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+.canvas-crop-actions .crop-submit>img,
+.canvas-crop-actions:has(>input:placeholder-shown) .crop-submit>img{
+  display:block!important;
+  width:32px!important;
+  height:34px!important;
+  opacity:1!important;
+  object-fit:contain!important;
+  filter:none!important;
+}
 .canvas-group-frame{
   position:absolute!important;
   z-index:0!important;
