@@ -4669,7 +4669,7 @@ function Canvas({
                         setSelection(null);
                       }}
                     >
-                      <img src="/assets/canvas-nav-folder.svg" />
+                      <img src="/assets/create-folder-figma.svg" />
                       添加到文件夹
                       <span className="selection-folder-chevron" aria-hidden="true" />
                     </button>

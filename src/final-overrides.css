@@ -10925,8 +10925,9 @@ button > img {
   border-radius:11px!important;
 }
 .selection-group-icon{
-  width:16px!important;
-  height:16px!important;
+  width:24px!important;
+  height:24px!important;
+  flex:0 0 24px!important;
   box-sizing:border-box!important;
   border:0!important;
   border-radius:0!important;
@@ -10935,14 +10936,14 @@ button > img {
 .selection-group-icon::before{
   content:""!important;position:absolute!important;inset:0!important;border-radius:4px!important;
   background:
-    linear-gradient(#45495d,#45495d) left top/6px 1.5px no-repeat,
-    linear-gradient(#45495d,#45495d) left top/1.5px 6px no-repeat,
-    linear-gradient(#45495d,#45495d) right top/6px 1.5px no-repeat,
-    linear-gradient(#45495d,#45495d) right top/1.5px 6px no-repeat,
-    linear-gradient(#45495d,#45495d) left bottom/6px 1.5px no-repeat,
-    linear-gradient(#45495d,#45495d) left bottom/1.5px 6px no-repeat,
-    linear-gradient(#45495d,#45495d) right bottom/6px 1.5px no-repeat,
-    linear-gradient(#45495d,#45495d) right bottom/1.5px 6px no-repeat!important;
+    linear-gradient(#45495d,#45495d) 3px 3px/7px 1.5px no-repeat,
+    linear-gradient(#45495d,#45495d) 3px 3px/1.5px 7px no-repeat,
+    linear-gradient(#45495d,#45495d) calc(100% - 3px) 3px/7px 1.5px no-repeat,
+    linear-gradient(#45495d,#45495d) calc(100% - 3px) 3px/1.5px 7px no-repeat,
+    linear-gradient(#45495d,#45495d) 3px calc(100% - 3px)/7px 1.5px no-repeat,
+    linear-gradient(#45495d,#45495d) 3px calc(100% - 3px)/1.5px 7px no-repeat,
+    linear-gradient(#45495d,#45495d) calc(100% - 3px) calc(100% - 3px)/7px 1.5px no-repeat,
+    linear-gradient(#45495d,#45495d) calc(100% - 3px) calc(100% - 3px)/1.5px 7px no-repeat!important;
 }
 .selection-action-stack .group-selection-button:hover,
 .selection-action-stack .create-folder-button:hover{
@@ -10951,7 +10952,7 @@ button > img {
   color:#6657df!important;
 }
 .selection-folder-wrap{position:relative!important}
-.selection-action-stack .create-folder-button>img{width:18px!important;height:18px!important}
+.selection-action-stack .create-folder-button>img{width:24px!important;height:24px!important;flex:0 0 24px!important}
 .selection-folder-chevron{
   width:7px!important;height:7px!important;border-right:1.5px solid #73788b!important;
   border-bottom:1.5px solid #73788b!important;transform:rotate(45deg) translateY(-2px)!important;
@@ -10975,7 +10976,7 @@ button > img {
 /* Figma 935:7 — canvas account menu, positioned immediately to the avatar's right. */
 .canvas-account-popover{
   position:fixed!important;left:var(--account-popover-left)!important;top:var(--account-popover-top)!important;bottom:auto!important;z-index:140!important;
-  width:200px!important;height:104px!important;box-sizing:border-box!important;padding:10px 6px!important;
+  width:184px!important;height:104px!important;box-sizing:border-box!important;padding:10px 6px!important;
   border:0!important;border-radius:10px!important;background:#fff!important;
   box-shadow:0 10px 24px rgba(0,0,0,.08),0 2px 8px rgba(107,122,153,.05)!important;
 }
@@ -10984,7 +10985,7 @@ button > img {
   transform:rotate(-90deg)!important;transform-origin:center!important;
 }
 .canvas-account-popover>button{
-  width:188px!important;height:42px!important;padding:0 12px!important;border:0!important;border-radius:12px!important;
+  width:172px!important;height:42px!important;padding:0 12px!important;border:0!important;border-radius:12px!important;
   background:#fff!important;display:flex!important;align-items:center!important;gap:12px!important;color:#212429!important;
   font:400 14px/22px "Alibaba PuHuiTi",sans-serif!important;text-align:left!important;
 }
@@ -11011,19 +11012,19 @@ button > img {
 }
 .canvas-group-toolbar>button:hover{background:#eeecff!important;color:#6557dc!important}
 .canvas-group-toolbar .group-color-button{width:40px!important;padding:0!important}
-.group-color-button>i{width:20px!important;height:20px!important;border-radius:50%!important;background:#d8d9df!important;box-shadow:inset 0 0 0 1px #cfd0d7!important}
+.group-color-button>i{width:24px!important;height:24px!important;border-radius:50%!important;background:#d8d9df!important;box-shadow:inset 0 0 0 1.5px #cfd0d7!important}
 .canvas-group-toolbar .group-layout-button{padding:0 9px!important;gap:7px!important}
-.group-nine-grid{width:20px!important;height:20px!important;display:grid!important;grid-template-columns:repeat(2,6px)!important;grid-template-rows:repeat(2,6px)!important;place-content:center!important;gap:3px!important}
+.group-nine-grid{width:24px!important;height:24px!important;flex:0 0 24px!important;display:grid!important;grid-template-columns:repeat(2,6px)!important;grid-template-rows:repeat(2,6px)!important;place-content:center!important;gap:3px!important}
 .group-nine-grid>i{width:6px!important;height:6px!important;box-sizing:border-box!important;border:1.5px solid #17191f!important;border-radius:1.5px!important;background:transparent!important}
 .group-toolbar-chevron{width:6px!important;height:6px!important;border-right:1.5px solid #777b8b!important;border-bottom:1.5px solid #777b8b!important;transform:rotate(45deg) translateY(-2px)!important}
 .group-toolbar-divider{width:1px!important;height:25px!important;margin:0 2px!important;background:#e5e4ec!important;flex:0 0 1px!important}
 .canvas-group-toolbar .group-run-button{min-width:112px!important}
 .group-run-icon{width:14px!important;height:18px!important;border:1.7px solid #474b5c!important;border-radius:7px 2px 2px 7px!important;clip-path:polygon(0 0,100% 50%,0 100%)!important}
 .canvas-group-toolbar .group-toolbar-ungroup{min-width:78px!important}
-.group-ungroup-icon{width:20px!important;height:20px!important;border:1.5px dashed #5d6172!important;border-radius:4px!important;position:relative!important}
+.group-ungroup-icon{width:24px!important;height:24px!important;flex:0 0 24px!important;border:1.5px dashed #5d6172!important;border-radius:4px!important;position:relative!important}
 .group-ungroup-icon::after{content:""!important;position:absolute!important;left:-3px!important;top:9px!important;width:25px!important;height:1.5px!important;background:#5d6172!important;transform:rotate(-45deg)!important}
 .canvas-group-toolbar .group-download-button{width:40px!important;padding:0!important}
-.group-download-button>img{width:20px!important;height:20px!important}
+.group-download-button>img{width:24px!important;height:24px!important}
 .canvas-group-frame:has(.canvas-group-toolbar)>.canvas-group-name{bottom:calc(100% + 10px)!important}
 .group-color-popover,.group-layout-popover{position:absolute!important;left:0!important;bottom:calc(100% + 10px)!important;top:auto!important;z-index:50!important;border:1px solid #e4e3ec!important;border-radius:14px!important;background:#fff!important;box-shadow:0 12px 30px rgba(45,47,69,.14),0 2px 8px rgba(93,83,163,.06)!important}
 .group-color-popover{width:316px!important;padding:13px!important;box-sizing:border-box!important;display:grid!important;grid-template-columns:repeat(5,44px)!important;gap:12px 14px!important}
@@ -11033,14 +11034,15 @@ button > img {
 .group-layout-popover{width:158px!important;padding:7px!important;left:47px!important}
 .canvas-group-toolbar .group-layout-popover>button{width:144px!important;height:42px!important;padding:0 12px!important;border:0!important;border-radius:9px!important;background:#fff!important;color:#303443!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:12px!important;font-size:14px!important;cursor:pointer!important}
 .canvas-group-toolbar .group-layout-popover>button:hover{background:#eeecff!important;color:#6557dc!important}
-.layout-grid-icon,.layout-horizontal-icon,.layout-vertical-icon{position:relative!important;width:20px!important;height:20px!important;flex:0 0 20px!important}
+.layout-grid-icon,.layout-horizontal-icon,.layout-vertical-icon{position:relative!important;width:24px!important;height:24px!important;flex:0 0 24px!important}
 .layout-grid-icon{background:linear-gradient(#17191f,#17191f) 2px 2px/6px 1.5px no-repeat,linear-gradient(#17191f,#17191f) 2px 2px/1.5px 6px no-repeat,linear-gradient(#17191f,#17191f) 12px 2px/6px 1.5px no-repeat,linear-gradient(#17191f,#17191f) 16.5px 2px/1.5px 6px no-repeat,linear-gradient(#17191f,#17191f) 2px 16.5px/6px 1.5px no-repeat,linear-gradient(#17191f,#17191f) 2px 12px/1.5px 6px no-repeat,linear-gradient(#17191f,#17191f) 12px 16.5px/6px 1.5px no-repeat,linear-gradient(#17191f,#17191f) 16.5px 12px/1.5px 6px no-repeat!important}
 .layout-grid-icon::before,.layout-grid-icon::after{content:""!important;position:absolute!important;width:6px!important;height:6px!important;border-right:1.5px solid #17191f!important;border-bottom:1.5px solid #17191f!important}
 .layout-grid-icon::before{left:2px!important;top:2px!important;box-shadow:10px 0 0 -0.1px transparent!important}.layout-grid-icon::after{right:2px!important;bottom:2px!important}
 .layout-horizontal-icon::before,.layout-horizontal-icon::after{content:""!important;position:absolute!important;width:9px!important;height:9px!important;border:1.5px solid #17191f!important;border-radius:3px!important;transform:rotate(35deg)!important;background:#fff!important}
 .layout-horizontal-icon::before{left:2px!important;top:7px!important}.layout-horizontal-icon::after{right:2px!important;top:3px!important;background:transparent!important}
-.layout-vertical-icon{background:radial-gradient(circle,#17191f 0 1.5px,transparent 1.7px) 1px 3px/4px 6px repeat-y!important}
-.layout-vertical-icon::before{content:""!important;position:absolute!important;left:7px!important;top:4px!important;width:12px!important;height:1.5px!important;border-radius:2px!important;background:#17191f!important;box-shadow:0 6px #17191f,0 12px #17191f!important}
+.layout-vertical-icon{background:none!important}
+.layout-vertical-icon::before{content:""!important;position:absolute!important;left:9px!important;top:5px!important;width:13px!important;height:1.5px!important;border-radius:2px!important;background:#17191f!important;box-shadow:0 7px #17191f,0 14px #17191f!important}
+.layout-vertical-icon::after{content:""!important;position:absolute!important;left:2px!important;top:4px!important;width:3.5px!important;height:3.5px!important;border:1.5px solid #17191f!important;box-sizing:border-box!important;border-radius:50%!important;background:transparent!important;box-shadow:0 7px 0 -1.5px #fff,0 7px 0 0 #17191f,0 14px 0 -1.5px #fff,0 14px 0 0 #17191f!important}
 .canvas-node-card.is-grouped[data-selected]::after{
   opacity:.9!important;
 }

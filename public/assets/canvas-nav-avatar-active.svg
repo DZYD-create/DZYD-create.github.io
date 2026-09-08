@@ -1,7 +1,5 @@
 <svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="Nav Avatar / Initial Active">
-<rect x="0.5" y="0.5" width="43" height="43" rx="21.5" fill="#FBFBFB"/>
-<rect x="0.5" y="0.5" width="43" height="43" rx="21.5" stroke="#F4F4F4"/>
 <path id="Nav Avatar Initial" d="M16 29V15H18.6312V20.9268H25.3617V15H28V29H25.3617V23.0527H18.6312V29H16Z" fill="#FFFFFF"/>
 </g>
 </svg>
