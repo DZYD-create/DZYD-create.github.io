@@ -3923,7 +3923,8 @@ function Canvas({
                             ? null
                             : { id: group.id, kind: "color" },
                         )}
-                      ><i style={{ background: group.colorSolid || "#d8d9df" }} /></button>
+                      ><i style={{ "--active-group-solid": group.colorSolid || "#d8d9df" } as React.CSSProperties} /></button>
+                      <span className="group-toolbar-divider" />
                       <button
                         className="group-layout-button"
                         aria-label="组布局"
@@ -4474,7 +4475,7 @@ function Canvas({
                       模型选择
                     </button>
                     <button
-                      className={promptPopover === "size" ? "active" : ""}
+                      className={`canvas-size-trigger ${promptPopover === "size" ? "active" : ""}`}
                       onClick={() =>
                         setPromptPopover((v) => (v === "size" ? null : "size"))
                       }
@@ -5826,7 +5827,12 @@ function AssetLibrary({
     }
     setEditing(null);
   };
-  const visibleTeachers = teachers.map((name, index) => ({ name, index })).filter(({ name }) => name.toLowerCase().includes(query.trim().toLowerCase()));
+  const normalizedQuery = query.trim().toLowerCase();
+  const posterMatches = !normalizedQuery || folderNames.poster.toLowerCase().includes(normalizedQuery) || posterName.toLowerCase().includes(normalizedQuery);
+  const teacherFolderMatches = !normalizedQuery || folderNames.teachers.toLowerCase().includes(normalizedQuery);
+  const logoMatches = !normalizedQuery || folderNames.logo.toLowerCase().includes(normalizedQuery) || logoName.toLowerCase().includes(normalizedQuery);
+  const visibleTeachers = teachers.map((name, index) => ({ name, index })).filter(({ name }) => teacherFolderMatches || name.toLowerCase().includes(normalizedQuery));
+  const hasSearchResults = posterMatches || visibleTeachers.length > 0 || logoMatches;
   const beginAssetDrag = (event: React.DragEvent, name: string, url: string) => {
     pendingCanvasAssetDrag = { name, url };
     event.dataTransfer.effectAllowed = "copy";
@@ -5855,21 +5861,21 @@ function AssetLibrary({
       <div className="asset-divider" />
       <small className="folder-label">文件夹</small>
       <div className="asset-tree">
-        <div className="tree-row">
+        {posterMatches && <div className="tree-row">
           <img className="tree-chevron" src={collapsed.poster ? "/assets/asset-chevron-right.svg" : "/assets/asset-chevron.svg"} onClick={() => setCollapsed((value)=>({...value,poster:!value.poster}))} />
           <i className="folder-icon cyan" />
           {editing==="poster"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("poster",folderNames.poster)}>{folderNames.poster}</b>}
-        </div>
-        {!collapsed.poster &&
+        </div>}
+        {posterMatches && !collapsed.poster &&
         <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,posterName,"/assets/school-kickoff-poster.png")} className={`asset-tree-entry asset-poster-file ${selected===5?"selected":""}`} onClick={()=>onSelect(5)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("poster-file",posterName);}}>
           <img src="/assets/school-kickoff-poster.png" />
           {editing==="poster-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{posterName}</span>}
         </div>}
-        <div className={`tree-row ${collapsed.teachers ? "" : "expanded"}`}>
+        {(teacherFolderMatches || visibleTeachers.length > 0) && <div className={`tree-row ${collapsed.teachers ? "" : "expanded"}`}>
           <img className="tree-chevron" src={collapsed.teachers ? "/assets/asset-chevron-right.svg" : "/assets/asset-chevron.svg"} onClick={() => setCollapsed((value)=>({...value,teachers:!value.teachers}))} />
           <i className="folder-icon blue" />
           {editing==="teachers"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("teachers",folderNames.teachers)}>{folderNames.teachers}</b>}
-        </div>
+        </div>}
         {!collapsed.teachers && visibleTeachers.map(({name:v,index:i}) => (
           <div
             role="button"
@@ -5885,13 +5891,13 @@ function AssetLibrary({
             {editing===`teacher-${i}`?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{v}</span>}
           </div>
         ))}
-        {!visibleTeachers.length && <p className="asset-search-empty">未找到“{query}”</p>}
-        <div className="tree-row logo-row">
+        {!hasSearchResults && <p className="asset-search-empty">未找到“{query}”</p>}
+        {logoMatches && <div className="tree-row logo-row">
           <img className="tree-chevron" src={collapsed.logo ? "/assets/asset-chevron-right.svg" : "/assets/asset-chevron.svg"} onClick={() => setCollapsed((value)=>({...value,logo:!value.logo}))} />
           <i className="folder-icon green" />
           {editing==="logo"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("logo",folderNames.logo)}>{folderNames.logo}</b>}
-        </div>
-        {!collapsed.logo && <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,logoName,"/assets/brand-logo-kcle.png")} className={`asset-tree-entry asset-logo-file ${selected===6?"selected":""}`} onClick={()=>onSelect(6)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("logo-file",logoName);}}><img src="/assets/brand-logo-kcle.png" />{editing==="logo-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{logoName}</span>}</div>}
+        </div>}
+        {logoMatches && !collapsed.logo && <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,logoName,"/assets/brand-logo-kcle.png")} className={`asset-tree-entry asset-logo-file ${selected===6?"selected":""}`} onClick={()=>onSelect(6)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("logo-file",logoName);}}><img src="/assets/brand-logo-kcle.png" />{editing==="logo-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{logoName}</span>}</div>}
       </div>
     </aside>
   );

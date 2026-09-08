@@ -12555,6 +12555,57 @@ button > img {
   top:5px!important;
 }
 
+/* Latest group toolbar reference: aligned icons, separators and equal edge space. */
+.canvas-group-toolbar{
+  width:315px!important;
+  min-width:315px!important;
+  max-width:315px!important;
+  height:58px!important;
+  padding:6px 12px!important;
+  display:grid!important;
+  grid-template-columns:48px 1px 62px 1px 88px 1px 48px!important;
+  column-gap:7px!important;
+  align-items:center!important;
+}
+.canvas-group-toolbar>.group-toolbar-divider{
+  width:1px!important;
+  height:26px!important;
+  margin:0!important;
+  justify-self:center!important;
+}
+.canvas-group-toolbar>.group-color-button,
+.canvas-group-toolbar>.group-layout-button,
+.canvas-group-toolbar>.group-toolbar-ungroup,
+.canvas-group-toolbar>.group-download-button{
+  width:100%!important;
+  min-width:0!important;
+  height:46px!important;
+  margin:0!important;
+  padding:0!important;
+  transform:none!important;
+  align-self:center!important;
+}
+.canvas-group-toolbar>.group-download-button{border-radius:14px!important}
+.canvas-group-toolbar>.group-download-button:hover{background:#eeecff!important}
+.canvas-group-toolbar .group-nine-grid{top:0!important}
+.group-color-button>i{background:var(--active-group-solid,#d8d9df)!important}
+
+/* Active Size icons always use the fully filled white sparkle artwork. */
+.home-size-trigger[aria-expanded="true"]>img,
+.canvas-size-trigger.active>img{
+  content:url('/assets/figma-home-size-active.svg')!important;
+  filter:none!important;
+}
+
+/* Keep the collapse glyph's center rule fully inside its rounded outline. */
+.conversation-collapse-button>span::before,
+.conversation-expand-button>span::before{
+  left:7px!important;
+  top:2px!important;
+  bottom:2px!important;
+  height:auto!important;
+}
+
 /* Single-image action strip uses content width and equal visible edge spacing. */
 .selection-action-stack:not(:has(>.group-selection-button)){
   width:max-content!important;
