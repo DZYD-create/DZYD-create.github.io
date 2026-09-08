@@ -10552,6 +10552,27 @@ button > img {
   background:#171b2d!important;
 }
 
+/* Optical pass from the rendered screenshots. */
+.canvas-group-toolbar{
+  width:286px!important;
+  min-width:286px!important;
+  max-width:286px!important;
+  justify-content:space-between!important;
+  padding:6px 12px!important;
+}
+.group-layout-popover .four-grid-icon{
+  position:relative!important;
+  top:2px!important;
+}
+.canvas-group-toolbar .group-nine-grid{
+  position:relative!important;
+  top:1px!important;
+}
+.group-layout-popover>button{
+  padding-top:0!important;
+  padding-bottom:0!important;
+}
+
 /* Optical alignment pass based on the rendered controls, not just box metrics. */
 .group-layout-popover .four-grid-icon{
   position:relative!important;
