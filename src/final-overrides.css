@@ -10975,7 +10975,7 @@ button > img {
 /* Figma 935:7 — canvas account menu, positioned immediately to the avatar's right. */
 .canvas-account-popover{
   position:fixed!important;left:var(--account-popover-left)!important;top:var(--account-popover-top)!important;bottom:auto!important;z-index:140!important;
-  width:200px!important;height:104px!important;box-sizing:border-box!important;padding:6px!important;
+  width:200px!important;height:104px!important;box-sizing:border-box!important;padding:10px 6px!important;
   border:0!important;border-radius:10px!important;background:#fff!important;
   box-shadow:0 10px 24px rgba(0,0,0,.08),0 2px 8px rgba(107,122,153,.05)!important;
 }
@@ -10990,11 +10990,10 @@ button > img {
 }
 .canvas-account-popover>button:hover{background:#f7f6ff!important}
 .canvas-account-popover>button>img{width:20px!important;height:20px!important;flex:0 0 20px!important}
-.canvas-account-popover>button.selected>span{
-  background:linear-gradient(90deg,#8a67f4,#4f6cfa)!important;background-clip:text!important;
-  -webkit-background-clip:text!important;color:transparent!important;
-}
+.canvas-account-popover>button>span{color:#212429!important;background:none!important}
 .canvas-account-popover .canvas-account-check{margin-left:auto!important;width:22px!important;height:22px!important;flex-basis:22px!important}
+.canvas-vertical-nav>button.active[aria-label="账户"] img{filter:none!important}
+.asset-empty button>img{display:block!important;width:24px!important;height:24px!important;flex:0 0 24px!important;object-fit:contain!important}
 
 /* Selected group toolbar: light-site counterpart of the provided horizontal control strip. */
 .canvas-group-toolbar{

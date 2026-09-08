@@ -4513,7 +4513,7 @@ function Canvas({
             }}
             aria-label="账户"
           >
-            <img src="/assets/canvas-nav-avatar.svg" />
+            <img src={mode === "account" ? "/assets/canvas-nav-avatar-active.svg" : "/assets/canvas-nav-avatar.svg"} />
           </button>
         </nav>
         {mode === "account" && (
@@ -4525,10 +4525,9 @@ function Canvas({
               "--account-popover-top": `${accountPopoverPosition.top}px`,
             } as React.CSSProperties}
           >
-            <button className="selected">
+            <button>
               <img src="/assets/account-selected-check.svg" />
               <span>切换账号</span>
-              <img className="canvas-account-check" src="/assets/account-switch.svg" />
             </button>
             <button>
               <img src="/assets/account-logout.svg" />
@@ -6504,7 +6503,7 @@ function Assets({
           <p>暂无内容，快去创建吧</p>
           <div>
             <button onClick={addFolder}>
-              <span>▣</span>创建文件夹
+              <img src="/assets/create-folder-figma.svg" alt="" />创建文件夹
             </button>
             <button onClick={() => fileRef.current?.click()}>
               <span>＋</span>创建设计
