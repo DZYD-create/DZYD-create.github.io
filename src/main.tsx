@@ -3958,9 +3958,9 @@ function Canvas({
                       const dx = event.clientX - (rect.left + rect.width / 2);
                       const dy = event.clientY - (rect.top + rect.height / 2);
                       const distance = Math.hypot(dx, dy);
-                      const influence = Math.max(0, 1 - distance / 210);
-                      port.style.setProperty("--port-dx", `${Math.max(-13, Math.min(13, dx * influence * .2))}px`);
-                      port.style.setProperty("--port-dy", `${Math.max(-11, Math.min(11, dy * influence * .2))}px`);
+                      const influence = Math.max(0, 1 - distance / 315);
+                      port.style.setProperty("--port-dx", `${Math.max(-19.5, Math.min(19.5, dx * influence * .3))}px`);
+                      port.style.setProperty("--port-dy", `${Math.max(-16.5, Math.min(16.5, dy * influence * .3))}px`);
                     });
                   }}
                   onMouseLeave={(event) => event.currentTarget.querySelectorAll<HTMLElement>(".canvas-node-port").forEach((port) => {

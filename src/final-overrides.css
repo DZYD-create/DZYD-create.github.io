@@ -10886,7 +10886,7 @@ button > img {
   align-items:center!important;
   gap:0!important;
   height:48px!important;
-  padding:4px!important;
+  padding:4px 10px!important;
   border:1px solid rgba(119,104,236,.2)!important;
   border-radius:15px!important;
   background:rgba(255,255,255,.96)!important;
@@ -10999,7 +10999,7 @@ button > img {
 /* Selected group toolbar: light-site counterpart of the provided horizontal control strip. */
 .canvas-group-toolbar{
   position:absolute!important;left:50%!important;bottom:calc(100% + 12px)!important;z-index:35!important;
-  height:48px!important;padding:4px 6px!important;box-sizing:border-box!important;border:1px solid #e5e3ef!important;
+  height:48px!important;padding:4px 12px!important;box-sizing:border-box!important;border:1px solid #e5e3ef!important;
   border-radius:15px!important;background:rgba(255,255,255,.97)!important;
   box-shadow:0 10px 28px rgba(54,55,82,.13),0 2px 7px rgba(93,83,163,.06)!important;
   display:flex!important;align-items:center!important;gap:4px!important;transform:translateX(-50%)!important;
@@ -11065,6 +11065,14 @@ button > img {
 }
 .canvas-inline-focus-remove:hover{background:rgba(111,94,226,.13)!important;color:#6557dc!important}
 
+/* Give every rail hover halo its own breathing room. */
+.canvas-vertical-nav{
+  grid-auto-rows:44px!important;
+  row-gap:16px!important;
+  height:484px!important;
+  min-height:484px!important;
+}
+
 .history-default-actions{position:relative!important;display:flex!important;align-items:center!important;gap:10px!important}
 .history-trash-wrap{position:relative!important}
 .history-trash-button{
@@ -11127,8 +11135,9 @@ button > img {
 
 /* A single straight separator between multi-select actions. */
 .selection-action-stack .group-selection-button{border-right:0!important}
-.selection-folder-wrap{padding-left:1px!important}
-.selection-folder-wrap::before{
+.selection-folder-wrap{padding-left:0!important}
+.group-selection-button + .selection-folder-wrap{padding-left:1px!important}
+.group-selection-button + .selection-folder-wrap::before{
   content:""!important;position:absolute!important;left:0!important;top:50%!important;width:1px!important;height:22px!important;
   border:0!important;border-radius:0!important;background:#dedde7!important;transform:translateY(-50%)!important;
 }
@@ -11180,6 +11189,7 @@ button > img {
   box-shadow:0 5px 14px rgba(63,68,104,.09)!important;
   display:flex!important;
   align-items:center!important;
+  justify-content:center!important;
   pointer-events:auto!important;
   user-select:none!important;
 }
@@ -11188,6 +11198,8 @@ button > img {
   text-overflow:ellipsis!important;
   white-space:nowrap!important;
   font-size:13px!important;
+  line-height:28px!important;
+  text-align:center!important;
 }
 .canvas-group-name input{
   width:100%!important;
