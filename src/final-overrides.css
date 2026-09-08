@@ -11093,9 +11093,8 @@ button > img {
 /* Card overflow menus shared by History and Assets. */
 .history-record-shell,.asset-content-card,.asset-subject-shell{position:relative!important;overflow:visible!important;min-width:0!important}
 .asset-subject-shell>.asset-subject-card{width:100%!important;height:100%!important}
-.asset-subject-shell>.card-more-wrap{bottom:18px!important}
-.card-more-wrap{position:absolute!important;right:4px!important;bottom:20px!important;z-index:25!important}
-.asset-card-more{bottom:18px!important}
+.card-more-wrap{position:absolute!important;right:4px!important;top:294px!important;bottom:auto!important;z-index:25!important}
+.asset-card-more{top:calc(100% - 58px)!important;bottom:auto!important}
 .card-more-button{
   width:30px!important;height:28px!important;padding:0!important;border:0!important;border-radius:8px!important;
   background:transparent!important;color:#777b8a!important;font:700 15px/1 Arial,sans-serif!important;
@@ -11110,7 +11109,7 @@ button > img {
 .card-more-menu>button{
   width:100%!important;height:36px!important;padding:0 11px!important;border:0!important;border-radius:8px!important;
   background:#fff!important;color:#343743!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;
-  font:400 13px/1 "Alibaba PuHuiTi","Microsoft YaHei",sans-serif!important;cursor:pointer!important;
+  font:400 16px/1 "Alibaba PuHuiTi","Microsoft YaHei",sans-serif!important;cursor:pointer!important;
 }
 .card-more-menu>button:hover{background:#eeeaff!important;color:#6755df!important}
 .card-more-menu>button.has-submenu{justify-content:space-between!important}
@@ -11135,7 +11134,7 @@ button > img {
 /* Ports lean gently toward the nearby pointer while remaining anchored. */
 .canvas-node-port{
   transform:translate(var(--port-dx,0px),calc(-50% + var(--port-dy,0px))) scale(.9)!important;
-  transition:opacity 160ms ease,visibility 160ms,transform 120ms cubic-bezier(.22,.75,.3,1)!important;
+  transition:opacity 160ms ease,visibility 160ms,transform 210ms cubic-bezier(.16,1.38,.34,1)!important;
   will-change:transform!important;
 }
 .canvas-node-card:hover .canvas-node-port,.canvas-node-card[data-active] .canvas-node-port,.canvas-node-port:focus-visible{
