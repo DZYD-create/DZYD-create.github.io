@@ -10526,6 +10526,14 @@ button > img {
   align-items:center!important;
   line-height:24px!important;
 }
+
+/* Screenshot-measured optical correction: 21px/17px becomes 17px/17px. */
+.canvas-group-toolbar>.group-color-button>i{
+  transform:translateX(-4px)!important;
+}
+.canvas-group-toolbar .group-nine-grid{
+  top:4px!important;
+}
 .group-layout-popover .four-grid-icon>svg{transform:translateY(0)!important}
 
 /* Three physical dots avoid font-baseline drift inside the generation More button. */
