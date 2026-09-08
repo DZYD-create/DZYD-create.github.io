@@ -11463,6 +11463,59 @@ button > img {
   justify-self:center!important;
   object-fit:contain!important;
 }
+
+/* History overflow menu follows the live preview size and stays centered on the title line. */
+.history-record-shell>.card-more-wrap{
+  top:calc(var(--history-card-height,209px) + 7px)!important;
+  bottom:auto!important;
+  transition:top .18s ease!important;
+}
+
+/* One-click inspiration badge hugs its copy with equal horizontal insets. */
+.template-detail-info>.template-detail-label{
+  display:inline-flex!important;
+  align-self:flex-start!important;
+  width:fit-content!important;
+  min-width:0!important;
+  max-width:max-content!important;
+  padding-left:10px!important;
+  padding-right:10px!important;
+  box-sizing:border-box!important;
+}
+
+/* Compact canvas-history rows: the thumbnail has equal space above and below. */
+.figma-history-cards.list-view>.figma-history-card{
+  height:64px!important;
+  min-height:64px!important;
+  max-height:64px!important;
+  padding:6px!important;
+  grid-template-columns:66px minmax(0,1fr)!important;
+  grid-template-rows:22px 18px!important;
+  row-gap:0!important;
+}
+.figma-history-cards.list-view .history-image-area{
+  width:66px!important;
+  height:52px!important;
+  margin:0!important;
+}
+
+/* Crop opens with the neutral outlined submit shown in the reference. */
+.canvas-crop-actions:has(>input:placeholder-shown) .crop-submit,
+.canvas-crop-actions:has(>input:placeholder-shown) .crop-submit:hover,
+.canvas-crop-actions:has(>input:placeholder-shown) .crop-submit:focus-visible{
+  width:32px!important;
+  height:32px!important;
+  min-width:32px!important;
+  padding:0!important;
+  border:2px solid #111218!important;
+  border-radius:50%!important;
+  background:#fff!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+.canvas-crop-actions:has(>input:placeholder-shown) .crop-submit>img{
+  opacity:0!important;
+}
 .canvas-group-frame{
   position:absolute!important;
   z-index:0!important;
