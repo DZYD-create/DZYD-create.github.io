@@ -3951,6 +3951,22 @@ function Canvas({
                     transform: `translate(calc(-50% + ${node.x}px),calc(-50% + ${node.y}px))`,
                   } as React.CSSProperties}
                   key={node.id}
+                  onMouseMove={(event) => {
+                    const card = event.currentTarget;
+                    card.querySelectorAll<HTMLElement>(".canvas-node-port").forEach((port) => {
+                      const rect = port.getBoundingClientRect();
+                      const dx = event.clientX - (rect.left + rect.width / 2);
+                      const dy = event.clientY - (rect.top + rect.height / 2);
+                      const distance = Math.hypot(dx, dy);
+                      const influence = Math.max(0, 1 - distance / 125);
+                      port.style.setProperty("--port-dx", `${Math.max(-5, Math.min(5, dx * influence * .12))}px`);
+                      port.style.setProperty("--port-dy", `${Math.max(-5, Math.min(5, dy * influence * .12))}px`);
+                    });
+                  }}
+                  onMouseLeave={(event) => event.currentTarget.querySelectorAll<HTMLElement>(".canvas-node-port").forEach((port) => {
+                    port.style.setProperty("--port-dx", "0px");
+                    port.style.setProperty("--port-dy", "0px");
+                  })}
                   onPointerDown={(e) => {
                     if (
                       e.button !== 0 ||
@@ -5960,6 +5976,10 @@ function History({
   const [sortBy, setSortBy] = useState("修改时间");
   const [zoom, setZoom] = useState(42);
   const [batch, setBatch] = useState(false);
+  const [historyMenu, setHistoryMenu] = useState<string | null>(null);
+  const [historyCovers, setHistoryCovers] = useState<Record<string, string>>({});
+  const [coverTarget, setCoverTarget] = useState<string | null>(null);
+  const historyCoverFile = useRef<HTMLInputElement>(null);
   const [selectedHistory, setSelectedHistory] = useState<string[]>([]);
   const [favoriteHistory, setFavoriteHistory] = useState<string[]>([]);
   const [cards, setCards] = useState([
@@ -6038,7 +6058,7 @@ function History({
                     aria-label="回收站"
                     title="回收站"
                   >
-                    <img src="/assets/action-trash.svg" alt="" />
+                    <img src="/assets/action-trash.svg" alt="" /><i /><span>回收站</span>
                   </button>
                   {trashOpen && (
                     <aside className="history-trash-popover" aria-label="回收站内容">
@@ -6183,7 +6203,7 @@ function History({
             <strong>{tab === "subject" ? "新建主体" : "新建画布"}</strong>
           </button>
           {cards.map((name, i) => {
-            const image = `/assets/template-${(i % 5) + 1}.png`;
+            const image = historyCovers[name] || `/assets/template-${(i % 5) + 1}.png`;
             const favorite = favoriteHistory.includes(name);
             return (
               <div className="history-record-shell" key={name}>
@@ -6219,11 +6239,36 @@ function History({
                   aria-label={favorite ? `取消置顶${name}` : `置顶${name}`}
                   onClick={() => setFavoriteHistory((items) => favorite ? items.filter((item) => item !== name) : [...items, name])}
                 ><span>置顶</span>★</button>
+                {!batch && <div className="card-more-wrap">
+                  <button
+                    className="card-more-button"
+                    aria-label={`${name}更多操作`}
+                    onClick={(event) => { event.stopPropagation(); setHistoryMenu((current) => current === name ? null : name); }}
+                  >•••</button>
+                  {historyMenu === name && <div className="card-more-menu" onClick={(event) => event.stopPropagation()}>
+                    <button onClick={() => { setHistoryMenu(null); onCanvas(image, name); }}>打开</button>
+                    <button onClick={() => { const next = window.prompt("请输入新名称", name)?.trim(); if (next) setCards((items) => items.map((item) => item === name ? next : item)); setHistoryMenu(null); }}>重命名</button>
+                    <button onClick={() => { setCoverTarget(name); setHistoryMenu(null); historyCoverFile.current?.click(); }}>修改封面</button>
+                    <button onClick={() => { setCards((items) => [...items, `${name} 副本`]); setHistoryMenu(null); }}>创建副本</button>
+                    <button className="has-submenu">移动至文件夹 <span>›</span></button>
+                    <button className="danger" onClick={() => {
+                      setRecycledCards((items) => [{ name, image }, ...items]);
+                      setCards((items) => items.filter((item) => item !== name));
+                      setHistoryMenu(null);
+                    }}>删除项目</button>
+                  </div>}
+                </div>}
               </div>
             );
           })}
         </div>
       </div>
+      <input ref={historyCoverFile} hidden type="file" accept="image/*" onChange={(event) => {
+        const file = event.target.files?.[0];
+        if (file && coverTarget) setHistoryCovers((items) => ({ ...items, [coverTarget]: URL.createObjectURL(file) }));
+        event.currentTarget.value = "";
+        setCoverTarget(null);
+      }} />
       {subjectOpen && (
         <div className="history-subject-backdrop">
           <section className={`history-subject-dialog ${subjectClosing ? "is-closing" : ""}`} role="dialog" aria-modal="true" aria-labelledby="subject-dialog-title">
@@ -6322,6 +6367,7 @@ function Assets({
   const subjectFile = useRef<HTMLInputElement>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [folderMenu, setFolderMenu] = useState(false);
+  const [assetMoreUrl, setAssetMoreUrl] = useState<string | null>(null);
   const [assetContext, setAssetContext] = useState<{ x: number; y: number; item: { name: string; url: string; category: "assets" | "live" } } | null>(null);
   useEffect(() => {
     const dismiss = () => {
@@ -6434,9 +6480,22 @@ function Assets({
             <strong>新建主体</strong>
           </button>
           {subjects.map((name, i) => (
-            <button className="asset-subject-card" key={name} onClick={() => { setSubjectName(name); setSubjectImages([samples[i % samples.length]]); setSubjectOpen(true); }}>
-              <div><img src={samples[i % samples.length]} alt={name} /></div><strong>{name}</strong><small>主体 · 最近修改</small>
-            </button>
+            <div className="asset-subject-shell" key={name}>
+              <button className="asset-subject-card" onClick={() => { setSubjectName(name); setSubjectImages([samples[i % samples.length]]); setSubjectOpen(true); }}>
+                <div><img src={samples[i % samples.length]} alt={name} /></div><strong>{name}</strong><small>主体 · 最近修改</small>
+              </button>
+              <div className="card-more-wrap">
+                <button className="card-more-button" aria-label={`${name}更多操作`} onClick={(event) => { event.stopPropagation(); setAssetMoreUrl((current) => current === `subject:${name}` ? null : `subject:${name}`); }}>•••</button>
+                {assetMoreUrl === `subject:${name}` && <div className="card-more-menu" onClick={(event) => event.stopPropagation()}>
+                  <button onClick={() => { setAssetMoreUrl(null); setSubjectName(name); setSubjectImages([samples[i % samples.length]]); setSubjectOpen(true); }}>打开</button>
+                  <button onClick={() => { const next = window.prompt("请输入新名称", name)?.trim(); if (next) setSubjects((items) => items.map((value) => value === name ? next : value)); setAssetMoreUrl(null); }}>重命名</button>
+                  <button onClick={() => { setAssetMoreUrl(null); setSubjectName(name); setSubjectImages([samples[i % samples.length]]); setSubjectOpen(true); }}>修改封面</button>
+                  <button onClick={() => { setSubjects((items) => [...items, `${name} 副本`]); setAssetMoreUrl(null); }}>创建副本</button>
+                  <button className="has-submenu">移动至文件夹 <span>›</span></button>
+                  <button className="danger" onClick={() => { setSubjects((items) => items.filter((value) => value !== name)); setAssetMoreUrl(null); }}>删除项目</button>
+                </div>}
+              </div>
+            </div>
           ))}
         </div>
       ) : tab === "kt" || empty ? (
@@ -6477,6 +6536,17 @@ function Assets({
                   setFavoriteAssets((items) => items.includes(item.url) ? items.filter((url) => url !== item.url) : [...items, item.url]);
                 }}
               ><span>置顶</span>★</button>
+              <div className="card-more-wrap asset-card-more">
+                <button className="card-more-button" aria-label={`${item.name}更多操作`} onClick={(event) => { event.stopPropagation(); setAssetMoreUrl((current) => current === item.url ? null : item.url); }}>•••</button>
+                {assetMoreUrl === item.url && <div className="card-more-menu" onClick={(event) => event.stopPropagation()}>
+                  <button onClick={() => { setAssetMoreUrl(null); onSendToCanvas(item); }}>打开</button>
+                  <button onClick={() => { const name = window.prompt("请输入新名称", item.name)?.trim(); if (name) setUploaded((items) => items.map((value) => value.url === item.url ? { ...value, name } : value)); setAssetMoreUrl(null); }}>重命名</button>
+                  <button onClick={() => { setAssetMoreUrl(null); fileRef.current?.click(); }}>修改封面</button>
+                  <button onClick={() => { setUploaded((items) => [...items, { ...item, name: `${item.name} 副本`, url: `${item.url}${item.url.includes("?") ? "&" : "?"}copy=${Date.now()}` }]); setAssetMoreUrl(null); }}>创建副本</button>
+                  <button className="has-submenu">移动至文件夹 <span>›</span></button>
+                  <button className="danger" onClick={() => { setUploaded((items) => items.filter((value) => value.url !== item.url)); setAssetMoreUrl(null); }}>删除项目</button>
+                </div>}
+              </div>
             </div>
           ))}
         </div>
