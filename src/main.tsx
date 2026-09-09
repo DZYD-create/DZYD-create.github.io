@@ -1832,7 +1832,7 @@ function Editor({
   const [brushSize, setBrushSize] = useState(48);
   const [brushMode, setBrushMode] = useState("画笔");
   const [ratio, setRatio] = useState("原比例");
-  const [detail, setDetail] = useState("细节生成强度");
+  const [detail, setDetail] = useState("轻度细节生成");
   const [resolution, setResolution] = useState("放大至 4K");
   const [detailOpen, setDetailOpen] = useState(false);
   const [resolutionOpen, setResolutionOpen] = useState(false);
@@ -2121,32 +2121,29 @@ function Editor({
                         aria-label="细节生成强度选项"
                       >
                         {[
-                          "轻度细节生成",
-                          "标准细节生成",
-                          "高细节生成",
-                          "超高细节生成",
-                        ].map((v, i) => (
+                          { name: "轻度细节生成", description: "优化画面噪点，轻微补充细节", icon: "spark" },
+                          { name: "标准细节生成", description: "平衡画质清晰度与自然度", icon: "sliders" },
+                          { name: "高清节生成", description: "强化纹理、文字与边缘细节", icon: "hd" },
+                          { name: "超高清节生成", description: "最大程度增强画质与还原细节", icon: "diamond" },
+                        ].map((option) => (
                           <button
-                            className={detail === v ? "active" : ""}
+                            className={detail === option.name ? "active" : ""}
                             role="option"
-                            aria-selected={detail === v}
+                            aria-selected={detail === option.name}
                             onClick={() => {
-                              setDetail(v);
+                              setDetail(option.name);
                               setDetailOpen(false);
                             }}
-                            key={v}
+                            key={option.name}
                           >
-                            <strong>{v}</strong>
-                            <small>
-                              {
-                                [
-                                  "保留原图结构，轻微补充细节",
-                                  "平衡画面清晰度与自然度",
-                                  "强化纹理、文字与边缘细节",
-                                  "最大程度增强复杂画面细节",
-                                ][i]
-                              }
-                            </small>
+                            <span className={`enhance-level-icon icon-${option.icon}`} aria-hidden="true">
+                              {option.icon === "spark" && <svg viewBox="0 0 32 32"><path d="M13 2c1.2 6.6 3.4 8.8 10 10-6.6 1.2-8.8 3.4-10 10-1.2-6.6-3.4-8.8-10-10 6.6-1.2 8.8-3.4 10-10Z"/><path d="M24 2c.5 2.8 1.5 3.8 4.3 4.3C25.5 6.8 24.5 7.8 24 10.6c-.5-2.8-1.5-3.8-4.3-4.3C22.5 5.8 23.5 4.8 24 2Z"/></svg>}
+                              {option.icon === "sliders" && <svg viewBox="0 0 32 32"><path d="M5 8h22M5 16h22M5 24h22"/><circle cx="12" cy="8" r="3"/><circle cx="21" cy="16" r="3"/><circle cx="10" cy="24" r="3"/></svg>}
+                              {option.icon === "hd" && <b>HD</b>}
+                              {option.icon === "diamond" && <svg viewBox="0 0 32 32"><path d="M7 7h18l5 7-14 15L2 14l5-7Z"/><path d="m2 14 28 0M10 7l-3 7 9 15 9-15-3-7M7 14l9-7 9 7"/></svg>}
+                            </span>
+                            <span className="enhance-level-copy"><strong>{option.name}</strong><small>{option.description}</small></span>
+                            {detail === option.name && <i className="enhance-level-check">✓</i>}
                           </button>
                         ))}
                       </div>
