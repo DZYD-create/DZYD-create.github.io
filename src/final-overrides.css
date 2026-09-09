@@ -13860,6 +13860,61 @@ button > img {
   .modal-generate-stars>i{font-size:14px!important}
 }
 
+/* Latest requested optical corrections. Keep this block last so legacy dialog rules cannot override it. */
+.figma-tool-modal > .modal-generate{
+  display:flex!important;align-items:center!important;justify-content:center!important;gap:9px!important
+}
+.figma-tool-modal > .modal-generate .modal-generate-stars{
+  display:flex!important;align-items:center!important;justify-content:center!important;width:30px!important;height:30px!important;flex:0 0 30px!important
+}
+.figma-tool-modal > .modal-generate .modal-generate-stars > svg{
+  display:block!important;width:30px!important;height:30px!important;transform:translateY(2px)!important
+}
+.figma-tool-modal > .modal-generate > span:last-child{
+  display:flex!important;align-items:center!important;height:30px!important;line-height:30px!important;margin:0!important
+}
+
+.figma-tool-modal.modal-增强清晰度{height:525px!important;padding-bottom:72px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-stage{
+  box-sizing:border-box!important;height:280px!important;padding:18px 24px!important;display:grid!important;place-items:center!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-stage > img{
+  display:block!important;width:auto!important;height:auto!important;max-width:78%!important;max-height:244px!important;margin:0!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-options{bottom:72px!important;height:54px!important}
+.figma-tool-modal.modal-增强清晰度 .detail-popover{
+  box-sizing:border-box!important;width:270px!important;padding:8px!important;border-radius:16px!important
+}
+.figma-tool-modal.modal-增强清晰度 .detail-popover > button{
+  box-sizing:border-box!important;min-height:54px!important;height:54px!important;padding:6px 34px 6px 54px!important;border-radius:10px!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon{
+  left:13px!important;width:34px!important;height:34px!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon > svg{width:33px!important;height:33px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-hd > b{
+  padding:2px 3px!important;border-width:2.4px!important;font-size:12px!important;line-height:16px!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-copy > strong{font-size:13px!important;line-height:19px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-copy > small{font-size:10px!important;line-height:15px!important;white-space:nowrap!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-check{right:9px!important;width:20px!important;height:20px!important;font-size:11px!important}
+
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap > button{
+  box-sizing:border-box!important;width:158px!important;min-width:158px!important;max-width:158px!important;padding:0 14px!important;
+  display:grid!important;grid-template-columns:minmax(0,1fr) 18px!important;align-items:center!important;column-gap:8px!important
+}
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap > button > strong,
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap > button > b{
+  display:flex!important;align-items:center!important;height:24px!important;line-height:24px!important;margin:0!important
+}
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap > button > strong{justify-content:flex-start!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap > button > b{justify-content:center!important;font-size:20px!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-popover{width:180px!important}
+
+.figma-tool-modal.modal-局部重绘 .modal-image-stage{
+  background:#f3f5f8!important;background-image:none!important
+}
+
 /* Exact two-spark artwork: large lower-left sparkle, small upper-right sparkle. */
 .modal-generate-stars{width:38px!important;height:38px!important;flex:0 0 38px!important}
 .modal-generate-stars>svg{display:block!important;width:38px!important;height:38px!important;fill:#fff!important;overflow:visible!important}
@@ -13979,6 +14034,66 @@ button > img {
 }
 .figma-tool-modal.modal-擦除内容>.modal-generate .modal-generate-stars>svg{width:30px!important;height:30px!important}
 
+/* Final optical pass for the conversation edit controls. */
+.figma-tool-modal>.modal-generate{
+  display:flex!important;align-items:center!important;justify-content:center!important
+}
+.figma-tool-modal>.modal-generate .modal-generate-stars{
+  display:flex!important;align-items:center!important;justify-content:center!important;height:30px!important;line-height:30px!important
+}
+.figma-tool-modal>.modal-generate .modal-generate-stars>svg{
+  display:block!important;transform:translateY(3px)!important
+}
+.figma-tool-modal>.modal-generate>span:last-child{
+  display:flex!important;align-items:center!important;justify-content:center!important;height:30px!important;line-height:30px!important
+}
+
+/* Strength popover is compact, while its four symbols remain easy to identify. */
+.figma-tool-modal.modal-增强清晰度 .detail-popover{
+  width:270px!important;padding:8px!important;border-radius:16px!important
+}
+.figma-tool-modal.modal-增强清晰度 .detail-popover>button{
+  min-height:54px!important;height:54px!important;padding:6px 34px 6px 54px!important;border-radius:10px!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon{
+  left:13px!important;width:34px!important;height:34px!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon>svg{width:33px!important;height:33px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-hd>b{
+  padding:2px 3px!important;border-width:2.4px!important;font-size:12px!important;line-height:16px!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-copy>strong{font-size:13px!important;line-height:19px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-copy>small{font-size:10px!important;line-height:15px!important;white-space:nowrap!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-check{right:9px!important;width:20px!important;height:20px!important;font-size:11px!important}
+
+/* The enhancement image has equal 18px top and bottom breathing room. */
+.figma-tool-modal.modal-增强清晰度{height:525px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-stage{
+  box-sizing:border-box!important;height:280px!important;padding:18px 24px!important;display:grid!important;place-items:center!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-stage>img{
+  display:block!important;width:auto!important;height:auto!important;max-width:78%!important;max-height:244px!important;margin:0!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-options{bottom:72px!important;height:54px!important}
+
+/* Compact resolution trigger with a shared baseline for label and chevron. */
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap>button{
+  width:158px!important;min-width:158px!important;max-width:158px!important;padding:0 14px!important;
+  display:grid!important;grid-template-columns:minmax(0,1fr) 18px!important;align-items:center!important;column-gap:8px!important
+}
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap>button>strong,
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap>button>b{
+  display:flex!important;align-items:center!important;height:24px!important;line-height:24px!important;margin:0!important
+}
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap>button>strong{justify-content:flex-start!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap>button>b{justify-content:center!important;font-size:20px!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-popover{width:180px!important}
+
+/* Local Redraw uses a calm solid work surface; checkerboard remains erase-only. */
+.figma-tool-modal.modal-局部重绘 .modal-image-stage{
+  background:#f3f5f8!important;background-image:none!important
+}
+
 /* Image Size returns to the normal editor-dialog footprint. */
 .figma-tool-modal.modal-图片尺寸{
   width:700px!important;height:auto!important;min-height:548px!important;max-width:calc(100vw - 40px)!important;
@@ -14036,3 +14151,28 @@ button > img {
   .enhance-level-copy>small{font-size:13px!important;line-height:20px!important}
   .enhance-level-check{right:14px!important;width:24px!important;height:24px!important;font-size:14px!important}
 }
+
+/* Requested final geometry — intentionally last in the cascade. */
+.figma-tool-modal > .modal-generate{display:flex!important;align-items:center!important;justify-content:center!important;gap:9px!important}
+.figma-tool-modal > .modal-generate .modal-generate-stars{display:flex!important;align-items:center!important;justify-content:center!important;width:30px!important;height:30px!important;flex:0 0 30px!important}
+.figma-tool-modal > .modal-generate .modal-generate-stars > svg{display:block!important;width:30px!important;height:30px!important;transform:translateY(2px)!important}
+.figma-tool-modal > .modal-generate > span:last-child{display:flex!important;align-items:center!important;height:30px!important;line-height:30px!important;margin:0!important}
+
+.figma-tool-modal.modal-增强清晰度{height:525px!important;padding-bottom:72px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-stage{box-sizing:border-box!important;height:280px!important;padding:18px 24px!important;display:grid!important;place-items:center!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-stage > img{display:block!important;width:auto!important;height:auto!important;max-width:78%!important;max-height:244px!important;margin:0!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-options{bottom:72px!important;height:54px!important}
+.figma-tool-modal.modal-增强清晰度 .detail-popover{box-sizing:border-box!important;width:270px!important;padding:8px!important;border-radius:16px!important}
+.figma-tool-modal.modal-增强清晰度 .detail-popover > button{box-sizing:border-box!important;min-height:54px!important;height:54px!important;padding:6px 34px 6px 54px!important;border-radius:10px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon{left:13px!important;width:34px!important;height:34px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon > svg{width:33px!important;height:33px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-hd > b{padding:2px 3px!important;border-width:2.4px!important;font-size:12px!important;line-height:16px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-copy > strong{font-size:13px!important;line-height:19px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-copy > small{font-size:10px!important;line-height:15px!important;white-space:nowrap!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-check{right:9px!important;width:20px!important;height:20px!important;font-size:11px!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap > button{box-sizing:border-box!important;width:158px!important;min-width:158px!important;max-width:158px!important;padding:0 14px!important;display:grid!important;grid-template-columns:minmax(0,1fr) 18px!important;align-items:center!important;column-gap:8px!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap > button > strong,.figma-tool-modal.modal-增强清晰度 .resolution-wrap > button > b{display:flex!important;align-items:center!important;height:24px!important;line-height:24px!important;margin:0!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap > button > strong{justify-content:flex-start!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap > button > b{justify-content:center!important;font-size:20px!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-popover{width:180px!important}
+.figma-tool-modal.modal-局部重绘 .modal-image-stage{background:#f3f5f8!important;background-image:none!important}
