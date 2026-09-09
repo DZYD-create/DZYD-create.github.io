@@ -4840,7 +4840,7 @@ function Canvas({
                   setFolderColorOpen(null);
                 }}
               >
-                ‹
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12.5 5-5 5 5 5" /></svg>
               </button>
             )}
             {folderIndex < folderNames.length - 1 && (
@@ -4853,7 +4853,7 @@ function Canvas({
                   setFolderColorOpen(null);
                 }}
               >
-                ›
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 5 5 5-5 5" /></svg>
               </button>
             )}
             {folderColorOpen !== null && (

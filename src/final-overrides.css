@@ -13156,3 +13156,33 @@ button > img {
   opacity:1!important;
   transform:translate(-50%,-50%)!important;
 }
+
+/* Single-image folder hover has equal visible padding on all four sides. */
+.selection-action-stack:not(:has(>.group-selection-button)) .create-folder-button{height:42px!important;min-height:42px!important;padding:9px 12px!important;box-sizing:border-box!important;gap:8px!important;margin:0!important}
+.selection-action-stack:not(:has(>.group-selection-button)) .selection-folder-wrap{padding:0!important;margin:0!important;display:flex!important;align-items:center!important}
+
+/* True centered chevrons instead of baseline-positioned text glyphs. */
+.folder-browser .folder-switch{display:grid!important;place-items:center!important;line-height:1!important}
+.folder-browser .folder-switch>svg{display:block!important;width:20px!important;height:20px!important;margin:0!important;overflow:visible!important}
+.folder-browser .folder-switch>svg>path{fill:none!important;stroke:currentColor!important;stroke-width:1.8!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+
+/* History and Assets use the same image-frame proportions at every zoom. */
+.history-page .history-cards .history-record-preview,
+.asset-page-figma .asset-subject-grid .asset-subject-card>div{width:100%!important;height:auto!important;min-height:0!important;aspect-ratio:1/1.12!important}
+
+/* Reference add entry: matched helper copy and a precisely drawn plus. */
+.history-page .history-create-record>.history-record-preview::after,
+.asset-page-figma .asset-subject-card.create>.asset-create-single::after,
+.asset-page-figma .asset-upload-entry>.asset-create-single::after{content:"点击添加内容"!important;display:block!important;position:absolute!important;left:50%!important;top:66%!important;transform:translateX(-50%)!important;color:#777b9c!important;font:600 15px/1.4 "Microsoft YaHei",sans-serif!important;white-space:nowrap!important}
+.history-page .history-create-record>.history-record-preview>span,
+.asset-page-figma .asset-subject-card.create>.asset-create-single>i,
+.asset-page-figma .asset-upload-entry>.asset-create-single>i{font-size:0!important}
+.history-page .history-create-record>.history-record-preview>span::before,
+.history-page .history-create-record>.history-record-preview>span::after,
+.asset-page-figma .asset-subject-card.create>.asset-create-single>i::before,
+.asset-page-figma .asset-subject-card.create>.asset-create-single>i::after,
+.asset-page-figma .asset-upload-entry>.asset-create-single>i::before,
+.asset-page-figma .asset-upload-entry>.asset-create-single>i::after{content:""!important;position:absolute!important;left:50%!important;top:50%!important;width:30px!important;height:4px!important;border-radius:2px!important;background:#fff!important;transform:translate(-50%,-50%)!important}
+.history-page .history-create-record>.history-record-preview>span::after,
+.asset-page-figma .asset-subject-card.create>.asset-create-single>i::after,
+.asset-page-figma .asset-upload-entry>.asset-create-single>i::after{transform:translate(-50%,-50%) rotate(90deg)!important}
