@@ -13466,3 +13466,31 @@ button > img {
 .history-filter-anchor>.history-pop .history-calendar-days>button.selected::after{
   content:""!important;position:absolute!important;left:50%!important;bottom:1px!important;width:5px!important;height:5px!important;border-radius:50%!important;background:#45a8ff!important;transform:translateX(-50%)!important
 }
+
+/* Every weekday label, date number and hover target shares the same 34px column. */
+.history-filter-anchor>.history-pop .history-calendar-week>span{
+  width:34px!important;min-width:34px!important;max-width:34px!important;
+  height:30px!important;padding:0!important;margin:0!important;
+  display:grid!important;place-items:center!important;text-align:center!important;line-height:1!important
+}
+.history-filter-anchor>.history-pop .history-calendar-days>button:disabled,
+.history-filter-anchor>.history-pop .history-calendar-days>button.disabled{
+  color:#d2d4dc!important;-webkit-text-fill-color:#d2d4dc!important;
+  background:transparent!important;box-shadow:none!important;cursor:not-allowed!important
+}
+.history-filter-anchor>.history-pop .history-calendar-days>button:disabled:hover,
+.history-filter-anchor>.history-pop .history-calendar-days>button.disabled:hover{
+  color:#d2d4dc!important;-webkit-text-fill-color:#d2d4dc!important;
+  background:transparent!important;transform:none!important
+}
+
+/* Conversation image edits stay in this modal and use the canvas-style mask tools. */
+.modal-image-stage{position:relative!important;overflow:hidden!important}
+.modal-image-stage>.editor-mask-layer{
+  position:absolute!important;inset:0!important;z-index:3!important;
+  display:block!important;width:100%!important;height:100%!important;
+  touch-action:none!important;user-select:none!important;cursor:crosshair!important
+}
+.modal-image-stage>.editor-mask-layer.erase-tool{cursor:cell!important}
+.paint-tools>button:disabled{opacity:.35!important;cursor:not-allowed!important}
+.paint-tools>button:disabled:hover{background:transparent!important;transform:none!important}

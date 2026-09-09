@@ -60,7 +60,7 @@ function DateFieldIcon() {
   return <svg className="history-date-icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12.5" rx="2.3"/><path d="M6.5 3v3M13.5 3v3M3 8h14"/><circle cx="7" cy="11.5" r=".9"/><circle cx="10" cy="11.5" r=".9"/></svg>;
 }
 
-function WhiteDateCalendar({ value, onSelect }: { value: string; onSelect: (value: string) => void }) {
+function WhiteDateCalendar({ value, minDate, onSelect }: { value: string; minDate?: string; onSelect: (value: string) => void }) {
   const initial = value ? new Date(`${value}T12:00:00`) : new Date(2026, 8, 1);
   const [month, setMonth] = useState(new Date(initial.getFullYear(), initial.getMonth(), 1));
   const year = month.getFullYear();
@@ -87,7 +87,8 @@ function WhiteDateCalendar({ value, onSelect }: { value: string; onSelect: (valu
     <div className="history-calendar-days">{cells.map((cell, index) => {
       const date = new Date(year, monthIndex + cell.offset, cell.day);
       const iso = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-      return <button key={`${iso}-${index}`} className={`${cell.offset ? "outside" : ""} ${value === iso ? "selected" : ""}`} onClick={() => onSelect(iso)}>{cell.day}</button>;
+      const disabled = Boolean(minDate && iso < minDate);
+      return <button key={`${iso}-${index}`} disabled={disabled} className={`${cell.offset ? "outside" : ""} ${value === iso ? "selected" : ""} ${disabled ? "disabled" : ""}`} onClick={() => !disabled && onSelect(iso)}>{cell.day}</button>;
     })}</div>
   </div>;
 }
@@ -113,7 +114,6 @@ function App() {
   const [tool, setTool] = useState<EditorTool | null>(null);
   const [canvasImage, setCanvasImage] = useState<string | null>(null);
   const [canvasImageName, setCanvasImageName] = useState("AI 视觉创作 · 未命名项目");
-  const [canvasInitialTool, setCanvasInitialTool] = useState("移动");
   const [pendingCanvasAssets, setPendingCanvasAssets] = useState<Array<{ name: string; url: string }>>([]);
   const [folders, setFolders] = useState(["品牌素材", "产品图片"]);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -307,7 +307,6 @@ function App() {
                     setGenerating(false);
                     setActiveConversation(null);
                   }
-                  if (item.id === "canvas") setCanvasInitialTool("移动");
                 }}
               >
                 <span className={`nav-glyph nav-glyph-${item.id}`}>
@@ -465,15 +464,6 @@ function App() {
             }}
             onCanvas={() => {
               setCanvasImage("/assets/template-2.png");
-              setCanvasInitialTool("移动");
-              setSection("canvas");
-              setEditing(false);
-            }}
-            onCanvasTool={(nextTool) => {
-              setCanvasImage("/assets/template-2.png");
-              setCanvasImageName("对话生成图片");
-              setCanvasInitialTool(nextTool === "擦除内容" ? "擦除" : "局部重绘");
-              setTool(null);
               setSection("canvas");
               setEditing(false);
             }}
@@ -483,7 +473,6 @@ function App() {
           <Canvas
             canvasImage={canvasImage}
             canvasImageName={canvasImageName}
-            initialTool={canvasInitialTool}
             initialAssets={pendingCanvasAssets}
             setCanvasImage={setCanvasImage}
             folders={folders}
@@ -510,7 +499,6 @@ function App() {
               setConversationCollapsed(false);
             }}
             onCanvas={(image, name) => {
-              setCanvasInitialTool("移动");
               setSection("canvas");
               setPendingCanvasAssets([]);
               setCanvasImage(image || null);
@@ -528,7 +516,6 @@ function App() {
               setConversationCollapsed(false);
             }}
             onSendToCanvas={(item) => {
-              setCanvasInitialTool("移动");
               const liveParts = [
                 { name: "直播间下贴片", url: "/assets/live-lower-strip.png" },
                 { name: "直播间上贴片背景", url: "/assets/live-upper-background.png" },
@@ -1836,14 +1823,12 @@ function Editor({
   prompt,
   onClose,
   onCanvas,
-  onCanvasTool,
 }: {
   tool: EditorTool | null;
   setTool: (v: EditorTool | null) => void;
   prompt: string;
   onClose: () => void;
   onCanvas: () => void;
-  onCanvasTool: (tool: "局部重绘" | "擦除内容") => void;
 }) {
   const [zoom, setZoom] = useState(100);
   const [saved, setSaved] = useState(false);
@@ -1856,6 +1841,11 @@ function Editor({
   const [detailOpen, setDetailOpen] = useState(false);
   const [resolutionOpen, setResolutionOpen] = useState(false);
   const [generatedEdit, setGeneratedEdit] = useState(false);
+  type EditorStroke = { size: number; kind: "paint" | "erase"; points: Array<{ x: number; y: number }> };
+  const [editorStrokes, setEditorStrokes] = useState<EditorStroke[]>([]);
+  const [activeEditorStroke, setActiveEditorStroke] = useState<EditorStroke | null>(null);
+  const [editorUndo, setEditorUndo] = useState<EditorStroke[][]>([]);
+  const [editorRedo, setEditorRedo] = useState<EditorStroke[][]>([]);
   const toolItems: { name: EditorTool; description: string; icon: string }[] = [
     {
       name: "局部重绘",
@@ -1879,15 +1869,37 @@ function Editor({
     },
   ];
   const openTool = (next: EditorTool) => {
-    if (next === "局部重绘" || next === "擦除内容") {
-      onCanvasTool(next);
-      return;
-    }
     setTool(next);
     setBrushMode("画笔");
+    setEditorStrokes([]);
+    setActiveEditorStroke(null);
+    setEditorUndo([]);
+    setEditorRedo([]);
     setGeneratedEdit(false);
   };
   const closeTool = () => setTool(null);
+  const editorPoint = (event: React.PointerEvent<SVGSVGElement>) => {
+    const box = event.currentTarget.getBoundingClientRect();
+    return { x: ((event.clientX - box.left) / box.width) * 800, y: ((event.clientY - box.top) / box.height) * 500 };
+  };
+  const beginEditorStroke = (event: React.PointerEvent<SVGSVGElement>) => {
+    if (brushMode === "移动") return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setActiveEditorStroke({ size: brushSize, kind: brushMode === "橡皮" ? "erase" : "paint", points: [editorPoint(event)] });
+  };
+  const moveEditorStroke = (event: React.PointerEvent<SVGSVGElement>) => {
+    if (!activeEditorStroke || !event.currentTarget.hasPointerCapture(event.pointerId)) return;
+    const point = editorPoint(event);
+    setActiveEditorStroke((stroke) => stroke ? { ...stroke, points: [...stroke.points, point] } : null);
+  };
+  const finishEditorStroke = (event: React.PointerEvent<SVGSVGElement>) => {
+    if (!activeEditorStroke) return;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    setEditorUndo((history) => [...history, editorStrokes]);
+    setEditorStrokes((strokes) => [...strokes, activeEditorStroke]);
+    setEditorRedo([]);
+    setActiveEditorStroke(null);
+  };
   return (
     <section className="editor figma-editor-page">
       <header className="figma-editor-topbar">
@@ -1990,6 +2002,13 @@ function Editor({
                 <div className="modal-canvas-wrap">
                   <div className="modal-image-stage">
                     <img src="/assets/template-2.png" alt="待编辑图片" />
+                    <svg className={`editor-mask-layer ${tool === "擦除内容" ? "erase-tool" : "redraw-tool"}`} viewBox="0 0 800 500" preserveAspectRatio="none" onPointerDown={beginEditorStroke} onPointerMove={moveEditorStroke} onPointerUp={finishEditorStroke} onPointerCancel={finishEditorStroke}>
+                      <defs>
+                        <pattern id="editor-checker" width="18" height="18" patternUnits="userSpaceOnUse"><rect width="18" height="18" fill="#eee"/><rect width="9" height="9" fill="#c8c8c8"/><rect x="9" y="9" width="9" height="9" fill="#c8c8c8"/></pattern>
+                        <mask id="editor-stroke-mask"><rect width="800" height="500" fill="white"/>{editorStrokes.filter((stroke) => stroke.kind === "erase").map((stroke, index) => <polyline key={index} points={stroke.points.map((point) => `${point.x},${point.y}`).join(" ")} fill="none" stroke="black" strokeWidth={stroke.size} strokeLinecap="round" strokeLinejoin="round"/>)}{activeEditorStroke?.kind === "erase" && <polyline points={activeEditorStroke.points.map((point) => `${point.x},${point.y}`).join(" ")} fill="none" stroke="black" strokeWidth={activeEditorStroke.size} strokeLinecap="round" strokeLinejoin="round"/>}</mask>
+                      </defs>
+                      <g mask="url(#editor-stroke-mask)">{editorStrokes.filter((stroke) => stroke.kind === "paint").map((stroke, index) => <polyline key={index} points={stroke.points.map((point) => `${point.x},${point.y}`).join(" ")} fill="none" stroke={tool === "擦除内容" ? "url(#editor-checker)" : "rgba(112,82,242,.56)"} strokeWidth={stroke.size} strokeLinecap="round" strokeLinejoin="round"/>)}{activeEditorStroke?.kind === "paint" && <polyline points={activeEditorStroke.points.map((point) => `${point.x},${point.y}`).join(" ")} fill="none" stroke={tool === "擦除内容" ? "url(#editor-checker)" : "rgba(112,82,242,.56)"} strokeWidth={activeEditorStroke.size} strokeLinecap="round" strokeLinejoin="round"/>}</g>
+                    </svg>
                   </div>
                   <div className="brush-size-control">
                     <img src="/assets/figma-brush-small.svg" />
@@ -2020,10 +2039,10 @@ function Editor({
                         </button>
                       ))}
                       <i />
-                      <button aria-label="撤销">
+                      <button aria-label="撤销" disabled={!editorUndo.length} onClick={() => setEditorUndo((history) => { if (!history.length) return history; const previous = history[history.length - 1]; setEditorRedo((redo) => [...redo, editorStrokes]); setEditorStrokes(previous); return history.slice(0, -1); })}>
                         <img src="/assets/figma-undo.svg" />
                       </button>
-                      <button aria-label="重做">
+                      <button aria-label="重做" disabled={!editorRedo.length} onClick={() => setEditorRedo((redo) => { if (!redo.length) return redo; const next = redo[redo.length - 1]; setEditorUndo((history) => [...history, editorStrokes]); setEditorStrokes(next); return redo.slice(0, -1); })}>
                         <img src="/assets/figma-redo.svg" />
                       </button>
                     </div>
@@ -2191,7 +2210,6 @@ function Editor({
 function Canvas({
   canvasImage,
   canvasImageName,
-  initialTool,
   initialAssets,
   setCanvasImage,
   folders,
@@ -2202,7 +2220,6 @@ function Canvas({
 }: {
   canvasImage: string | null;
   canvasImageName: string;
-  initialTool: string;
   initialAssets: Array<{ name: string; url: string }>;
   setCanvasImage: (v: string | null) => void;
   folders: string[];
@@ -2221,7 +2238,7 @@ function Canvas({
   const [applied, setApplied] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [quickOpen, setQuickOpen] = useState(false);
-  const [canvasTool, setCanvasTool] = useState(initialTool || "移动");
+  const [canvasTool, setCanvasTool] = useState("移动");
   const [redrawMode, setRedrawMode] = useState("画笔");
   const [redrawBrushSize, setRedrawBrushSize] = useState(48);
   type RedrawStroke = { nodeId: number; size: number; kind: "brush" | "box" | "erase"; points: Array<{ x: number; y: number }> };
@@ -6269,7 +6286,7 @@ function History({
                   <button onClick={(event) => { event.stopPropagation(); setDatePicker((current) => current === "end" ? null : "end"); }}>
                     {endDate.slice(2)} <DateFieldIcon />
                   </button>
-                  {datePicker && <WhiteDateCalendar value={datePicker === "start" ? startDate : endDate} onSelect={(value) => { if (datePicker === "start") setStartDate(value); else setEndDate(value); setDatePicker(null); }} />}
+                  {datePicker && <WhiteDateCalendar value={datePicker === "start" ? startDate : endDate} minDate={datePicker === "end" ? startDate : undefined} onSelect={(value) => { if (datePicker === "start") { setStartDate(value); if (endDate && endDate < value) setEndDate(value); } else setEndDate(value); setDatePicker(null); }} />}
                 </div>
                 {["全部", "最近一周", "最近一个月", "最近三个月"].map((v) => (
                   <button
