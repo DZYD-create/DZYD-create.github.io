@@ -12785,3 +12785,33 @@ button > img {
   align-self:center!important;
   margin:0 0 3px!important;
 }
+
+/* Slightly more breathing room between Arrange and its disclosure arrow. */
+.canvas-group-toolbar>.group-layout-button{
+  grid-template-columns:24px 8px!important;
+  gap:10px!important;
+}
+
+/* Larger History menu targets, matching the outlined reference proportions. */
+.history-filter-anchor>.filter-pop{width:196px!important;min-width:196px!important;padding:9px!important}
+.history-filter-anchor>.time-pop{width:300px!important;min-width:300px!important;padding:9px!important}
+.history-filter-anchor>.sort-pop{width:220px!important;min-width:220px!important;padding:9px!important}
+.history-pop>button,
+.history-pop>.history-date-row>button{
+  width:100%!important;
+  min-height:44px!important;
+  padding:0 14px!important;
+  margin:3px 0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+}
+.history-pop>.history-date-row{gap:8px!important;margin-bottom:5px!important}
+.history-pop>.history-date-row>button{margin:0!important}
+
+/* Folder-add and Group glyphs now share the same 1.6px optical stroke. */
+.selection-action-stack .create-folder-button>img{
+  transform:none!important;
+  width:24px!important;
+  height:24px!important;
+}
