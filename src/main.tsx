@@ -50,6 +50,12 @@ const samples = [
   "/assets/template-6.png",
 ];
 
+const featuredPeople = [
+  { name: "教师形象 1", url: "/assets/person-teacher-1.png" },
+  { name: "教师形象 2", url: "/assets/person-teacher-2.png" },
+  { name: "教师形象 3", url: "/assets/person-teacher-3.png" },
+];
+
 function App() {
   const [section, setSection] = useState<Section>("studio");
   const [prompt, setPrompt] = useState("");
@@ -5941,8 +5947,7 @@ function HistoryDrawer({ onClose }: { onClose: () => void }) {
   const [listView, setListView] = useState(false);
   const [query, setQuery] = useState("");
   const historyItems = [
-    { name: "小学全科卡", url: "/assets/template-2.png" },
-    { name: "课程价格展示", url: "/assets/template-3.png" },
+    ...featuredPeople,
   ].filter((item) => item.name.toLowerCase().includes(query.trim().toLowerCase()));
   return (
     <aside className="figma-history-panel">
@@ -6023,10 +6028,9 @@ function History({
   const [selectedHistory, setSelectedHistory] = useState<string[]>([]);
   const [favoriteHistory, setFavoriteHistory] = useState<string[]>([]);
   const [cards, setCards] = useState([
-    "夏日新品预热海报",
-    "课程价格板设计",
-    "新品种草海报",
-    "直播间活动主视觉",
+    "教师形象 1",
+    "教师形象 2",
+    "教师形象 3",
   ]);
   const [trashOpen, setTrashOpen] = useState(false);
   const [recycledCards, setRecycledCards] = useState<Array<{ name: string; image: string }>>([]);
@@ -6241,10 +6245,9 @@ function History({
             onClick={tab === "subject" ? () => setSubjectOpen(true) : () => onCanvas()}
           >
             <div className="history-record-preview"><span>＋</span></div>
-            <strong>{tab === "subject" ? "新建主体" : "新建画布"}</strong>
           </button>
           {cards.map((name, i) => ({ name, i })).filter(({ name }) => name.toLowerCase().includes(historyQuery.trim().toLowerCase())).map(({ name, i }) => {
-            const image = `/assets/template-${(i % 5) + 1}.png`;
+            const image = featuredPeople[i % featuredPeople.length].url;
             const favorite = favoriteHistory.includes(name);
             return (
               <div className="history-record-shell" key={name}>
@@ -6258,13 +6261,13 @@ function History({
                     } else if (tab === "subject") {
                       setSubjectName(name);
                       setSubjectDescription("");
-                      setSubjectPreview(samples[i % samples.length]);
+                      setSubjectPreview(featuredPeople[i % featuredPeople.length].url);
                       setSubjectOpen(true);
                     } else onCanvas(image, name);
                   }}
                 >
                   <div className="history-record-preview">
-                    {tab === "subject" && <img src={samples[i % samples.length]} alt={name} />}
+                    {tab === "subject" && <img src={featuredPeople[i % featuredPeople.length].url} alt={name} />}
                     {tab === "canvas" && <img src={image} alt={name} />}
                     {batch && (
                       <i className={`batch-check ${selectedHistory.includes(name) ? "selected" : ""}`}>
@@ -6395,7 +6398,7 @@ function Assets({
   const [subjectOpen, setSubjectOpen] = useState(false);
   const [subjectName, setSubjectName] = useState("");
   const [subjectImages, setSubjectImages] = useState<string[]>([]);
-  const [subjects, setSubjects] = useState(["夏日新品预热海报", "课程价格板设计", "新品种草海报", "直播间活动主视觉"]);
+  const [subjects, setSubjects] = useState(featuredPeople.map((person) => person.name));
   const [uploadedPeople, setUploadedPeople] = useState<{ name: string; url: string }[]>([]);
   const [favoriteAssets, setFavoriteAssets] = useState<string[]>([]);
   const subjectFile = useRef<HTMLInputElement>(null);
@@ -6439,7 +6442,7 @@ function Assets({
     .filter((item) => item.category === (tab === "live" ? "live" : "assets"))
     .filter((item) => item.name.toLowerCase().includes(normalizedAssetQuery))
     .sort((a, b) => Number(favoriteAssets.includes(b.url)) - Number(favoriteAssets.includes(a.url)));
-  const activeSubjects = [...uploadedPeople, ...subjects.map((name, i) => ({ name, url: samples[i % samples.length] }))]
+  const activeSubjects = [...uploadedPeople, ...subjects.map((name, i) => ({ name, url: featuredPeople[i % featuredPeople.length].url }))]
     .filter((item) => item.name.toLowerCase().includes(normalizedAssetQuery));
   const empty = activeAssets.length === 0;
   return (
@@ -6470,7 +6473,7 @@ function Assets({
                 ...items,
               ]);
               setUploadedPeople((items) => items.filter((item) => !selectedAssets.includes(`subject:${item.url}`)));
-              setSubjects((items) => items.filter((name, index) => !selectedAssets.includes(`subject:${samples[index % samples.length]}`)));
+              setSubjects((items) => items.filter((name, index) => !selectedAssets.includes(`subject:${featuredPeople[index % featuredPeople.length].url}`)));
               setUploaded((items) => items.filter((item) => !selectedAssets.includes(`upload:${item.url}`)));
               setSelectedAssets([]);
             }}><img src="/assets/action-trash.svg" alt="" />删除</button>
@@ -6565,7 +6568,6 @@ function Assets({
         <div className="asset-subject-grid" style={{ "--asset-card-width": `${210 + assetZoom * 1.25}px` } as React.CSSProperties}>
           <button className="asset-subject-card create" onClick={() => personFile.current?.click()}>
             <div className="asset-create-single" aria-hidden="true"><i>＋</i></div>
-            <strong>上传人物</strong>
           </button>
           {activeSubjects.map((person) => (
             <div className="asset-subject-shell" key={person.url}>

@@ -12713,6 +12713,14 @@ button > img {
   gap:13px!important;
 }
 
+/* Add cards are intentionally icon-only. */
+.history-create-record>.history-record-preview::after,
+.asset-subject-card.create>.asset-create-single::after,
+.asset-upload-entry>.asset-create-single::after{
+  content:none!important;
+  display:none!important;
+}
+
 /* Stable composited zoom: no listener churn, no linear stepping. */
 .figma-infinite-canvas>.canvas-node-layer,
 .figma-infinite-canvas>.canvas-links,
@@ -13095,4 +13103,12 @@ button > img {
   height:20px!important;
   stroke-width:1.6!important;
   transform:none!important;
+}
+
+/* Final icon-only add-entry rule: no generated caption at any breakpoint. */
+.history-page .history-create-record>.history-record-preview::after,
+.asset-page-figma .asset-subject-card.create>.asset-create-single::after,
+.asset-page-figma .asset-upload-entry>.asset-create-single::after{
+  content:none!important;
+  display:none!important;
 }
