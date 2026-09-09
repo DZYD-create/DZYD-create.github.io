@@ -4724,7 +4724,11 @@ function Canvas({
                             setSelection(null);
                           }}
                         >
-                          <i style={{ background: folderColors[index] }} />
+                          <i style={{ color: folderColors[index] }} aria-hidden="true">
+                            <svg viewBox="0 0 34 27">
+                              <path d="M3 8V7A4 4 0 0 1 7 3h6.8l3.1 3.2H27A4 4 0 0 1 31 10v11a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
+                            </svg>
+                          </i>
                           <span>{name}</span>
                         </button>
                       ))}

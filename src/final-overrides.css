@@ -13112,3 +13112,47 @@ button > img {
   content:none!important;
   display:none!important;
 }
+
+/* Reference folder: one continuous, softly rounded filled silhouette. */
+.selection-folder-popover>button>i{
+  width:36px!important;
+  height:29px!important;
+  flex:0 0 36px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:none!important;
+  box-shadow:none!important;
+  display:grid!important;
+  place-items:center!important;
+}
+.selection-folder-popover>button>i::before{content:none!important;display:none!important}
+.selection-folder-popover>button>i>svg{
+  display:block!important;
+  width:36px!important;
+  height:29px!important;
+  overflow:visible!important;
+  filter:drop-shadow(0 1px 1px rgba(76,55,38,.16))!important;
+}
+.selection-folder-popover>button>i>svg>path{
+  fill:currentColor!important;
+  stroke:color-mix(in srgb,currentColor 78%,#8b684d)!important;
+  stroke-width:1.35!important;
+  stroke-linejoin:round!important;
+}
+
+/* The plus is permanently anchored to the card's geometric center. */
+.history-page .history-create-record>.history-record-preview,
+.asset-page-figma .asset-subject-card.create>.asset-create-single,
+.asset-page-figma .asset-upload-entry>.asset-create-single{
+  transform:none!important;
+}
+.history-page .history-create-record>.history-record-preview>span,
+.asset-page-figma .asset-subject-card.create>.asset-create-single>i,
+.asset-page-figma .asset-upload-entry>.asset-create-single>i,
+.asset-page-figma .asset-subject-card.create:hover>.asset-create-single>i,
+.asset-page-figma .asset-upload-entry:hover>.asset-create-single>i{
+  left:50%!important;
+  top:50%!important;
+  opacity:1!important;
+  transform:translate(-50%,-50%)!important;
+}
