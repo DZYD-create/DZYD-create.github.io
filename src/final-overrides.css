@@ -12815,3 +12815,59 @@ button > img {
   width:24px!important;
   height:24px!important;
 }
+
+/* Menus grow with their options so every interaction outline stays inside. */
+.history-filter-anchor>.history-pop{
+  height:auto!important;
+  max-height:none!important;
+  min-height:0!important;
+  overflow:visible!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+.history-filter-anchor>.filter-pop{min-height:118px!important}
+.history-filter-anchor>.time-pop{min-height:282px!important}
+.history-filter-anchor>.sort-pop{min-height:292px!important}
+
+/* Zoom changes only size; the complete artwork and its proportions stay stable. */
+.history-record-preview>img,
+.asset-subject-card>div>img,
+.asset-content-open>img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  transform:none!important;
+}
+.history-record-preview,
+.asset-subject-card>div,
+.asset-content-open{
+  background:#f1f2f4!important;
+}
+
+/* History and Assets search reveal on hover/focus with a neutral pill. */
+.history-search-action{
+  border-radius:21px!important;
+  border-color:#e1e3ea!important;
+  background:#fff!important;
+  box-shadow:none!important;
+  transition:width .2s ease,border-color .2s ease,background .2s ease!important;
+}
+.history-search-action:hover,
+.history-search-action:focus-within,
+.history-search-action.open{
+  width:190px!important;
+  border-color:#d8dbe4!important;
+  background:#fff!important;
+  color:#667085!important;
+  box-shadow:none!important;
+}
+.history-search-action:hover>input,
+.history-search-action:focus-within>input,
+.history-search-action.open>input{
+  width:138px!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+.history-search-action>img{filter:none!important}
