@@ -13243,3 +13243,68 @@ button > img {
   font:normal 600 15px/1.4 "Microsoft YaHei",sans-serif!important;
   white-space:nowrap!important;
 }
+
+/* Canvas drawer back arrows stay optically centered and have no hover treatment. */
+.asset-library-panel .asset-title,
+.figma-history-panel .figma-history-title{
+  min-height:32px!important;
+  align-items:center!important;
+}
+.asset-library-panel .asset-title>button:first-child,
+.figma-history-panel .figma-history-title>button:first-child{
+  align-self:center!important;
+  display:grid!important;
+  place-items:center!important;
+  margin:0!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  transform:none!important;
+  transition:none!important;
+}
+.asset-library-panel .asset-title>button:first-child:hover,
+.asset-library-panel .asset-title>button:first-child:focus-visible,
+.figma-history-panel .figma-history-title>button:first-child:hover,
+.figma-history-panel .figma-history-title>button:first-child:focus-visible{
+  background:transparent!important;
+  color:inherit!important;
+  border:0!important;
+  box-shadow:none!important;
+  transform:none!important;
+  outline:0!important;
+}
+.asset-library-panel .asset-title>button:first-child>img,
+.figma-history-panel .figma-history-title>button:first-child>img{
+  display:block!important;
+  margin:0!important;
+  transform:none!important;
+}
+
+/* Canvas Assets rows keep a complete four-sided hover outline. */
+.asset-library-panel .asset-tree>.asset-tree-entry{
+  width:calc(100% - 52px)!important;
+  box-sizing:border-box!important;
+  overflow:visible!important;
+}
+.asset-library-panel .asset-tree>.asset-tree-entry:hover,
+.asset-library-panel .asset-tree>.asset-tree-entry:focus-visible{
+  border:1px solid #7b61ff!important;
+  transform:none!important;
+  outline:0!important;
+}
+
+/* List column headings are stronger and vertically centered with their columns. */
+.canvas-search-modal .search-table-head{
+  align-items:center!important;
+}
+.canvas-search-modal .search-table-head>span{
+  display:flex!important;
+  align-items:center!important;
+  height:100%!important;
+  font-size:14px!important;
+  line-height:20px!important;
+  font-weight:600!important;
+  color:#4f5565!important;
+}

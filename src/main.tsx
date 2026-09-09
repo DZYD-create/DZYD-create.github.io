@@ -51,9 +51,9 @@ const samples = [
 ];
 
 const featuredPeople = [
-  { name: "教师形象 1", url: "/assets/person-teacher-1.png" },
-  { name: "教师形象 2", url: "/assets/person-teacher-2.png" },
-  { name: "教师形象 3", url: "/assets/person-teacher-3.png" },
+  { name: "上官", url: "/assets/person-teacher-1.png" },
+  { name: "李狗蛋", url: "/assets/person-teacher-2.png" },
+  { name: "田豆花", url: "/assets/person-teacher-3.png" },
 ];
 
 function App() {
@@ -6042,9 +6042,9 @@ function History({
   const [selectedHistory, setSelectedHistory] = useState<string[]>([]);
   const [favoriteHistory, setFavoriteHistory] = useState<string[]>([]);
   const [cards, setCards] = useState([
-    "教师形象 1",
-    "教师形象 2",
-    "教师形象 3",
+    "上官",
+    "李狗蛋",
+    "田豆花",
   ]);
   const [trashOpen, setTrashOpen] = useState(false);
   const [recycledCards, setRecycledCards] = useState<Array<{ name: string; image: string }>>([]);
