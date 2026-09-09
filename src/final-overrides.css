@@ -12972,3 +12972,58 @@ button > img {
   background:#fff!important;
   object-fit:contain!important;
 }
+
+/* History and Assets: Search, circular Recycle Bin, then Batch Select. */
+.history-default-actions>.history-trash-wrap{order:2!important}
+.history-default-actions>.history-batch{order:3!important}
+.history-default-actions .history-trash-button{
+  width:42px!important;
+  min-width:42px!important;
+  max-width:42px!important;
+  height:42px!important;
+  padding:0!important;
+  border-radius:50%!important;
+  display:grid!important;
+  place-items:center!important;
+}
+
+/* Canvas Assets: details panel starts exactly at the selected row's top edge. */
+.figma-infinite-canvas>.apply-popover{margin:0!important}
+.figma-infinite-canvas>.apply-popover::before{top:14px!important}
+.asset-library-panel .asset-tree>.asset-tree-entry{
+  box-sizing:border-box!important;
+  border:1px solid transparent!important;
+  transform:scale(1)!important;
+  transform-origin:left center!important;
+  transition:border-color .16s ease,background .16s ease,color .16s ease,transform .16s ease!important;
+}
+.asset-library-panel .asset-tree>.asset-tree-entry:hover,
+.asset-library-panel .asset-tree>.asset-tree-entry:focus-visible{
+  border-color:#7b61ff!important;
+  background:#f6f3ff!important;
+  color:#4037a8!important;
+  transform:scale(1.025)!important;
+  outline:0!important;
+  z-index:2!important;
+}
+.asset-library-panel .asset-tree>.asset-tree-entry.selected{
+  border-color:#7b61ff!important;
+  background:#f6f3ff!important;
+  color:#4037a8!important;
+  transform:scale(1)!important;
+  outline:0!important;
+  z-index:2!important;
+}
+
+/* Search view glyphs share the same 20px canvas and 1.6px optical weight. */
+.canvas-search-modal .search-controls>button>.four-grid-icon,
+.canvas-search-modal .search-controls>button>img{
+  width:20px!important;
+  height:20px!important;
+}
+.canvas-search-modal .search-controls>button>.four-grid-icon>svg{
+  width:20px!important;
+  height:20px!important;
+  stroke-width:1.6!important;
+  transform:none!important;
+}
