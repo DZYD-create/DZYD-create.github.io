@@ -14242,3 +14242,32 @@ button > img {
   box-sizing:border-box!important;display:grid!important;place-items:center!important;width:40px!important;height:28px!important;margin-left:12px!important;padding-left:13px!important;border-left:1px solid #cfd2dc!important;color:#596174!important
 }
 .figma-tool-modal.modal-图片尺寸 .resize-pencil > svg{display:block!important;width:24px!important;height:24px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.8!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+
+/* Final reference pass: resolution menu, detail icons, redraw actions and preview scale. */
+.figma-tool-modal.modal-增强清晰度 .resolution-popover{
+  width:230px!important;padding:10px!important
+}
+.figma-tool-modal.modal-增强清晰度 .resolution-popover > button{
+  display:flex!important;align-items:center!important;gap:0!important;padding-right:16px!important;white-space:nowrap!important
+}
+.figma-tool-modal.modal-增强清晰度 .resolution-popover > button > small{
+  display:flex!important;align-items:center!important;align-self:center!important;height:24px!important;margin:0 0 0 auto!important;font-size:12px!important;line-height:24px!important
+}
+
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon{width:34px!important;height:34px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon > svg{width:32px!important;height:32px!important;stroke-width:2.35!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-spark > svg{width:32px!important;height:32px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-hd > b{
+  box-sizing:border-box!important;min-width:31px!important;padding:2px 3px!important;border:2.5px solid #11182b!important;border-radius:4px!important;
+  font:800 12px/16px Arial,sans-serif!important;text-align:center!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-diamond > svg{width:33px!important;height:33px!important;stroke-width:2.3!important}
+
+.figma-tool-modal.modal-擦除内容 > .modal-generate{
+  width:136px!important;height:50px!important;min-height:50px!important;max-height:50px!important
+}
+.figma-tool-modal.modal-擦除内容 .erase-modal-secondary{right:232px!important}
+.figma-tool-modal.modal-擦除内容 .erase-modal-secondary > button:last-child{height:50px!important;min-height:50px!important;max-height:50px!important}
+.figma-tool-modal.modal-擦除内容 .modal-image-stage > img{
+  max-width:88%!important;max-height:96%!important
+}
