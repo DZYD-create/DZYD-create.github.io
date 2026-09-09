@@ -13661,3 +13661,18 @@ button > img {
 .history-filter-anchor>.history-pop .history-calendar>header>button:hover{
   border:0!important;background:#f2f0ff!important;box-shadow:none!important;transform:translateY(-50%)!important
 }
+
+/* Search table: center the Created header and every timestamp in the same fifth track. */
+.canvas-search-modal .search-table-head>span:nth-child(5),
+.canvas-search-modal .search-list>button>:nth-child(5){
+  box-sizing:border-box!important;
+  width:100%!important;
+  height:100%!important;
+  margin:0!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  justify-self:stretch!important;
+  text-align:center!important;
+}
