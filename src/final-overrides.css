@@ -14176,3 +14176,37 @@ button > img {
 .figma-tool-modal.modal-增强清晰度 .resolution-wrap > button > b{justify-content:center!important;font-size:20px!important}
 .figma-tool-modal.modal-增强清晰度 .resolution-popover{width:180px!important}
 .figma-tool-modal.modal-局部重绘 .modal-image-stage{background:#f3f5f8!important;background-image:none!important}
+
+/* Paint workspace: explicit vertical tool labels and a live, draggable brush-size control. */
+.figma-tool-modal.modal-擦除内容 .paint-tools > button{
+  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important
+}
+.figma-tool-modal.modal-擦除内容 .paint-tools > button::after{content:none!important;display:none!important}
+.figma-tool-modal.modal-擦除内容 .paint-tools > button > img{display:block!important;width:27px!important;height:27px!important;flex:0 0 27px!important;margin:0!important}
+.figma-tool-modal.modal-擦除内容 .paint-tools > button > span{
+  display:block!important;height:15px!important;color:#40485a!important;font-size:11px!important;line-height:15px!important;text-align:center!important;white-space:nowrap!important
+}
+.figma-tool-modal.modal-擦除内容 .paint-tools > button.active > span{color:#2680f2!important}
+.figma-tool-modal.modal-擦除内容 .brush-size-control::after{content:none!important}
+.figma-tool-modal.modal-擦除内容 .brush-size-control > input{
+  appearance:none!important;-webkit-appearance:none!important;width:218px!important;height:20px!important;margin:0!important;cursor:pointer!important;background:transparent!important;touch-action:none!important
+}
+.figma-tool-modal.modal-擦除内容 .brush-size-control > input::-webkit-slider-runnable-track{height:5px!important;border-radius:999px!important;background:linear-gradient(90deg,#2984f5 0,#2984f5 calc((var(--brush-progress,48) - 8)*1.087%),#d8deea calc((var(--brush-progress,48) - 8)*1.087%),#d8deea 100%)!important}
+.figma-tool-modal.modal-擦除内容 .brush-size-control > input::-webkit-slider-thumb{-webkit-appearance:none!important;width:18px!important;height:18px!important;margin-top:-6.5px!important;border:2px solid #fff!important;border-radius:50%!important;background:#2984f5!important;box-shadow:0 1px 5px rgba(41,132,245,.35)!important;cursor:grab!important}
+.figma-tool-modal.modal-擦除内容 .brush-size-control > input:active::-webkit-slider-thumb{cursor:grabbing!important}
+.figma-tool-modal.modal-擦除内容 .brush-size-control > output{min-width:30px!important;margin-left:10px!important;color:#30384a!important;font-size:16px!important;line-height:20px!important;text-align:center!important}
+
+/* Keep reset, cancel and generate as three separate, non-overlapping actions. */
+.figma-tool-modal.modal-擦除内容 .erase-modal-secondary{left:40px!important;right:250px!important;bottom:22px!important;display:flex!important;justify-content:space-between!important;align-items:center!important}
+.figma-tool-modal.modal-擦除内容 .erase-modal-secondary > button:last-child{position:absolute!important;right:0!important;min-width:82px!important}
+.figma-tool-modal.modal-擦除内容 > .modal-generate{right:40px!important;width:154px!important;margin:0!important}
+
+/* Resolution trigger: the SVG chevron has its own centered box and no font baseline. */
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap > button{
+  display:grid!important;grid-template-columns:minmax(0,1fr) 16px!important;align-items:center!important;column-gap:6px!important
+}
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap > button > strong{display:flex!important;align-items:center!important;height:24px!important;line-height:24px!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-chevron{display:grid!important;place-items:center!important;width:16px!important;height:24px!important;margin:0!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-chevron > svg{display:block!important;width:14px!important;height:14px!important;overflow:visible!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-chevron path{fill:none!important;stroke:currentColor!important;stroke-width:1.6!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap > button[aria-expanded="true"] > .resolution-chevron{transform:rotate(180deg)!important}

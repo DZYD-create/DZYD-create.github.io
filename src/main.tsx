@@ -2019,9 +2019,12 @@ function Editor({
                       min="8"
                       max="100"
                       value={brushSize}
-                      onChange={(e) => setBrushSize(Number(e.target.value))}
+                      style={{ "--brush-progress": brushSize } as React.CSSProperties}
+                      onInput={(e) => setBrushSize(Number(e.currentTarget.value))}
+                      onChange={(e) => setBrushSize(Number(e.currentTarget.value))}
                     />
                     <img src="/assets/figma-brush-large.svg" />
+                    <output aria-live="polite">{brushSize}</output>
                   </div>
                   <div className="modal-canvas-footer">
                     <div className="paint-tools">
@@ -2038,6 +2041,7 @@ function Editor({
                           key={name}
                         >
                           <img src={`/assets/${icon}`} />
+                          <span>{name === "画笔" ? "涂抹" : name === "橡皮" ? "橡皮擦" : name}</span>
                         </button>
                       ))}
                       <i />
@@ -2162,7 +2166,7 @@ function Editor({
                         setDetailOpen(false);
                       }}
                     >
-                      <strong>{resolution}</strong><b>⌄</b>
+                      <strong>{resolution}</strong><span className="resolution-chevron" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m4 6 4 4 4-4"/></svg></span>
                     </button>
                     {resolutionOpen && (
                       <div
