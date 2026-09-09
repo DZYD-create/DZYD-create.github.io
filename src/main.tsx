@@ -2068,7 +2068,7 @@ function Editor({
                   />
                   {(tool === "擦除内容" || tool === "局部重绘") ? <><span className="erase-prompt-count">{modalPrompt.length}/300</span><i/><button className="erase-ai-optimize"><img src="/assets/magic.svg"/>AI 优化</button></> : <img src="/assets/figma-text-tool.svg" />}
                 </div>
-                {(tool === "擦除内容" || tool === "局部重绘") && <div className="erase-modal-secondary"><button onClick={() => { setEditorStrokes([]); setEditorUndo([]); setEditorRedo([]); setModalPrompt(""); }}>↶　重置</button><button onClick={closeTool}>取消</button></div>}
+                {(tool === "擦除内容" || tool === "局部重绘") && <div className="erase-modal-secondary"><button className="erase-reset" onClick={() => { setEditorStrokes([]); setEditorUndo([]); setEditorRedo([]); setModalPrompt(""); }}><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8.2 10.5H3.8V6.1"/><path d="M4.3 10.1A12 12 0 1 1 4.8 23"/></svg><span>重置</span></button><button onClick={closeTool}>取消</button></div>}
               </>
             )}
             {tool === "图片尺寸" && (
@@ -2102,7 +2102,7 @@ function Editor({
                     onChange={(e) => setModalPrompt(e.target.value)}
                     placeholder="描述想要如何更改画面，或涂抹后输入要更改的文案"
                   />
-                  <img src="/assets/figma-text-tool.svg" />
+                  <span className="resize-pencil" aria-hidden="true"><svg viewBox="0 0 28 28"><path d="m6 20.5-1 4.5 4.5-1L22.7 10.8a2.2 2.2 0 0 0 0-3.1l-2.4-2.4a2.2 2.2 0 0 0-3.1 0L6 20.5Z"/><path d="m15.4 7.1 5.5 5.5M5 25h18"/></svg></span>
                 </div>
               </>
             )}
