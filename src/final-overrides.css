@@ -13494,3 +13494,56 @@ button > img {
 .modal-image-stage>.editor-mask-layer.erase-tool{cursor:cell!important}
 .paint-tools>button:disabled{opacity:.35!important;cursor:not-allowed!important}
 .paint-tools>button:disabled:hover{background:transparent!important;transform:none!important}
+
+/* Canvas search: toolbar, table heading and rows all use the same side insets. */
+.canvas-search-modal>.canvas-search-toolbar,
+.canvas-search-modal>.search-selected-count,
+.canvas-search-modal>.search-list,
+.canvas-search-modal>.search-grid,
+.canvas-search-modal>.search-empty{
+  box-sizing:border-box!important;
+  width:auto!important;
+  margin-left:16px!important;
+  margin-right:16px!important;
+}
+.canvas-search-modal>.search-list{padding-left:0!important;padding-right:0!important}
+.canvas-search-modal .search-table-head,
+.canvas-search-modal .search-list>button{box-sizing:border-box!important;width:100%!important}
+
+/* History image cards use the same restrained lift and shadow as Assets. */
+.history-page .history-record:not(.history-create-record){
+  transform-origin:center!important;
+  transition:transform .22s cubic-bezier(.2,.75,.25,1),filter .22s ease!important;
+}
+.history-page .history-record:not(.history-create-record):hover{
+  transform:scale(1.022)!important;
+  z-index:20!important;
+}
+.history-page .history-record:not(.history-create-record):hover>.history-record-preview{
+  transform:none!important;
+  box-shadow:0 8px 18px rgba(50,57,86,.1)!important;
+}
+
+/* History previews deliberately have no animated/light-flow outline. */
+.history-page .history-record-preview::after{
+  content:none!important;display:none!important;animation:none!important;background:none!important
+}
+
+/* A shorter homepage conversation rail with matching left/right New Work insets. */
+.conversation-panel{width:244px!important}
+.main.with-panel{left:332px!important}
+.conversation-panel-head{
+  box-sizing:border-box!important;width:100%!important;padding-left:15px!important;padding-right:15px!important
+}
+.conversation-panel-head>.new-work{
+  width:100%!important;min-width:0!important;max-width:none!important;flex:1 1 auto!important
+}
+
+/* The Size sparkle remains fully white on hover as well as while selected. */
+.generation-page .new-creation-composer .home-size-trigger:hover>img,
+.generation-page .new-creation-composer .home-size-trigger[aria-expanded="true"]>img,
+.new-creation-page .home-size-trigger:hover>img,
+.new-creation-page .home-size-trigger[aria-expanded="true"]>img{
+  content:url('/assets/figma-home-size-active.svg')!important;
+  filter:none!important;
+}
