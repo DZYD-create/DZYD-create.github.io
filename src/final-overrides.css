@@ -13609,3 +13609,25 @@ button > img {
 .conversation-panel>.conversation-panel-head>.new-work{
   box-sizing:border-box!important;width:100%!important;min-width:0!important;max-width:none!important;margin:0!important
 }
+
+/* Calendar title is centered against the whole popup, independent of arrow widths. */
+.history-filter-anchor>.history-pop .history-calendar>header{position:relative!important}
+.history-filter-anchor>.history-pop .history-calendar>header>strong{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  width:max-content!important;
+  margin:0!important;
+  transform:translate(-50%,-50%)!important;
+  text-align:center!important;
+}
+
+/* Past Conversations starts on the same left baseline as the search field. */
+.conversation-panel>.label{
+  box-sizing:border-box!important;
+  width:calc(100% - 30px)!important;
+  margin-left:15px!important;
+  margin-right:15px!important;
+  padding-left:0!important;
+  text-align:left!important;
+}
