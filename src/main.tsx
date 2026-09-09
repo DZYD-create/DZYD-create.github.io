@@ -1991,6 +1991,7 @@ function Editor({
               <div className="tool-modal-heading">
                 <strong>{tool}</strong>
                 {tool === "增强清晰度" && <small>智能提升画面清晰度，让图片更细腻、更生动</small>}
+                {tool === "擦除内容" && <small>涂抹需要擦除的区域，AI 将智能删除并自然修复画面</small>}
               </div>
               <button onClick={closeTool} aria-label="关闭">
                 <img src="/assets/figma-modal-close.svg" />
@@ -2027,6 +2028,7 @@ function Editor({
                         ["画笔", "figma-brush.svg"],
                         ["橡皮", "figma-eraser-mode.svg"],
                         ["移动", "figma-hand.svg"],
+                        ...(tool === "擦除内容" ? [["框选", "crop-ratio.svg"]] : []),
                       ].map(([name, icon]) => (
                         <button
                           className={brushMode === name ? "active" : ""}
@@ -2053,13 +2055,15 @@ function Editor({
                   </div>
                 </div>
                 <div className="modal-prompt">
+                  {tool === "擦除内容" && <span className="erase-prompt-spark" aria-hidden="true">✦</span>}
                   <input
                     value={modalPrompt}
                     onChange={(e) => setModalPrompt(e.target.value)}
                     placeholder="描述想要如何更改画面，或涂抹后输入要更改的文案"
                   />
-                  <img src="/assets/figma-text-tool.svg" />
+                  {tool === "擦除内容" ? <><span className="erase-prompt-count">{modalPrompt.length}/300</span><i/><button className="erase-ai-optimize"><img src="/assets/magic.svg"/>AI 优化</button></> : <img src="/assets/figma-text-tool.svg" />}
                 </div>
+                {tool === "擦除内容" && <div className="erase-modal-secondary"><button onClick={() => { setEditorStrokes([]); setEditorUndo([]); setEditorRedo([]); setModalPrompt(""); }}>↶　重置</button><button onClick={closeTool}>取消</button></div>}
               </>
             )}
             {tool === "图片尺寸" && (
@@ -2195,7 +2199,7 @@ function Editor({
               className="modal-generate"
               onClick={() => setGeneratedEdit(true)}
             >
-              <span className="modal-generate-stars" aria-hidden="true">✦<i>✦</i></span>
+              <span className="modal-generate-stars" aria-hidden="true"><svg viewBox="0 0 52 52"><path d="M20 5c1.8 10.3 5.7 14.2 16 16-10.3 1.8-14.2 5.7-16 16-1.8-10.3-5.7-14.2-16-16C14.3 19.2 18.2 15.3 20 5Z"/><path d="M39 2c.8 4.8 2.7 6.7 7.5 7.5C41.7 10.3 39.8 12.2 39 17c-.8-4.8-2.7-6.7-7.5-7.5C36.3 8.7 38.2 6.8 39 2Z"/></svg></span>
               <span>{generatedEdit ? "已生成" : "生成"}</span>
             </button>
           </section>

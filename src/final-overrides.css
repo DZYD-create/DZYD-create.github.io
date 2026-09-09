@@ -13860,6 +13860,87 @@ button > img {
   .modal-generate-stars>i{font-size:14px!important}
 }
 
+/* Exact two-spark artwork: large lower-left sparkle, small upper-right sparkle. */
+.modal-generate-stars{width:38px!important;height:38px!important;flex:0 0 38px!important}
+.modal-generate-stars>svg{display:block!important;width:38px!important;height:38px!important;fill:#fff!important;overflow:visible!important}
+.modal-generate-stars>i{display:none!important}
+.figma-tool-modal>.modal-generate{gap:14px!important}
+
+/* Enhancement dialog uses the normal editor footprint and reserves separate rows for controls/actions. */
+.figma-tool-modal.modal-增强清晰度{
+  box-sizing:border-box!important;width:860px!important;height:650px!important;max-width:calc(100vw - 40px)!important;max-height:calc(100vh - 40px)!important;
+  padding:28px 40px 84px!important;border-radius:24px!important
+}
+.figma-tool-modal.modal-增强清晰度>header{height:58px!important;margin:0 0 14px!important}
+.figma-tool-modal.modal-增强清晰度>header strong{font-size:25px!important;line-height:32px!important}
+.figma-tool-modal.modal-增强清晰度 .tool-modal-heading>small{font-size:15px!important;line-height:22px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-stage{height:410px!important;padding:25px 24px 82px!important;border-radius:20px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-options{
+  left:40px!important;right:40px!important;bottom:82px!important;height:62px!important;padding:0 18px!important;align-items:center!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-option-wrap>button{height:48px!important;padding:0 18px!important;border-radius:13px!important;gap:10px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-option-wrap>button>strong{font-size:15px!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap>button{min-width:185px!important}
+.figma-tool-modal.modal-增强清晰度>.modal-generate{right:40px!important;bottom:20px!important;width:154px!important;height:50px!important;border-radius:14px!important;font-size:19px!important}
+.figma-tool-modal.modal-增强清晰度>.modal-generate .modal-generate-stars{width:34px!important;height:34px!important;flex-basis:34px!important}
+.figma-tool-modal.modal-增强清晰度>.modal-generate .modal-generate-stars>svg{width:34px!important;height:34px!important}
+.figma-tool-modal.modal-增强清晰度 .detail-popover{bottom:56px!important;width:310px!important;padding:9px!important;border-radius:17px!important}
+.figma-tool-modal.modal-增强清晰度 .detail-popover>button{min-height:62px!important;padding:7px 38px 7px 54px!important;border-radius:11px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon{left:14px!important;width:28px!important;height:28px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon>svg{width:27px!important;height:27px!important;stroke-width:2!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-hd>b{padding:2px 3px!important;border-width:2px!important;font-size:11px!important;line-height:14px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-copy>strong{font-size:14px!important;line-height:20px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-copy>small{font-size:11px!important;line-height:17px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-check{right:10px!important;width:21px!important;height:21px!important;font-size:12px!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-popover{width:185px!important}
+
+/* Erase Content follows the reference editing workspace. */
+.figma-tool-modal.modal-擦除内容{
+  box-sizing:border-box!important;width:980px!important;min-height:700px!important;max-width:calc(100vw - 40px)!important;max-height:calc(100vh - 32px)!important;
+  padding:30px 40px 92px!important;border-radius:26px!important
+}
+.figma-tool-modal.modal-擦除内容>header{height:64px!important;margin:0 0 14px!important;align-items:flex-start!important}
+.figma-tool-modal.modal-擦除内容 .tool-modal-heading{display:flex!important;flex-direction:column!important;gap:4px!important}
+.figma-tool-modal.modal-擦除内容 .tool-modal-heading>strong{font-size:28px!important;line-height:34px!important;font-weight:700!important;color:#151b2e!important}
+.figma-tool-modal.modal-擦除内容 .tool-modal-heading>small{font-size:15px!important;line-height:22px!important;color:#8790a5!important}
+.figma-tool-modal.modal-擦除内容 .modal-canvas-wrap{box-sizing:border-box!important;height:430px!important;padding:12px 14px 82px!important;border-radius:20px!important;background:#f5f7fb!important}
+.figma-tool-modal.modal-擦除内容 .modal-image-stage{
+  height:320px!important;border:1px solid #edf1f7!important;border-radius:15px!important;
+  background-color:#fff!important;background-image:linear-gradient(45deg,#edf4fd 25%,transparent 25%),linear-gradient(-45deg,#edf4fd 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#edf4fd 75%),linear-gradient(-45deg,transparent 75%,#edf4fd 75%)!important;
+  background-size:24px 24px!important;background-position:0 0,0 12px,12px -12px,-12px 0!important
+}
+.figma-tool-modal.modal-擦除内容 .modal-image-stage>img{max-width:72%!important;max-height:100%!important}
+.figma-tool-modal.modal-擦除内容 .brush-size-control{left:360px!important;bottom:22px!important;width:280px!important;height:45px!important;background:transparent!important}
+.figma-tool-modal.modal-擦除内容 .brush-size-control::before{content:"画笔大小"!important;position:absolute!important;left:0!important;top:-17px!important;color:#374052!important;font-size:12px!important}
+.figma-tool-modal.modal-擦除内容 .brush-size-control>img{display:none!important}
+.figma-tool-modal.modal-擦除内容 .brush-size-control>input{width:230px!important;accent-color:#2984f5!important}
+.figma-tool-modal.modal-擦除内容 .brush-size-control::after{content:"50"!important;margin-left:12px!important;color:#30384a!important;font-size:16px!important}
+.figma-tool-modal.modal-擦除内容 .modal-canvas-footer{left:14px!important;right:14px!important;bottom:13px!important;height:58px!important;align-items:center!important}
+.figma-tool-modal.modal-擦除内容 .paint-tools{height:58px!important;padding:0!important;gap:4px!important;background:transparent!important}
+.figma-tool-modal.modal-擦除内容 .paint-tools>button{width:76px!important;height:58px!important;padding:5px!important;display:flex!important;flex-direction:column!important;gap:2px!important;font-size:0!important}
+.figma-tool-modal.modal-擦除内容 .paint-tools>button:nth-child(1)::after{content:"涂抹"}.figma-tool-modal.modal-擦除内容 .paint-tools>button:nth-child(2)::after{content:"橡皮擦"}.figma-tool-modal.modal-擦除内容 .paint-tools>button:nth-child(3)::after{content:"移动"}.figma-tool-modal.modal-擦除内容 .paint-tools>button:nth-child(4)::after{content:"框选"}
+.figma-tool-modal.modal-擦除内容 .paint-tools>button::after{display:block!important;color:#40485a!important;font-size:11px!important;line-height:15px!important}
+.figma-tool-modal.modal-擦除内容 .paint-tools>button.active{background:#eaf2ff!important;color:#2680f2!important}
+.figma-tool-modal.modal-擦除内容 .paint-tools>button.active::after{color:#2680f2!important}
+.figma-tool-modal.modal-擦除内容 .paint-tools img{width:27px!important;height:27px!important}
+.figma-tool-modal.modal-擦除内容 .paint-tools>i,.figma-tool-modal.modal-擦除内容 .paint-tools>button:nth-last-child(-n+2){display:none!important}
+.figma-tool-modal.modal-擦除内容 .modal-zoom{width:165px!important;height:48px!important;border:1px solid #edf0f5!important;border-radius:24px!important;background:#fff!important;font-size:16px!important}
+.figma-tool-modal.modal-擦除内容 .modal-prompt{box-sizing:border-box!important;height:58px!important;margin-top:16px!important;padding:0 14px!important;border:1.5px solid #5799ff!important;border-radius:13px!important;background:#fff!important}
+.erase-prompt-spark{width:28px!important;color:#2d83f5!important;font-size:27px!important;line-height:1!important}
+.figma-tool-modal.modal-擦除内容 .modal-prompt>input{font-size:15px!important}
+.erase-prompt-count{color:#a0a7b7!important;font-size:13px!important}.figma-tool-modal.modal-擦除内容 .modal-prompt>i{width:1px!important;height:30px!important;margin:0 12px!important;background:#dfe3eb!important}
+.erase-ai-optimize{height:38px!important;padding:0 8px!important;border:0!important;background:transparent!important;color:#2580f3!important;font-size:15px!important;display:flex!important;align-items:center!important;gap:7px!important}
+.erase-ai-optimize>img{width:24px!important;height:24px!important;filter:none!important}
+.erase-modal-secondary{position:absolute!important;left:40px!important;right:210px!important;bottom:22px!important;display:flex!important;justify-content:space-between!important}
+.erase-modal-secondary>button{height:50px!important;padding:0 26px!important;border:1px solid #e3e6ed!important;border-radius:14px!important;background:#fff!important;color:#343b4c!important;font-size:16px!important}
+.figma-tool-modal.modal-擦除内容>.modal-generate{right:40px!important;bottom:22px!important;width:154px!important;height:50px!important;border-radius:14px!important;font-size:19px!important}
+.figma-tool-modal.modal-擦除内容>.modal-generate .modal-generate-stars{display:none!important}
+
+@media(max-height:760px){
+  .figma-tool-modal.modal-增强清晰度{height:610px!important;transform:scale(.92)!important}
+  .figma-tool-modal.modal-擦除内容{transform:scale(.83)!important}
+}
+
 /* Image Size returns to the normal editor-dialog footprint. */
 .figma-tool-modal.modal-图片尺寸{
   width:700px!important;height:auto!important;min-height:548px!important;max-width:calc(100vw - 40px)!important;
