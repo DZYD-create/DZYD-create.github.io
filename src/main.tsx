@@ -1793,10 +1793,6 @@ function TemplateDetail({
             <dt>适用场景</dt>
             <dd>{extra.scene}</dd>
           </div>
-          <div>
-            <dt>构图与光影</dt>
-            <dd>{extra.composition}</dd>
-          </div>
         </dl>
         <div className="template-detail-meta">
           <span>{item.model}</span>
@@ -4883,6 +4879,25 @@ function Canvas({
                         setFolderExpanded(false);
                       }
                     }}
+                    onDoubleClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      const title = folderNames[index];
+                      const folderImages = samples.slice(0, 3);
+                      setFolderIndex(index);
+                      setProjectTitle(title);
+                      setCanvasImage(folderImages[0]);
+                      setCanvasNodes(folderImages.map((url, imageIndex) => ({
+                        id: Date.now() + imageIndex,
+                        url,
+                        x: (imageIndex - 1) * 390,
+                        y: 0,
+                        name: `${title} ${imageIndex + 1}`,
+                      })));
+                      setActiveNodeId(null);
+                      setFolderExpanded(false);
+                      setMode(null);
+                    }}
                   >
                     <span
                       className="folder-color-wash"
@@ -6147,6 +6162,18 @@ function History({
   const subjectFile = useRef<HTMLInputElement>(null);
   const choose = (kind: "filter" | "time" | "sort") =>
     setPopup((v) => (v === kind ? null : kind));
+  const sortedHistoryCards = cards
+    .map((name, originalIndex) => ({
+      name,
+      originalIndex,
+      modifiedAt: [202608051906, 202608051300, 202608031657][originalIndex] ?? 0,
+      createdAt: [202608010900, 202608041200, 202608021000][originalIndex] ?? 0,
+    }))
+    .sort((left, right) => {
+      const field = sortBy === "创建时间" ? "createdAt" : "modifiedAt";
+      const delta = right[field] - left[field];
+      return order === "近-远" ? delta : -delta;
+    });
   return (
     <section className="history-page" onClick={() => {
       if (popup) setPopup(null);
@@ -6352,7 +6379,7 @@ function History({
           >
             <div className="history-record-preview"><span>＋</span><em className="add-entry-copy">点击添加内容</em></div>
           </button>
-          {cards.map((name, i) => ({ name, i })).filter(({ name }) => name.toLowerCase().includes(historyQuery.trim().toLowerCase())).map(({ name, i }) => {
+          {sortedHistoryCards.filter(({ name }) => name.toLowerCase().includes(historyQuery.trim().toLowerCase())).map(({ name, originalIndex: i }) => {
             const image = featuredPeople[i % featuredPeople.length].url;
             const favorite = favoriteHistory.includes(name);
             return (

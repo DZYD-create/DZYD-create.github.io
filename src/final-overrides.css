@@ -13677,3 +13677,46 @@ button > img {
   text-align:center!important;
   transform:translateX(-18px)!important;
 }
+
+/* Smaller, identical add controls across History and every Assets category. */
+.history-page .history-create-record>.history-record-preview,
+.asset-page-figma .asset-subject-card.create>.asset-create-single,
+.asset-page-figma .asset-upload-entry>.asset-create-single{
+  background:#eff0f2!important;
+}
+.history-page .history-create-record:hover>.history-record-preview,
+.asset-page-figma .asset-subject-card.create:hover>.asset-create-single,
+.asset-page-figma .asset-upload-entry:hover>.asset-create-single{
+  background:#e9e7f7!important;
+}
+.history-page .history-create-record>.history-record-preview>span,
+.asset-page-figma .asset-subject-card.create>.asset-create-single>i,
+.asset-page-figma .asset-upload-entry>.asset-create-single>i{
+  width:27px!important;height:27px!important;min-width:27px!important;min-height:27px!important
+}
+.history-page .history-create-record>.history-record-preview>span::before,
+.history-page .history-create-record>.history-record-preview>span::after,
+.asset-page-figma .asset-subject-card.create>.asset-create-single>i::before,
+.asset-page-figma .asset-subject-card.create>.asset-create-single>i::after,
+.asset-page-figma .asset-upload-entry>.asset-create-single>i::before,
+.asset-page-figma .asset-upload-entry>.asset-create-single>i::after{
+  width:20px!important;height:3px!important;border-radius:2px!important
+}
+
+/* Clearer hierarchy and tighter reading rhythm in the One-click Same Style detail. */
+.template-detail-info{
+  padding:30px 36px 32px!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+.template-detail-info h1{margin:14px 0 5px!important;font-size:28px!important;line-height:1.28!important;font-weight:700!important}
+.template-detail-date{font-size:12px!important;line-height:20px!important}
+.template-detail-intro{margin-top:18px!important;font-size:14px!important;line-height:1.75!important;color:#5d6473!important}
+.template-detail-info>i{margin:22px 0!important}
+.template-detail-info h2{margin-bottom:10px!important;font-size:13px!important;font-weight:600!important;color:#777e90!important}
+.template-detail-prompt{font-size:14px!important;line-height:1.8!important;text-align:left!important}
+.template-detail-subtitle{margin-top:20px!important}
+.template-detail-spec{margin-top:18px!important;padding-top:16px!important;border-top:1px solid #ececf2!important}
+.template-detail-spec>div{grid-template-columns:70px minmax(0,1fr)!important;margin-top:0!important;gap:12px!important;font-size:13px!important;line-height:1.7!important}
+.template-detail-meta{margin-top:18px!important}
+.template-detail-use{margin-top:22px!important}
