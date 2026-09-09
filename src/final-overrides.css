@@ -12654,6 +12654,75 @@ button > img {
   transform:none!important;
 }
 
+/* The circular add control stays on the exact geometric center at every card size. */
+.history-create-record>.history-record-preview>span,
+.asset-subject-card.create>.asset-create-single>i,
+.asset-upload-entry>.asset-create-single>i{
+  top:50%!important;
+}
+.history-create-record>.history-record-preview::after,
+.asset-subject-card.create>.asset-create-single::after,
+.asset-upload-entry>.asset-create-single::after{
+  top:68%!important;
+}
+
+/* Folder naming uses the site's animated light-flow outline without shadow. */
+.folder-browser .folder-create{
+  border:1.5px solid transparent!important;
+  background:
+    linear-gradient(#fff,#fff) padding-box,
+    linear-gradient(90deg,#765dff,#5fc8ff,#f0a4ff,#765dff) border-box!important;
+  background-size:100% 100%,300% 100%!important;
+  box-shadow:none!important;
+  animation:folder-input-flow 3s linear infinite!important;
+}
+.folder-browser .folder-create input{
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+}
+@keyframes folder-input-flow{
+  to{background-position:0 0,300% 0}
+}
+
+/* Group folder picker uses the site's own colors as filled folder glyphs. */
+.selection-folder-popover>button>i{
+  position:relative!important;
+  width:34px!important;
+  height:24px!important;
+  flex:0 0 34px!important;
+  border:1.5px solid color-mix(in srgb,currentColor 18%,transparent)!important;
+  border-radius:6px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.42)!important;
+}
+.selection-folder-popover>button>i::before{
+  content:""!important;
+  position:absolute!important;
+  left:3px!important;
+  top:-5px!important;
+  width:15px!important;
+  height:7px!important;
+  border-radius:5px 5px 0 0!important;
+  background:inherit!important;
+  border:inherit!important;
+  border-bottom:0!important;
+}
+.selection-folder-popover>button{
+  min-height:48px!important;
+  gap:13px!important;
+}
+
+/* Stable composited zoom: no listener churn, no linear stepping. */
+.figma-infinite-canvas>.canvas-node-layer,
+.figma-infinite-canvas>.canvas-links,
+.figma-infinite-canvas>.canvas-link-actions{
+  will-change:transform!important;
+  backface-visibility:hidden!important;
+  transform:translateZ(0) scale(var(--canvas-scale,1))!important;
+  transition:transform 110ms cubic-bezier(.2,.72,.25,1)!important;
+}
+
 /* The selected color controls both the solid dot and the group frame. */
 .canvas-group-frame{
   border-color:color-mix(in srgb,var(--group-solid) 68%,transparent)!important;

@@ -2954,7 +2954,7 @@ function Canvas({
         )
           return;
         event.preventDefault();
-        zoomTargetRef.current = Math.max(25, Math.min(200, zoomTargetRef.current * Math.exp(-event.deltaY * 0.00072)));
+        zoomTargetRef.current = Math.max(25, Math.min(200, zoomTargetRef.current * Math.exp(-event.deltaY * 0.00055)));
         zoomPointerRef.current = { x: event.clientX, y: event.clientY };
         if (zoomFrameRef.current === null) {
           zoomFrameRef.current = window.requestAnimationFrame(() => {
@@ -2971,7 +2971,7 @@ function Canvas({
     };
     canvas.addEventListener("wheel", wheel, { passive: false });
     return () => canvas.removeEventListener("wheel", wheel);
-  }, [canvasZoom, mode, canvasNodes.length]);
+  }, [mode, canvasNodes.length]);
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
