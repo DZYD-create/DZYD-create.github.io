@@ -13675,4 +13675,5 @@ button > img {
   justify-content:center!important;
   justify-self:stretch!important;
   text-align:center!important;
+  transform:translateX(-18px)!important;
 }
