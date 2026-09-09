@@ -13720,3 +13720,142 @@ button > img {
 .template-detail-spec>div{grid-template-columns:70px minmax(0,1fr)!important;margin-top:0!important;gap:12px!important;font-size:13px!important;line-height:1.7!important}
 .template-detail-meta{margin-top:18px!important}
 .template-detail-use{margin-top:22px!important}
+
+/* Reference-scale conversation image edit dialogs. */
+.tool-modal-backdrop{z-index:5000!important;padding:28px 34px!important;box-sizing:border-box!important;backdrop-filter:blur(7px)!important}
+.figma-tool-modal.modal-图片尺寸,
+.figma-tool-modal.modal-增强清晰度{
+  box-sizing:border-box!important;
+  width:min(1468px,calc(100vw - 68px))!important;
+  height:min(964px,calc(100vh - 56px))!important;
+  max-width:none!important;
+  max-height:none!important;
+  padding:38px 64px 44px!important;
+  border-radius:34px!important;
+  background:#fff!important;
+  overflow:visible!important;
+}
+.figma-tool-modal.modal-图片尺寸>header,
+.figma-tool-modal.modal-增强清晰度>header{
+  height:76px!important;margin:0!important;align-items:flex-start!important
+}
+.figma-tool-modal.modal-图片尺寸>header strong,
+.figma-tool-modal.modal-增强清晰度>header strong{
+  color:#151b2e!important;font-size:36px!important;line-height:46px!important;font-weight:700!important
+}
+.figma-tool-modal.modal-增强清晰度 .tool-modal-heading{display:flex!important;flex-direction:column!important;gap:3px!important}
+.figma-tool-modal.modal-增强清晰度 .tool-modal-heading>small{color:#687187!important;font-size:22px!important;line-height:30px!important;font-weight:500!important}
+.figma-tool-modal.modal-图片尺寸>header>button,
+.figma-tool-modal.modal-增强清晰度>header>button{
+  width:44px!important;height:44px!important;margin:3px 0 0!important;border-radius:0!important;background:transparent!important
+}
+.figma-tool-modal.modal-图片尺寸>header>button>img,
+.figma-tool-modal.modal-增强清晰度>header>button>img{width:42px!important;height:42px!important}
+
+/* Image Size: large preview, six equal ratio tiles and full-width instruction field. */
+.figma-tool-modal.modal-图片尺寸 .resize-stage{
+  box-sizing:border-box!important;height:440px!important;padding:34px!important;border-radius:28px!important;
+  background:linear-gradient(135deg,#f3f5f9,#eef1f7)!important
+}
+.figma-tool-modal.modal-图片尺寸 .resize-frame{
+  width:100%!important;height:100%!important;border:1px solid rgba(255,255,255,.94)!important;border-radius:18px!important;
+  background:rgba(255,255,255,.16)!important;box-shadow:inset 0 0 42px rgba(255,255,255,.5)!important
+}
+.figma-tool-modal.modal-图片尺寸 .resize-frame>img{width:auto!important;height:auto!important;max-width:58%!important;max-height:94%!important;object-fit:contain!important}
+.figma-tool-modal.modal-图片尺寸 .resize-frame>i{display:none!important}
+.figma-tool-modal.modal-图片尺寸 .ratio-list{
+  box-sizing:border-box!important;height:114px!important;margin-top:20px!important;display:grid!important;
+  grid-template-columns:repeat(6,1fr)!important;gap:18px!important
+}
+.figma-tool-modal.modal-图片尺寸 .ratio-list>button{
+  box-sizing:border-box!important;width:100%!important;height:114px!important;padding:13px 8px!important;border:0!important;
+  border-radius:17px!important;background:#f3f4f7!important;color:#353b4a!important;gap:10px!important;font-size:23px!important;font-weight:500!important
+}
+.figma-tool-modal.modal-图片尺寸 .ratio-list>button.active{background:#efedff!important;color:#4f37dc!important}
+.figma-tool-modal.modal-图片尺寸 .ratio-list>button>i{width:30px!important;height:30px!important;border:3px solid currentColor!important;border-radius:5px!important}
+.figma-tool-modal.modal-图片尺寸 .ratio-list>button:nth-child(3)>i{width:23px!important;height:31px!important}
+.figma-tool-modal.modal-图片尺寸 .ratio-list>button:nth-child(4)>i{width:16px!important;height:34px!important}
+.figma-tool-modal.modal-图片尺寸 .ratio-list>button:nth-child(5)>i{width:34px!important;height:23px!important}
+.figma-tool-modal.modal-图片尺寸 .ratio-list>button:nth-child(6)>i{width:38px!important;height:20px!important}
+.figma-tool-modal.modal-图片尺寸 .modal-prompt{
+  box-sizing:border-box!important;height:82px!important;margin-top:28px!important;padding:0 28px!important;border:2px solid #cbd3f7!important;
+  border-radius:22px!important;background:#fff!important
+}
+.figma-tool-modal.modal-图片尺寸 .modal-prompt>input{font-size:22px!important;color:#50586b!important}
+.figma-tool-modal.modal-图片尺寸 .modal-prompt>img{width:34px!important;height:34px!important;padding-left:24px!important;border-left:1px solid #cfd2dc!important}
+
+/* Enhance: reference image stage and bottom controls. */
+.figma-tool-modal.modal-增强清晰度 .enhance-stage{
+  box-sizing:border-box!important;height:610px!important;padding:44px 32px 138px!important;border-radius:28px!important;
+  background:linear-gradient(135deg,#f3f5f9,#eef1f7)!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-stage>img{width:auto!important;height:100%!important;max-width:78%!important;max-height:100%!important;object-fit:contain!important;border-radius:8px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-options{
+  position:absolute!important;left:64px!important;right:64px!important;bottom:120px!important;height:72px!important;padding:0 32px!important;
+  border-radius:0 0 28px 28px!important;background:transparent!important;align-items:center!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-option-wrap>button{
+  box-sizing:border-box!important;height:68px!important;padding:0 30px!important;border:1px solid #d8dbe6!important;border-radius:18px!important;
+  background:#fff!important;color:#222838!important;display:flex!important;align-items:center!important;gap:18px!important;font-size:22px!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-option-wrap>button>strong{font:600 22px/1 "Microsoft YaHei",sans-serif!important;white-space:nowrap!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-option-wrap>button>b{font-size:30px!important;font-weight:400!important;color:#697186!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap>button{min-width:295px!important;justify-content:space-between!important}
+.detail-grid-icon{width:28px!important;height:28px!important;display:grid!important;grid-template-columns:repeat(3,5px)!important;grid-template-rows:repeat(3,5px)!important;gap:4px!important;place-content:center!important}
+.detail-grid-icon>i{display:block!important;width:5px!important;height:5px!important;border-radius:50%!important;background:#11182b!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-popover{
+  bottom:78px!important;width:474px!important;max-height:none!important;padding:14px!important;border-radius:22px!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-popover>button{min-height:92px!important;padding:15px 28px!important;border-radius:16px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-popover strong{font-size:21px!important;line-height:30px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-popover small{font-size:17px!important;line-height:26px!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-popover{left:auto!important;right:0!important;width:295px!important}
+
+/* One identical Generate control for all four edit functions. */
+.figma-tool-modal>.modal-generate{
+  box-sizing:border-box!important;position:absolute!important;right:64px!important;bottom:44px!important;
+  width:248px!important;height:82px!important;margin:0!important;padding:0!important;border:0!important;border-radius:23px!important;
+  background:linear-gradient(105deg,#258cf7 0%,#526cf3 48%,#9f58ee 100%)!important;
+  box-shadow:0 14px 28px rgba(76,93,231,.28)!important;color:#fff!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;gap:20px!important;font-size:30px!important;font-weight:600!important
+}
+.figma-tool-modal>.modal-generate:hover{transform:translateY(-2px)!important;box-shadow:0 18px 34px rgba(76,93,231,.34)!important}
+.modal-generate-stars{position:relative!important;width:42px!important;height:44px!important;display:block!important;font-size:39px!important;line-height:44px!important;color:#fff!important}
+.modal-generate-stars>i{position:absolute!important;right:-1px!important;top:-9px!important;font:400 18px/1 Arial,sans-serif!important;color:#fff!important}
+.figma-tool-modal:not(.modal-图片尺寸):not(.modal-增强清晰度){padding-bottom:92px!important}
+.figma-tool-modal:not(.modal-图片尺寸):not(.modal-增强清晰度)>.modal-generate{
+  right:35px!important;bottom:22px!important;width:180px!important;height:58px!important;border-radius:17px!important;
+  gap:14px!important;font-size:22px!important
+}
+.figma-tool-modal:not(.modal-图片尺寸):not(.modal-增强清晰度) .modal-generate-stars{
+  width:32px!important;height:34px!important;font-size:30px!important;line-height:34px!important
+}
+
+@media(max-width:1100px), (max-height:760px){
+  .figma-tool-modal.modal-图片尺寸,.figma-tool-modal.modal-增强清晰度{
+    transform:none!important;width:calc(100vw - 48px)!important;height:calc(100vh - 96px)!important;
+    padding:22px 46px 28px!important;border-radius:26px!important
+  }
+  .figma-tool-modal.modal-图片尺寸>header,.figma-tool-modal.modal-增强清晰度>header{height:54px!important}
+  .figma-tool-modal.modal-图片尺寸>header strong,.figma-tool-modal.modal-增强清晰度>header strong{font-size:28px!important;line-height:38px!important}
+  .figma-tool-modal.modal-增强清晰度 .tool-modal-heading>small{font-size:16px!important;line-height:22px!important}
+  .figma-tool-modal.modal-图片尺寸 .resize-stage{height:270px!important;padding:20px!important}
+  .figma-tool-modal.modal-图片尺寸 .ratio-list{height:82px!important;margin-top:14px!important;gap:12px!important}
+  .figma-tool-modal.modal-图片尺寸 .ratio-list>button{height:82px!important;padding:8px!important;font-size:16px!important;gap:6px!important}
+  .figma-tool-modal.modal-图片尺寸 .ratio-list>button>i{transform:scale(.76)!important}
+  .figma-tool-modal.modal-图片尺寸 .modal-prompt{height:54px!important;margin-top:14px!important;padding:0 20px!important;border-radius:15px!important}
+  .figma-tool-modal.modal-图片尺寸 .modal-prompt>input{font-size:16px!important}
+  .figma-tool-modal.modal-图片尺寸 .modal-prompt>img{width:26px!important;height:26px!important;padding-left:17px!important}
+  .figma-tool-modal.modal-增强清晰度 .enhance-stage{height:394px!important;padding:24px 24px 92px!important}
+  .figma-tool-modal.modal-增强清晰度 .enhance-options{left:46px!important;right:46px!important;bottom:92px!important;height:54px!important;padding:0 22px!important}
+  .figma-tool-modal.modal-增强清晰度 .enhance-option-wrap>button{height:52px!important;padding:0 21px!important;border-radius:14px!important;gap:12px!important;font-size:16px!important}
+  .figma-tool-modal.modal-增强清晰度 .enhance-option-wrap>button>strong{font-size:16px!important}
+  .figma-tool-modal.modal-增强清晰度 .resolution-wrap>button{min-width:210px!important}
+  .figma-tool-modal.modal-增强清晰度 .enhance-popover{bottom:61px!important;width:360px!important}
+  .figma-tool-modal.modal-增强清晰度 .enhance-popover>button{min-height:67px!important;padding:9px 18px!important}
+  .figma-tool-modal.modal-增强清晰度 .enhance-popover strong{font-size:16px!important;line-height:23px!important}
+  .figma-tool-modal.modal-增强清晰度 .enhance-popover small{font-size:13px!important;line-height:20px!important}
+  .figma-tool-modal>.modal-generate{right:46px!important;bottom:28px!important;width:180px!important;height:58px!important;border-radius:17px!important;gap:14px!important;font-size:22px!important}
+  .modal-generate-stars{width:32px!important;height:34px!important;font-size:30px!important;line-height:34px!important}
+  .modal-generate-stars>i{font-size:14px!important}
+}

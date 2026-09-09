@@ -1988,7 +1988,10 @@ function Editor({
             aria-label={tool}
           >
             <header>
-              <strong>{tool}</strong>
+              <div className="tool-modal-heading">
+                <strong>{tool}</strong>
+                {tool === "增强清晰度" && <small>智能提升画面清晰度，让图片更细腻、更生动</small>}
+              </div>
               <button onClick={closeTool} aria-label="关闭">
                 <img src="/assets/figma-modal-close.svg" />
               </button>
@@ -2108,7 +2111,8 @@ function Editor({
                         setResolutionOpen(false);
                       }}
                     >
-                      ☷　{detail}
+                      <span className="enhance-control-icon detail-grid-icon" aria-hidden="true"><i/><i/><i/><i/><i/><i/><i/><i/><i/></span>
+                      <strong>调节生成强度</strong><b>›</b>
                     </button>
                     {detailOpen && (
                       <div
@@ -2156,7 +2160,7 @@ function Editor({
                         setDetailOpen(false);
                       }}
                     >
-                      {resolution}　⌃
+                      <strong>{resolution}</strong><b>⌄</b>
                     </button>
                     {resolutionOpen && (
                       <div
@@ -2194,7 +2198,8 @@ function Editor({
               className="modal-generate"
               onClick={() => setGeneratedEdit(true)}
             >
-              {generatedEdit ? "已生成" : "生成"}
+              <span className="modal-generate-stars" aria-hidden="true">✦<i>✦</i></span>
+              <span>{generatedEdit ? "已生成" : "生成"}</span>
             </button>
           </section>
         </div>
