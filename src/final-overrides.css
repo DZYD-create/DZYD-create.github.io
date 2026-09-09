@@ -13343,3 +13343,37 @@ button > img {
 .canvas-search-modal .search-grid>button[draggable="true"]{cursor:grab!important}
 .canvas-search-modal .search-list>button[draggable="true"]:active,
 .canvas-search-modal .search-grid>button[draggable="true"]:active{cursor:grabbing!important}
+
+/* White site-native date picker for History. */
+.history-date-row{position:relative!important}
+.history-date-row>button{display:flex!important;align-items:center!important;justify-content:space-between!important}
+.history-date-icon{display:block!important;width:18px!important;height:18px!important;flex:0 0 18px!important;fill:none!important;stroke:#17191f!important;stroke-width:1.55!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+.history-date-icon circle{fill:#17191f!important;stroke:none!important}
+.history-calendar{
+  position:absolute!important;
+  left:0!important;
+  top:58px!important;
+  z-index:10050!important;
+  width:334px!important;
+  padding:14px 16px 18px!important;
+  box-sizing:border-box!important;
+  border:1px solid #ebeaf3!important;
+  border-radius:18px!important;
+  background:#fff!important;
+  color:#202432!important;
+  box-shadow:0 18px 46px rgba(46,43,72,.17),0 3px 10px rgba(84,75,132,.07)!important;
+}
+.history-calendar>header{height:42px!important;display:grid!important;grid-template-columns:30px 30px 1fr 30px 30px!important;align-items:center!important;border-bottom:1px solid #efeff4!important;padding:0 0 10px!important;margin-bottom:10px!important}
+.history-calendar>header>strong{text-align:center!important;margin:0!important;color:#202432!important;font-size:17px!important;line-height:24px!important;font-weight:600!important}
+.history-calendar>header>button,
+.history-calendar-days>button{
+  width:30px!important;height:30px!important;min-height:30px!important;margin:0!important;padding:0!important;border:0!important;border-radius:8px!important;background:transparent!important;color:#5e6370!important;display:grid!important;place-items:center!important;text-align:center!important;font-size:16px!important;line-height:1!important;cursor:pointer!important
+}
+.history-calendar>header>button:hover,
+.history-calendar-days>button:hover{background:#f0edff!important;color:#5949db!important;border:0!important;transform:none!important}
+.history-calendar-week,
+.history-calendar-days{display:grid!important;grid-template-columns:repeat(7,1fr)!important;justify-items:center!important;gap:5px 8px!important}
+.history-calendar-week{margin-bottom:5px!important}
+.history-calendar-week>span{width:30px!important;height:25px!important;display:grid!important;place-items:center!important;color:#9296a3!important;font-size:13px!important;font-weight:500!important}
+.history-calendar-days>button.outside{color:#c4c6ce!important}
+.history-calendar-days>button.selected{background:#7061ee!important;color:#fff!important;box-shadow:0 5px 12px rgba(103,85,225,.25)!important}

@@ -56,6 +56,42 @@ const featuredPeople = [
   { name: "田豆花", url: "/assets/person-teacher-3.png" },
 ];
 
+function DateFieldIcon() {
+  return <svg className="history-date-icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12.5" rx="2.3"/><path d="M6.5 3v3M13.5 3v3M3 8h14"/><circle cx="7" cy="11.5" r=".9"/><circle cx="10" cy="11.5" r=".9"/></svg>;
+}
+
+function WhiteDateCalendar({ value, onSelect }: { value: string; onSelect: (value: string) => void }) {
+  const initial = value ? new Date(`${value}T12:00:00`) : new Date(2026, 8, 1);
+  const [month, setMonth] = useState(new Date(initial.getFullYear(), initial.getMonth(), 1));
+  const year = month.getFullYear();
+  const monthIndex = month.getMonth();
+  const firstDay = new Date(year, monthIndex, 1).getDay();
+  const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+  const previousMonthDays = new Date(year, monthIndex, 0).getDate();
+  const cells = Array.from({ length: 42 }, (_, index) => {
+    const dayOffset = index - firstDay + 1;
+    if (dayOffset < 1) return { day: previousMonthDays + dayOffset, offset: -1 };
+    if (dayOffset > daysInMonth) return { day: dayOffset - daysInMonth, offset: 1 };
+    return { day: dayOffset, offset: 0 };
+  });
+  const move = (offset: number) => setMonth(new Date(year, monthIndex + offset, 1));
+  return <div className="history-calendar" role="dialog" aria-label="选择日期" onClick={(event) => event.stopPropagation()}>
+    <header>
+      <button aria-label="上一年" onClick={() => move(-12)}>«</button>
+      <button aria-label="上个月" onClick={() => move(-1)}>‹</button>
+      <strong>{year} 年 {String(monthIndex + 1).padStart(2, "0")} 月</strong>
+      <button aria-label="下个月" onClick={() => move(1)}>›</button>
+      <button aria-label="下一年" onClick={() => move(12)}>»</button>
+    </header>
+    <div className="history-calendar-week">{["日", "一", "二", "三", "四", "五", "六"].map((day) => <span key={day}>{day}</span>)}</div>
+    <div className="history-calendar-days">{cells.map((cell, index) => {
+      const date = new Date(year, monthIndex + cell.offset, cell.day);
+      const iso = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      return <button key={`${iso}-${index}`} className={`${cell.offset ? "outside" : ""} ${value === iso ? "selected" : ""}`} onClick={() => onSelect(iso)}>{cell.day}</button>;
+    })}</div>
+  </div>;
+}
+
 function App() {
   const [section, setSection] = useState<Section>("studio");
   const [prompt, setPrompt] = useState("");
@@ -6047,6 +6083,9 @@ function History({
   const [time, setTime] = useState("全部");
   const [order, setOrder] = useState("近-远");
   const [sortBy, setSortBy] = useState("修改时间");
+  const [datePicker, setDatePicker] = useState<"start" | "end" | null>(null);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("2026-08-17");
   const [zoom, setZoom] = useState(42);
   const [historySearchOpen, setHistorySearchOpen] = useState(false);
   const [historyQuery, setHistoryQuery] = useState("");
@@ -6202,12 +6241,13 @@ function History({
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="history-date-row">
-                  <button>
-                    开始日期 <span>▣</span>
+                  <button onClick={(event) => { event.stopPropagation(); setDatePicker((current) => current === "start" ? null : "start"); }}>
+                    {startDate ? startDate.slice(2) : "开始日期"} <DateFieldIcon />
                   </button>
-                  <button>
-                    26-08-17 <span>▣</span>
+                  <button onClick={(event) => { event.stopPropagation(); setDatePicker((current) => current === "end" ? null : "end"); }}>
+                    {endDate.slice(2)} <DateFieldIcon />
                   </button>
+                  {datePicker && <WhiteDateCalendar value={datePicker === "start" ? startDate : endDate} onSelect={(value) => { if (datePicker === "start") setStartDate(value); else setEndDate(value); setDatePicker(null); }} />}
                 </div>
                 {["全部", "最近一周", "最近一个月", "最近三个月"].map((v) => (
                   <button
