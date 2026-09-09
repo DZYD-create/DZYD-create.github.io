@@ -6016,7 +6016,7 @@ function HistoryDrawer({ onClose }: { onClose: () => void }) {
     <aside className="figma-history-panel">
       <div className="figma-history-title">
         <button onClick={onClose} aria-label="关闭历史">
-          <img src="/assets/history-back.svg" />
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12.5 5-5 5 5 5" /></svg>
         </button>
         <h2>历史</h2>
         <span />

@@ -13377,3 +13377,45 @@ button > img {
 .history-calendar-week>span{width:30px!important;height:25px!important;display:grid!important;place-items:center!important;color:#9296a3!important;font-size:13px!important;font-weight:500!important}
 .history-calendar-days>button.outside{color:#c4c6ce!important}
 .history-calendar-days>button.selected{background:#7061ee!important;color:#fff!important;box-shadow:0 5px 12px rgba(103,85,225,.25)!important}
+
+/* Both canvas drawer titles use the exact same arrow box and horizontal gap. */
+.asset-library-panel .asset-title,
+.figma-history-panel .figma-history-title{
+  display:flex!important;
+  align-items:center!important;
+  gap:12px!important;
+}
+.asset-library-panel .asset-title>button:first-child,
+.figma-history-panel .figma-history-title>button:first-child{
+  width:20px!important;
+  min-width:20px!important;
+  height:28px!important;
+  flex:0 0 20px!important;
+}
+.asset-library-panel .asset-title>button:first-child>svg,
+.figma-history-panel .figma-history-title>button:first-child>svg{
+  display:block!important;
+  width:20px!important;
+  height:20px!important;
+  margin:0!important;
+}
+.asset-library-panel .asset-title>button:first-child>svg>path,
+.figma-history-panel .figma-history-title>button:first-child>svg>path{
+  fill:none!important;
+  stroke:#202432!important;
+  stroke-width:1.7!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+}
+
+/* Rename uses the site's animated light-flow field; remove the decorative progress bar. */
+.conversation-rename-dialog>input{
+  box-sizing:border-box!important;
+  border:1.5px solid transparent!important;
+  background:linear-gradient(#fff,#fff) padding-box,linear-gradient(90deg,#765dff,#5fc8ff,#f0a4ff,#765dff) border-box!important;
+  background-size:100% 100%,300% 100%!important;
+  box-shadow:none!important;
+  animation:folder-input-flow 3s linear infinite!important;
+}
+.conversation-rename-dialog>small{display:none!important}
+.conversation-rename-dialog footer{margin-top:24px!important}
