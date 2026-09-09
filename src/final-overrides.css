@@ -12871,3 +12871,104 @@ button > img {
   pointer-events:auto!important;
 }
 .history-search-action>img{filter:none!important}
+
+/* Equal vertical rhythm for the four quick Time choices. */
+.history-filter-anchor>.time-pop{
+  gap:6px!important;
+  padding:10px!important;
+}
+.history-filter-anchor>.time-pop>button{
+  margin:0!important;
+  flex:0 0 44px!important;
+}
+.history-filter-anchor>.time-pop>.history-date-row{margin:0 0 2px!important}
+
+/* Reference add-card: inset lavender dash, glowing gradient plus and helper copy. */
+.history-create-record>.history-record-preview,
+.asset-subject-card.create>.asset-create-single,
+.asset-upload-entry>.asset-create-single{
+  position:relative!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+  border:0!important;
+  border-radius:14px!important;
+  background:linear-gradient(145deg,#fbfaff 0%,#f5f4ff 55%,#fafaff 100%)!important;
+  box-shadow:0 8px 22px rgba(104,82,224,.13)!important;
+}
+.history-create-record>.history-record-preview::before,
+.asset-subject-card.create>.asset-create-single::before,
+.asset-upload-entry>.asset-create-single::before{
+  content:""!important;
+  position:absolute!important;
+  inset:10px!important;
+  border:2px dashed #c7b7ff!important;
+  border-radius:12px!important;
+  pointer-events:none!important;
+}
+.history-create-record>.history-record-preview>span,
+.asset-subject-card.create>.asset-create-single>i,
+.asset-upload-entry>.asset-create-single>i{
+  position:absolute!important;
+  left:50%!important;
+  top:42%!important;
+  z-index:2!important;
+  width:58px!important;
+  height:58px!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:50%!important;
+  background:linear-gradient(145deg,#8e57ff 0%,#612df5 100%)!important;
+  color:#fff!important;
+  box-shadow:0 0 0 9px rgba(116,77,248,.08),0 0 0 18px rgba(116,77,248,.04),0 9px 22px rgba(91,50,226,.25)!important;
+  display:grid!important;
+  place-items:center!important;
+  font:300 38px/1 Arial,sans-serif!important;
+  opacity:1!important;
+  visibility:visible!important;
+  transform:translate(-50%,-50%)!important;
+}
+.history-create-record>.history-record-preview::after,
+.asset-subject-card.create>.asset-create-single::after,
+.asset-upload-entry>.asset-create-single::after{
+  content:"点击添加内容"!important;
+  position:absolute!important;
+  left:50%!important;
+  top:62%!important;
+  right:auto!important;
+  bottom:auto!important;
+  z-index:2!important;
+  width:auto!important;
+  height:auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  display:block!important;
+  color:#777b9c!important;
+  font:600 15px/1.4 "Microsoft YaHei",sans-serif!important;
+  white-space:nowrap!important;
+  opacity:1!important;
+  visibility:visible!important;
+  transform:translateX(-50%)!important;
+}
+
+/* Full artwork without gray framing or crop during zoom. */
+.history-record-preview,
+.asset-subject-card>div,
+.asset-content-open,
+.asset-content-open>img{
+  border:0!important;
+  outline:0!important;
+  background:#fff!important;
+  box-shadow:none!important;
+}
+.history-record-preview>img,
+.asset-subject-card>div>img,
+.asset-content-open>img{
+  border:0!important;
+  background:#fff!important;
+  object-fit:contain!important;
+}
