@@ -1833,7 +1833,7 @@ function Editor({
   const [brushMode, setBrushMode] = useState("画笔");
   const [ratio, setRatio] = useState("原比例");
   const [detail, setDetail] = useState("轻度细节生成");
-  const [resolution, setResolution] = useState("放大至 4K");
+  const [resolution, setResolution] = useState("放大至 2K");
   const [detailOpen, setDetailOpen] = useState(false);
   const [resolutionOpen, setResolutionOpen] = useState(false);
   const [generatedEdit, setGeneratedEdit] = useState(false);
@@ -1982,7 +1982,7 @@ function Editor({
       {tool && (
         <div className="tool-modal-backdrop" role="presentation">
           <section
-            className={`figma-tool-modal modal-${tool}`}
+            className={`figma-tool-modal modal-${tool} ${tool === "局部重绘" ? "modal-擦除内容" : ""}`}
             role="dialog"
             aria-modal="true"
             aria-label={tool}
@@ -1992,6 +1992,7 @@ function Editor({
                 <strong>{tool}</strong>
                 {tool === "增强清晰度" && <small>智能提升画面清晰度，让图片更细腻、更生动</small>}
                 {tool === "擦除内容" && <small>涂抹需要擦除的区域，AI 将智能删除并自然修复画面</small>}
+                {tool === "局部重绘" && <small>涂抹需要重绘的区域，AI 将根据描述自然重绘画面</small>}
               </div>
               <button onClick={closeTool} aria-label="关闭">
                 <img src="/assets/figma-modal-close.svg" />
@@ -2028,7 +2029,7 @@ function Editor({
                         ["画笔", "figma-brush.svg"],
                         ["橡皮", "figma-eraser-mode.svg"],
                         ["移动", "figma-hand.svg"],
-                        ...(tool === "擦除内容" ? [["框选", "crop-ratio.svg"]] : []),
+                        ...((tool === "擦除内容" || tool === "局部重绘") ? [["框选", "crop-ratio.svg"]] : []),
                       ].map(([name, icon]) => (
                         <button
                           className={brushMode === name ? "active" : ""}
@@ -2055,15 +2056,15 @@ function Editor({
                   </div>
                 </div>
                 <div className="modal-prompt">
-                  {tool === "擦除内容" && <span className="erase-prompt-spark" aria-hidden="true">✦</span>}
+                  {(tool === "擦除内容" || tool === "局部重绘") && <span className="erase-prompt-spark" aria-hidden="true">✦</span>}
                   <input
                     value={modalPrompt}
                     onChange={(e) => setModalPrompt(e.target.value)}
                     placeholder="描述想要如何更改画面，或涂抹后输入要更改的文案"
                   />
-                  {tool === "擦除内容" ? <><span className="erase-prompt-count">{modalPrompt.length}/300</span><i/><button className="erase-ai-optimize"><img src="/assets/magic.svg"/>AI 优化</button></> : <img src="/assets/figma-text-tool.svg" />}
+                  {(tool === "擦除内容" || tool === "局部重绘") ? <><span className="erase-prompt-count">{modalPrompt.length}/300</span><i/><button className="erase-ai-optimize"><img src="/assets/magic.svg"/>AI 优化</button></> : <img src="/assets/figma-text-tool.svg" />}
                 </div>
-                {tool === "擦除内容" && <div className="erase-modal-secondary"><button onClick={() => { setEditorStrokes([]); setEditorUndo([]); setEditorRedo([]); setModalPrompt(""); }}>↶　重置</button><button onClick={closeTool}>取消</button></div>}
+                {(tool === "擦除内容" || tool === "局部重绘") && <div className="erase-modal-secondary"><button onClick={() => { setEditorStrokes([]); setEditorUndo([]); setEditorRedo([]); setModalPrompt(""); }}>↶　重置</button><button onClick={closeTool}>取消</button></div>}
               </>
             )}
             {tool === "图片尺寸" && (
@@ -2185,6 +2186,7 @@ function Editor({
                             }}
                             key={v}
                           >
+                            {resolution === v && <b className="resolution-check">✓</b>}
                             {v}
                             <small>{v === "放大至 4K" ? "推荐" : ""}</small>
                           </button>

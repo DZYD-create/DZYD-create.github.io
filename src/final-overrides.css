@@ -13941,6 +13941,44 @@ button > img {
   .figma-tool-modal.modal-擦除内容{transform:scale(.83)!important}
 }
 
+/* Final modal geometry: no overlap, equal optical centers, compact enhancement stage. */
+.figma-tool-modal>.modal-generate{line-height:1!important}
+.figma-tool-modal>.modal-generate>span:last-child{display:flex!important;align-items:center!important;height:38px!important;line-height:38px!important}
+.figma-tool-modal>.modal-generate .modal-generate-stars{display:grid!important;place-items:center!important;align-self:center!important}
+.figma-tool-modal>.modal-generate .modal-generate-stars>svg{display:block!important;transform:translateY(0)!important}
+
+.figma-tool-modal.modal-增强清晰度{height:570px!important;padding-bottom:78px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-stage{height:330px!important;padding:20px 24px 70px!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-stage>img{height:auto!important;max-height:240px!important;max-width:78%!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-options{bottom:76px!important;height:58px!important}
+.figma-tool-modal.modal-增强清晰度>.modal-generate{bottom:16px!important}
+
+/* Resolution chooser matches the reference: floating above the outlined trigger. */
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap>button[aria-expanded="true"]{
+  border:2px solid #171b28!important;background:#fff!important
+}
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap>button[aria-expanded="true"]>b{transform:rotate(180deg)!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-popover{
+  box-sizing:border-box!important;right:0!important;bottom:58px!important;width:210px!important;max-height:none!important;
+  padding:12px!important;border:1px solid #e6e9f0!important;border-radius:20px!important;background:#fff!important;
+  box-shadow:0 13px 30px rgba(37,45,67,.15)!important
+}
+.figma-tool-modal.modal-增强清晰度 .resolution-popover>button{
+  box-sizing:border-box!important;position:relative!important;width:100%!important;height:58px!important;min-height:58px!important;
+  padding:0 14px 0 38px!important;border:0!important;border-radius:12px!important;background:#fff!important;color:#171c2b!important;
+  display:flex!important;align-items:center!important;justify-content:flex-start!important;font-size:16px!important;text-align:left!important
+}
+.figma-tool-modal.modal-增强清晰度 .resolution-popover>button.active{background:#f0efff!important;color:#3022a4!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-popover>button>small{margin-left:auto!important;color:#654de0!important;font-size:12px!important}
+.resolution-check{position:absolute!important;left:14px!important;top:50%!important;transform:translateY(-50%)!important;color:#3223af!important;font-size:18px!important;font-weight:500!important}
+
+/* Redraw uses the complete paint workspace while retaining its own title. */
+.figma-tool-modal.modal-局部重绘.modal-擦除内容 .tool-modal-heading>strong::after{content:none!important}
+.figma-tool-modal.modal-擦除内容>.modal-generate .modal-generate-stars{
+  display:grid!important;width:30px!important;height:30px!important;flex-basis:30px!important
+}
+.figma-tool-modal.modal-擦除内容>.modal-generate .modal-generate-stars>svg{width:30px!important;height:30px!important}
+
 /* Image Size returns to the normal editor-dialog footprint. */
 .figma-tool-modal.modal-图片尺寸{
   width:700px!important;height:auto!important;min-height:548px!important;max-width:calc(100vw - 40px)!important;
