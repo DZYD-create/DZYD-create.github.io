@@ -13631,3 +13631,33 @@ button > img {
   padding-left:0!important;
   text-align:left!important;
 }
+
+/* Keep both calendar navigation controls on each side of the centered title. */
+.history-filter-anchor>.history-pop .history-calendar>header>button{
+  position:absolute!important;
+  top:50%!important;
+  width:30px!important;
+  min-width:30px!important;
+  max-width:30px!important;
+  height:30px!important;
+  min-height:30px!important;
+  max-height:30px!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:7px!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  transform:translateY(-50%)!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  line-height:1!important;
+}
+.history-filter-anchor>.history-pop .history-calendar>header>button:nth-of-type(1){left:0!important;right:auto!important}
+.history-filter-anchor>.history-pop .history-calendar>header>button:nth-of-type(2){left:30px!important;right:auto!important}
+.history-filter-anchor>.history-pop .history-calendar>header>button:nth-of-type(3){left:auto!important;right:30px!important}
+.history-filter-anchor>.history-pop .history-calendar>header>button:nth-of-type(4){left:auto!important;right:0!important}
+.history-filter-anchor>.history-pop .history-calendar>header>button:hover{
+  border:0!important;background:#f2f0ff!important;box-shadow:none!important;transform:translateY(-50%)!important
+}
