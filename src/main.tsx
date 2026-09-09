@@ -113,6 +113,7 @@ function App() {
   const [tool, setTool] = useState<EditorTool | null>(null);
   const [canvasImage, setCanvasImage] = useState<string | null>(null);
   const [canvasImageName, setCanvasImageName] = useState("AI 视觉创作 · 未命名项目");
+  const [canvasInitialTool, setCanvasInitialTool] = useState("移动");
   const [pendingCanvasAssets, setPendingCanvasAssets] = useState<Array<{ name: string; url: string }>>([]);
   const [folders, setFolders] = useState(["品牌素材", "产品图片"]);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -306,6 +307,7 @@ function App() {
                     setGenerating(false);
                     setActiveConversation(null);
                   }
+                  if (item.id === "canvas") setCanvasInitialTool("移动");
                 }}
               >
                 <span className={`nav-glyph nav-glyph-${item.id}`}>
@@ -463,6 +465,15 @@ function App() {
             }}
             onCanvas={() => {
               setCanvasImage("/assets/template-2.png");
+              setCanvasInitialTool("移动");
+              setSection("canvas");
+              setEditing(false);
+            }}
+            onCanvasTool={(nextTool) => {
+              setCanvasImage("/assets/template-2.png");
+              setCanvasImageName("对话生成图片");
+              setCanvasInitialTool(nextTool === "擦除内容" ? "擦除" : "局部重绘");
+              setTool(null);
               setSection("canvas");
               setEditing(false);
             }}
@@ -472,6 +483,7 @@ function App() {
           <Canvas
             canvasImage={canvasImage}
             canvasImageName={canvasImageName}
+            initialTool={canvasInitialTool}
             initialAssets={pendingCanvasAssets}
             setCanvasImage={setCanvasImage}
             folders={folders}
@@ -498,6 +510,7 @@ function App() {
               setConversationCollapsed(false);
             }}
             onCanvas={(image, name) => {
+              setCanvasInitialTool("移动");
               setSection("canvas");
               setPendingCanvasAssets([]);
               setCanvasImage(image || null);
@@ -515,6 +528,7 @@ function App() {
               setConversationCollapsed(false);
             }}
             onSendToCanvas={(item) => {
+              setCanvasInitialTool("移动");
               const liveParts = [
                 { name: "直播间下贴片", url: "/assets/live-lower-strip.png" },
                 { name: "直播间上贴片背景", url: "/assets/live-upper-background.png" },
@@ -1822,12 +1836,14 @@ function Editor({
   prompt,
   onClose,
   onCanvas,
+  onCanvasTool,
 }: {
   tool: EditorTool | null;
   setTool: (v: EditorTool | null) => void;
   prompt: string;
   onClose: () => void;
   onCanvas: () => void;
+  onCanvasTool: (tool: "局部重绘" | "擦除内容") => void;
 }) {
   const [zoom, setZoom] = useState(100);
   const [saved, setSaved] = useState(false);
@@ -1863,8 +1879,12 @@ function Editor({
     },
   ];
   const openTool = (next: EditorTool) => {
+    if (next === "局部重绘" || next === "擦除内容") {
+      onCanvasTool(next);
+      return;
+    }
     setTool(next);
-    setBrushMode(next === "擦除内容" ? "橡皮" : "画笔");
+    setBrushMode("画笔");
     setGeneratedEdit(false);
   };
   const closeTool = () => setTool(null);
@@ -2171,6 +2191,7 @@ function Editor({
 function Canvas({
   canvasImage,
   canvasImageName,
+  initialTool,
   initialAssets,
   setCanvasImage,
   folders,
@@ -2181,6 +2202,7 @@ function Canvas({
 }: {
   canvasImage: string | null;
   canvasImageName: string;
+  initialTool: string;
   initialAssets: Array<{ name: string; url: string }>;
   setCanvasImage: (v: string | null) => void;
   folders: string[];
@@ -2199,7 +2221,7 @@ function Canvas({
   const [applied, setApplied] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [quickOpen, setQuickOpen] = useState(false);
-  const [canvasTool, setCanvasTool] = useState("移动");
+  const [canvasTool, setCanvasTool] = useState(initialTool || "移动");
   const [redrawMode, setRedrawMode] = useState("画笔");
   const [redrawBrushSize, setRedrawBrushSize] = useState(48);
   type RedrawStroke = { nodeId: number; size: number; kind: "brush" | "box" | "erase"; points: Array<{ x: number; y: number }> };

@@ -13419,3 +13419,50 @@ button > img {
 }
 .conversation-rename-dialog>small{display:none!important}
 .conversation-rename-dialog footer{margin-top:24px!important}
+
+/* Match the reference calendar geometry; only its palette is light. */
+.history-filter-anchor>.history-pop .history-calendar{
+  width:334px!important;
+  min-width:334px!important;
+  height:398px!important;
+  padding:14px 18px 18px!important;
+  overflow:hidden!important;
+  background:#fff!important;
+}
+.history-filter-anchor>.history-pop .history-calendar>header{
+  height:52px!important;
+  grid-template-columns:30px 30px 1fr 30px 30px!important;
+  padding:0 0 10px!important;
+  margin:0 0 10px!important;
+  background:#fff!important;
+}
+.history-filter-anchor>.history-pop .history-calendar>header>button{
+  width:30px!important;min-width:30px!important;max-width:30px!important;height:30px!important;min-height:30px!important;
+  padding:0!important;margin:0!important;border:0!important;border-radius:7px!important;background:transparent!important;color:#686d79!important
+}
+.history-filter-anchor>.history-pop .history-calendar-week,
+.history-filter-anchor>.history-pop .history-calendar-days{
+  width:100%!important;
+  grid-template-columns:repeat(7,34px)!important;
+  column-gap:8px!important;
+  justify-content:center!important;
+  align-items:center!important;
+}
+.history-filter-anchor>.history-pop .history-calendar-week{height:30px!important;margin:0 0 4px!important}
+.history-filter-anchor>.history-pop .history-calendar-days{row-gap:7px!important}
+.history-filter-anchor>.history-pop .history-calendar-days>button{
+  position:relative!important;
+  width:34px!important;min-width:34px!important;max-width:34px!important;
+  height:38px!important;min-height:38px!important;max-height:38px!important;
+  padding:0!important;margin:0!important;border:0!important;border-radius:8px!important;
+  background:transparent!important;color:#3f4450!important;-webkit-text-fill-color:#3f4450!important;
+  display:grid!important;place-items:center!important;font-size:16px!important;font-weight:500!important;line-height:1!important
+}
+.history-filter-anchor>.history-pop .history-calendar-days>button.outside{color:#bec1ca!important;-webkit-text-fill-color:#bec1ca!important}
+.history-filter-anchor>.history-pop .history-calendar-days>button:hover{background:#f2f0ff!important;color:#5949db!important;-webkit-text-fill-color:#5949db!important}
+.history-filter-anchor>.history-pop .history-calendar-days>button.selected{
+  background:transparent!important;color:#202432!important;-webkit-text-fill-color:#202432!important;box-shadow:none!important;font-weight:700!important
+}
+.history-filter-anchor>.history-pop .history-calendar-days>button.selected::after{
+  content:""!important;position:absolute!important;left:50%!important;bottom:1px!important;width:5px!important;height:5px!important;border-radius:50%!important;background:#45a8ff!important;transform:translateX(-50%)!important
+}
