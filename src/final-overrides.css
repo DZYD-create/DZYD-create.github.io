@@ -13547,3 +13547,50 @@ button > img {
   content:url('/assets/figma-home-size-active.svg')!important;
   filter:none!important;
 }
+
+/* Calendar alignment: weekday labels, date hit areas and numerals share one exact grid. */
+.history-filter-anchor>.history-pop .history-calendar>.history-calendar-week,
+.history-filter-anchor>.history-pop .history-calendar>.history-calendar-days{
+  box-sizing:border-box!important;
+  display:grid!important;
+  grid-template-columns:repeat(7,34px)!important;
+  grid-auto-flow:row!important;
+  column-gap:8px!important;
+  justify-content:start!important;
+  justify-items:stretch!important;
+  align-items:stretch!important;
+  width:286px!important;
+  min-width:286px!important;
+  max-width:286px!important;
+  padding:0!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+.history-filter-anchor>.history-pop .history-calendar>.history-calendar-week>span,
+.history-filter-anchor>.history-pop .history-calendar>.history-calendar-days>button{
+  box-sizing:border-box!important;
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  justify-self:stretch!important;
+  align-self:stretch!important;
+  width:34px!important;
+  min-width:34px!important;
+  max-width:34px!important;
+  margin:0!important;
+  padding:0!important;
+  text-align:center!important;
+  text-indent:0!important;
+  line-height:1!important;
+}
+.history-filter-anchor>.history-pop .history-calendar>.history-calendar-week>span{
+  height:30px!important;min-height:30px!important;max-height:30px!important
+}
+.history-filter-anchor>.history-pop .history-calendar>.history-calendar-days{
+  grid-auto-rows:38px!important;row-gap:7px!important
+}
+.history-filter-anchor>.history-pop .history-calendar>.history-calendar-days>button{
+  height:38px!important;min-height:38px!important;max-height:38px!important;
+  border-radius:8px!important;background-clip:padding-box!important
+}
