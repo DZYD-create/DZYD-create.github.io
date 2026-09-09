@@ -13308,3 +13308,38 @@ button > img {
   font-weight:600!important;
   color:#4f5565!important;
 }
+
+/* Asset drawer uses a geometrically centered SVG chevron. */
+.asset-library-panel .asset-title>button:first-child>svg{
+  display:block!important;
+  width:20px!important;
+  height:20px!important;
+  margin:0!important;
+  overflow:visible!important;
+}
+.asset-library-panel .asset-title>button:first-child>svg>path{
+  fill:none!important;
+  stroke:#202432!important;
+  stroke-width:1.7!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+}
+
+/* Search results are real draggable image previews. */
+.canvas-search-modal .search-list>button>i{
+  overflow:hidden!important;
+  background:#f2f3f6!important;
+}
+.canvas-search-modal .search-list>button>i>img,
+.canvas-search-modal .search-grid>button>div>img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+}
+.canvas-search-modal .search-grid>button>div{overflow:hidden!important}
+.canvas-search-modal .search-list>button[draggable="true"],
+.canvas-search-modal .search-grid>button[draggable="true"]{cursor:grab!important}
+.canvas-search-modal .search-list>button[draggable="true"]:active,
+.canvas-search-modal .search-grid>button[draggable="true"]:active{cursor:grabbing!important}

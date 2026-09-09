@@ -5649,19 +5649,15 @@ function CanvasSearchModal({
   const [selected, setSelected] = useState<number[]>([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [filter, setFilter] = useState("显示全部");
-  const rows = [
-    ["2026-08-05 19:06", "编辑于 23 分钟前"],
-    ["2026-08-05 19:06", "编辑于 6 分钟前"],
-    ["2026-08-03 16:57", "编辑于 17 小时前"],
-    ["2026-06-24 10:32", "编辑于 1 个月前"],
-    ["2026-06-23 18:37", "编辑于 1 个月前"],
-  ];
-  const imageOnlyEmpty = filter === "仅看图片";
+  const rows = featuredPeople.map((person, index) => ({
+    ...person,
+    created: index === 2 ? "2026-08-03 16:57" : "2026-08-05 19:06",
+    updated: index === 0 ? "编辑于 23 分钟前" : index === 1 ? "编辑于 6 分钟前" : "编辑于 17 小时前",
+  }));
+  const imageOnlyEmpty = filter === "仅看项目";
   const visible = imageOnlyEmpty
     ? []
-    : query.trim() && !"untitled".includes(query.trim().toLowerCase())
-      ? []
-      : rows;
+    : rows.filter((row) => row.name.toLowerCase().includes(query.trim().toLowerCase()));
   const isSearchMiss = visible.length === 0 && query.trim().length > 0;
   const toggle = (i: number) =>
     setSelected((v) => (v.includes(i) ? v.filter((n) => n !== i) : [...v, i]));
@@ -5773,16 +5769,24 @@ function CanvasSearchModal({
             </div>
             {visible.map((row, i) => (
               <button
+                draggable
                 className={selected.includes(i) ? "selected" : ""}
                 onClick={() => toggle(i)}
+                onDragStart={(event) => {
+                  pendingCanvasAssetDrag = { name: row.name, url: row.url };
+                  event.dataTransfer.effectAllowed = "copy";
+                  const payload = JSON.stringify(pendingCanvasAssetDrag);
+                  event.dataTransfer.setData("application/x-canvas-asset", payload);
+                  event.dataTransfer.setData("text/plain", payload);
+                }}
                 key={i}
               >
-                <i />
-                <strong>Untitled</strong>
-                <span>项目</span>
+                <i><img src={row.url} alt={row.name} /></i>
+                <strong>{row.name}</strong>
                 <span>图片</span>
-                <span>{row[0]}</span>
-                <small>{row[1]}</small>
+                <span>图片</span>
+                <span>{row.created}</span>
+                <small>{row.updated}</small>
               </button>
             ))}
           </div>
@@ -5790,19 +5794,28 @@ function CanvasSearchModal({
           <div className="search-grid">
             {visible.map((row, i) => (
               <button
+                draggable
                 className={selected.includes(i) ? "selected" : ""}
                 onClick={() => toggle(i)}
+                onDragStart={(event) => {
+                  pendingCanvasAssetDrag = { name: row.name, url: row.url };
+                  event.dataTransfer.effectAllowed = "copy";
+                  const payload = JSON.stringify(pendingCanvasAssetDrag);
+                  event.dataTransfer.setData("application/x-canvas-asset", payload);
+                  event.dataTransfer.setData("text/plain", payload);
+                }}
                 key={i}
               >
                 <div>
+                  <img src={row.url} alt={row.name} />
                   {selected.includes(i) && (
                     <span>
                       <img src="/assets/canvas-search-check.svg" />
                     </span>
                   )}
                 </div>
-                <strong>Untitled</strong>
-                <small>{row[1]}</small>
+                <strong>{row.name}</strong>
+                <small>{row.updated}</small>
               </button>
             ))}
           </div>
@@ -5865,8 +5878,8 @@ function AssetLibrary({
   return (
     <aside className="asset-library-panel" onDoubleClick={(event) => event.stopPropagation()}>
       <div className="asset-title">
-        <button onClick={onClose}>
-          <img src="/assets/asset-back.svg" />
+        <button onClick={onClose} aria-label="关闭素材库">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12.5 5-5 5 5 5" /></svg>
         </button>
         <h2>素材库</h2>
       </div>
@@ -6080,7 +6093,7 @@ function History({
               <input
                 type="range"
                 min="10"
-                max="100"
+                max="500"
                 value={zoom}
                 onChange={(e) => setZoom(Number(e.target.value))}
               />
@@ -6474,7 +6487,7 @@ function Assets({
         </div>
         <div className={`asset-top-actions ${assetSearchOpen ? "search-open" : ""}`} onClick={(event) => event.stopPropagation()}>
           <label className="history-zoom asset-zoom">
-            <input type="range" min="10" max="100" value={assetZoom} onChange={(event) => setAssetZoom(Number(event.target.value))} />
+            <input type="range" min="10" max="500" value={assetZoom} onChange={(event) => setAssetZoom(Number(event.target.value))} />
           </label>
           {assetBatch ? <div className="history-batch-actions asset-batch-actions">
             <span>已选择 {selectedAssets.length} 项内容</span>
