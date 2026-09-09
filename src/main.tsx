@@ -262,7 +262,14 @@ function App() {
                 onClick={() => {
                   setSection(item.id);
                   setEditing(false);
-                  if (item.id === "studio") setStudioView("home");
+                  if (item.id === "studio") {
+                    setStudioView("home");
+                    setPrompt("");
+                    setGenerated(false);
+                    setPreparing(false);
+                    setGenerating(false);
+                    setActiveConversation(null);
+                  }
                 }}
               >
                 <span className={`nav-glyph nav-glyph-${item.id}`}>
@@ -391,6 +398,9 @@ function App() {
             onBack={() => {
               setStudioView("home");
               setConversationCollapsed(false);
+              setPrompt("");
+              setActiveConversation(null);
+              setGenerated(false);
             }}
             onEdit={() => setEditing(true)}
             onRegenerate={(value) => {
@@ -6243,12 +6253,12 @@ function History({
             )}
           </div>
         </div>
-        <div className="history-cards" style={{ "--history-columns": zoom < 35 ? 5 : zoom < 68 ? 4 : 3, "--history-card-height": `${227 + zoom * 1.4}px` } as React.CSSProperties}>
+        <div className="history-cards" style={{ "--history-columns": zoom < 35 ? 5 : zoom < 68 ? 4 : 3, "--history-card-height": `${227 + zoom * 1.4}px`, "--shared-card-width": `${210 + zoom * 1.25}px` } as React.CSSProperties}>
           <button
             className="history-record history-create-record"
             onClick={tab === "subject" ? () => setSubjectOpen(true) : () => onCanvas()}
           >
-            <div className="history-record-preview"><span>＋</span></div>
+            <div className="history-record-preview"><span>＋</span><em className="add-entry-copy">点击添加内容</em></div>
           </button>
           {cards.map((name, i) => ({ name, i })).filter(({ name }) => name.toLowerCase().includes(historyQuery.trim().toLowerCase())).map(({ name, i }) => {
             const image = featuredPeople[i % featuredPeople.length].url;
@@ -6280,7 +6290,7 @@ function History({
                     )}
                   </div>
                   <strong>{name}</strong>
-                  {i > 0 && <small>{i === 1 ? "编辑于 6 分钟前" : "编辑于 17 小时前"}</small>}
+                  <small>{i === 0 ? "\u00A0" : i === 1 ? "编辑于 6 分钟前" : "编辑于 17 小时前"}</small>
                 </button>
                 <button
                   className={`history-pin ${favorite ? "active" : ""}`}
@@ -6569,9 +6579,9 @@ function Assets({
         </div>
       )}
       {tab === "subject" ? (
-        <div className="asset-subject-grid" style={{ "--asset-card-width": `${210 + assetZoom * 1.25}px` } as React.CSSProperties}>
+        <div className="asset-subject-grid" style={{ "--asset-card-width": `${210 + assetZoom * 1.25}px`, "--shared-card-width": `${210 + assetZoom * 1.25}px`, "--asset-columns": assetZoom < 35 ? 5 : assetZoom < 68 ? 4 : 3 } as React.CSSProperties}>
           <button className="asset-subject-card create" onClick={() => personFile.current?.click()}>
-            <div className="asset-create-single" aria-hidden="true"><i>＋</i></div>
+            <div className="asset-create-single" aria-hidden="true"><i>＋</i><em className="add-entry-copy">点击添加内容</em></div>
           </button>
           {activeSubjects.map((person) => (
             <div className="asset-subject-shell" key={person.url}>
@@ -6611,7 +6621,7 @@ function Assets({
             onClick={() => fileRef.current?.click()}
             aria-label={tab === "live" ? "上传直播间素材" : "上传海报素材"}
           >
-            <div className="asset-create-single" aria-hidden="true"><i>＋</i></div>
+            <div className="asset-create-single" aria-hidden="true"><i>＋</i><em className="add-entry-copy">点击添加内容</em></div>
             <strong>{tab === "live" ? "上传直播间素材" : "上传海报"}</strong>
           </button>
           {activeAssets.map((item) => (

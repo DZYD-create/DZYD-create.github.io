@@ -13186,3 +13186,60 @@ button > img {
 .history-page .history-create-record>.history-record-preview>span::after,
 .asset-page-figma .asset-subject-card.create>.asset-create-single>i::after,
 .asset-page-figma .asset-upload-entry>.asset-create-single>i::after{transform:translate(-50%,-50%) rotate(90deg)!important}
+
+/* History and Assets cards share one grid, one frame ratio and one metadata rhythm. */
+.history-page .history-cards,
+.asset-page-figma .asset-subject-grid{
+  grid-template-columns:repeat(var(--history-columns,var(--asset-columns,4)),minmax(0,1fr))!important;
+  gap:20px!important;
+  padding-left:34px!important;
+  padding-right:31px!important;
+}
+.history-record-shell>.history-record,
+.asset-subject-shell>.asset-subject-card{height:100%!important}
+.history-record-shell>.card-more-wrap,
+.asset-subject-shell>.card-more-wrap{
+  top:calc(100% - 42px)!important;
+  right:4px!important;
+  bottom:auto!important;
+  transition:top .18s ease!important;
+}
+.history-record>strong,
+.asset-subject-card>strong{padding-right:38px!important;box-sizing:border-box!important}
+
+/* Assets action group sits on the same visual row as the category tabs. */
+.asset-page-header>.asset-top-actions{
+  position:absolute!important;
+  right:31px!important;
+  top:58px!important;
+  margin:0!important;
+}
+
+/* Same zoom value now produces the exact same card width on both pages. */
+.history-page .history-cards,
+.asset-page-figma .asset-subject-grid{
+  grid-template-columns:repeat(var(--history-columns,var(--asset-columns,4)),var(--shared-card-width))!important;
+  justify-content:start!important;
+}
+.history-page .history-create-record>.history-record-preview::after{
+  z-index:4!important;
+  opacity:1!important;
+  visibility:visible!important;
+  color:#777b9c!important;
+  -webkit-text-fill-color:#777b9c!important;
+}
+
+/* A real element keeps the reference caption identical across both page types. */
+.history-create-record>.history-record-preview::after,
+.asset-subject-card.create>.asset-create-single::after,
+.asset-upload-entry>.asset-create-single::after{content:none!important;display:none!important}
+.add-entry-copy{
+  position:absolute!important;
+  left:50%!important;
+  top:66%!important;
+  z-index:4!important;
+  transform:translateX(-50%)!important;
+  color:#777b9c!important;
+  font:normal 600 15px/1.4 "Microsoft YaHei",sans-serif!important;
+  white-space:nowrap!important;
+}
