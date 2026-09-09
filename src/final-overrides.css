@@ -13594,3 +13594,18 @@ button > img {
   height:38px!important;min-height:38px!important;max-height:38px!important;
   border-radius:8px!important;background-clip:padding-box!important
 }
+
+/* New Work and conversation search share one exact sidebar width and inset. */
+.conversation-panel>.conversation-panel-head,
+.conversation-panel>.conversation-search{
+  box-sizing:border-box!important;
+  width:calc(100% - 30px)!important;
+  min-width:0!important;
+  max-width:none!important;
+  margin-left:15px!important;
+  margin-right:15px!important;
+}
+.conversation-panel>.conversation-panel-head{padding-left:0!important;padding-right:0!important}
+.conversation-panel>.conversation-panel-head>.new-work{
+  box-sizing:border-box!important;width:100%!important;min-width:0!important;max-width:none!important;margin:0!important
+}
