@@ -14659,3 +14659,28 @@ button > img {
   border:5px solid #fff!important;background:linear-gradient(145deg,#8e57ff,#612df5)!important;
   box-shadow:0 0 0 7px rgba(116,77,248,.08),0 7px 16px rgba(91,50,226,.22)!important
 }
+
+/* Folder title and date share one left edge. */
+.folder-browser .folder-meta{
+  display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:flex-start!important;
+  text-align:left!important
+}
+.folder-browser .folder-meta>strong,
+.folder-browser .folder-meta>small{display:block!important;width:100%!important;margin-left:0!important;text-align:left!important}
+
+/* A selected editor image uses a filled bright-yellow favorite star. */
+.figma-editor-topbar .editor-favorite.active{
+  color:#ffd21f!important;-webkit-text-fill-color:#ffd21f!important;text-shadow:0 1px 5px rgba(255,190,0,.28)!important
+}
+
+/* The thick white ring belongs to the whole rounded add card, not the plus circle. */
+.history-page .history-create-record>.history-record-preview,
+.asset-page-figma .asset-subject-card.create>.asset-create-single,
+.asset-page-figma .asset-upload-entry>.asset-create-single{
+  border:6px solid #fff!important
+}
+.history-page .history-create-record>.history-record-preview>span,
+.asset-page-figma .asset-subject-card.create>.asset-create-single>i,
+.asset-page-figma .asset-upload-entry>.asset-create-single>i{
+  border:0!important;box-sizing:border-box!important
+}

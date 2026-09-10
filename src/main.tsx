@@ -112,6 +112,7 @@ function App() {
   const [editing, setEditing] = useState(false);
   const [editorReturn, setEditorReturn] = useState<"studio" | "history">("studio");
   const [tool, setTool] = useState<EditorTool | null>(null);
+  const [editorFavorite, setEditorFavorite] = useState(false);
   const [canvasImage, setCanvasImage] = useState<string | null>(null);
   const [canvasImageName, setCanvasImageName] = useState("AI 视觉创作 · 未命名项目");
   const [pendingCanvasAssets, setPendingCanvasAssets] = useState<Array<{ name: string; url: string }>>([]);
@@ -458,6 +459,8 @@ function App() {
             tool={tool}
             setTool={setTool}
             prompt={prompt}
+            favorite={editorFavorite}
+            onToggleFavorite={() => setEditorFavorite((value) => !value)}
             onClose={() => {
               setEditing(false);
               if (editorReturn === "history") setSection("history");
@@ -494,6 +497,8 @@ function App() {
         )}
         {section === "history" && (
           <History
+            favoriteGenerated={editorFavorite}
+            onToggleGeneratedFavorite={() => setEditorFavorite((value) => !value)}
             onEdit={() => {
               setEditorReturn("history");
               setSection("studio");
@@ -1826,6 +1831,8 @@ function Editor({
   onClose,
   onCanvas,
   onGenerate,
+  favorite,
+  onToggleFavorite,
 }: {
   tool: EditorTool | null;
   setTool: (v: EditorTool | null) => void;
@@ -1833,6 +1840,8 @@ function Editor({
   onClose: () => void;
   onCanvas: () => void;
   onGenerate: () => void;
+  favorite: boolean;
+  onToggleFavorite: () => void;
 }) {
   const [zoom, setZoom] = useState(100);
   const [saved, setSaved] = useState(false);
@@ -1938,8 +1947,8 @@ function Editor({
         </button>
         <strong>编辑生成图片</strong>
         <div className="editor-top-actions">
-          <button aria-label="收藏">☆</button>
-          <button className="editor-download">
+          <button className={`editor-favorite ${favorite ? "active" : ""}`} aria-label={favorite ? "取消收藏" : "收藏"} aria-pressed={favorite} onClick={onToggleFavorite}>{favorite ? "★" : "☆"}</button>
+          <button className="editor-download" onClick={() => { const link = document.createElement("a"); link.href = "/assets/template-2.png"; link.download = "对话生图.png"; document.body.appendChild(link); link.click(); link.remove(); }}>
             <img src="/assets/editor-download.svg" />
             下载
           </button>
@@ -2225,7 +2234,7 @@ function Editor({
                           >
                             {resolution === v && <b className="resolution-check">✓</b>}
                             {v}
-                            <small>{v === "放大至 4K" ? "推荐" : ""}</small>
+                            <small>{v === "放大至 2K" ? "推荐" : ""}</small>
                           </button>
                         ))}
                       </div>
@@ -6185,10 +6194,14 @@ function History({
   onEdit,
   onBack,
   onCanvas,
+  favoriteGenerated,
+  onToggleGeneratedFavorite,
 }: {
   onEdit: () => void;
   onBack: () => void;
   onCanvas: (image?: string, name?: string) => void;
+  favoriteGenerated: boolean;
+  onToggleGeneratedFavorite: () => void;
 }) {
   const [tab] = useState<"subject" | "canvas">("canvas");
   const [popup, setPopup] = useState<"filter" | "time" | "sort" | null>(null);
@@ -6221,7 +6234,8 @@ function History({
   const subjectFile = useRef<HTMLInputElement>(null);
   const choose = (kind: "filter" | "time" | "sort") =>
     setPopup((v) => (v === kind ? null : kind));
-  const sortedHistoryCards = cards
+  const visibleCards = favoriteGenerated && !cards.includes("对话生图图片") ? [...cards, "对话生图图片"] : cards;
+  const sortedHistoryCards = visibleCards
     .map((name, originalIndex) => ({
       name,
       originalIndex,
@@ -6438,9 +6452,9 @@ function History({
           >
             <div className="history-record-preview"><span>＋</span><em className="add-entry-copy">点击添加内容</em></div>
           </button>
-          {sortedHistoryCards.filter(({ name }) => name.toLowerCase().includes(historyQuery.trim().toLowerCase())).map(({ name, originalIndex: i }) => {
-            const image = featuredPeople[i % featuredPeople.length].url;
-            const favorite = favoriteHistory.includes(name);
+          {sortedHistoryCards.filter(({ name }) => name.toLowerCase().includes(historyQuery.trim().toLowerCase()) && (filter !== "收藏" || name === "对话生图图片" || favoriteHistory.includes(name))).map(({ name, originalIndex: i }) => {
+            const image = name === "对话生图图片" ? "/assets/template-2.png" : featuredPeople[i % featuredPeople.length].url;
+            const favorite = name === "对话生图图片" ? favoriteGenerated : favoriteHistory.includes(name);
             return (
               <div className="history-record-shell" key={name}>
                 <button
@@ -6473,7 +6487,7 @@ function History({
                 <button
                   className={`history-pin ${favorite ? "active" : ""}`}
                   aria-label={favorite ? `取消置顶${name}` : `置顶${name}`}
-                  onClick={() => setFavoriteHistory((items) => favorite ? items.filter((item) => item !== name) : [...items, name])}
+                  onClick={() => name === "对话生图图片" ? onToggleGeneratedFavorite() : setFavoriteHistory((items) => favorite ? items.filter((item) => item !== name) : [...items, name])}
                 ><span>置顶</span>★</button>
                 {!batch && <div className="card-more-wrap">
                   <button
