@@ -14452,3 +14452,18 @@ button > img {
 .figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-spark>svg path{
   stroke:#3e82ef!important;stroke-width:1.45px!important;stroke-linejoin:round!important;stroke-linecap:round!important;paint-order:stroke fill!important
 }
+
+/* Entering the rail reveals the complete label column; the pointed row then changes emphasis. */
+.canvas-vertical-nav:hover>button:not([aria-label="账户"])::after,
+.canvas-vertical-nav:focus-within>button:not([aria-label="账户"])::after{
+  opacity:1;transform:translate(16px,-50%)
+}
+.canvas-vertical-nav:hover>button:not([aria-label="账户"]):hover::after,
+.canvas-vertical-nav:focus-within>button:not([aria-label="账户"]):focus-visible::after{
+  color:#4f63ef;background:#f1f2ff;font-weight:650;box-shadow:6px 7px 20px rgba(73,85,168,.16)
+}
+
+/* Only the upper-right accent sparkle is reduced. */
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-spark>svg .spark-small{
+  transform-box:fill-box!important;transform-origin:center!important;transform:scale(.7)!important
+}

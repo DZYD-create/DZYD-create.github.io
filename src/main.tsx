@@ -2153,7 +2153,7 @@ function Editor({
                             key={option.name}
                           >
                             <span className={`enhance-level-icon icon-${option.icon}`} aria-hidden="true">
-                              {option.icon === "spark" && <svg viewBox="0 0 32 32"><path d="M13 2c1.2 6.6 3.4 8.8 10 10-6.6 1.2-8.8 3.4-10 10-1.2-6.6-3.4-8.8-10-10 6.6-1.2 8.8-3.4 10-10Z"/><path d="M24 2c.5 2.8 1.5 3.8 4.3 4.3C25.5 6.8 24.5 7.8 24 10.6c-.5-2.8-1.5-3.8-4.3-4.3C22.5 5.8 23.5 4.8 24 2Z"/></svg>}
+                              {option.icon === "spark" && <svg viewBox="0 0 32 32"><path d="M13 2c1.2 6.6 3.4 8.8 10 10-6.6 1.2-8.8 3.4-10 10-1.2-6.6-3.4-8.8-10-10 6.6-1.2 8.8-3.4 10-10Z"/><path className="spark-small" d="M24 2c.5 2.8 1.5 3.8 4.3 4.3C25.5 6.8 24.5 7.8 24 10.6c-.5-2.8-1.5-3.8-4.3-4.3C22.5 5.8 23.5 4.8 24 2Z"/></svg>}
                               {option.icon === "sliders" && <svg viewBox="0 0 32 32"><path d="M5 8h22M5 16h22M5 24h22"/><circle cx="12" cy="8" r="3"/><circle cx="21" cy="16" r="3"/><circle cx="10" cy="24" r="3"/></svg>}
                               {option.icon === "hd" && <b>HD</b>}
                               {option.icon === "diamond" && <svg viewBox="0 0 32 32"><path d="M7 8h18l4 7-13 13L3 15l4-7Z"/><path d="M3 15h26M10 8l6 20 6-20"/></svg>}
@@ -4895,11 +4895,8 @@ function Canvas({
                     }}
                     onClick={(event) => {
                       if (event.detail > 1) return;
-                      if (offset === 0) setFolderExpanded((v) => !v);
-                      else {
-                        setFolderIndex(index);
-                        setFolderExpanded(false);
-                      }
+                      setFolderIndex(index);
+                      setFolderExpanded(true);
                     }}
                     onDoubleClick={(event) => {
                       event.preventDefault();
