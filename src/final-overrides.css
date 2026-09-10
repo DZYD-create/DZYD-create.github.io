@@ -14360,6 +14360,38 @@ button > img {
 }
 .figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-diamond > svg{width:30px!important;height:30px!important;stroke-width:2.15!important}
 
+/* Center the resolution label and chevron as one balanced unit. */
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap > button{
+  display:flex!important;align-items:center!important;justify-content:center!important;gap:18px!important;padding:0 16px!important
+}
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap > button > strong{
+  display:flex!important;align-items:center!important;justify-content:center!important;width:auto!important;height:24px!important;margin:0!important
+}
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap > button > .resolution-chevron{
+  display:grid!important;place-items:center!important;width:16px!important;height:24px!important;flex:0 0 16px!important;margin:0!important
+}
+
+/* Strength label and right chevron use the same optical center line. */
+.figma-tool-modal.modal-增强清晰度 .enhance-option-wrap:first-child > button{
+  display:grid!important;grid-template-columns:30px auto 16px!important;place-content:center!important;align-items:center!important;column-gap:9px!important
+}
+.figma-tool-modal.modal-增强清晰度 .detail-chevron{
+  display:grid!important;place-items:center!important;width:16px!important;height:24px!important;margin:0!important
+}
+.figma-tool-modal.modal-增强清晰度 .detail-chevron > svg{display:block!important;width:14px!important;height:14px!important}
+.figma-tool-modal.modal-增强清晰度 .detail-chevron path{fill:none!important;stroke:#697186!important;stroke-width:1.7!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+
+/* Image Size uses the same uninterrupted solid work surface as Local Redraw. */
+.figma-tool-modal.modal-图片尺寸 .resize-stage{background:#f3f5f8!important}
+.figma-tool-modal.modal-图片尺寸 .resize-frame{
+  border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important
+}
+
+/* When the conversation rail is collapsed, its restore control stays at the bottom. */
+.conversation-expand-button{
+  top:auto!important;bottom:22px!important
+}
+
 /* Latest focused corrections. */
 .figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-sliders circle{
   fill:#fff!important;stroke:#11182b!important;stroke-width:2.15px!important
