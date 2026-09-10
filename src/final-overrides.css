@@ -14754,3 +14754,18 @@ button > img {
 .canvas-history-record .canvas-history-strip>img{
   width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;object-fit:cover!important
 }
+
+/* Add-entry outer ring is slimmer and never turns into a dark-purple outline on hover. */
+.history-page .history-create-record>.history-record-preview,
+.asset-page-figma .asset-subject-card.create>.asset-create-single,
+.asset-page-figma .asset-upload-entry>.asset-create-single{
+  border-width:3px!important;border-color:#fff!important;outline:0!important
+}
+.history-page .history-create-record:hover>.history-record-preview,
+.asset-page-figma .asset-subject-card.create:hover>.asset-create-single,
+.asset-page-figma .asset-upload-entry:hover>.asset-create-single{
+  border-color:#eeeaff!important;outline:0!important;box-shadow:0 8px 20px rgba(104,82,224,.12)!important
+}
+
+/* Editing tools remain available in the empty canvas and can launch the first upload. */
+.canvas-empty-state .canvas-bottom-dock{display:flex!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important}

@@ -1241,7 +1241,7 @@ function Studio({
         {skills.map((v, i) => (
           <button
             className={skill === v ? "selected" : ""}
-            onClick={() => setSkill(v)}
+            onClick={() => setSkill(skill === v ? "" : v)}
             key={v}
           >
             <img
@@ -2524,6 +2524,7 @@ function Canvas({
   const [uploadTargetNodeId, setUploadTargetNodeId] = useState<number | null>(
     null,
   );
+  const pendingDockToolRef = useRef<string | null>(null);
   const [commentPosition, setCommentPosition] = useState<{
     x: number;
     y: number;
@@ -3352,6 +3353,11 @@ function Canvas({
   const handleDockAction = (label: string) => {
     setAddOpen(false);
     setQuickOpen(false);
+    if (canvasNodes.length === 0 && !["下载", "预览"].includes(label)) {
+      pendingDockToolRef.current = label;
+      ref.current?.click();
+      return;
+    }
     if (label === "下载") {
       if (!canvasImage) return;
       const link = document.createElement("a");
@@ -5352,7 +5358,7 @@ function Canvas({
             }}
           />
         )}
-        {canvasImage && mode !== "comments" && (
+        {mode !== "comments" && (
           <nav className="canvas-bottom-dock" aria-label="图片编辑工具">
             {[
               ["移动", "canvas-dock-move.svg"],
@@ -5389,7 +5395,9 @@ function Canvas({
           if (!files.length) return;
           const stamp = Date.now();
           const center = getViewportCenterOffset();
+          let uploadedPrimaryId: number | null = null;
           if (uploadTargetNodeId !== null) {
+            uploadedPrimaryId = uploadTargetNodeId;
             const first = files[0],
               url = URL.createObjectURL(first);
             setCanvasNodes((nodes) =>
@@ -5433,6 +5441,14 @@ function Canvas({
             }));
             setCanvasNodes((v) => [...v, ...added]);
             setCanvasImage(added[0].url);
+            uploadedPrimaryId = added[0].id;
+          }
+          if (pendingDockToolRef.current && uploadedPrimaryId !== null) {
+            const pendingTool = pendingDockToolRef.current;
+            pendingDockToolRef.current = null;
+            setActiveNodeId(uploadedPrimaryId);
+            setCanvasTool(pendingTool);
+            if (pendingTool === "扩图") setExpandFrame({ id: uploadedPrimaryId, width: 346, height: 358 });
           }
           e.currentTarget.value = "";
           setAddOpen(false);
@@ -6454,12 +6470,6 @@ function History({
           </div>
         </div>
         <div className="history-cards" style={{ "--history-columns": zoom < 35 ? 5 : zoom < 68 ? 4 : 3, "--history-card-height": `${227 + zoom * 1.4}px`, "--shared-card-width": `${210 + zoom * 1.25}px` } as React.CSSProperties}>
-          {tab === "workspace" && <button
-            className="history-record history-create-record"
-            onClick={() => onCanvas()}
-          >
-            <div className="history-record-preview"><span>＋</span><em className="add-entry-copy">点击添加内容</em></div>
-          </button>}
           {tab === "workspace" && sortedHistoryCards.filter(({ name }) => name.toLowerCase().includes(historyQuery.trim().toLowerCase()) && (filter !== "收藏" || name === "对话生图图片" || favoriteHistory.includes(name))).map(({ name, originalIndex: i }) => {
             const image = name === "对话生图图片" ? "/assets/template-2.png" : featuredPeople[i % featuredPeople.length].url;
             const favorite = name === "对话生图图片" ? favoriteGenerated : favoriteHistory.includes(name);
