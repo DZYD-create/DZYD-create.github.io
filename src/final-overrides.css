@@ -14271,3 +14271,52 @@ button > img {
 .figma-tool-modal.modal-擦除内容 .modal-image-stage > img{
   max-width:88%!important;max-height:96%!important
 }
+
+/* Unified dialog geometry requested in the latest review. */
+.figma-tool-modal > header{position:relative!important;align-items:flex-start!important}
+.figma-tool-modal > header > button{
+  box-sizing:border-box!important;width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;
+  margin:0!important;padding:0!important;display:grid!important;place-items:center!important;background:transparent!important;border:0!important
+}
+.figma-tool-modal > header > button > img{display:block!important;width:28px!important;height:28px!important;margin:0!important}
+.figma-tool-modal.modal-擦除内容 > header > button{margin-top:3px!important}
+.figma-tool-modal.modal-增强清晰度 > header > button{margin-top:2px!important}
+.figma-tool-modal.modal-图片尺寸 > header > button{margin-top:0!important}
+
+/* Both controls sit exactly on the left and right edges of the image container. */
+.figma-tool-modal.modal-增强清晰度 .enhance-options{
+  box-sizing:border-box!important;left:40px!important;right:40px!important;width:auto!important;padding-left:0!important;padding-right:0!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-option-wrap:first-child{margin-left:0!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-wrap{margin-left:auto!important;margin-right:0!important}
+
+/* Match the optical weight of all four strength icons. */
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon > svg{
+  width:32px!important;height:32px!important;stroke-width:2.2!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-hd > b{
+  border-width:2.2px!important;font-weight:800!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-diamond > svg{stroke-width:2.2!important}
+
+/* Redraw and erase use the exact same 150px width as Image Size. */
+.figma-tool-modal.modal-擦除内容 > .modal-generate,
+.figma-tool-modal.modal-图片尺寸 > .modal-generate{
+  width:150px!important;min-width:150px!important;max-width:150px!important
+}
+
+/* Treat sparkle and label as one centered unit, independent of their individual glyph boxes. */
+.figma-tool-modal > .modal-generate{display:grid!important;place-items:center!important;padding:0!important}
+.figma-tool-modal > .modal-generate > .modal-generate-content{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;width:auto!important;height:32px!important;
+  flex:none!important;gap:7px!important;margin:0!important;line-height:32px!important
+}
+.figma-tool-modal > .modal-generate .modal-generate-stars{
+  display:grid!important;place-items:center!important;width:28px!important;height:28px!important;flex:0 0 28px!important;margin:0!important
+}
+.figma-tool-modal > .modal-generate .modal-generate-stars > svg{
+  display:block!important;width:28px!important;height:28px!important;transform:translateY(1px)!important
+}
+.figma-tool-modal > .modal-generate .modal-generate-label{
+  display:flex!important;align-items:center!important;width:auto!important;height:32px!important;margin:0!important;line-height:32px!important;white-space:nowrap!important
+}

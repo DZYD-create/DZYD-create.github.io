@@ -2205,8 +2205,10 @@ function Editor({
               className="modal-generate"
               onClick={() => setGeneratedEdit(true)}
             >
-              <span className="modal-generate-stars" aria-hidden="true"><svg viewBox="0 0 52 52"><path d="M20 5c1.8 10.3 5.7 14.2 16 16-10.3 1.8-14.2 5.7-16 16-1.8-10.3-5.7-14.2-16-16C14.3 19.2 18.2 15.3 20 5Z"/><path d="M39 2c.8 4.8 2.7 6.7 7.5 7.5C41.7 10.3 39.8 12.2 39 17c-.8-4.8-2.7-6.7-7.5-7.5C36.3 8.7 38.2 6.8 39 2Z"/></svg></span>
-              <span>{generatedEdit ? "已生成" : "生成"}</span>
+              <span className="modal-generate-content">
+                <span className="modal-generate-stars" aria-hidden="true"><svg viewBox="0 0 52 52"><path d="M20 5c1.8 10.3 5.7 14.2 16 16-10.3 1.8-14.2 5.7-16 16-1.8-10.3-5.7-14.2-16-16C14.3 19.2 18.2 15.3 20 5Z"/><path d="M39 2c.8 4.8 2.7 6.7 7.5 7.5C41.7 10.3 39.8 12.2 39 17c-.8-4.8-2.7-6.7-7.5-7.5C36.3 8.7 38.2 6.8 39 2Z"/></svg></span>
+                <span className="modal-generate-label">{generatedEdit ? "已生成" : "生成"}</span>
+              </span>
             </button>
           </section>
         </div>
