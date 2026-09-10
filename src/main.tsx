@@ -1943,7 +1943,6 @@ function Editor({
             <img src="/assets/editor-download.svg" />
             下载
           </button>
-          <button aria-label="更多">•••</button>
         </div>
       </header>
       <div className="figma-editor-workspace">
@@ -2010,7 +2009,7 @@ function Editor({
         </aside>
       </div>
       {tool && (
-        <div className="tool-modal-backdrop" role="presentation" onClick={closeTool}>
+        <div className="tool-modal-backdrop" role="presentation">
           <section
             className={`figma-tool-modal modal-${tool} ${tool === "局部重绘" ? "modal-擦除内容" : ""}`}
             role="dialog"

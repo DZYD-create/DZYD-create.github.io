@@ -14617,3 +14617,45 @@ button > img {
 .figma-tool-modal.modal-图片尺寸 .modal-prompt{
   border-color:#7255ea!important;box-shadow:0 0 0 1px rgba(114,85,234,.06)!important
 }
+
+/* Modal generation hover keeps its color and only grows slightly. */
+.figma-tool-modal>.modal-generate,
+.figma-tool-modal>.modal-generate:hover{
+  transition:transform .16s ease!important
+}
+.figma-tool-modal>.modal-generate:hover{
+  transform:scale(1.025)!important;filter:none!important;background:linear-gradient(105deg,#258cf7 0%,#526cf3 48%,#9f58ee 100%)!important;
+  box-shadow:0 12px 24px rgba(76,93,231,.24)!important
+}
+
+/* Resolution and strength selections share the same purple circular check. */
+.figma-tool-modal.modal-增强清晰度 .enhance-level-check,
+.figma-tool-modal.modal-增强清晰度 .resolution-check{
+  box-sizing:border-box!important;width:21px!important;height:21px!important;border-radius:50%!important;
+  display:grid!important;place-items:center!important;background:#7255ea!important;color:#fff!important;
+  font:600 12px/1 Arial,sans-serif!important;font-style:normal!important
+}
+.figma-tool-modal.modal-增强清晰度 .resolution-check{
+  left:14px!important;right:auto!important;top:50%!important;transform:translateY(-50%)!important
+}
+
+/* History and Assets add cards: lavender field, white-ringed purple add control. */
+.history-page .history-create-record>.history-record-preview,
+.asset-page-figma .asset-subject-card.create>.asset-create-single,
+.asset-page-figma .asset-upload-entry>.asset-create-single{
+  background:linear-gradient(145deg,#faf9ff 0%,#f1efff 100%)!important;
+  border:1px solid rgba(255,255,255,.95)!important;box-shadow:0 7px 20px rgba(104,82,224,.12)!important
+}
+.history-page .history-create-record>.history-record-preview::before,
+.asset-page-figma .asset-subject-card.create>.asset-create-single::before,
+.asset-page-figma .asset-upload-entry>.asset-create-single::before{
+  content:""!important;display:block!important;position:absolute!important;inset:9px!important;
+  border:1.5px dashed #c7b7ff!important;border-radius:10px!important;pointer-events:none!important
+}
+.history-page .history-create-record>.history-record-preview>span,
+.asset-page-figma .asset-subject-card.create>.asset-create-single>i,
+.asset-page-figma .asset-upload-entry>.asset-create-single>i{
+  box-sizing:content-box!important;width:31px!important;height:31px!important;min-width:31px!important;min-height:31px!important;
+  border:5px solid #fff!important;background:linear-gradient(145deg,#8e57ff,#612df5)!important;
+  box-shadow:0 0 0 7px rgba(116,77,248,.08),0 7px 16px rgba(91,50,226,.22)!important
+}
