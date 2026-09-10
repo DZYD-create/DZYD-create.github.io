@@ -2342,6 +2342,23 @@ function Canvas({
         : node,
     ));
   };
+  const enterCanvasFolder = (index: number) => {
+    const title = folderNames[index];
+    const folderImages = samples.slice(0, 3);
+    setFolderIndex(index);
+    setProjectTitle(title);
+    setCanvasImage(folderImages[0]);
+    setCanvasNodes(folderImages.map((url, imageIndex) => ({
+      id: Date.now() + imageIndex,
+      url,
+      x: (imageIndex - 1) * 390,
+      y: 0,
+      name: `${title} ${imageIndex + 1}`,
+    })));
+    setActiveNodeId(null);
+    setFolderExpanded(false);
+    setMode(null);
+  };
   const getCanvasPoint = (clientX: number, clientY: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: clientX, y: clientY };
@@ -4895,7 +4912,14 @@ function Canvas({
                       setFolderColorOpen(null);
                     }}
                     onClick={(event) => {
-                      if (event.detail > 1) return;
+                      if (event.detail >= 2) {
+                        if (folderClickTimerRef.current !== null) {
+                          window.clearTimeout(folderClickTimerRef.current);
+                          folderClickTimerRef.current = null;
+                        }
+                        enterCanvasFolder(index);
+                        return;
+                      }
                       if (folderClickTimerRef.current !== null) window.clearTimeout(folderClickTimerRef.current);
                       folderClickTimerRef.current = window.setTimeout(() => {
                         setFolderIndex(index);
@@ -4906,25 +4930,6 @@ function Canvas({
                     onDoubleClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
-                      if (folderClickTimerRef.current !== null) {
-                        window.clearTimeout(folderClickTimerRef.current);
-                        folderClickTimerRef.current = null;
-                      }
-                      const title = folderNames[index];
-                      const folderImages = samples.slice(0, 3);
-                      setFolderIndex(index);
-                      setProjectTitle(title);
-                      setCanvasImage(folderImages[0]);
-                      setCanvasNodes(folderImages.map((url, imageIndex) => ({
-                        id: Date.now() + imageIndex,
-                        url,
-                        x: (imageIndex - 1) * 390,
-                        y: 0,
-                        name: `${title} ${imageIndex + 1}`,
-                      })));
-                      setActiveNodeId(null);
-                      setFolderExpanded(false);
-                      setMode(null);
                     }}
                   >
                     <span
