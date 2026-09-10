@@ -14530,3 +14530,25 @@ button > img {
 .modal-image-stage>.editor-mask-layer.brush-mode-框选{cursor:crosshair!important}
 .modal-image-stage>.editor-mask-layer.brush-mode-移动{cursor:grab!important}
 .modal-image-stage>.editor-mask-layer.brush-mode-移动:active{cursor:grabbing!important}
+
+/* Redraw/erase tool choices use the same unmistakable purple hover and selected state. */
+.figma-tool-modal.modal-擦除内容 .paint-tools>button:not(:disabled):hover,
+.figma-tool-modal.modal-擦除内容 .paint-tools>button.active{
+  background:#7255ea!important;border-color:#7255ea!important;color:#fff!important;box-shadow:0 5px 12px rgba(91,65,205,.22)!important
+}
+.figma-tool-modal.modal-擦除内容 .paint-tools>button:not(:disabled):hover img,
+.figma-tool-modal.modal-擦除内容 .paint-tools>button.active img{
+  filter:brightness(0) invert(1)!important
+}
+.figma-tool-modal.modal-擦除内容 .paint-tools>button:not(:disabled):hover span,
+.figma-tool-modal.modal-擦除内容 .paint-tools>button.active span{color:#fff!important}
+
+/* Keep the brush-size range above decorative layers and update continuously while dragging. */
+.figma-tool-modal.modal-擦除内容 .brush-size-control{
+  position:relative!important;z-index:8!important;pointer-events:auto!important
+}
+.figma-tool-modal.modal-擦除内容 .brush-size-control input[type="range"]{
+  position:relative!important;z-index:9!important;pointer-events:auto!important;touch-action:none!important;cursor:pointer!important
+}
+.figma-tool-modal.modal-擦除内容 .brush-size-control input[type="range"]::-webkit-slider-thumb{cursor:grab!important}
+.figma-tool-modal.modal-擦除内容 .brush-size-control input[type="range"]:active::-webkit-slider-thumb{cursor:grabbing!important}
