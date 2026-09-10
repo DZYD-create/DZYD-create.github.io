@@ -1980,12 +1980,13 @@ function Editor({
         </aside>
       </div>
       {tool && (
-        <div className="tool-modal-backdrop" role="presentation">
+        <div className="tool-modal-backdrop" role="presentation" onClick={closeTool}>
           <section
             className={`figma-tool-modal modal-${tool} ${tool === "局部重绘" ? "modal-擦除内容" : ""}`}
             role="dialog"
             aria-modal="true"
             aria-label={tool}
+            onClick={(event) => event.stopPropagation()}
           >
             <header>
               <div className="tool-modal-heading">
@@ -2068,7 +2069,7 @@ function Editor({
                   />
                   {(tool === "擦除内容" || tool === "局部重绘") ? <><span className="erase-prompt-count">{modalPrompt.length}/300</span><i/><button className="erase-ai-optimize"><img src="/assets/magic.svg"/>AI 优化</button></> : <img src="/assets/figma-text-tool.svg" />}
                 </div>
-                {(tool === "擦除内容" || tool === "局部重绘") && <div className="erase-modal-secondary"><button className="erase-reset" onClick={() => { setEditorStrokes([]); setEditorUndo([]); setEditorRedo([]); setModalPrompt(""); }}><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8.2 10.5H3.8V6.1"/><path d="M4.3 10.1A12 12 0 1 1 4.8 23"/></svg><span>重置</span></button><button onClick={closeTool}>取消</button></div>}
+                {(tool === "擦除内容" || tool === "局部重绘") && <div className="erase-modal-secondary"><button className="erase-reset" onClick={() => { setEditorStrokes([]); setEditorUndo([]); setEditorRedo([]); setModalPrompt(""); }}><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8.2 10.5H3.8V6.1"/><path d="M4.3 10.1A12 12 0 1 1 4.8 23"/></svg><span>重置</span></button></div>}
               </>
             )}
             {tool === "图片尺寸" && (

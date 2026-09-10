@@ -14320,3 +14320,42 @@ button > img {
 .figma-tool-modal > .modal-generate .modal-generate-label{
   display:flex!important;align-items:center!important;width:auto!important;height:32px!important;margin:0!important;line-height:32px!important;white-space:nowrap!important
 }
+
+/* Conversation editor: the generated artwork fully covers its white preview stage. */
+.figma-editor-page .generated-image-canvas > img{
+  display:block!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;
+  object-fit:cover!important;margin:0!important;box-shadow:none!important
+}
+
+/* All four modal close controls are inert on hover and keep the same appearance. */
+.figma-tool-modal > header > button:hover,
+.figma-tool-modal > header > button:focus-visible{
+  background:transparent!important;border-color:transparent!important;color:inherit!important;box-shadow:none!important;transform:none!important
+}
+
+/* Image Size and Enhancement inherit the redraw generate-label typography. */
+.figma-tool-modal > .modal-generate,
+.figma-tool-modal > .modal-generate .modal-generate-label{
+  font-family:"Microsoft YaHei",sans-serif!important;font-size:19px!important;font-weight:600!important
+}
+
+/* With Cancel removed, Reset remains independently anchored at the lower left. */
+.figma-tool-modal.modal-擦除内容 .erase-modal-secondary{
+  left:40px!important;right:auto!important;width:auto!important;justify-content:flex-start!important
+}
+
+/* Four reference icons share a 30px visual box and one consistent optical stroke. */
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon{
+  width:30px!important;height:30px!important;left:14px!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon > svg{
+  display:block!important;width:30px!important;height:30px!important;stroke-width:2.15!important;stroke-linecap:round!important;stroke-linejoin:round!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-spark > svg{
+  width:30px!important;height:30px!important;fill:#3e82ef!important;stroke:none!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-hd > b{
+  box-sizing:border-box!important;display:grid!important;place-items:center!important;width:30px!important;height:23px!important;
+  min-width:30px!important;padding:0!important;border:2.15px solid #11182b!important;border-radius:3px!important;font:800 12px/1 Arial,sans-serif!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-diamond > svg{width:30px!important;height:30px!important;stroke-width:2.15!important}
