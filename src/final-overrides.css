@@ -14490,3 +14490,43 @@ button > img {
 .canvas-vertical-nav:focus-within>button:not([aria-label="账户"]):focus-visible::after{
   background:#f1f2ff!important;box-shadow:none!important
 }
+
+/* Rail names are bare text, each centered on the same horizontal axis as its icon. */
+.canvas-vertical-nav::before{display:none!important;content:none!important}
+.canvas-vertical-nav>button:not([aria-label="账户"])::after{
+  left:56px!important;top:50%!important;width:auto!important;min-width:70px!important;height:44px!important;
+  padding:0 8px!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
+  color:#202432!important;font-size:14px!important;font-weight:500!important;line-height:44px!important;
+  align-items:center!important;justify-content:flex-start!important
+}
+.canvas-vertical-nav:hover>button:not([aria-label="账户"])::after,
+.canvas-vertical-nav:focus-within>button:not([aria-label="账户"])::after{
+  transform:translate(8px,-50%)!important
+}
+.canvas-vertical-nav:hover>button:not([aria-label="账户"]):hover::after,
+.canvas-vertical-nav:focus-within>button:not([aria-label="账户"]):focus-visible::after{
+  color:#202432!important;background:transparent!important;font-weight:650!important
+}
+
+/* All selectable controls in the four conversation-image dialogs share one purple state language. */
+.figma-tool-modal .paint-tools>button:not(:disabled):hover,
+.figma-tool-modal .paint-tools>button.active,
+.figma-tool-modal.modal-图片尺寸 .ratio-list>button:hover,
+.figma-tool-modal.modal-图片尺寸 .ratio-list>button.active,
+.figma-tool-modal.modal-增强清晰度 .enhance-option-wrap>button:hover,
+.figma-tool-modal.modal-增强清晰度 .enhance-option-wrap>button[aria-expanded="true"],
+.figma-tool-modal.modal-增强清晰度 .enhance-popover>button:hover,
+.figma-tool-modal.modal-增强清晰度 .enhance-popover>button.active{
+  background:#eeeaff!important;color:#5f43df!important;border-color:#9a83f5!important;box-shadow:none!important
+}
+.figma-tool-modal .paint-tools>button:not(:disabled):hover img,
+.figma-tool-modal .paint-tools>button.active img{filter:none!important}
+
+/* Brush and eraser use a hollow circular pointer; free-select uses a crosshair. */
+.modal-image-stage>.editor-mask-layer.brush-mode-画笔,
+.modal-image-stage>.editor-mask-layer.brush-mode-橡皮{
+  cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11.5' fill='none' stroke='%23202732' stroke-width='1.5'/%3E%3Ccircle cx='16' cy='16' r='1' fill='%23202732'/%3E%3C/svg%3E") 16 16,crosshair!important
+}
+.modal-image-stage>.editor-mask-layer.brush-mode-框选{cursor:crosshair!important}
+.modal-image-stage>.editor-mask-layer.brush-mode-移动{cursor:grab!important}
+.modal-image-stage>.editor-mask-layer.brush-mode-移动:active{cursor:grabbing!important}

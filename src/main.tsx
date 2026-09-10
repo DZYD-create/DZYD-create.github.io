@@ -1844,7 +1844,7 @@ function Editor({
   const [resolution, setResolution] = useState("放大至 2K");
   const [detailOpen, setDetailOpen] = useState(false);
   const [resolutionOpen, setResolutionOpen] = useState(false);
-  type EditorStroke = { size: number; kind: "paint" | "erase"; points: Array<{ x: number; y: number }> };
+  type EditorStroke = { size: number; kind: "paint" | "erase" | "select"; points: Array<{ x: number; y: number }> };
   const [editorStrokes, setEditorStrokes] = useState<EditorStroke[]>([]);
   const [activeEditorStroke, setActiveEditorStroke] = useState<EditorStroke | null>(null);
   const [editorUndo, setEditorUndo] = useState<EditorStroke[][]>([]);
@@ -1887,7 +1887,11 @@ function Editor({
   const beginEditorStroke = (event: React.PointerEvent<SVGSVGElement>) => {
     if (brushMode === "移动") return;
     event.currentTarget.setPointerCapture(event.pointerId);
-    setActiveEditorStroke({ size: brushSize, kind: brushMode === "橡皮" ? "erase" : "paint", points: [editorPoint(event)] });
+    setActiveEditorStroke({
+      size: brushSize,
+      kind: brushMode === "橡皮" ? "erase" : brushMode === "框选" ? "select" : "paint",
+      points: [editorPoint(event)],
+    });
   };
   const moveEditorStroke = (event: React.PointerEvent<SVGSVGElement>) => {
     if (!activeEditorStroke || !event.currentTarget.hasPointerCapture(event.pointerId)) return;
@@ -2010,12 +2014,14 @@ function Editor({
                 <div className="modal-canvas-wrap">
                   <div className="modal-image-stage">
                     <img src="/assets/template-2.png" alt="待编辑图片" />
-                    <svg className={`editor-mask-layer ${tool === "擦除内容" ? "erase-tool" : "redraw-tool"}`} viewBox="0 0 800 500" preserveAspectRatio="none" onPointerDown={beginEditorStroke} onPointerMove={moveEditorStroke} onPointerUp={finishEditorStroke} onPointerCancel={finishEditorStroke}>
+                    <svg className={`editor-mask-layer ${tool === "擦除内容" ? "erase-tool" : "redraw-tool"} brush-mode-${brushMode}`} viewBox="0 0 800 500" preserveAspectRatio="none" onPointerDown={beginEditorStroke} onPointerMove={moveEditorStroke} onPointerUp={finishEditorStroke} onPointerCancel={finishEditorStroke}>
                       <defs>
                         <pattern id="editor-checker" width="18" height="18" patternUnits="userSpaceOnUse"><rect width="18" height="18" fill="#eee"/><rect width="9" height="9" fill="#c8c8c8"/><rect x="9" y="9" width="9" height="9" fill="#c8c8c8"/></pattern>
                         <mask id="editor-stroke-mask"><rect width="800" height="500" fill="white"/>{editorStrokes.filter((stroke) => stroke.kind === "erase").map((stroke, index) => <polyline key={index} points={stroke.points.map((point) => `${point.x},${point.y}`).join(" ")} fill="none" stroke="black" strokeWidth={stroke.size} strokeLinecap="round" strokeLinejoin="round"/>)}{activeEditorStroke?.kind === "erase" && <polyline points={activeEditorStroke.points.map((point) => `${point.x},${point.y}`).join(" ")} fill="none" stroke="black" strokeWidth={activeEditorStroke.size} strokeLinecap="round" strokeLinejoin="round"/>}</mask>
                       </defs>
                       <g mask="url(#editor-stroke-mask)">{editorStrokes.filter((stroke) => stroke.kind === "paint").map((stroke, index) => <polyline key={index} points={stroke.points.map((point) => `${point.x},${point.y}`).join(" ")} fill="none" stroke={tool === "擦除内容" ? "url(#editor-checker)" : "rgba(112,82,242,.56)"} strokeWidth={stroke.size} strokeLinecap="round" strokeLinejoin="round"/>)}{activeEditorStroke?.kind === "paint" && <polyline points={activeEditorStroke.points.map((point) => `${point.x},${point.y}`).join(" ")} fill="none" stroke={tool === "擦除内容" ? "url(#editor-checker)" : "rgba(112,82,242,.56)"} strokeWidth={activeEditorStroke.size} strokeLinecap="round" strokeLinejoin="round"/>}</g>
+                      {editorStrokes.filter((stroke) => stroke.kind === "select").map((stroke, index) => <polygon key={`select-${index}`} points={stroke.points.map((point) => `${point.x},${point.y}`).join(" ")} fill="rgba(112,82,242,.2)" stroke="#7457ee" strokeWidth="3" strokeDasharray="9 7" strokeLinecap="round" strokeLinejoin="round"/>)}
+                      {activeEditorStroke?.kind === "select" && <polygon points={activeEditorStroke.points.map((point) => `${point.x},${point.y}`).join(" ")} fill="rgba(112,82,242,.2)" stroke="#7457ee" strokeWidth="3" strokeDasharray="9 7" strokeLinecap="round" strokeLinejoin="round"/>}
                     </svg>
                   </div>
                   <div className="brush-size-control">
