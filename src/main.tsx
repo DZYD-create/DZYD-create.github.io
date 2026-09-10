@@ -96,7 +96,7 @@ function WhiteDateCalendar({ value, minDate, onSelect }: { value: string; minDat
 function App() {
   const [section, setSection] = useState<Section>("studio");
   const [prompt, setPrompt] = useState("");
-  const [skill, setSkill] = useState("预热海报");
+  const [skill, setSkill] = useState("");
   const [generating, setGenerating] = useState(false);
   const [preparing, setPreparing] = useState(false);
   const [generated, setGenerated] = useState(false);
@@ -509,9 +509,9 @@ function App() {
               setStudioView("home");
               setConversationCollapsed(false);
             }}
-            onCanvas={(image, name) => {
+            onCanvas={(image, name, assets) => {
               setSection("canvas");
-              setPendingCanvasAssets([]);
+              setPendingCanvasAssets((assets ?? []).map((url, index) => ({ name: `${name || "画布"} ${index + 1}`, url })));
               setCanvasImage(image || null);
               if (name) setCanvasImageName(name);
             }}
@@ -6199,7 +6199,7 @@ function History({
 }: {
   onEdit: () => void;
   onBack: () => void;
-  onCanvas: (image?: string, name?: string) => void;
+  onCanvas: (image?: string, name?: string, assets?: string[]) => void;
   favoriteGenerated: boolean;
   onToggleGeneratedFavorite: () => void;
 }) {
@@ -6512,7 +6512,7 @@ function History({
           })}
           {tab === "canvas" && canvasHistoryCards.map((canvasItem) => (
             <div className="history-record-shell canvas-history-shell" key={canvasItem.name}>
-              <button className="history-record canvas-history-record" onClick={() => onCanvas(canvasItem.images[0], canvasItem.name)}>
+              <button className="history-record canvas-history-record" onClick={() => onCanvas(canvasItem.images[0], canvasItem.name, canvasItem.images)}>
                 <div className={`history-record-preview canvas-history-strip image-count-${canvasItem.images.length}`}>
                   {canvasItem.images.map((image, imageIndex) => <img key={`${canvasItem.name}-${imageIndex}`} src={image} alt="" />)}
                 </div>
