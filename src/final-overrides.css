@@ -14755,6 +14755,14 @@ button > img {
   width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;object-fit:cover!important
 }
 
+/* Keep the add-card white edge restrained; its hover edge changes with the card. */
+.history-page .history-create-record>.history-record-preview,
+.asset-page-figma .asset-subject-card.create>.asset-create-single,
+.asset-page-figma .asset-upload-entry>.asset-create-single{border-width:3px!important}
+.history-page .history-create-record:hover>.history-record-preview,
+.asset-page-figma .asset-subject-card.create:hover>.asset-create-single,
+.asset-page-figma .asset-upload-entry:hover>.asset-create-single{border-color:#cfc4fb!important}
+
 /* Add-entry outer ring is slimmer and never turns into a dark-purple outline on hover. */
 .history-page .history-create-record>.history-record-preview,
 .asset-page-figma .asset-subject-card.create>.asset-create-single,

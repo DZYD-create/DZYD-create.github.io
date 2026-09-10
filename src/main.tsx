@@ -3355,7 +3355,11 @@ function Canvas({
     setQuickOpen(false);
     if (canvasNodes.length === 0 && !["下载", "预览"].includes(label)) {
       pendingDockToolRef.current = label;
-      ref.current?.click();
+      const canvas = canvasRef.current;
+      setAddPosition(canvas
+        ? { x: Math.max(8, canvas.clientWidth / 2 - 128), y: Math.max(8, canvas.clientHeight / 2 - 215) }
+        : { x: 118, y: 210 });
+      setAddOpen(true);
       return;
     }
     if (label === "下载") {
@@ -3829,19 +3833,19 @@ function Canvas({
               <strong>画布自由生成</strong>
             </div>
             <div className="canvas-home-actions">
-              <button onClick={() => setCanvasTool("局部重绘")}>
+              <button onClick={() => handleDockAction("局部重绘")}>
                 <img src="/assets/canvas-dock-redraw.svg" />
                 局部重绘
               </button>
-              <button onClick={() => setCanvasTool("擦除内容")}>
+              <button onClick={() => handleDockAction("擦除")}>
                 <img src="/assets/canvas-dock-erase.svg" />
                 擦除内容
               </button>
-              <button onClick={() => setCanvasTool("尺寸修改")}>
+              <button onClick={() => handleDockAction("裁剪")}>
                 <img src="/assets/figma-resize.svg" />
                 尺寸修改
               </button>
-              <button onClick={() => setCanvasTool("高清")}>
+              <button onClick={() => handleDockAction("高清画质")}>
                 <img src="/assets/canvas-dock-hd.svg" />
                 画质增强
               </button>
