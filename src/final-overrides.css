@@ -14706,3 +14706,29 @@ button > img {
 .asset-page-figma .asset-upload-entry>.asset-create-single::before{
   z-index:0!important;background:linear-gradient(145deg,#faf9ff 0%,#f1efff 100%)!important
 }
+
+/* The whole add-card edge participates in the hover color change. */
+.history-page .history-create-record:hover>.history-record-preview,
+.asset-page-figma .asset-subject-card.create:hover>.asset-create-single,
+.asset-page-figma .asset-upload-entry:hover>.asset-create-single{
+  border-color:#ddd5ff!important;background:#f4f1ff!important
+}
+.history-page .history-create-record:hover>.history-record-preview::before,
+.asset-page-figma .asset-subject-card.create:hover>.asset-create-single::before,
+.asset-page-figma .asset-upload-entry:hover>.asset-create-single::before{
+  border-color:#a994f5!important;background:#ebe6ff!important
+}
+
+/* Canvas history cards show several images from the saved canvas in one row. */
+.history-tabs{display:flex!important;align-items:center!important;gap:8px!important}
+.history-tabs>button{min-width:72px!important}
+.canvas-history-record .canvas-history-strip{
+  box-sizing:border-box!important;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  align-items:center!important;gap:6px!important;padding:10px!important;background:#171717!important
+}
+.canvas-history-record .canvas-history-strip>img{
+  position:static!important;display:block!important;width:100%!important;height:auto!important;aspect-ratio:1/1!important;
+  object-fit:cover!important;border-radius:7px!important
+}
+.canvas-history-record>strong,
+.canvas-history-record>small{display:block!important;text-align:left!important}

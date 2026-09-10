@@ -6203,7 +6203,7 @@ function History({
   favoriteGenerated: boolean;
   onToggleGeneratedFavorite: () => void;
 }) {
-  const [tab] = useState<"subject" | "canvas">("canvas");
+  const [tab, setTab] = useState<"workspace" | "canvas">("workspace");
   const [popup, setPopup] = useState<"filter" | "time" | "sort" | null>(null);
   const [filter, setFilter] = useState("操作");
   const [time, setTime] = useState("全部");
@@ -6265,7 +6265,10 @@ function History({
       </div>
       <div className="history-workspace">
         <div className="history-top-row">
-          <div className="history-tabs"><button className="active">画布</button></div>
+          <div className="history-tabs">
+            <button className={tab === "workspace" ? "active" : ""} onClick={() => setTab("workspace")}>工作台</button>
+            <button className={tab === "canvas" ? "active" : ""} onClick={() => setTab("canvas")}>画布</button>
+          </div>
           <div className={`history-top-actions ${historySearchOpen ? "search-open" : ""}`}>
             <label className="history-zoom">
               <input
@@ -6446,13 +6449,13 @@ function History({
           </div>
         </div>
         <div className="history-cards" style={{ "--history-columns": zoom < 35 ? 5 : zoom < 68 ? 4 : 3, "--history-card-height": `${227 + zoom * 1.4}px`, "--shared-card-width": `${210 + zoom * 1.25}px` } as React.CSSProperties}>
-          <button
+          {tab === "workspace" && <button
             className="history-record history-create-record"
-            onClick={tab === "subject" ? () => setSubjectOpen(true) : () => onCanvas()}
+            onClick={() => onCanvas()}
           >
             <div className="history-record-preview"><span>＋</span><em className="add-entry-copy">点击添加内容</em></div>
-          </button>
-          {sortedHistoryCards.filter(({ name }) => name.toLowerCase().includes(historyQuery.trim().toLowerCase()) && (filter !== "收藏" || name === "对话生图图片" || favoriteHistory.includes(name))).map(({ name, originalIndex: i }) => {
+          </button>}
+          {tab === "workspace" && sortedHistoryCards.filter(({ name }) => name.toLowerCase().includes(historyQuery.trim().toLowerCase()) && (filter !== "收藏" || name === "对话生图图片" || favoriteHistory.includes(name))).map(({ name, originalIndex: i }) => {
             const image = name === "对话生图图片" ? "/assets/template-2.png" : featuredPeople[i % featuredPeople.length].url;
             const favorite = name === "对话生图图片" ? favoriteGenerated : favoriteHistory.includes(name);
             return (
@@ -6464,17 +6467,11 @@ function History({
                       setSelectedHistory((items) =>
                         items.includes(name) ? items.filter((item) => item !== name) : [...items, name],
                       );
-                    } else if (tab === "subject") {
-                      setSubjectName(name);
-                      setSubjectDescription("");
-                      setSubjectPreview(featuredPeople[i % featuredPeople.length].url);
-                      setSubjectOpen(true);
                     } else onCanvas(image, name);
                   }}
                 >
                   <div className="history-record-preview">
-                    {tab === "subject" && <img src={featuredPeople[i % featuredPeople.length].url} alt={name} />}
-                    {tab === "canvas" && <img src={image} alt={name} />}
+                    <img src={image} alt={name} />
                     {batch && (
                       <i className={`batch-check ${selectedHistory.includes(name) ? "selected" : ""}`}>
                         {selectedHistory.includes(name) ? "✓" : ""}
@@ -6508,7 +6505,18 @@ function History({
               </div>
             );
           })}
-          {historyQuery.trim() && !cards.some((name) => name.toLowerCase().includes(historyQuery.trim().toLowerCase())) && <p className="history-search-empty">未找到相关内容</p>}
+          {tab === "canvas" && ["品牌活动画布", "直播海报画布", "课程视觉画布"].map((name, canvasIndex) => (
+            <div className="history-record-shell canvas-history-shell" key={name}>
+              <button className="history-record canvas-history-record" onClick={() => onCanvas(samples[canvasIndex], name)}>
+                <div className="history-record-preview canvas-history-strip">
+                  {samples.slice(canvasIndex, canvasIndex + 4).concat(samples.slice(0, canvasIndex)).slice(0, 4).map((image, imageIndex) => <img key={`${name}-${imageIndex}`} src={image} alt="" />)}
+                </div>
+                <strong>{name}</strong>
+                <small>画布 · {6 + canvasIndex}月17日修改</small>
+              </button>
+            </div>
+          ))}
+          {tab === "workspace" && historyQuery.trim() && !cards.some((name) => name.toLowerCase().includes(historyQuery.trim().toLowerCase())) && <p className="history-search-empty">未找到相关内容</p>}
         </div>
       </div>
       {subjectOpen && (
