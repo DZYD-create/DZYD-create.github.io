@@ -2279,6 +2279,7 @@ function Canvas({
   const [folderDone, setFolderDone] = useState(false);
   const [folderExpanded, setFolderExpanded] = useState(false);
   const [folderIndex, setFolderIndex] = useState(2);
+  const folderClickTimerRef = useRef<number | null>(null);
   const [projectTitle, setProjectTitle] = useState(canvasImageName || "AI 视觉创作 · 未命名项目");
   const [folderName, setFolderName] = useState("");
   const [folderNames, setFolderNames] = useState([
@@ -4895,12 +4896,20 @@ function Canvas({
                     }}
                     onClick={(event) => {
                       if (event.detail > 1) return;
-                      setFolderIndex(index);
-                      setFolderExpanded(true);
+                      if (folderClickTimerRef.current !== null) window.clearTimeout(folderClickTimerRef.current);
+                      folderClickTimerRef.current = window.setTimeout(() => {
+                        setFolderIndex(index);
+                        setFolderExpanded(true);
+                        folderClickTimerRef.current = null;
+                      }, 220);
                     }}
                     onDoubleClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
+                      if (folderClickTimerRef.current !== null) {
+                        window.clearTimeout(folderClickTimerRef.current);
+                        folderClickTimerRef.current = null;
+                      }
                       const title = folderNames[index];
                       const folderImages = samples.slice(0, 3);
                       setFolderIndex(index);

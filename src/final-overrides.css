@@ -14467,3 +14467,26 @@ button > img {
 .figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-spark>svg .spark-small{
   transform-box:fill-box!important;transform-origin:center!important;transform:scale(.7)!important
 }
+
+/* The canvas rail opens one continuous white name panel, not separate label pills. */
+.canvas-vertical-nav::before{
+  content:"";position:absolute;left:48px;top:0;z-index:0;box-sizing:border-box;width:106px;height:334px;
+  border-radius:0 22px 22px 0;background:rgba(255,255,255,.97);box-shadow:8px 10px 24px rgba(51,61,86,.11);
+  opacity:0;transform:translateX(-28px);pointer-events:none;
+  transition:transform .2s cubic-bezier(.2,.75,.25,1),opacity .14s ease
+}
+.canvas-vertical-nav:hover::before,
+.canvas-vertical-nav:focus-within::before{opacity:1;transform:translateX(0)}
+.canvas-vertical-nav>button:not([aria-label="账户"])::after{
+  z-index:2!important;left:44px!important;width:104px!important;min-width:104px!important;padding:0 12px!important;
+  border-radius:8px!important;background:transparent!important;box-shadow:none!important;
+  transform:translate(-24px,-50%)!important
+}
+.canvas-vertical-nav:hover>button:not([aria-label="账户"])::after,
+.canvas-vertical-nav:focus-within>button:not([aria-label="账户"])::after{
+  transform:translate(8px,-50%)!important
+}
+.canvas-vertical-nav:hover>button:not([aria-label="账户"]):hover::after,
+.canvas-vertical-nav:focus-within>button:not([aria-label="账户"]):focus-visible::after{
+  background:#f1f2ff!important;box-shadow:none!important
+}
