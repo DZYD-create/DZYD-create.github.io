@@ -14684,3 +14684,25 @@ button > img {
 .asset-page-figma .asset-upload-entry>.asset-create-single>i{
   border:0!important;box-sizing:border-box!important
 }
+
+/* Generate label and sparkle remain white in every interaction state. */
+.figma-tool-modal>.modal-generate,
+.figma-tool-modal>.modal-generate:hover,
+.figma-tool-modal>.modal-generate:active,
+.figma-tool-modal>.modal-generate .modal-generate-label,
+.figma-tool-modal>.modal-generate:hover .modal-generate-label,
+.figma-tool-modal>.modal-generate:active .modal-generate-label{
+  color:#fff!important;-webkit-text-fill-color:#fff!important
+}
+.figma-tool-modal>.modal-generate .modal-generate-stars>svg,
+.figma-tool-modal>.modal-generate .modal-generate-stars>svg path{fill:#fff!important;stroke:#fff!important}
+
+/* The lavender fill ends at the dashed line; its outer rounded band stays white. */
+.history-page .history-create-record>.history-record-preview,
+.asset-page-figma .asset-subject-card.create>.asset-create-single,
+.asset-page-figma .asset-upload-entry>.asset-create-single{background:#fff!important}
+.history-page .history-create-record>.history-record-preview::before,
+.asset-page-figma .asset-subject-card.create>.asset-create-single::before,
+.asset-page-figma .asset-upload-entry>.asset-create-single::before{
+  z-index:0!important;background:linear-gradient(145deg,#faf9ff 0%,#f1efff 100%)!important
+}
