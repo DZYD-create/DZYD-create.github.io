@@ -4893,7 +4893,8 @@ function Canvas({
                       setFolderDeleteIndex(index);
                       setFolderColorOpen(null);
                     }}
-                    onClick={() => {
+                    onClick={(event) => {
+                      if (event.detail > 1) return;
                       if (offset === 0) setFolderExpanded((v) => !v);
                       else {
                         setFolderIndex(index);
