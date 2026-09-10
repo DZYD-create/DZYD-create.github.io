@@ -2031,16 +2031,18 @@ function Editor({
               <>
                 <div className="modal-canvas-wrap">
                   <div className="modal-image-stage">
-                    <img src="/assets/template-2.png" alt="待编辑图片" />
-                    <svg className={`editor-mask-layer ${tool === "擦除内容" ? "erase-tool" : "redraw-tool"} brush-mode-${brushMode}`} viewBox="0 0 800 500" preserveAspectRatio="none" onPointerDown={beginEditorStroke} onPointerMove={moveEditorStroke} onPointerUp={finishEditorStroke} onPointerCancel={finishEditorStroke}>
+                    <div className="modal-image-surface">
+                      <img src="/assets/template-2.png" alt="待编辑图片" />
+                      <svg className={`editor-mask-layer ${tool === "擦除内容" ? "erase-tool" : "redraw-tool"} brush-mode-${brushMode}`} viewBox="0 0 800 500" preserveAspectRatio="none" onPointerDown={beginEditorStroke} onPointerMove={moveEditorStroke} onPointerUp={finishEditorStroke} onPointerCancel={finishEditorStroke}>
                       <defs>
-                        <pattern id="editor-checker" width="18" height="18" patternUnits="userSpaceOnUse"><rect width="18" height="18" fill="rgba(238,238,238,.58)"/><rect width="9" height="9" fill="rgba(190,194,204,.58)"/><rect x="9" y="9" width="9" height="9" fill="rgba(190,194,204,.58)"/></pattern>
+                        <pattern id="editor-checker" width="18" height="18" patternUnits="userSpaceOnUse"><rect width="18" height="18" fill="rgba(238,238,238,.28)"/><rect width="9" height="9" fill="rgba(190,194,204,.28)"/><rect x="9" y="9" width="9" height="9" fill="rgba(190,194,204,.28)"/></pattern>
                         <mask id="editor-stroke-mask"><rect width="800" height="500" fill="white"/>{editorStrokes.filter((stroke) => stroke.kind === "erase").map((stroke, index) => stroke.points.length === 1 ? <circle key={index} cx={stroke.points[0].x} cy={stroke.points[0].y} r={stroke.size / 2} fill="black"/> : <path key={index} d={editorStrokePath(stroke.points)} fill="none" stroke="black" strokeWidth={stroke.size} strokeLinecap="round" strokeLinejoin="round"/>)}{activeEditorStroke?.kind === "erase" && (activeEditorStroke.points.length === 1 ? <circle cx={activeEditorStroke.points[0].x} cy={activeEditorStroke.points[0].y} r={activeEditorStroke.size / 2} fill="black"/> : <path d={editorStrokePath(activeEditorStroke.points)} fill="none" stroke="black" strokeWidth={activeEditorStroke.size} strokeLinecap="round" strokeLinejoin="round"/>)}</mask>
                       </defs>
                       <g mask="url(#editor-stroke-mask)">{editorStrokes.filter((stroke) => stroke.kind === "paint").map((stroke, index) => stroke.points.length === 1 ? <circle key={index} cx={stroke.points[0].x} cy={stroke.points[0].y} r={stroke.size / 2} fill={tool === "擦除内容" ? "url(#editor-checker)" : "rgba(112,82,242,.56)"}/> : <path key={index} d={editorStrokePath(stroke.points)} fill="none" stroke={tool === "擦除内容" ? "url(#editor-checker)" : "rgba(112,82,242,.56)"} strokeWidth={stroke.size} strokeLinecap="round" strokeLinejoin="round"/>)}{activeEditorStroke?.kind === "paint" && (activeEditorStroke.points.length === 1 ? <circle cx={activeEditorStroke.points[0].x} cy={activeEditorStroke.points[0].y} r={activeEditorStroke.size / 2} fill={tool === "擦除内容" ? "url(#editor-checker)" : "rgba(112,82,242,.56)"}/> : <path d={editorStrokePath(activeEditorStroke.points)} fill="none" stroke={tool === "擦除内容" ? "url(#editor-checker)" : "rgba(112,82,242,.56)"} strokeWidth={activeEditorStroke.size} strokeLinecap="round" strokeLinejoin="round"/>)}</g>
-                      {editorStrokes.filter((stroke) => stroke.kind === "select").map((stroke, index) => { const rect = editorSelectionRect(stroke.points); return <rect key={`select-${index}`} {...rect} fill="rgba(112,82,242,.16)" stroke="#7457ee" strokeWidth="3" strokeDasharray="9 7"/>; })}
-                      {activeEditorStroke?.kind === "select" && (() => { const rect = editorSelectionRect(activeEditorStroke.points); return <rect {...rect} fill="rgba(112,82,242,.16)" stroke="#7457ee" strokeWidth="3" strokeDasharray="9 7"/>; })()}
-                    </svg>
+                      {editorStrokes.filter((stroke) => stroke.kind === "select").map((stroke, index) => { const rect = editorSelectionRect(stroke.points); return <rect className="editor-selection-rect" key={`select-${index}`} {...rect}/>; })}
+                      {activeEditorStroke?.kind === "select" && (() => { const rect = editorSelectionRect(activeEditorStroke.points); return <rect className="editor-selection-rect" {...rect}/>; })()}
+                      </svg>
+                    </div>
                   </div>
                   <div className="brush-size-control">
                     <img src="/assets/figma-brush-small.svg" />
