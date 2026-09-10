@@ -14359,3 +14359,39 @@ button > img {
   min-width:30px!important;padding:0!important;border:2.15px solid #11182b!important;border-radius:3px!important;font:800 12px/1 Arial,sans-serif!important
 }
 .figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-diamond > svg{width:30px!important;height:30px!important;stroke-width:2.15!important}
+
+/* Latest focused corrections. */
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-sliders circle{
+  fill:#fff!important;stroke:#11182b!important;stroke-width:2.15px!important
+}
+
+/* Enhancement uses the exact same close artwork geometry as Erase. */
+.figma-tool-modal.modal-增强清晰度 > header > button,
+.figma-tool-modal.modal-擦除内容 > header > button{
+  width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;margin-top:3px!important
+}
+.figma-tool-modal.modal-增强清晰度 > header > button > img,
+.figma-tool-modal.modal-擦除内容 > header > button > img{
+  display:block!important;width:28px!important;height:28px!important
+}
+
+/* Reset stays clipped inside the modal, aligned to the prompt's left edge. */
+.figma-tool-modal.modal-擦除内容{overflow:hidden!important}
+.figma-tool-modal.modal-擦除内容 .erase-modal-secondary{
+  box-sizing:border-box!important;position:absolute!important;left:40px!important;right:auto!important;bottom:22px!important;
+  width:118px!important;height:50px!important;display:block!important;z-index:3!important
+}
+.figma-tool-modal.modal-擦除内容 .erase-reset{
+  box-sizing:border-box!important;width:118px!important;height:50px!important;min-width:118px!important;max-width:118px!important;
+  display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:10px!important;white-space:nowrap!important
+}
+.figma-tool-modal.modal-擦除内容 .erase-reset > svg{display:block!important;flex:0 0 27px!important}
+.figma-tool-modal.modal-擦除内容 .erase-reset > span{
+  display:block!important;width:auto!important;height:26px!important;line-height:26px!important;white-space:nowrap!important;word-break:keep-all!important
+}
+
+/* Image Size copies the blue erase-prompt border treatment. */
+.figma-tool-modal.modal-图片尺寸 .modal-prompt{
+  box-sizing:border-box!important;border:1.5px solid #5799ff!important;background:#fff!important;
+  box-shadow:0 0 0 1px rgba(87,153,255,.04)!important
+}
