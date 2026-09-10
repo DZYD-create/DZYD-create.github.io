@@ -6247,6 +6247,11 @@ function History({
       const delta = right[field] - left[field];
       return order === "近-远" ? delta : -delta;
     });
+  const canvasHistoryCards = [
+    { name: "品牌活动画布", images: [samples[0], samples[1]], edited: "编辑于 6 分钟前" },
+    { name: "直播海报画布", images: [samples[1], samples[2], samples[3]], edited: "编辑于 2 小时前" },
+    { name: "课程视觉画布", images: [samples[0], samples[2], samples[3], samples[4]], edited: "编辑于 1 天前" },
+  ];
   return (
     <section className="history-page" onClick={() => {
       if (popup) setPopup(null);
@@ -6479,7 +6484,7 @@ function History({
                     )}
                   </div>
                   <strong>{name}</strong>
-                  <small>{i === 0 ? "\u00A0" : i === 1 ? "编辑于 6 分钟前" : "编辑于 17 小时前"}</small>
+                  <small>{name === "对话生图图片" ? "编辑于 刚刚" : i === 0 ? "编辑于 2 分钟前" : i === 1 ? "编辑于 6 分钟前" : "编辑于 17 小时前"}</small>
                 </button>
                 <button
                   className={`history-pin ${favorite ? "active" : ""}`}
@@ -6505,14 +6510,14 @@ function History({
               </div>
             );
           })}
-          {tab === "canvas" && ["品牌活动画布", "直播海报画布", "课程视觉画布"].map((name, canvasIndex) => (
-            <div className="history-record-shell canvas-history-shell" key={name}>
-              <button className="history-record canvas-history-record" onClick={() => onCanvas(samples[canvasIndex], name)}>
-                <div className="history-record-preview canvas-history-strip">
-                  {samples.slice(canvasIndex, canvasIndex + 4).concat(samples.slice(0, canvasIndex)).slice(0, 4).map((image, imageIndex) => <img key={`${name}-${imageIndex}`} src={image} alt="" />)}
+          {tab === "canvas" && canvasHistoryCards.map((canvasItem) => (
+            <div className="history-record-shell canvas-history-shell" key={canvasItem.name}>
+              <button className="history-record canvas-history-record" onClick={() => onCanvas(canvasItem.images[0], canvasItem.name)}>
+                <div className={`history-record-preview canvas-history-strip image-count-${canvasItem.images.length}`}>
+                  {canvasItem.images.map((image, imageIndex) => <img key={`${canvasItem.name}-${imageIndex}`} src={image} alt="" />)}
                 </div>
-                <strong>{name}</strong>
-                <small>画布 · {6 + canvasIndex}月17日修改</small>
+                <strong>{canvasItem.name}</strong>
+                <small>{canvasItem.edited}</small>
               </button>
             </div>
           ))}

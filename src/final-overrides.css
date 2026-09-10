@@ -14730,5 +14730,13 @@ button > img {
   position:static!important;display:block!important;width:100%!important;height:auto!important;aspect-ratio:1/1!important;
   object-fit:cover!important;border-radius:7px!important
 }
+.canvas-history-record .canvas-history-strip.image-count-2{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.canvas-history-record .canvas-history-strip.image-count-3{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.canvas-history-record .canvas-history-strip.image-count-4{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+.canvas-history-record .canvas-history-strip.image-count-2>img,
+.canvas-history-record .canvas-history-strip.image-count-3>img,
+.canvas-history-record .canvas-history-strip.image-count-4>img{
+  height:100%!important;min-height:0!important;aspect-ratio:auto!important
+}
 .canvas-history-record>strong,
 .canvas-history-record>small{display:block!important;text-align:left!important}
