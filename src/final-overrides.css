@@ -14591,3 +14591,14 @@ button > img {
 .figma-tool-modal.modal-擦除内容 .paint-tools>button.active img{filter:none!important}
 .figma-tool-modal.modal-擦除内容 .paint-tools>button:not(:disabled):hover span,
 .figma-tool-modal.modal-擦除内容 .paint-tools>button.active span{color:#4f37dc!important}
+
+/* The live hollow cursor uses the exact current brush diameter. */
+.figma-tool-modal.modal-擦除内容 .modal-image-surface>.editor-mask-layer.brush-mode-画笔,
+.figma-tool-modal.modal-擦除内容 .modal-image-surface>.editor-mask-layer.brush-mode-橡皮{cursor:none!important}
+.editor-live-brush-cursor{
+  pointer-events:none!important;fill:none!important;stroke:#202732!important;stroke-width:1.6px!important;
+  vector-effect:non-scaling-stroke!important
+}
+
+/* Redraw and erase prompt sparkles share one purple. */
+.figma-tool-modal.modal-擦除内容 .erase-prompt-spark{color:#7255ea!important;-webkit-text-fill-color:#7255ea!important}
