@@ -14602,3 +14602,15 @@ button > img {
 
 /* Redraw and erase prompt sparkles share one purple. */
 .figma-tool-modal.modal-擦除内容 .erase-prompt-spark{color:#7255ea!important;-webkit-text-fill-color:#7255ea!important}
+
+/* Redraw and erase use one purple accent for brush sizing and prompt input. */
+.figma-tool-modal.modal-擦除内容 .brush-size-control>input[type="range"]{accent-color:#7255ea!important}
+.figma-tool-modal.modal-擦除内容 .brush-size-control>input[type="range"]::-webkit-slider-runnable-track{
+  background:linear-gradient(90deg,#7255ea 0,#7255ea calc((var(--brush-progress,48) - 8)*1.087%),#ddd8f3 calc((var(--brush-progress,48) - 8)*1.087%),#ddd8f3 100%)!important
+}
+.figma-tool-modal.modal-擦除内容 .brush-size-control>input[type="range"]::-webkit-slider-thumb{
+  background:#7255ea!important;box-shadow:0 1px 5px rgba(114,85,234,.35)!important
+}
+.figma-tool-modal.modal-擦除内容 .modal-prompt{
+  border-color:#7255ea!important;box-shadow:0 0 0 1px rgba(114,85,234,.06)!important
+}
