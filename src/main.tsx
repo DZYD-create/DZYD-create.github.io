@@ -1123,7 +1123,7 @@ function NewCreationPage({
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="描述你的设计需求，输入 @ 可引用素材或 Skill"
+          placeholder={attachment || prompt ? "" : "描述你的设计需求，输入 @ 可引用素材或 Skill"}
         />
         {attachment && (
           <div className="attachment">
@@ -1322,7 +1322,7 @@ function Studio({
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="描述你的设计需求，输入 @ 可引用素材或 Skill"
+          placeholder={attachment || prompt ? "" : "描述你的设计需求，输入 @ 可引用素材或 Skill"}
         />
         {attachment && (
           <div className="attachment">
@@ -6112,6 +6112,7 @@ function AssetLibrary({
   const [logoName, setLogoName] = useState("洋葱学园");
   const [collapsed, setCollapsed] = useState({ poster: false, teachers: false, logo: false });
   const [editing, setEditing] = useState<string | null>(null);
+  const [folderMore, setFolderMore] = useState<string | null>(null);
   const [renameDraft, setRenameDraft] = useState("");
   const beginInlineRename = (key: string, current: string) => { setEditing(key); setRenameDraft(current); };
   const commitInlineRename = () => {
@@ -6162,6 +6163,8 @@ function AssetLibrary({
           <img className="tree-chevron" src={collapsed.poster ? "/assets/asset-chevron-right.svg" : "/assets/asset-chevron.svg"} onClick={() => setCollapsed((value)=>({...value,poster:!value.poster}))} />
           <i className="folder-icon cyan" />
           {editing==="poster"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("poster",folderNames.poster)}>{folderNames.poster}</b>}
+          <button className="asset-folder-more" aria-label={`${folderNames.poster}更多操作`} aria-expanded={folderMore==="poster"} onClick={(event)=>{event.stopPropagation();setFolderMore((value)=>value==="poster"?null:"poster");}}>•••</button>
+          {folderMore==="poster" && <div className="asset-folder-more-menu"><button onClick={()=>{setFolderMore(null);beginInlineRename("poster",folderNames.poster);}}>重命名</button></div>}
         </div>}
         {posterMatches && !collapsed.poster &&
         <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,posterName,"/assets/school-kickoff-poster.png")} className={`asset-tree-entry asset-poster-file ${selected===5?"selected":""}`} onClick={(event)=>onSelect(5,event.currentTarget.getBoundingClientRect().top)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("poster-file",posterName);}}>
@@ -6172,6 +6175,8 @@ function AssetLibrary({
           <img className="tree-chevron" src={collapsed.teachers ? "/assets/asset-chevron-right.svg" : "/assets/asset-chevron.svg"} onClick={() => setCollapsed((value)=>({...value,teachers:!value.teachers}))} />
           <i className="folder-icon blue" />
           {editing==="teachers"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("teachers",folderNames.teachers)}>{folderNames.teachers}</b>}
+          <button className="asset-folder-more" aria-label={`${folderNames.teachers}更多操作`} aria-expanded={folderMore==="teachers"} onClick={(event)=>{event.stopPropagation();setFolderMore((value)=>value==="teachers"?null:"teachers");}}>•••</button>
+          {folderMore==="teachers" && <div className="asset-folder-more-menu"><button onClick={()=>{setFolderMore(null);beginInlineRename("teachers",folderNames.teachers);}}>重命名</button></div>}
         </div>}
         {!collapsed.teachers && visibleTeachers.map(({name:v,index:i}) => (
           <div
@@ -6193,6 +6198,8 @@ function AssetLibrary({
           <img className="tree-chevron" src={collapsed.logo ? "/assets/asset-chevron-right.svg" : "/assets/asset-chevron.svg"} onClick={() => setCollapsed((value)=>({...value,logo:!value.logo}))} />
           <i className="folder-icon green" />
           {editing==="logo"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("logo",folderNames.logo)}>{folderNames.logo}</b>}
+          <button className="asset-folder-more" aria-label={`${folderNames.logo}更多操作`} aria-expanded={folderMore==="logo"} onClick={(event)=>{event.stopPropagation();setFolderMore((value)=>value==="logo"?null:"logo");}}>•••</button>
+          {folderMore==="logo" && <div className="asset-folder-more-menu"><button onClick={()=>{setFolderMore(null);beginInlineRename("logo",folderNames.logo);}}>重命名</button></div>}
         </div>}
         {logoMatches && !collapsed.logo && <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,logoName,"/assets/brand-logo-kcle.png")} className={`asset-tree-entry asset-logo-file ${selected===6?"selected":""}`} onClick={(event)=>onSelect(6,event.currentTarget.getBoundingClientRect().top)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("logo-file",logoName);}}><img src="/assets/brand-logo-kcle.png" />{editing==="logo-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{logoName}</span>}</div>}
       </div>

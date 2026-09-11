@@ -14795,3 +14795,37 @@ button > img {
 /* Desktop image drag targets give immediate visual feedback. */
 .figma-composer:has(textarea:focus),
 .new-creation-composer:has(textarea:focus){border-color:#8b63f6!important}
+
+/* Add cards keep their slim white edge on hover; no extra outer purple ring. */
+.history-page .history-create-record:hover>.history-record-preview,
+.asset-page-figma .asset-subject-card.create:hover>.asset-create-single,
+.asset-page-figma .asset-upload-entry:hover>.asset-create-single{
+  border-color:#fff!important;outline:0!important;box-shadow:0 8px 20px rgba(104,82,224,.14)!important
+}
+
+/* The inspiration overlay dims and centers within the usable content region, not the full viewport. */
+.main.with-panel .template-detail-page{inset:0 0 0 317px!important;padding:44px!important}
+.main:not(.with-panel) .template-detail-page{inset:0 0 0 88px!important;padding:44px!important}
+
+/* Canvas asset folders own a contained, baseline-centered more action. */
+.asset-library-panel .asset-tree>.tree-row{
+  position:relative!important;display:flex!important;align-items:center!important;padding-right:38px!important;overflow:visible!important
+}
+.asset-library-panel .asset-tree>.tree-row>b,
+.asset-library-panel .asset-tree>.tree-row>.asset-inline-rename{min-width:0!important;flex:1 1 auto!important}
+.asset-library-panel .asset-folder-more{
+  position:absolute!important;right:6px!important;top:50%!important;transform:translateY(-50%)!important;
+  width:28px!important;height:28px!important;min-width:28px!important;padding:0 0 5px!important;border:0!important;border-radius:7px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;background:transparent!important;
+  color:#707686!important;font:700 16px/1 Arial,sans-serif!important;letter-spacing:1px!important;cursor:pointer!important
+}
+.asset-library-panel .asset-folder-more:hover,
+.asset-library-panel .asset-folder-more[aria-expanded="true"]{background:#f0edff!important;color:#6f55e8!important}
+.asset-library-panel .asset-folder-more-menu{
+  position:absolute!important;z-index:80!important;right:6px!important;top:calc(100% + 3px)!important;width:92px!important;padding:5px!important;
+  border:1px solid #ebe9f3!important;border-radius:9px!important;background:#fff!important;box-shadow:0 8px 20px rgba(37,35,55,.13)!important
+}
+.asset-library-panel .asset-folder-more-menu>button{
+  width:100%!important;height:30px!important;border:0!important;border-radius:6px!important;background:transparent!important;text-align:left!important;padding:0 10px!important
+}
+.asset-library-panel .asset-folder-more-menu>button:hover{background:#f0edff!important;color:#6f55e8!important}
