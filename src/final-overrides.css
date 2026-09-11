@@ -15139,6 +15139,11 @@ button > img {
 .generation-attachment-rail.count-0 .upload-card-rays>b:nth-child(2){left:10px!important;top:0!important;transform:rotate(-5deg)!important}
 .generation-attachment-rail.count-0 .upload-card-rays>b:nth-child(3){left:19px!important;top:6px!important;transform:rotate(45deg)!important}
 
+/* Initial add-card plus sits below the label instead of covering its final character. */
+.generation-attachment-rail.count-0 .generation-add-image-card>i{
+  right:-14px!important;bottom:-18px!important
+}
+
 /* Final reference detail: solid lower picture shape and three rays outside, converging at the top-right corner. */
 .upload-card-picture-icon .picture-fill{
   fill:#7c59ee!important;stroke:#7c59ee!important;stroke-width:1.4!important;stroke-linejoin:round!important
