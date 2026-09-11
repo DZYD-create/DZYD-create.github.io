@@ -819,7 +819,7 @@ function GenerationPage({
             ))}
             {attachments.length < 5 && (
               <button className="generation-add-image-card" onClick={() => generationFile.current?.click()} aria-label="添加图片">
-                <UploadCardPictureIcon /><strong>添加图片</strong><i aria-hidden="true">＋</i><span className="upload-card-rays" aria-hidden="true"><b /><b /><b /></span>
+                <UploadCardPictureIcon /><strong>添加图片</strong><i aria-hidden="true">＋</i>
               </button>
             )}
           </div>
@@ -1157,7 +1157,7 @@ function NewCreationPage({
                 <button className="generation-attachment-remove" aria-label={`移除图片 ${image.name}`} onClick={() => setAttachments((items) => items.filter((item) => item.url !== image.url))}>×</button>
               </div>
             ))}
-            {attachments.length < 5 && <button className="generation-add-image-card" onClick={() => fileRef.current?.click()} aria-label="添加图片"><UploadCardPictureIcon /><strong>添加图片</strong><i aria-hidden="true">＋</i><span className="upload-card-rays" aria-hidden="true"><b /><b /><b /></span></button>}
+            {attachments.length < 5 && <button className="generation-add-image-card" onClick={() => fileRef.current?.click()} aria-label="添加图片"><UploadCardPictureIcon /><strong>添加图片</strong><i aria-hidden="true">＋</i></button>}
           </div>
         </div>
         <textarea
