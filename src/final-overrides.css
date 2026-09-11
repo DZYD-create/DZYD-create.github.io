@@ -14983,3 +14983,55 @@ button > img {
 .asset-library-panel .asset-folder-more-menu>button.danger:hover{
   background:#f0edff!important;color:#6549dd!important;border:1px solid #8064ee!important;box-shadow:none!important
 }
+
+/* Reference-accurate upload card: fixed geometry, purple artwork and three separate accent strokes. */
+.generation-add-image-card{
+  box-sizing:border-box!important;flex:none!important;min-width:104px!important;min-height:128px!important;
+  background:#fff!important;border:2px solid #fff!important;
+  box-shadow:0 17px 31px rgba(112,73,238,.28),0 6px 13px rgba(143,108,244,.17)!important
+}
+.generation-add-image-card>.figma-upload-image-icon.upload-image-icon-v2{
+  width:38px!important;height:38px!important;flex:0 0 38px!important;color:#805cf0!important
+}
+.generation-add-image-card>.figma-upload-image-icon.upload-image-icon-v2>svg{
+  width:38px!important;height:38px!important;stroke:#805cf0!important;stroke-width:2.7!important
+}
+.generation-add-image-card>.figma-upload-image-icon.upload-image-icon-v2>svg circle{fill:#805cf0!important}
+.generation-add-image-card>.figma-upload-image-icon.upload-image-icon-v2>svg .upload-plus{stroke:#805cf0!important;stroke-width:3.1!important}
+.generation-attachment-rail.count-0 .generation-add-image-card::after{
+  content:""!important;right:-13px!important;top:-17px!important;width:22px!important;height:19px!important;
+  background:
+    linear-gradient(#6d54ef,#6d54ef) 2px 12px/2.5px 7px no-repeat,
+    linear-gradient(55deg,#6d54ef 0 48%,transparent 50%) 8px 5px/8px 3px no-repeat,
+    linear-gradient(82deg,#6d54ef 0 48%,transparent 50%) 17px 0/3px 8px no-repeat!important;
+  transform:none!important
+}
+
+/* Uploaded cards clip only their bitmap, so the circular close control remains fully visible. */
+.generation-attachment-thumb{overflow:visible!important;box-sizing:border-box!important}
+.generation-attachment-thumb>img{border-radius:11px!important;clip-path:inset(0 round 11px)!important}
+.generation-attachment-remove{right:-10px!important;top:-10px!important;flex:none!important;box-sizing:border-box!important}
+.generation-attachment-rail:not(.count-0) .generation-add-image-card{
+  width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px!important;max-height:40px!important;
+  aspect-ratio:1/1!important;flex:none!important;border:0!important
+}
+
+/* Portalled folder menu is viewport-level UI and cannot be clipped by the drawer. */
+.asset-folder-more-menu-portal{
+  position:fixed!important;z-index:2147483000!important;width:146px!important;padding:6px!important;
+  border:1px solid #ebe9f3!important;border-radius:9px!important;background:#fff!important;
+  box-shadow:0 10px 24px rgba(37,35,55,.16)!important
+}
+.asset-folder-more-menu-portal>button{
+  box-sizing:border-box!important;width:100%!important;height:34px!important;padding:0 10px!important;border:1px solid transparent!important;
+  border-radius:7px!important;background:#fff!important;color:#272a34!important;display:flex!important;align-items:center!important;gap:10px!important;
+  text-align:left!important;font-size:13px!important
+}
+.asset-folder-more-menu-portal>button>span{width:18px!important;display:grid!important;place-items:center!important;color:inherit!important}
+.asset-folder-more-menu-portal>button svg{width:17px!important;height:17px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.55!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+.asset-folder-more-menu-portal>button:hover,
+.asset-folder-more-menu-portal>button:focus-visible{
+  background:#f0edff!important;color:#6549dd!important;border-color:#8064ee!important;outline:0!important
+}
+.asset-folder-more-menu-portal>button.danger{color:#ef4b58!important}
+.asset-folder-more-menu-portal>button.danger:hover{color:#6549dd!important}

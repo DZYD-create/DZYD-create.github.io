@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { flushSync } from "react-dom";
+import { createPortal, flushSync } from "react-dom";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 import "./overrides.css";
@@ -6147,6 +6147,7 @@ function AssetLibrary({
   const [collapsed, setCollapsed] = useState({ poster: false, teachers: false, logo: false });
   const [editing, setEditing] = useState<string | null>(null);
   const [folderMore, setFolderMore] = useState<string | null>(null);
+  const [folderMenuPosition, setFolderMenuPosition] = useState({ left: 0, top: 0 });
   const [hiddenFolders, setHiddenFolders] = useState<string[]>([]);
   const [extraFolders, setExtraFolders] = useState<Array<{ id: string; name: string }>>([]);
   const [customCollapsed, setCustomCollapsed] = useState<Record<string, boolean>>({});
@@ -6175,12 +6176,23 @@ function AssetLibrary({
     else setHiddenFolders((folders) => [...folders, key]);
     setFolderMore(null);
   };
-  const folderActions = (key: string, name: string) => folderMore===key && (
-    <div className="asset-folder-more-menu">
+  const toggleFolderActions = (event: React.MouseEvent<HTMLButtonElement>, key: string) => {
+    event.stopPropagation();
+    if (folderMore === key) { setFolderMore(null); return; }
+    const rect = event.currentTarget.getBoundingClientRect();
+    const menuHeight = 116;
+    const safeBottom = 84;
+    const preferredTop = rect.bottom + 4;
+    const top = Math.max(8, Math.min(preferredTop, document.documentElement.clientHeight - menuHeight - safeBottom));
+    setFolderMenuPosition({ left: Math.max(8, rect.right - 146), top });
+    setFolderMore(key);
+  };
+  const folderActions = (key: string, name: string) => folderMore===key && createPortal(
+    <div className="asset-folder-more-menu asset-folder-more-menu-portal" style={{ left: folderMenuPosition.left, top: folderMenuPosition.top }} onClick={(event)=>event.stopPropagation()}>
       <button onClick={createAssetFolder}><span><svg viewBox="0 0 20 20"><path d="M10 4v12M4 10h12" /></svg></span>新建文件夹</button>
       <button onClick={()=>{setFolderMore(null);beginInlineRename(key,name);}}><span><svg viewBox="0 0 20 20"><path d="m4 14-.7 3.1 3.2-.7L15 7.9 12.1 5Z" /><path d="m10.8 6.3 2.9 2.9" /></svg></span>重命名</button>
       <button className="danger" onClick={()=>deleteAssetFolder(key)}><span><svg viewBox="0 0 20 20"><path d="M4.5 6h11M8 3.5h4M6.2 6l.7 10.5h6.2L13.8 6M8.5 9v4.5M11.5 9v4.5" /></svg></span>删除</button>
-    </div>
+    </div>, document.body
   );
   const normalizedQuery = query.trim().toLowerCase();
   const posterMatches = !normalizedQuery || folderNames.poster.toLowerCase().includes(normalizedQuery) || posterName.toLowerCase().includes(normalizedQuery);
@@ -6220,7 +6232,7 @@ function AssetLibrary({
           <img className="tree-chevron" src={collapsed.poster ? "/assets/asset-chevron-right.svg" : "/assets/asset-chevron.svg"} onClick={() => setCollapsed((value)=>({...value,poster:!value.poster}))} />
           <i className="folder-icon cyan" />
           {editing==="poster"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("poster",folderNames.poster)}>{folderNames.poster}</b>}
-          <button className="asset-folder-more" aria-label={`${folderNames.poster}更多操作`} aria-expanded={folderMore==="poster"} onClick={(event)=>{event.stopPropagation();setFolderMore((value)=>value==="poster"?null:"poster");}}>•••</button>
+          <button className="asset-folder-more" aria-label={`${folderNames.poster}更多操作`} aria-expanded={folderMore==="poster"} onClick={(event)=>toggleFolderActions(event,"poster")}>•••</button>
           {folderActions("poster",folderNames.poster)}
         </div>}
         {posterMatches && !hiddenFolders.includes("poster") && !collapsed.poster &&
@@ -6232,7 +6244,7 @@ function AssetLibrary({
           <img className="tree-chevron" src={collapsed.teachers ? "/assets/asset-chevron-right.svg" : "/assets/asset-chevron.svg"} onClick={() => setCollapsed((value)=>({...value,teachers:!value.teachers}))} />
           <i className="folder-icon blue" />
           {editing==="teachers"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("teachers",folderNames.teachers)}>{folderNames.teachers}</b>}
-          <button className="asset-folder-more" aria-label={`${folderNames.teachers}更多操作`} aria-expanded={folderMore==="teachers"} onClick={(event)=>{event.stopPropagation();setFolderMore((value)=>value==="teachers"?null:"teachers");}}>•••</button>
+          <button className="asset-folder-more" aria-label={`${folderNames.teachers}更多操作`} aria-expanded={folderMore==="teachers"} onClick={(event)=>toggleFolderActions(event,"teachers")}>•••</button>
           {folderActions("teachers",folderNames.teachers)}
         </div>}
         {!hiddenFolders.includes("teachers") && !collapsed.teachers && visibleTeachers.map(({name:v,index:i}) => (
@@ -6255,7 +6267,7 @@ function AssetLibrary({
           <img className="tree-chevron" src={collapsed.logo ? "/assets/asset-chevron-right.svg" : "/assets/asset-chevron.svg"} onClick={() => setCollapsed((value)=>({...value,logo:!value.logo}))} />
           <i className="folder-icon green" />
           {editing==="logo"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("logo",folderNames.logo)}>{folderNames.logo}</b>}
-          <button className="asset-folder-more" aria-label={`${folderNames.logo}更多操作`} aria-expanded={folderMore==="logo"} onClick={(event)=>{event.stopPropagation();setFolderMore((value)=>value==="logo"?null:"logo");}}>•••</button>
+          <button className="asset-folder-more" aria-label={`${folderNames.logo}更多操作`} aria-expanded={folderMore==="logo"} onClick={(event)=>toggleFolderActions(event,"logo")}>•••</button>
           {folderActions("logo",folderNames.logo)}
         </div>}
         {logoMatches && !hiddenFolders.includes("logo") && !collapsed.logo && <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,logoName,"/assets/brand-logo-kcle.png")} className={`asset-tree-entry asset-logo-file ${selected===6?"selected":""}`} onClick={(event)=>onSelect(6,event.currentTarget.getBoundingClientRect().top)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("logo-file",logoName);}}><img src="/assets/brand-logo-kcle.png" />{editing==="logo-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{logoName}</span>}</div>}
@@ -6265,7 +6277,7 @@ function AssetLibrary({
           </button>
           <i className="folder-icon violet" />
           {editing===folder.id?<input className="asset-inline-rename" autoFocus value={renameDraft} placeholder="请输入文件夹名称" onChange={(event)=>setRenameDraft(event.target.value)} onBlur={()=>{if(!renameDraft.trim())setRenameDraft(folder.name);commitInlineRename();}} onKeyDown={(event)=>{if(event.key==="Enter")commitInlineRename();if(event.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename(folder.id,folder.name)}>{folder.name}</b>}
-          <button className="asset-folder-more" aria-label={`${folder.name}更多操作`} aria-expanded={folderMore===folder.id} onClick={(event)=>{event.stopPropagation();setFolderMore((value)=>value===folder.id?null:folder.id);}}>•••</button>
+          <button className="asset-folder-more" aria-label={`${folder.name}更多操作`} aria-expanded={folderMore===folder.id} onClick={(event)=>toggleFolderActions(event,folder.id)}>•••</button>
           {folderActions(folder.id,folder.name)}
         </div>)}
       </div>
