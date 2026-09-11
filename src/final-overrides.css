@@ -15128,15 +15128,15 @@ button > img {
   fill:#7c59ee!important;stroke:none!important
 }
 .generation-attachment-rail.count-0 .upload-card-rays{
-  right:-17px!important;top:-17px!important;width:25px!important;height:22px!important
+  right:-12px!important;top:-15px!important;width:19px!important;height:17px!important
 }
 .generation-attachment-rail.count-0 .upload-card-rays>b{
-  width:2.3px!important;height:7px!important;border-radius:3px!important;background:#6e55ef!important;
+  width:1.7px!important;height:5.5px!important;border-radius:2px!important;background:#7865f2!important;
   left:auto!important;top:auto!important;bottom:auto!important;transform-origin:50% 100%!important
 }
-.generation-attachment-rail.count-0 .upload-card-rays>b:nth-child(1){left:1px!important;top:12px!important;transform:rotate(-43deg)!important}
-.generation-attachment-rail.count-0 .upload-card-rays>b:nth-child(2){left:9px!important;top:2px!important;transform:rotate(-8deg)!important}
-.generation-attachment-rail.count-0 .upload-card-rays>b:nth-child(3){left:18px!important;top:7px!important;transform:rotate(35deg)!important}
+.generation-attachment-rail.count-0 .upload-card-rays>b:nth-child(1){left:1px!important;top:10px!important;transform:rotate(-24deg)!important}
+.generation-attachment-rail.count-0 .upload-card-rays>b:nth-child(2){left:7px!important;top:1px!important;transform:rotate(-5deg)!important}
+.generation-attachment-rail.count-0 .upload-card-rays>b:nth-child(3){left:14px!important;top:6px!important;transform:rotate(48deg)!important}
 
 /* Final reference detail: solid lower picture shape and three rays outside, converging at the top-right corner. */
 .upload-card-picture-icon .picture-fill{
