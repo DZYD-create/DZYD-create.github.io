@@ -15035,3 +15035,26 @@ button > img {
 }
 .asset-folder-more-menu-portal>button.danger{color:#ef4b58!important}
 .asset-folder-more-menu-portal>button.danger:hover{color:#6549dd!important}
+
+/* The initial card uses its own reference artwork instead of the generic upload glyph. */
+.generation-attachment-rail.count-0 .generation-add-image-card::after{content:none!important;display:none!important}
+.upload-card-picture-icon{
+  display:grid!important;place-items:center!important;width:40px!important;height:40px!important;flex:0 0 40px!important;color:#7c59ee!important
+}
+.upload-card-picture-icon>svg{display:block!important;width:40px!important;height:40px!important;overflow:visible!important}
+.upload-card-picture-icon rect,
+.upload-card-picture-icon path:not(.badge-plus){fill:none!important;stroke:currentColor!important;stroke-width:2.45!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+.upload-card-picture-icon>svg>circle:not(.badge){fill:currentColor!important}
+.upload-card-picture-icon .badge{fill:#7c59ee!important;stroke:#fff!important;stroke-width:1.7!important}
+.upload-card-picture-icon .badge-plus{fill:none!important;stroke:#fff!important;stroke-width:1.8!important;stroke-linecap:round!important}
+.upload-card-rays{position:absolute!important;right:-14px!important;top:-17px!important;width:24px!important;height:20px!important;display:block!important;pointer-events:none!important}
+.upload-card-rays>b{position:absolute!important;display:block!important;width:2.5px!important;height:8px!important;border-radius:3px!important;background:#6e55ef!important;transform-origin:50% 100%!important}
+.upload-card-rays>b:nth-child(1){left:2px!important;top:10px!important;transform:rotate(-38deg)!important}
+.upload-card-rays>b:nth-child(2){left:10px!important;top:3px!important;transform:rotate(-9deg)!important}
+.upload-card-rays>b:nth-child(3){left:18px!important;top:5px!important;transform:rotate(31deg)!important}
+
+/* Once images exist, the add control is only a fixed circular white plus. */
+.generation-attachment-rail:not(.count-0) .generation-add-image-card>.upload-card-picture-icon,
+.generation-attachment-rail:not(.count-0) .generation-add-image-card>strong,
+.generation-attachment-rail:not(.count-0) .generation-add-image-card>.upload-card-rays{display:none!important}
+.generation-attachment-rail:not(.count-0) .generation-add-image-card>i{display:block!important}

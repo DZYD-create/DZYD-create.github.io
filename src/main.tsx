@@ -235,7 +235,7 @@ function App() {
         const target = e.target as HTMLElement;
         if (
           !target.closest(
-            "[data-popover-trigger],.theme-picker,.popover,.model-selector-popover,.size-selector-popover,.model-invocation-popover,.canvas-add-popover,.asset-library-panel,.home-asset-popover,.asset-add-menu,.asset-folder-menu,.asset-context-menu,.apply-popover,.figma-history-panel,.canvas-search-modal,.canvas-comment-panel,.canvas-comments-mode,.figma-tool-modal",
+            "[data-popover-trigger],.theme-picker,.popover,.model-selector-popover,.size-selector-popover,.model-invocation-popover,.canvas-add-popover,.asset-library-panel,.asset-folder-more-menu-portal,.home-asset-popover,.asset-add-menu,.asset-folder-menu,.asset-context-menu,.apply-popover,.figma-history-panel,.canvas-search-modal,.canvas-comment-panel,.canvas-comments-mode,.figma-tool-modal",
           )
         )
           document.dispatchEvent(new Event("dismiss-popovers"));
@@ -819,7 +819,7 @@ function GenerationPage({
             ))}
             {attachments.length < 5 && (
               <button className="generation-add-image-card" onClick={() => generationFile.current?.click()} aria-label="添加图片">
-                <FigmaUploadImageIcon /><strong>添加图片</strong><i aria-hidden="true">＋</i>
+                <UploadCardPictureIcon /><strong>添加图片</strong><i aria-hidden="true">＋</i><span className="upload-card-rays" aria-hidden="true"><b /><b /><b /></span>
               </button>
             )}
           </div>
@@ -1157,7 +1157,7 @@ function NewCreationPage({
                 <button className="generation-attachment-remove" aria-label={`移除图片 ${image.name}`} onClick={() => setAttachments((items) => items.filter((item) => item.url !== image.url))}>×</button>
               </div>
             ))}
-            {attachments.length < 5 && <button className="generation-add-image-card" onClick={() => fileRef.current?.click()} aria-label="添加图片"><FigmaUploadImageIcon /><strong>添加图片</strong><i aria-hidden="true">＋</i></button>}
+            {attachments.length < 5 && <button className="generation-add-image-card" onClick={() => fileRef.current?.click()} aria-label="添加图片"><UploadCardPictureIcon /><strong>添加图片</strong><i aria-hidden="true">＋</i><span className="upload-card-rays" aria-hidden="true"><b /><b /><b /></span></button>}
           </div>
         </div>
         <textarea
@@ -1646,6 +1646,20 @@ function FigmaUploadImageIcon() {
         <path d="m7.5 23 6.25-6.2 4.2 4.15 3.15-3.1 4.4 4.35" />
         <circle cx="21" cy="10.5" r="1.7" />
         <path className="upload-plus" d="M25 3v8M21 7h8" />
+      </svg>
+    </span>
+  );
+}
+
+function UploadCardPictureIcon() {
+  return (
+    <span className="upload-card-picture-icon" aria-hidden="true">
+      <svg viewBox="0 0 36 36" role="presentation">
+        <rect x="5.5" y="7" width="22" height="18" rx="3.2" />
+        <circle cx="21.5" cy="12.4" r="2.25" />
+        <path d="m8.5 22 5.4-5.4 4.1 4.05 2.8-2.7 4.2 4.05" />
+        <circle className="badge" cx="27" cy="25.5" r="6.5" />
+        <path className="badge-plus" d="M27 22.4v6.2M23.9 25.5h6.2" />
       </svg>
     </span>
   );
