@@ -6147,6 +6147,7 @@ function AssetLibrary({
   const [folderMore, setFolderMore] = useState<string | null>(null);
   const [hiddenFolders, setHiddenFolders] = useState<string[]>([]);
   const [extraFolders, setExtraFolders] = useState<Array<{ id: string; name: string }>>([]);
+  const [customCollapsed, setCustomCollapsed] = useState<Record<string, boolean>>({});
   const [renameDraft, setRenameDraft] = useState("");
   const beginInlineRename = (key: string, current: string) => { setEditing(key); setRenameDraft(current); };
   const commitInlineRename = () => {
@@ -6256,8 +6257,10 @@ function AssetLibrary({
           {folderActions("logo",folderNames.logo)}
         </div>}
         {logoMatches && !hiddenFolders.includes("logo") && !collapsed.logo && <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,logoName,"/assets/brand-logo-kcle.png")} className={`asset-tree-entry asset-logo-file ${selected===6?"selected":""}`} onClick={(event)=>onSelect(6,event.currentTarget.getBoundingClientRect().top)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("logo-file",logoName);}}><img src="/assets/brand-logo-kcle.png" />{editing==="logo-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{logoName}</span>}</div>}
-        {extraFolders.map((folder) => <div className="tree-row custom-folder-row" key={folder.id}>
-          <img className="tree-chevron" src="/assets/asset-chevron-right.svg" />
+        {extraFolders.map((folder) => <div className={`tree-row custom-folder-row ${folderMore===folder.id ? "menu-open" : ""}`} key={folder.id}>
+          <button className="custom-folder-chevron" aria-label={customCollapsed[folder.id] ? `展开${folder.name}` : `收起${folder.name}`} onClick={()=>setCustomCollapsed((values)=>({...values,[folder.id]:!values[folder.id]}))}>
+            <img className="tree-chevron" src={customCollapsed[folder.id] ? "/assets/asset-chevron-right.svg" : "/assets/asset-chevron.svg"} />
+          </button>
           <i className="folder-icon violet" />
           {editing===folder.id?<input className="asset-inline-rename" autoFocus value={renameDraft} placeholder="请输入文件夹名称" onChange={(event)=>setRenameDraft(event.target.value)} onBlur={()=>{if(!renameDraft.trim())setRenameDraft(folder.name);commitInlineRename();}} onKeyDown={(event)=>{if(event.key==="Enter")commitInlineRename();if(event.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename(folder.id,folder.name)}>{folder.name}</b>}
           <button className="asset-folder-more" aria-label={`${folder.name}更多操作`} aria-expanded={folderMore===folder.id} onClick={(event)=>{event.stopPropagation();setFolderMore((value)=>value===folder.id?null:folder.id);}}>•••</button>
@@ -6451,7 +6454,7 @@ function History({
               <input
                 type="range"
                 min="10"
-                max="500"
+                max="250"
                 value={zoom}
                 onChange={(e) => setZoom(Number(e.target.value))}
               />
@@ -6853,7 +6856,7 @@ function Assets({
         </div>
         <div className={`asset-top-actions ${assetSearchOpen ? "search-open" : ""}`} onClick={(event) => event.stopPropagation()}>
           <label className="history-zoom asset-zoom">
-            <input type="range" min="10" max="500" value={assetZoom} onChange={(event) => setAssetZoom(Number(event.target.value))} />
+            <input type="range" min="10" max="250" value={assetZoom} onChange={(event) => setAssetZoom(Number(event.target.value))} />
           </label>
           {assetBatch ? <div className="history-batch-actions asset-batch-actions">
             <span>已选择 {selectedAssets.length} 项内容</span>

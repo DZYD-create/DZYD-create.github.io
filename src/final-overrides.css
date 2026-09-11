@@ -14896,3 +14896,50 @@ button > img {
 /* Newly created asset folders use the same complete folder silhouette as existing rows. */
 .asset-library-panel .folder-icon.violet{background:#f3f5f8!important;border-color:#e6eaf1!important}
 .asset-library-panel .folder-icon.violet::before{background:#d9ccff!important}
+
+/* Final attachment composition follows the reference and stays fully left of the composer. */
+.generation-attachment-rail{width:145px!important;right:calc(100% + 20px)!important;bottom:2px!important}
+.new-creation-page>.new-creation-composer>.generation-attachment-rail,
+.generation-page .generation-attachment-rail{width:145px!important;right:calc(100% + 20px)!important}
+.generation-attachment-stack{width:145px!important;height:136px!important}
+.generation-add-image-card,.generation-attachment-thumb{width:104px!important;height:128px!important;left:5px!important;border-radius:13px!important}
+.generation-add-image-card{
+  gap:10px!important;transform:rotate(-7deg)!important;
+  box-shadow:0 18px 36px rgba(116,70,235,.32),0 7px 17px rgba(141,102,248,.22)!important
+}
+.generation-add-image-card>svg{width:40px!important;height:40px!important}
+.generation-add-image-card>strong{font-size:15px!important;line-height:22px!important}
+.generation-attachment-thumb{transform:translateX(calc(var(--attachment-index) * 10px)) rotate(calc((var(--attachment-index) - 1) * 5deg))!important}
+.generation-attachment-thumb:hover{transform:translateX(calc(var(--attachment-index) * 10px)) translateY(-9px) rotate(calc((var(--attachment-index) - 1) * 5deg)) scale(1.05)!important}
+.generation-attachment-rail:not(.count-0) .generation-add-image-card{
+  left:82px!important;bottom:0!important;width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;
+  padding:0!important;border:0!important;border-radius:50%!important;background:#303034!important;box-shadow:0 7px 16px rgba(86,54,180,.26)!important;
+  transform:none!important;display:grid!important;place-items:center!important;overflow:hidden!important
+}
+.generation-attachment-rail:not(.count-0) .generation-add-image-card>i{
+  position:relative!important;inset:auto!important;display:block!important;width:22px!important;height:22px!important;
+  border:0!important;border-radius:0!important;background:transparent!important;color:transparent!important;font-size:0!important
+}
+.generation-attachment-rail:not(.count-0) .generation-add-image-card>i::before,
+.generation-attachment-rail:not(.count-0) .generation-add-image-card>i::after{
+  content:""!important;position:absolute!important;left:50%!important;top:50%!important;width:18px!important;height:2.5px!important;
+  border-radius:2px!important;background:#fff!important;transform:translate(-50%,-50%)!important
+}
+.generation-attachment-rail:not(.count-0) .generation-add-image-card>i::after{transform:translate(-50%,-50%) rotate(90deg)!important}
+@media (max-width:1400px){
+  .generation-page>.composer.figma-composer.generation-composer,
+  .new-creation-page>.new-creation-composer{width:580px!important}
+}
+
+/* Every folder row, including a folder being named, uses identical icon geometry. */
+.asset-library-panel .custom-folder-row{grid-template-columns:16px 26px minmax(0,1fr)!important}
+.asset-library-panel .custom-folder-chevron{width:16px!important;height:24px!important;padding:0!important;border:0!important;background:transparent!important;display:grid!important;place-items:center!important}
+.asset-library-panel .custom-folder-chevron:hover{background:#f0edff!important;border-radius:5px!important}
+.asset-library-panel .custom-folder-chevron>.tree-chevron{width:12px!important;height:12px!important;margin:0!important}
+.asset-library-panel .custom-folder-row>.folder-icon{width:26px!important;height:22px!important;min-width:26px!important;min-height:22px!important}
+
+/* More menus sit above every drawer row and cannot be clipped by the tree. */
+.asset-library-panel,.asset-library-panel .asset-tree{overflow:visible!important}
+.asset-library-panel .tree-row.menu-open,
+.asset-library-panel .tree-row:has(.asset-folder-more[aria-expanded="true"]){z-index:5000!important}
+.asset-library-panel .asset-folder-more-menu{z-index:5100!important}
