@@ -14777,3 +14777,21 @@ button > img {
 
 /* Editing tools remain available in the empty canvas and can launch the first upload. */
 .canvas-empty-state .canvas-bottom-dock{display:flex!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important}
+
+/* Final add-entry geometry: canvas history owns the history entry; white band is slim. */
+.history-page .history-create-record>.history-record-preview,
+.asset-page-figma .asset-subject-card.create>.asset-create-single,
+.asset-page-figma .asset-upload-entry>.asset-create-single{
+  border-width:2px!important;border-color:#fff!important;outline:0!important;
+  transition:border-color .16s ease,box-shadow .16s ease,transform .16s ease!important
+}
+.history-page .history-create-record:hover>.history-record-preview,
+.asset-page-figma .asset-subject-card.create:hover>.asset-create-single,
+.asset-page-figma .asset-upload-entry:hover>.asset-create-single{
+  border-color:#fff!important;outline:0!important;
+  box-shadow:0 0 0 3px #cbbcff,0 8px 20px rgba(104,82,224,.14)!important
+}
+
+/* Desktop image drag targets give immediate visual feedback. */
+.figma-composer:has(textarea:focus),
+.new-creation-composer:has(textarea:focus){border-color:#8b63f6!important}

@@ -584,6 +584,7 @@ function GenerationPage({
   const [uploadOpen, setUploadOpen] = useState(false);
   const [assetsOpen, setAssetsOpen] = useState(false);
   const [invocationOpen, setInvocationOpen] = useState(false);
+  const [attachment, setAttachment] = useState("");
   const generationFile = useRef<HTMLInputElement>(null);
   const composerInput = useRef<HTMLTextAreaElement>(null);
   const [progress, setProgress] = useState(generating ? 0 : 100);
@@ -780,13 +781,34 @@ function GenerationPage({
           </section>
         </div>
       )}
-      <div className="composer figma-composer generation-composer new-creation-composer">
+      <div
+        className="composer figma-composer generation-composer new-creation-composer"
+        onDragOver={(event) => {
+          if (Array.from(event.dataTransfer.items).some((item) => item.kind === "file" && item.type.startsWith("image/"))) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "copy";
+          }
+        }}
+        onDrop={(event) => {
+          const image = Array.from(event.dataTransfer.files).find((file) => file.type.startsWith("image/"));
+          if (!image) return;
+          event.preventDefault();
+          setAttachment(image.name);
+          setUploadOpen(false);
+        }}
+      >
         <textarea
           ref={composerInput}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="描述你的设计需求，输入 @ 可引用素材或 Skill"
         />
+        {attachment && (
+          <div className="attachment">
+            <img src="/assets/upload.svg" /> {attachment}
+            <button className="css-close" aria-label="移除附件" onClick={() => setAttachment("")} />
+          </div>
+        )}
         <footer className="composer-actions">
           <button
             data-popover-trigger
@@ -889,7 +911,11 @@ function GenerationPage({
           hidden
           type="file"
           accept="image/*,.pdf,.doc,.docx"
-          onChange={() => setUploadOpen(false)}
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (file?.type.startsWith("image/")) setAttachment(file.name);
+            setUploadOpen(false);
+          }}
         />
       </div>
     </section>
@@ -1034,6 +1060,7 @@ function NewCreationPage({
   const [sizeOpen, setSizeOpen] = useState(false);
   const [assetsOpen, setAssetsOpen] = useState(false);
   const [invocationOpen, setInvocationOpen] = useState(false);
+  const [attachment, setAttachment] = useState("");
   const [greetingLook, setGreetingLook] = useState({ x: 0, y: 0 });
   const fileRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -1077,12 +1104,33 @@ function NewCreationPage({
           今天想聊点什么<span>✦</span>
         </h1>
       </div>
-      <div className="new-creation-composer">
+      <div
+        className="new-creation-composer"
+        onDragOver={(event) => {
+          if (Array.from(event.dataTransfer.items).some((item) => item.kind === "file" && item.type.startsWith("image/"))) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "copy";
+          }
+        }}
+        onDrop={(event) => {
+          const image = Array.from(event.dataTransfer.files).find((file) => file.type.startsWith("image/"));
+          if (!image) return;
+          event.preventDefault();
+          setAttachment(image.name);
+          setUploadOpen(false);
+        }}
+      >
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="描述你的设计需求，输入 @ 可引用素材或 Skill"
         />
+        {attachment && (
+          <div className="attachment">
+            <img src="/assets/upload.svg" /> {attachment}
+            <button className="css-close" aria-label="移除附件" onClick={() => setAttachment("")} />
+          </div>
+        )}
         <footer>
           <button
             data-popover-trigger
@@ -1183,7 +1231,11 @@ function NewCreationPage({
           hidden
           type="file"
           accept="image/*,.pdf,.doc,.docx"
-          onChange={() => setUploadOpen(false)}
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (file?.type.startsWith("image/")) setAttachment(file.name);
+            setUploadOpen(false);
+          }}
         />
       </div>
     </section>
@@ -1251,7 +1303,22 @@ function Studio({
           </button>
         ))}
       </div>
-      <div className="composer figma-composer">
+      <div
+        className="composer figma-composer"
+        onDragOver={(event) => {
+          if (Array.from(event.dataTransfer.items).some((item) => item.kind === "file" && item.type.startsWith("image/"))) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "copy";
+          }
+        }}
+        onDrop={(event) => {
+          const image = Array.from(event.dataTransfer.files).find((file) => file.type.startsWith("image/"));
+          if (!image) return;
+          event.preventDefault();
+          setAttachment(image.name);
+          setUploadOpen(false);
+        }}
+      >
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
@@ -3657,6 +3724,7 @@ function Canvas({
         onDragOver={(event) => {
           if (
             pendingCanvasAssetDrag ||
+            Array.from(event.dataTransfer.items).some((item) => item.kind === "file" && item.type.startsWith("image/")) ||
             event.dataTransfer.types.includes("application/x-canvas-asset") ||
             event.dataTransfer.types.includes("text/plain")
           ) {
@@ -3667,6 +3735,22 @@ function Canvas({
           }
         }}
         onDrop={(event) => {
+          const droppedImages = Array.from(event.dataTransfer.files).filter((file) => file.type.startsWith("image/"));
+          if (droppedImages.length) {
+            event.preventDefault();
+            const point = getCanvasPoint(event.clientX, event.clientY);
+            const created = droppedImages.map((file, index) => ({
+              id: Date.now() + index,
+              url: URL.createObjectURL(file),
+              name: file.name,
+              x: point.x - CANVAS_WORLD_CENTER + index * 36,
+              y: point.y - CANVAS_WORLD_CENTER + index * 36,
+            }));
+            setCanvasNodes((nodes) => [...nodes, ...created]);
+            setCanvasImage(created[0].url);
+            setActiveNodeId(created[0].id);
+            return;
+          }
           const raw =
             event.dataTransfer.getData("application/x-canvas-asset") ||
             event.dataTransfer.getData("text/plain") ||
@@ -6474,6 +6558,14 @@ function History({
           </div>
         </div>
         <div className="history-cards" style={{ "--history-columns": zoom < 35 ? 5 : zoom < 68 ? 4 : 3, "--history-card-height": `${227 + zoom * 1.4}px`, "--shared-card-width": `${210 + zoom * 1.25}px` } as React.CSSProperties}>
+          {tab === "canvas" && (
+            <button className="history-record history-create-record" onClick={() => onCanvas(samples[0], "新建画布", [samples[0]])}>
+              <div className="history-record-preview">
+                <span>＋</span>
+                <em className="add-entry-copy">点击添加内容</em>
+              </div>
+            </button>
+          )}
           {tab === "workspace" && sortedHistoryCards.filter(({ name }) => name.toLowerCase().includes(historyQuery.trim().toLowerCase()) && (filter !== "收藏" || name === "对话生图图片" || favoriteHistory.includes(name))).map(({ name, originalIndex: i }) => {
             const image = name === "对话生图图片" ? "/assets/template-2.png" : featuredPeople[i % featuredPeople.length].url;
             const favorite = name === "对话生图图片" ? favoriteGenerated : favoriteHistory.includes(name);
