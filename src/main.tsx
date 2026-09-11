@@ -818,7 +818,7 @@ function GenerationPage({
               </div>
             ))}
             {attachments.length < 5 && (
-              <button className="generation-add-image-card" onClick={() => generationFile.current?.click()} aria-label="添加图片">
+              <button className="generation-add-image-card" onClick={() => generationFile.current?.click()} onDragOver={(event)=>{event.preventDefault();event.dataTransfer.dropEffect="copy";}} onDrop={(event)=>{event.preventDefault();event.stopPropagation();addGenerationImages(event.dataTransfer.files);}} aria-label="添加图片">
                 <UploadCardPictureIcon /><strong>添加图片</strong><i aria-hidden="true">＋</i>
               </button>
             )}
@@ -1157,7 +1157,7 @@ function NewCreationPage({
                 <button className="generation-attachment-remove" aria-label={`移除图片 ${image.name}`} onClick={() => setAttachments((items) => items.filter((item) => item.url !== image.url))}>×</button>
               </div>
             ))}
-            {attachments.length < 5 && <button className="generation-add-image-card" onClick={() => fileRef.current?.click()} aria-label="添加图片"><UploadCardPictureIcon /><strong>添加图片</strong><i aria-hidden="true">＋</i></button>}
+            {attachments.length < 5 && <button className="generation-add-image-card" onClick={() => fileRef.current?.click()} onDragOver={(event)=>{event.preventDefault();event.dataTransfer.dropEffect="copy";}} onDrop={(event)=>{event.preventDefault();event.stopPropagation();addNewCreationImages(event.dataTransfer.files);}} aria-label="添加图片"><UploadCardPictureIcon /><strong>添加图片</strong><i aria-hidden="true">＋</i></button>}
           </div>
         </div>
         <textarea

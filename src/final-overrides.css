@@ -15144,6 +15144,32 @@ button > img {
   right:-14px!important;bottom:-18px!important
 }
 
+/* Initial upload is a larger square card; the floating plus exists only after an image is present. */
+.generation-attachment-rail.count-0 .generation-add-image-card{
+  width:96px!important;height:96px!important;min-width:96px!important;min-height:96px!important;aspect-ratio:1/1!important
+}
+.generation-attachment-rail.count-0 .generation-add-image-card>i{display:none!important}
+.generation-attachment-rail:not(.count-0)>span{display:none!important}
+
+/* Every folder header keeps one rhythm; compact more buttons have no hover/open treatment. */
+.asset-library-panel .asset-tree>.tree-row{
+  min-height:34px!important;height:34px!important;margin:0!important;padding-top:0!important;padding-bottom:0!important;box-sizing:border-box!important
+}
+.asset-library-panel .asset-folder-more{
+  width:20px!important;height:20px!important;min-width:20px!important;right:7px!important;padding:0 0 3px!important;
+  border:0!important;border-radius:0!important;background:transparent!important;color:#777d8c!important;font-size:12px!important;letter-spacing:0!important
+}
+.asset-library-panel .asset-folder-more:hover,
+.asset-library-panel .asset-folder-more:focus-visible,
+.asset-library-panel .asset-folder-more[aria-expanded="true"]{
+  background:transparent!important;color:#777d8c!important;border:0!important;box-shadow:none!important;outline:0!important;transform:translateY(-50%)!important
+}
+
+/* Theme menu gains breathing room below its three rows. */
+.theme-picker{
+  height:128px!important;padding:10px 14px 18px!important;gap:5px!important;box-sizing:border-box!important;justify-content:flex-start!important
+}
+
 /* Final reference detail: solid lower picture shape and three rays outside, converging at the top-right corner. */
 .upload-card-picture-icon .picture-fill{
   fill:#7c59ee!important;stroke:#7c59ee!important;stroke-width:1.4!important;stroke-linejoin:round!important
