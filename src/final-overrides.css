@@ -15170,6 +15170,16 @@ button > img {
   height:128px!important;padding:10px 14px 18px!important;gap:5px!important;box-sizing:border-box!important;justify-content:flex-start!important
 }
 
+/* No count badge is shown; the empty square reaches the composer's top edge. */
+.generation-attachment-rail>span{display:none!important}
+.generation-attachment-rail.count-0 .generation-add-image-card{
+  width:128px!important;height:128px!important;min-width:128px!important;min-height:128px!important;
+  left:18px!important;bottom:9px!important
+}
+
+/* Compact dots remain neutral, with slightly clearer separation. */
+.asset-library-panel .asset-folder-more{letter-spacing:1.2px!important}
+
 /* Final reference detail: solid lower picture shape and three rays outside, converging at the top-right corner. */
 .upload-card-picture-icon .picture-fill{
   fill:#7c59ee!important;stroke:#7c59ee!important;stroke-width:1.4!important;stroke-linejoin:round!important

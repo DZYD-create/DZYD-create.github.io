@@ -604,6 +604,21 @@ function GenerationPage({
     ].slice(0, 5));
     setUploadOpen(false);
   };
+  const addGenerationImageUrl = (url: string, name = "历史图片") => {
+    if (!url) return;
+    setAttachments((current) => current.some((item) => item.url === url) || current.length >= 5
+      ? current
+      : [...current, { name, url }]);
+  };
+  const handleGenerationImageDrop = (event: React.DragEvent) => {
+    event.preventDefault();
+    const images = Array.from(event.dataTransfer.files).filter((file) => file.type.startsWith("image/"));
+    if (images.length) { addGenerationImages(images); return; }
+    try {
+      const payload = JSON.parse(event.dataTransfer.getData("application/x-generation-image"));
+      addGenerationImageUrl(payload.url, payload.name);
+    } catch {}
+  };
   const startNewRound = (request: string) => {
     const nextRequest = request.trim() || prompt;
     setRoundPrompts((items) => [...items, nextRequest]);
@@ -695,7 +710,7 @@ function GenerationPage({
                   {[...samples, ...samples]
                     .slice(round % samples.length, round % samples.length + 4)
                     .map((src, i) => (
-                      <button className="generation-tile" key={`${round}-${src}`} onClick={onEdit}>
+                      <button className="generation-tile" key={`${round}-${src}`} onClick={onEdit} draggable={!isGenerating} onDragStart={(event)=>{if(isGenerating)return;event.dataTransfer.effectAllowed="copy";event.dataTransfer.setData("application/x-generation-image",JSON.stringify({url:src,name:`第 ${round + 1} 轮生成结果 ${i + 1}`}));}}>
                         {isGenerating ? (
                           <div className="generation-progress"><span>✦</span><strong>生成中 {progress}%</strong></div>
                         ) : (
@@ -792,16 +807,13 @@ function GenerationPage({
       <div
         className="composer figma-composer generation-composer new-creation-composer"
         onDragOver={(event) => {
-          if (Array.from(event.dataTransfer.items).some((item) => item.kind === "file" && item.type.startsWith("image/"))) {
+          if (Array.from(event.dataTransfer.items).some((item) => item.kind === "file" && item.type.startsWith("image/")) || event.dataTransfer.types.includes("application/x-generation-image")) {
             event.preventDefault();
             event.dataTransfer.dropEffect = "copy";
           }
         }}
         onDrop={(event) => {
-          const images = Array.from(event.dataTransfer.files).filter((file) => file.type.startsWith("image/"));
-          if (!images.length) return;
-          event.preventDefault();
-          addGenerationImages(images);
+          handleGenerationImageDrop(event);
         }}
       >
         <div className={`generation-attachment-rail count-${attachments.length}`}>
@@ -818,7 +830,7 @@ function GenerationPage({
               </div>
             ))}
             {attachments.length < 5 && (
-              <button className="generation-add-image-card" onClick={() => generationFile.current?.click()} onDragOver={(event)=>{event.preventDefault();event.dataTransfer.dropEffect="copy";}} onDrop={(event)=>{event.preventDefault();event.stopPropagation();addGenerationImages(event.dataTransfer.files);}} aria-label="添加图片">
+              <button className="generation-add-image-card" onClick={() => generationFile.current?.click()} onDragOver={(event)=>{event.preventDefault();event.dataTransfer.dropEffect="copy";}} onDrop={(event)=>{event.stopPropagation();handleGenerationImageDrop(event);}} aria-label="添加图片">
                 <UploadCardPictureIcon /><strong>添加图片</strong><i aria-hidden="true">＋</i>
               </button>
             )}
