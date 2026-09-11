@@ -14868,6 +14868,31 @@ button > img {
 .asset-library-panel .folder-icon.violet{background:#e9e1ff!important}
 
 @media (max-width:1400px){
-  .generation-page>.composer.figma-composer.generation-composer{width:710px!important}
-  .generation-attachment-rail{right:calc(100% - 45px)!important}
+  .generation-page>.composer.figma-composer.generation-composer{width:620px!important}
+  .generation-page .generation-attachment-rail{right:calc(100% + 10px)!important;width:130px!important}
+  .new-creation-page>.new-creation-composer{width:620px!important}
+  .new-creation-page>.new-creation-composer>.generation-attachment-rail{right:calc(100% + 10px)!important;width:130px!important}
 }
+
+/* New Creation shares the exact same five-image attachment rail. */
+.new-creation-page>.new-creation-composer{overflow:visible!important}
+.new-creation-page>.new-creation-composer>.generation-attachment-rail{right:calc(100% + 26px)!important;bottom:3px!important}
+
+/* Keep all fanned cards fully clear of the composer edge. */
+.generation-page .generation-attachment-rail{right:calc(100% + 30px)!important}
+.generation-attachment-thumb{left:4px!important;transform:translateX(calc(var(--attachment-index) * 11px)) rotate(calc((var(--attachment-index) - 1) * 6deg))!important}
+.generation-attachment-thumb:hover{transform:translateX(calc(var(--attachment-index) * 11px)) translateY(-9px) rotate(calc((var(--attachment-index) - 1) * 6deg)) scale(1.06)!important}
+.generation-attachment-rail:not(.count-0) .generation-add-image-card{left:68px!important}
+
+/* Reference uses a visible violet cast under the add-image card. */
+.generation-add-image-card{box-shadow:0 16px 30px rgba(119,78,237,.34),0 5px 12px rgba(132,94,244,.18)!important}
+
+/* Plus glyph is optically and geometrically centered inside its circle. */
+.generation-add-image-card>i{
+  padding:0!important;line-height:1!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  text-indent:0!important;font-family:Arial,sans-serif!important;font-weight:400!important
+}
+
+/* Newly created asset folders use the same complete folder silhouette as existing rows. */
+.asset-library-panel .folder-icon.violet{background:#f3f5f8!important;border-color:#e6eaf1!important}
+.asset-library-panel .folder-icon.violet::before{background:#d9ccff!important}

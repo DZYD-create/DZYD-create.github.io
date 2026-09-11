@@ -1080,9 +1080,17 @@ function NewCreationPage({
   const [sizeOpen, setSizeOpen] = useState(false);
   const [assetsOpen, setAssetsOpen] = useState(false);
   const [invocationOpen, setInvocationOpen] = useState(false);
-  const [attachment, setAttachment] = useState("");
+  const [attachments, setAttachments] = useState<Array<{ name: string; url: string }>>([]);
   const [greetingLook, setGreetingLook] = useState({ x: 0, y: 0 });
   const fileRef = useRef<HTMLInputElement>(null);
+  const addNewCreationImages = (files: FileList | File[]) => {
+    const images = Array.from(files).filter((file) => file.type.startsWith("image/"));
+    setAttachments((current) => [
+      ...current,
+      ...images.slice(0, Math.max(0, 5 - current.length)).map((file) => ({ name: file.name, url: URL.createObjectURL(file) })),
+    ].slice(0, 5));
+    setUploadOpen(false);
+  };
   useEffect(() => {
     const dismiss = () => {
       setUploadOpen(false);
@@ -1133,24 +1141,28 @@ function NewCreationPage({
           }
         }}
         onDrop={(event) => {
-          const image = Array.from(event.dataTransfer.files).find((file) => file.type.startsWith("image/"));
-          if (!image) return;
+          const images = Array.from(event.dataTransfer.files).filter((file) => file.type.startsWith("image/"));
+          if (!images.length) return;
           event.preventDefault();
-          setAttachment(image.name);
-          setUploadOpen(false);
+          addNewCreationImages(images);
         }}
       >
+        <div className={`generation-attachment-rail count-${attachments.length}`}>
+          <span>{attachments.length}张图片</span>
+          <div className="generation-attachment-stack">
+            {attachments.map((image, index) => (
+              <button className="generation-attachment-thumb" style={{ "--attachment-index": index } as React.CSSProperties} key={image.url} aria-label={`移除图片 ${image.name}`} onClick={() => setAttachments((items) => items.filter((item) => item.url !== image.url))}>
+                <img src={image.url} alt={image.name} />
+              </button>
+            ))}
+            {attachments.length < 5 && <button className="generation-add-image-card" onClick={() => fileRef.current?.click()} aria-label="添加图片"><FigmaUploadImageIcon /><strong>添加图片</strong><i aria-hidden="true">＋</i></button>}
+          </div>
+        </div>
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder={attachment || prompt ? "" : "描述你的设计需求，输入 @ 可引用素材或 Skill"}
+          placeholder={attachments.length || prompt ? "" : "描述你的设计需求，输入 @ 可引用素材或 Skill"}
         />
-        {attachment && (
-          <div className="attachment">
-            <img src="/assets/upload.svg" /> {attachment}
-            <button className="css-close" aria-label="移除附件" onClick={() => setAttachment("")} />
-          </div>
-        )}
         <footer>
           <button
             data-popover-trigger
@@ -1250,11 +1262,11 @@ function NewCreationPage({
           ref={fileRef}
           hidden
           type="file"
-          accept="image/*,.pdf,.doc,.docx"
+          accept="image/*"
+          multiple
           onChange={(event) => {
-            const file = event.target.files?.[0];
-            if (file?.type.startsWith("image/")) setAttachment(file.name);
-            setUploadOpen(false);
+            if (event.target.files) addNewCreationImages(event.target.files);
+            event.target.value = "";
           }}
         />
       </div>
