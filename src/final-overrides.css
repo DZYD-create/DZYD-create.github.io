@@ -15088,3 +15088,37 @@ button > img {
 .home-size-trigger[aria-expanded="true"]>img{
   content:url('/assets/figma-home-size-active.svg')!important;filter:none!important
 }
+
+/* Match the compact reference card at visual size, including its restrained cast shadow. */
+.generation-attachment-rail.count-0 .generation-add-image-card{
+  left:18px!important;bottom:9px!important;width:76px!important;height:88px!important;min-width:76px!important;min-height:88px!important;
+  border-radius:10px!important;gap:5px!important;transform:rotate(-7deg)!important;
+  box-shadow:0 12px 24px rgba(107,69,231,.23),0 4px 9px rgba(133,95,241,.14)!important
+}
+.generation-attachment-rail.count-0 .generation-add-image-card:hover{
+  transform:translateY(-3px) rotate(-7deg) scale(1.045)!important;
+  box-shadow:0 15px 28px rgba(107,69,231,.27),0 6px 12px rgba(133,95,241,.17)!important
+}
+.generation-attachment-rail.count-0 .upload-card-picture-icon{
+  width:30px!important;height:30px!important;flex-basis:30px!important
+}
+.generation-attachment-rail.count-0 .upload-card-picture-icon>svg{width:30px!important;height:30px!important}
+.generation-attachment-rail.count-0 .generation-add-image-card>strong{
+  font-size:12px!important;line-height:16px!important;font-weight:600!important;color:#7556e8!important
+}
+.generation-attachment-rail.count-0>span{left:-38px!important;top:12px!important;padding:4px 12px!important;font-size:12px!important;line-height:18px!important}
+.generation-attachment-rail.count-0 .upload-card-rays{right:-10px!important;top:-14px!important}
+
+/* Keep the drawer header/search fixed; only the growing folder list consumes and scrolls the remaining space. */
+.figma-infinite-canvas>.asset-library-panel{
+  display:flex!important;flex-direction:column!important;overflow:visible!important
+}
+.asset-library-panel>.asset-title,
+.asset-library-panel>.asset-scope,
+.asset-library-panel>.asset-search,
+.asset-library-panel>.subject-title,
+.asset-library-panel>.asset-divider,
+.asset-library-panel>.folder-label{flex:0 0 auto!important}
+.asset-library-panel>.asset-tree{
+  flex:1 1 auto!important;min-height:0!important;max-height:none!important;overflow-y:auto!important;overflow-x:hidden!important
+}
