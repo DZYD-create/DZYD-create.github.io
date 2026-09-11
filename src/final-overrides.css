@@ -14943,3 +14943,43 @@ button > img {
 .asset-library-panel .tree-row.menu-open,
 .asset-library-panel .tree-row:has(.asset-folder-more[aria-expanded="true"]){z-index:5000!important}
 .asset-library-panel .asset-folder-more-menu{z-index:5100!important}
+
+/* Uploaded images expose deletion only through a hover close control. */
+.generation-attachment-thumb{cursor:default!important}
+.generation-attachment-remove{
+  position:absolute!important;z-index:30!important;right:-7px!important;top:-7px!important;width:24px!important;height:24px!important;
+  padding:0!important;border:2px solid #fff!important;border-radius:50%!important;background:#2f3035!important;color:#fff!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;font:400 19px/18px Arial,sans-serif!important;
+  opacity:0!important;transform:scale(.82)!important;transition:opacity .16s ease,transform .16s ease,background .16s ease!important;
+  box-shadow:0 4px 10px rgba(28,25,42,.22)!important;cursor:pointer!important
+}
+.generation-attachment-thumb:hover>.generation-attachment-remove,
+.generation-attachment-remove:focus-visible{opacity:1!important;transform:scale(1)!important}
+.generation-attachment-remove:hover{background:#7255ea!important}
+
+/* Wider fan spacing expands away from the input, never across it. */
+.generation-attachment-rail,
+.new-creation-page>.new-creation-composer>.generation-attachment-rail,
+.generation-page .generation-attachment-rail{width:190px!important;right:calc(100% + 15px)!important}
+.generation-attachment-stack{width:190px!important}
+.generation-attachment-thumb{left:auto!important;right:30px!important;transform:translateX(calc(var(--attachment-index) * -16px)) rotate(calc((var(--attachment-index) - 1) * -5deg))!important}
+.generation-attachment-thumb:hover{transform:translateX(calc(var(--attachment-index) * -16px)) translateY(-9px) rotate(calc((var(--attachment-index) - 1) * -5deg)) scale(1.05)!important}
+.generation-attachment-rail:not(.count-0) .generation-add-image-card{left:auto!important;right:0!important}
+@media (max-width:1400px){
+  .generation-page>.composer.figma-composer.generation-composer,
+  .new-creation-page>.new-creation-composer{width:520px!important}
+}
+
+/* Three small decorative marks sit above the initial upload card. */
+.generation-attachment-rail.count-0 .generation-add-image-card::after{
+  content:"•••"!important;position:absolute!important;right:-14px!important;top:-19px!important;color:#6654ef!important;
+  font:700 15px/1 Arial,sans-serif!important;letter-spacing:2px!important;transform:rotate(54deg)!important;pointer-events:none!important
+}
+
+/* Folder action menus may leave the white drawer and use search-result hover styling. */
+.asset-library-panel,.asset-library-panel .asset-tree{overflow:visible!important}
+.asset-library-panel .asset-folder-more-menu{z-index:20000!important;overflow:visible!important}
+.asset-library-panel .asset-folder-more-menu>button:hover,
+.asset-library-panel .asset-folder-more-menu>button.danger:hover{
+  background:#f0edff!important;color:#6549dd!important;border:1px solid #8064ee!important;box-shadow:none!important
+}

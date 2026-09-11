@@ -808,13 +808,14 @@ function GenerationPage({
           <span>{attachments.length}张图片</span>
           <div className="generation-attachment-stack">
             {attachments.map((image, index) => (
-              <button
+              <div
                 className="generation-attachment-thumb"
                 style={{ "--attachment-index": index } as React.CSSProperties}
                 key={image.url}
-                aria-label={`移除图片 ${image.name}`}
-                onClick={() => setAttachments((items) => items.filter((item) => item.url !== image.url))}
-              ><img src={image.url} alt={image.name} /></button>
+              >
+                <img src={image.url} alt={image.name} />
+                <button className="generation-attachment-remove" aria-label={`移除图片 ${image.name}`} onClick={() => setAttachments((items) => items.filter((item) => item.url !== image.url))}>×</button>
+              </div>
             ))}
             {attachments.length < 5 && (
               <button className="generation-add-image-card" onClick={() => generationFile.current?.click()} aria-label="添加图片">
@@ -1151,9 +1152,10 @@ function NewCreationPage({
           <span>{attachments.length}张图片</span>
           <div className="generation-attachment-stack">
             {attachments.map((image, index) => (
-              <button className="generation-attachment-thumb" style={{ "--attachment-index": index } as React.CSSProperties} key={image.url} aria-label={`移除图片 ${image.name}`} onClick={() => setAttachments((items) => items.filter((item) => item.url !== image.url))}>
+              <div className="generation-attachment-thumb" style={{ "--attachment-index": index } as React.CSSProperties} key={image.url}>
                 <img src={image.url} alt={image.name} />
-              </button>
+                <button className="generation-attachment-remove" aria-label={`移除图片 ${image.name}`} onClick={() => setAttachments((items) => items.filter((item) => item.url !== image.url))}>×</button>
+              </div>
             ))}
             {attachments.length < 5 && <button className="generation-add-image-card" onClick={() => fileRef.current?.click()} aria-label="添加图片"><FigmaUploadImageIcon /><strong>添加图片</strong><i aria-hidden="true">＋</i></button>}
           </div>
