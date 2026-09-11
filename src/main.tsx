@@ -584,7 +584,7 @@ function GenerationPage({
   const [uploadOpen, setUploadOpen] = useState(false);
   const [assetsOpen, setAssetsOpen] = useState(false);
   const [invocationOpen, setInvocationOpen] = useState(false);
-  const [attachment, setAttachment] = useState("");
+  const [attachments, setAttachments] = useState<Array<{ name: string; url: string }>>([]);
   const generationFile = useRef<HTMLInputElement>(null);
   const composerInput = useRef<HTMLTextAreaElement>(null);
   const [progress, setProgress] = useState(generating ? 0 : 100);
@@ -596,6 +596,14 @@ function GenerationPage({
   const [roundPrompts, setRoundPrompts] = useState([
     prompt || "生成夏日新品直播海报，突出新品卖点，风格清爽明亮。",
   ]);
+  const addGenerationImages = (files: FileList | File[]) => {
+    const images = Array.from(files).filter((file) => file.type.startsWith("image/"));
+    setAttachments((current) => [
+      ...current,
+      ...images.slice(0, Math.max(0, 5 - current.length)).map((file) => ({ name: file.name, url: URL.createObjectURL(file) })),
+    ].slice(0, 5));
+    setUploadOpen(false);
+  };
   const startNewRound = (request: string) => {
     const nextRequest = request.trim() || prompt;
     setRoundPrompts((items) => [...items, nextRequest]);
@@ -790,25 +798,37 @@ function GenerationPage({
           }
         }}
         onDrop={(event) => {
-          const image = Array.from(event.dataTransfer.files).find((file) => file.type.startsWith("image/"));
-          if (!image) return;
+          const images = Array.from(event.dataTransfer.files).filter((file) => file.type.startsWith("image/"));
+          if (!images.length) return;
           event.preventDefault();
-          setAttachment(image.name);
-          setUploadOpen(false);
+          addGenerationImages(images);
         }}
       >
+        <div className={`generation-attachment-rail count-${attachments.length}`}>
+          <span>{attachments.length}张图片</span>
+          <div className="generation-attachment-stack">
+            {attachments.map((image, index) => (
+              <button
+                className="generation-attachment-thumb"
+                style={{ "--attachment-index": index } as React.CSSProperties}
+                key={image.url}
+                aria-label={`移除图片 ${image.name}`}
+                onClick={() => setAttachments((items) => items.filter((item) => item.url !== image.url))}
+              ><img src={image.url} alt={image.name} /></button>
+            ))}
+            {attachments.length < 5 && (
+              <button className="generation-add-image-card" onClick={() => generationFile.current?.click()} aria-label="添加图片">
+                <FigmaUploadImageIcon /><strong>添加图片</strong><i aria-hidden="true">＋</i>
+              </button>
+            )}
+          </div>
+        </div>
         <textarea
           ref={composerInput}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="描述你的设计需求，输入 @ 可引用素材或 Skill"
         />
-        {attachment && (
-          <div className="attachment">
-            <img src="/assets/upload.svg" /> {attachment}
-            <button className="css-close" aria-label="移除附件" onClick={() => setAttachment("")} />
-          </div>
-        )}
         <footer className="composer-actions">
           <button
             data-popover-trigger
@@ -910,11 +930,11 @@ function GenerationPage({
           ref={generationFile}
           hidden
           type="file"
-          accept="image/*,.pdf,.doc,.docx"
+          accept="image/*"
+          multiple
           onChange={(event) => {
-            const file = event.target.files?.[0];
-            if (file?.type.startsWith("image/")) setAttachment(file.name);
-            setUploadOpen(false);
+            if (event.target.files) addGenerationImages(event.target.files);
+            event.target.value = "";
           }}
         />
       </div>
@@ -6113,6 +6133,8 @@ function AssetLibrary({
   const [collapsed, setCollapsed] = useState({ poster: false, teachers: false, logo: false });
   const [editing, setEditing] = useState<string | null>(null);
   const [folderMore, setFolderMore] = useState<string | null>(null);
+  const [hiddenFolders, setHiddenFolders] = useState<string[]>([]);
+  const [extraFolders, setExtraFolders] = useState<Array<{ id: string; name: string }>>([]);
   const [renameDraft, setRenameDraft] = useState("");
   const beginInlineRename = (key: string, current: string) => { setEditing(key); setRenameDraft(current); };
   const commitInlineRename = () => {
@@ -6122,9 +6144,29 @@ function AssetLibrary({
       else if (key === "poster-file") setPosterName(value);
       else if (key === "logo-file") setLogoName(value);
       else if (["poster","teachers","logo"].includes(key)) setFolderNames((names)=>({...names,[key]:value}));
+      else if (key.startsWith("custom-")) setExtraFolders((folders)=>folders.map((folder)=>folder.id===key?{...folder,name:value}:folder));
     }
     setEditing(null);
   };
+  const createAssetFolder = () => {
+    const id = `custom-${Date.now()}`;
+    setExtraFolders((folders) => [...folders, { id, name: "未命名文件夹" }]);
+    setFolderMore(null);
+    setEditing(id);
+    setRenameDraft("");
+  };
+  const deleteAssetFolder = (key: string) => {
+    if (key.startsWith("custom-")) setExtraFolders((folders) => folders.filter((folder) => folder.id !== key));
+    else setHiddenFolders((folders) => [...folders, key]);
+    setFolderMore(null);
+  };
+  const folderActions = (key: string, name: string) => folderMore===key && (
+    <div className="asset-folder-more-menu">
+      <button onClick={createAssetFolder}><span><svg viewBox="0 0 20 20"><path d="M10 4v12M4 10h12" /></svg></span>新建文件夹</button>
+      <button onClick={()=>{setFolderMore(null);beginInlineRename(key,name);}}><span><svg viewBox="0 0 20 20"><path d="m4 14-.7 3.1 3.2-.7L15 7.9 12.1 5Z" /><path d="m10.8 6.3 2.9 2.9" /></svg></span>重命名</button>
+      <button className="danger" onClick={()=>deleteAssetFolder(key)}><span><svg viewBox="0 0 20 20"><path d="M4.5 6h11M8 3.5h4M6.2 6l.7 10.5h6.2L13.8 6M8.5 9v4.5M11.5 9v4.5" /></svg></span>删除</button>
+    </div>
+  );
   const normalizedQuery = query.trim().toLowerCase();
   const posterMatches = !normalizedQuery || folderNames.poster.toLowerCase().includes(normalizedQuery) || posterName.toLowerCase().includes(normalizedQuery);
   const teacherFolderMatches = !normalizedQuery || folderNames.teachers.toLowerCase().includes(normalizedQuery);
@@ -6159,26 +6201,26 @@ function AssetLibrary({
       <div className="asset-divider" />
       <small className="folder-label">文件夹</small>
       <div className="asset-tree">
-        {posterMatches && <div className="tree-row">
+        {posterMatches && !hiddenFolders.includes("poster") && <div className="tree-row">
           <img className="tree-chevron" src={collapsed.poster ? "/assets/asset-chevron-right.svg" : "/assets/asset-chevron.svg"} onClick={() => setCollapsed((value)=>({...value,poster:!value.poster}))} />
           <i className="folder-icon cyan" />
           {editing==="poster"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("poster",folderNames.poster)}>{folderNames.poster}</b>}
           <button className="asset-folder-more" aria-label={`${folderNames.poster}更多操作`} aria-expanded={folderMore==="poster"} onClick={(event)=>{event.stopPropagation();setFolderMore((value)=>value==="poster"?null:"poster");}}>•••</button>
-          {folderMore==="poster" && <div className="asset-folder-more-menu"><button onClick={()=>{setFolderMore(null);beginInlineRename("poster",folderNames.poster);}}>重命名</button></div>}
+          {folderActions("poster",folderNames.poster)}
         </div>}
-        {posterMatches && !collapsed.poster &&
+        {posterMatches && !hiddenFolders.includes("poster") && !collapsed.poster &&
         <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,posterName,"/assets/school-kickoff-poster.png")} className={`asset-tree-entry asset-poster-file ${selected===5?"selected":""}`} onClick={(event)=>onSelect(5,event.currentTarget.getBoundingClientRect().top)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("poster-file",posterName);}}>
           <img src="/assets/school-kickoff-poster.png" />
           {editing==="poster-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{posterName}</span>}
         </div>}
-        {(teacherFolderMatches || visibleTeachers.length > 0) && <div className={`tree-row ${collapsed.teachers ? "" : "expanded"}`}>
+        {(teacherFolderMatches || visibleTeachers.length > 0) && !hiddenFolders.includes("teachers") && <div className={`tree-row ${collapsed.teachers ? "" : "expanded"}`}>
           <img className="tree-chevron" src={collapsed.teachers ? "/assets/asset-chevron-right.svg" : "/assets/asset-chevron.svg"} onClick={() => setCollapsed((value)=>({...value,teachers:!value.teachers}))} />
           <i className="folder-icon blue" />
           {editing==="teachers"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("teachers",folderNames.teachers)}>{folderNames.teachers}</b>}
           <button className="asset-folder-more" aria-label={`${folderNames.teachers}更多操作`} aria-expanded={folderMore==="teachers"} onClick={(event)=>{event.stopPropagation();setFolderMore((value)=>value==="teachers"?null:"teachers");}}>•••</button>
-          {folderMore==="teachers" && <div className="asset-folder-more-menu"><button onClick={()=>{setFolderMore(null);beginInlineRename("teachers",folderNames.teachers);}}>重命名</button></div>}
+          {folderActions("teachers",folderNames.teachers)}
         </div>}
-        {!collapsed.teachers && visibleTeachers.map(({name:v,index:i}) => (
+        {!hiddenFolders.includes("teachers") && !collapsed.teachers && visibleTeachers.map(({name:v,index:i}) => (
           <div
             role="button"
             tabIndex={0}
@@ -6194,14 +6236,21 @@ function AssetLibrary({
           </div>
         ))}
         {!hasSearchResults && <p className="asset-search-empty">未找到“{query}”</p>}
-        {logoMatches && <div className="tree-row logo-row">
+        {logoMatches && !hiddenFolders.includes("logo") && <div className="tree-row logo-row">
           <img className="tree-chevron" src={collapsed.logo ? "/assets/asset-chevron-right.svg" : "/assets/asset-chevron.svg"} onClick={() => setCollapsed((value)=>({...value,logo:!value.logo}))} />
           <i className="folder-icon green" />
           {editing==="logo"?<input className="asset-inline-rename" autoFocus value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename("logo",folderNames.logo)}>{folderNames.logo}</b>}
           <button className="asset-folder-more" aria-label={`${folderNames.logo}更多操作`} aria-expanded={folderMore==="logo"} onClick={(event)=>{event.stopPropagation();setFolderMore((value)=>value==="logo"?null:"logo");}}>•••</button>
-          {folderMore==="logo" && <div className="asset-folder-more-menu"><button onClick={()=>{setFolderMore(null);beginInlineRename("logo",folderNames.logo);}}>重命名</button></div>}
+          {folderActions("logo",folderNames.logo)}
         </div>}
-        {logoMatches && !collapsed.logo && <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,logoName,"/assets/brand-logo-kcle.png")} className={`asset-tree-entry asset-logo-file ${selected===6?"selected":""}`} onClick={(event)=>onSelect(6,event.currentTarget.getBoundingClientRect().top)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("logo-file",logoName);}}><img src="/assets/brand-logo-kcle.png" />{editing==="logo-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{logoName}</span>}</div>}
+        {logoMatches && !hiddenFolders.includes("logo") && !collapsed.logo && <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,logoName,"/assets/brand-logo-kcle.png")} className={`asset-tree-entry asset-logo-file ${selected===6?"selected":""}`} onClick={(event)=>onSelect(6,event.currentTarget.getBoundingClientRect().top)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("logo-file",logoName);}}><img src="/assets/brand-logo-kcle.png" />{editing==="logo-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{logoName}</span>}</div>}
+        {extraFolders.map((folder) => <div className="tree-row custom-folder-row" key={folder.id}>
+          <img className="tree-chevron" src="/assets/asset-chevron-right.svg" />
+          <i className="folder-icon violet" />
+          {editing===folder.id?<input className="asset-inline-rename" autoFocus value={renameDraft} placeholder="请输入文件夹名称" onChange={(event)=>setRenameDraft(event.target.value)} onBlur={()=>{if(!renameDraft.trim())setRenameDraft(folder.name);commitInlineRename();}} onKeyDown={(event)=>{if(event.key==="Enter")commitInlineRename();if(event.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename(folder.id,folder.name)}>{folder.name}</b>}
+          <button className="asset-folder-more" aria-label={`${folder.name}更多操作`} aria-expanded={folderMore===folder.id} onClick={(event)=>{event.stopPropagation();setFolderMore((value)=>value===folder.id?null:folder.id);}}>•••</button>
+          {folderActions(folder.id,folder.name)}
+        </div>)}
       </div>
     </aside>
   );
