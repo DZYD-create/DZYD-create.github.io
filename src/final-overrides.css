@@ -15058,3 +15058,33 @@ button > img {
 .generation-attachment-rail:not(.count-0) .generation-add-image-card>strong,
 .generation-attachment-rail:not(.count-0) .generation-add-image-card>.upload-card-rays{display:none!important}
 .generation-attachment-rail:not(.count-0) .generation-add-image-card>i{display:block!important}
+
+/* Asset folders scroll independently; portalled action menus remain outside this clipping region. */
+.asset-library-panel .asset-tree{
+  max-height:calc(100vh - 365px)!important;overflow-y:auto!important;overflow-x:hidden!important;
+  overscroll-behavior:contain!important;touch-action:pan-y!important;padding-right:4px!important
+}
+.asset-library-panel .asset-tree>.tree-row>.tree-chevron,
+.asset-library-panel .custom-folder-chevron{
+  width:16px!important;height:16px!important;min-width:16px!important;min-height:16px!important;margin:0!important;padding:0!important;
+  border:0!important;background:transparent!important;display:grid!important;place-items:center!important;flex:0 0 16px!important
+}
+.asset-library-panel .asset-tree>.tree-row>.tree-chevron,
+.asset-library-panel .custom-folder-chevron>.tree-chevron{
+  width:12px!important;height:12px!important;min-width:12px!important;min-height:12px!important;margin:0!important;object-fit:contain!important
+}
+.asset-library-panel .custom-folder-chevron:hover{background:transparent!important}
+
+/* The count badge clears the card, while all three rays share the card corner as their origin. */
+.generation-attachment-rail.count-0>span{left:-25px!important}
+.upload-card-rays{right:-11px!important;top:-16px!important;width:20px!important;height:20px!important}
+.upload-card-rays>b{left:0!important;bottom:0!important;top:auto!important;transform-origin:50% 100%!important}
+.upload-card-rays>b:nth-child(1){left:0!important;top:auto!important;transform:rotate(-48deg)!important}
+.upload-card-rays>b:nth-child(2){left:0!important;top:auto!important;transform:rotate(-12deg)!important}
+.upload-card-rays>b:nth-child(3){left:0!important;top:auto!important;transform:rotate(28deg)!important}
+
+/* Size-selector sparkle stays pure white throughout hover and selected states. */
+.home-size-trigger:hover>img,
+.home-size-trigger[aria-expanded="true"]>img{
+  content:url('/assets/figma-home-size-active.svg')!important;filter:none!important
+}
