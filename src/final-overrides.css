@@ -15221,6 +15221,13 @@ button > img {
 .generation-attachment-rail.count-0 .upload-card-picture-icon>svg>.badge{fill:#9a82e8!important}
 .generation-attachment-rail.count-0 .generation-add-image-card>strong{color:#9a82e8!important}
 
+/* Vivid violet treatment for the square picture frame and its add badge. */
+.generation-attachment-rail.count-0 .generation-add-image-card{border-color:#bca9ff!important}
+.generation-attachment-rail.count-0 .upload-card-picture-icon{color:#7346f6!important}
+.generation-attachment-rail.count-0 .upload-card-picture-icon>svg>.picture-fill,
+.generation-attachment-rail.count-0 .upload-card-picture-icon>svg>.badge{fill:#7346f6!important}
+.generation-attachment-rail.count-0 .generation-add-image-card>strong{color:#7346f6!important}
+
 /* Final reference detail: solid lower picture shape and three rays outside, converging at the top-right corner. */
 .upload-card-picture-icon .picture-fill{
   fill:#7c59ee!important;stroke:#7c59ee!important;stroke-width:1.4!important;stroke-linejoin:round!important
