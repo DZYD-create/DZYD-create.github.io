@@ -15246,6 +15246,20 @@ button > img {
 .generation-attachment-rail.count-0 .upload-card-picture-icon>svg>.badge{fill:#967cf8!important}
 .generation-attachment-rail.count-0 .generation-add-image-card>strong{color:#967cf8!important}
 
+/* Final visual calibration from the supplied crop: blue-violet ink and a broad, soft lower glow. */
+.generation-attachment-rail.count-0 .generation-add-image-card{
+  border-color:#d4c9ff!important;
+  box-shadow:0 18px 34px rgba(128,104,250,.24),0 7px 16px rgba(128,104,250,.12)!important
+}
+.generation-attachment-rail.count-0 .generation-add-image-card:hover{
+  box-shadow:0 21px 38px rgba(128,104,250,.27),0 9px 19px rgba(128,104,250,.14)!important
+}
+.generation-attachment-rail.count-0 .upload-card-picture-icon{color:#8068fa!important}
+.generation-attachment-rail.count-0 .upload-card-picture-icon>svg rect{stroke-width:2.85!important}
+.generation-attachment-rail.count-0 .upload-card-picture-icon>svg>.picture-fill,
+.generation-attachment-rail.count-0 .upload-card-picture-icon>svg>.badge{fill:#8068fa!important}
+.generation-attachment-rail.count-0 .generation-add-image-card>strong{color:#8068fa!important}
+
 /* Final reference detail: solid lower picture shape and three rays outside, converging at the top-right corner. */
 .upload-card-picture-icon .picture-fill{
   fill:#7c59ee!important;stroke:#7c59ee!important;stroke-width:1.4!important;stroke-linejoin:round!important

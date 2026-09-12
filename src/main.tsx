@@ -1668,10 +1668,10 @@ function UploadCardPictureIcon() {
     <span className="upload-card-picture-icon" aria-hidden="true">
       <svg viewBox="0 0 36 36" role="presentation">
         <rect x="5.5" y="5.5" width="21" height="21" rx="3.6" />
-        <circle cx="20.8" cy="11.4" r="2.15" />
-        <path className="picture-fill" d="M8.2 24.2 13.7 18.6l4 3.95 2.8-2.75 4.8 4.7H8.2Z" />
-        <circle className="badge" cx="26.8" cy="25.8" r="5.8" />
-        <path className="badge-plus" d="M26.8 23v5.6M24 25.8h5.6" />
+        <circle cx="20.6" cy="11.2" r="2.2" />
+        <path className="picture-fill" d="M7.2 25.1 13.6 15.8l5.15 6.1 2.9-3.55 4.65 5.65v1.1H7.2Z" />
+        <circle className="badge" cx="26.7" cy="25.7" r="5.45" />
+        <path className="badge-plus" d="M26.7 23.15v5.1M24.15 25.7h5.1" />
       </svg>
     </span>
   );
