@@ -15228,6 +15228,24 @@ button > img {
 .generation-attachment-rail.count-0 .upload-card-picture-icon>svg>.badge{fill:#7346f6!important}
 .generation-attachment-rail.count-0 .generation-add-image-card>strong{color:#7346f6!important}
 
+/* Purple sampled from the supplied reference (#987ff8 family). */
+.generation-attachment-rail.count-0 .generation-add-image-card{
+  border-color:#d8ceff!important;
+  box-shadow:0 11px 24px rgba(150,124,248,.18),0 4px 10px rgba(150,124,248,.1)!important
+}
+.generation-attachment-rail.count-0 .generation-add-image-card:hover{
+  box-shadow:0 14px 27px rgba(150,124,248,.22),0 5px 12px rgba(150,124,248,.12)!important
+}
+.generation-attachment-rail.count-0 .upload-card-picture-icon{
+  width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;
+  flex-basis:44px!important;color:#967cf8!important
+}
+.generation-attachment-rail.count-0 .upload-card-picture-icon>svg{width:44px!important;height:44px!important}
+.generation-attachment-rail.count-0 .upload-card-picture-icon>svg rect{stroke-width:2.7!important}
+.generation-attachment-rail.count-0 .upload-card-picture-icon>svg>.picture-fill,
+.generation-attachment-rail.count-0 .upload-card-picture-icon>svg>.badge{fill:#967cf8!important}
+.generation-attachment-rail.count-0 .generation-add-image-card>strong{color:#967cf8!important}
+
 /* Final reference detail: solid lower picture shape and three rays outside, converging at the top-right corner. */
 .upload-card-picture-icon .picture-fill{
   fill:#7c59ee!important;stroke:#7c59ee!important;stroke-width:1.4!important;stroke-linejoin:round!important
