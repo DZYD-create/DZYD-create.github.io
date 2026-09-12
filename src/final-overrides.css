@@ -15396,6 +15396,38 @@ button > img {
   height:160px!important
 }
 
+/* Homepage upload choices mirror Model choice feedback. */
+.studio-page .upload-pop>button:hover,
+.studio-page .upload-pop>button:focus-visible,
+.studio-page .upload-pop>button:active,
+.studio-page .upload-pop>button.active,
+.studio-page .upload-pop>button.selected{
+  border:1px solid #8a67f4!important;background:#f7f6ff!important;color:#694add!important;box-shadow:none!important;outline:0!important
+}
+.studio-page .upload-pop>button:hover>img,
+.studio-page .upload-pop>button:hover>.figma-upload-image-icon,
+.studio-page .upload-pop>button:focus-visible>img,
+.studio-page .upload-pop>button:focus-visible>.figma-upload-image-icon{
+  filter:brightness(0) saturate(100%) invert(39%) sepia(44%) saturate(1964%) hue-rotate(221deg)!important;color:#694add!important
+}
+
+/* Conversation composer icons are black at rest, then defer to existing violet hover/open artwork. */
+.generation-page>.generation-composer .composer-actions>button[aria-expanded="false"]:not(:hover)>img{
+  filter:brightness(0) saturate(100%)!important;opacity:1!important
+}
+
+/* Neutral re-edit artwork and aligned batch-delete geometry. */
+.generation-result-actions .action-edit>img{
+  filter:grayscale(1) brightness(.48)!important;opacity:1!important
+}
+.generation-result-actions .generation-more-menu .batch-delete-icon{
+  width:18px!important;height:18px!important;min-width:18px!important;min-height:18px!important;flex:0 0 18px!important
+}
+.generation-result-actions .generation-more-menu .batch-delete:hover .batch-delete-icon,
+.generation-result-actions .generation-more-menu .batch-delete:focus-visible .batch-delete-icon{
+  filter:brightness(0) saturate(100%) invert(39%) sepia(44%) saturate(1964%) hue-rotate(221deg)!important
+}
+
 /* Final reference detail: solid lower picture shape and three rays outside, converging at the top-right corner. */
 .upload-card-picture-icon .picture-fill{
   fill:#7c59ee!important;stroke:#7c59ee!important;stroke-width:1.4!important;stroke-linejoin:round!important
