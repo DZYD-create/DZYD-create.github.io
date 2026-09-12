@@ -15443,6 +15443,34 @@ button > img {
   color:#694add!important
 }
 
+/* New Creation uses the same complete hover/open feedback as Conversation Generation. */
+.new-creation-page>.new-creation-composer .composer-actions>button:hover,
+.new-creation-page>.new-creation-composer .composer-actions>button[aria-expanded="true"]{
+  border-color:#8a67f4!important;background:#f2edff!important;color:#694add!important;
+  box-shadow:inset 0 0 0 1px rgba(138,103,244,.18)!important
+}
+.new-creation-page>.new-creation-composer .composer-actions>button:not(.home-size-trigger):hover>img,
+.new-creation-page>.new-creation-composer .composer-actions>button:not(.home-size-trigger)[aria-expanded="true"]>img{
+  filter:brightness(0) saturate(100%) invert(39%) sepia(44%) saturate(1964%) hue-rotate(221deg)!important;opacity:1!important
+}
+.new-creation-page>.new-creation-composer .home-size-trigger:hover>img,
+.new-creation-page>.new-creation-composer .home-size-trigger[aria-expanded="true"]>img{
+  content:url('/assets/figma-home-size-active.svg')!important;filter:none!important;opacity:1!important
+}
+.new-creation-page .upload-pop>button:hover,
+.new-creation-page .upload-pop>button:focus-visible,
+.new-creation-page .upload-pop>button:active,
+.new-creation-page .upload-pop>button.active,
+.new-creation-page .upload-pop>button.selected,
+.new-creation-page .model-selector-popover>button:hover,
+.new-creation-page .model-selector-popover>button.active{
+  border:1px solid #8a67f4!important;background:#f7f6ff!important;color:#694add!important;box-shadow:none!important;outline:0!important
+}
+.new-creation-page .home-asset-popover .composer-assets-grid>button:hover,
+.new-creation-page .home-asset-popover .composer-assets-grid>button.active{
+  border:1px solid #8a67f4!important;background:#f7f6ff!important;box-shadow:none!important
+}
+
 /* Final reference detail: solid lower picture shape and three rays outside, converging at the top-right corner. */
 .upload-card-picture-icon .picture-fill{
   fill:#7c59ee!important;stroke:#7c59ee!important;stroke-width:1.4!important;stroke-linejoin:round!important
