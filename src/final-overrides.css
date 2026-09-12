@@ -15292,6 +15292,33 @@ button > img {
   margin:0!important;transform:none!important;z-index:5!important
 }
 
+/* Size options mirror Model options: quiet normally, violet outline only on hover/selection. */
+.size-selector-popover .size-quality button,
+.size-selector-popover .ratio-grid button{
+  border:1px solid transparent!important;box-shadow:none!important
+}
+.size-selector-popover .size-quality button:hover,
+.size-selector-popover .ratio-grid button:hover,
+.size-selector-popover .size-quality button.active,
+.size-selector-popover .ratio-grid button.active{
+  border-color:#8a67f4!important
+}
+.size-selector-popover .size-quality button.active,
+.size-selector-popover .ratio-grid button.active{border-width:1.5px!important}
+
+/* Asset popover choices use the same violet interaction outline everywhere. */
+.home-asset-popover button:hover,
+.home-asset-popover button.active,
+.home-asset-popover button.selected,
+.asset-add-menu button:hover,
+.asset-add-menu button.active,
+.asset-add-menu button.selected,
+.asset-folder-menu button:hover,
+.asset-folder-menu button.active,
+.asset-folder-menu button.selected{
+  border-color:#8a67f4!important;box-shadow:inset 0 0 0 1px #8a67f4!important
+}
+
 /* Final reference detail: solid lower picture shape and three rays outside, converging at the top-right corner. */
 .upload-card-picture-icon .picture-fill{
   fill:#7c59ee!important;stroke:#7c59ee!important;stroke-width:1.4!important;stroke-linejoin:round!important
