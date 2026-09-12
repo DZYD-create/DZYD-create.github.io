@@ -15428,6 +15428,21 @@ button > img {
   filter:brightness(0) saturate(100%) invert(39%) sepia(44%) saturate(1964%) hue-rotate(221deg)!important
 }
 
+/* Conversation composer icons share the site's violet hover/open state. */
+.generation-page>.generation-composer .composer-actions>button:not(.home-size-trigger):hover>img,
+.generation-page>.generation-composer .composer-actions>button:not(.home-size-trigger)[aria-expanded="true"]>img{
+  filter:brightness(0) saturate(100%) invert(39%) sepia(44%) saturate(1964%) hue-rotate(221deg)!important;
+  opacity:1!important
+}
+.generation-page>.generation-composer .composer-actions>.home-size-trigger:hover>img,
+.generation-page>.generation-composer .composer-actions>.home-size-trigger[aria-expanded="true"]>img{
+  content:url('/assets/figma-home-size-active.svg')!important;filter:none!important;opacity:1!important
+}
+.generation-page>.generation-composer .composer-actions>button:hover>.figma-upload-image-icon,
+.generation-page>.generation-composer .composer-actions>button[aria-expanded="true"]>.figma-upload-image-icon{
+  color:#694add!important
+}
+
 /* Final reference detail: solid lower picture shape and three rays outside, converging at the top-right corner. */
 .upload-card-picture-icon .picture-fill{
   fill:#7c59ee!important;stroke:#7c59ee!important;stroke-width:1.4!important;stroke-linejoin:round!important
