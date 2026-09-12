@@ -15208,6 +15208,19 @@ button > img {
 .generation-attachment-rail.count-0 .upload-card-picture-icon>svg>.badge{fill:#7047f5!important}
 .generation-attachment-rail.count-0 .generation-add-image-card>strong{color:#7047f5!important}
 
+/* Upload artwork stays strictly square and uses one soft lavender palette. */
+.generation-attachment-rail.count-0 .generation-add-image-card{border-color:#ddd5f8!important}
+.generation-attachment-rail.count-0 .upload-card-picture-icon{
+  width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;
+  flex:0 0 48px!important;aspect-ratio:1/1!important;color:#9a82e8!important
+}
+.generation-attachment-rail.count-0 .upload-card-picture-icon>svg{
+  width:48px!important;height:48px!important;aspect-ratio:1/1!important
+}
+.generation-attachment-rail.count-0 .upload-card-picture-icon>svg>.picture-fill,
+.generation-attachment-rail.count-0 .upload-card-picture-icon>svg>.badge{fill:#9a82e8!important}
+.generation-attachment-rail.count-0 .generation-add-image-card>strong{color:#9a82e8!important}
+
 /* Final reference detail: solid lower picture shape and three rays outside, converging at the top-right corner. */
 .upload-card-picture-icon .picture-fill{
   fill:#7c59ee!important;stroke:#7c59ee!important;stroke-width:1.4!important;stroke-linejoin:round!important
