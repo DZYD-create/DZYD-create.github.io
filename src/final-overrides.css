@@ -15260,6 +15260,38 @@ button > img {
 .generation-attachment-rail.count-0 .upload-card-picture-icon>svg>.badge{fill:#8068fa!important}
 .generation-attachment-rail.count-0 .generation-add-image-card>strong{color:#8068fa!important}
 
+/* High-saturation reference violet; the mountain fills under the frame stroke with no white seam. */
+.generation-attachment-rail.count-0 .generation-add-image-card{
+  border-color:#c9b8ff!important;
+  box-shadow:0 20px 38px rgba(113,63,255,.25),0 8px 20px rgba(113,63,255,.13)!important
+}
+.generation-attachment-rail.count-0 .generation-add-image-card:hover{
+  box-shadow:0 23px 42px rgba(113,63,255,.29),0 10px 23px rgba(113,63,255,.15)!important
+}
+.generation-attachment-rail.count-0 .upload-card-picture-icon{color:#713fff!important}
+.generation-attachment-rail.count-0 .upload-card-picture-icon>svg>.picture-fill{
+  fill:#713fff!important;stroke:none!important;clip-path:inset(5.5px 9.5px 9.5px 5.5px round 3.6px)!important
+}
+.generation-attachment-rail.count-0 .upload-card-picture-icon>svg>.badge{fill:#713fff!important}
+.generation-attachment-rail.count-0 .generation-add-image-card>strong{color:#713fff!important}
+
+/* Homepage size choices use the model selector's violet border. */
+.studio-page .size-selector-popover .size-quality button,
+.studio-page .size-selector-popover .ratio-grid button{
+  border-color:#8a67f4!important
+}
+.studio-page .size-selector-popover .size-quality button.active,
+.studio-page .size-selector-popover .ratio-grid button.active{
+  border-color:#8a67f4!important
+}
+
+/* Every inspiration detail keeps its call-to-action anchored to the panel bottom. */
+.template-detail-info{position:relative!important;padding-bottom:96px!important}
+.template-detail-info>.template-detail-use{
+  position:absolute!important;left:32px!important;right:32px!important;bottom:24px!important;width:auto!important;
+  margin:0!important;transform:none!important;z-index:5!important
+}
+
 /* Final reference detail: solid lower picture shape and three rays outside, converging at the top-right corner. */
 .upload-card-picture-icon .picture-fill{
   fill:#7c59ee!important;stroke:#7c59ee!important;stroke-width:1.4!important;stroke-linejoin:round!important
