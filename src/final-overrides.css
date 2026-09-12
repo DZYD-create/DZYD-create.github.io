@@ -15196,6 +15196,18 @@ button > img {
   font-size:15px!important;line-height:21px!important;font-weight:600!important
 }
 
+/* Brighter upload accent with a proportionally enlarged center pictogram. */
+.generation-attachment-rail.count-0 .generation-add-image-card{
+  border-color:#cfc0ff!important
+}
+.generation-attachment-rail.count-0 .upload-card-picture-icon{
+  width:48px!important;height:48px!important;flex-basis:48px!important;color:#7047f5!important
+}
+.generation-attachment-rail.count-0 .upload-card-picture-icon>svg{width:48px!important;height:48px!important}
+.generation-attachment-rail.count-0 .upload-card-picture-icon>svg>.picture-fill,
+.generation-attachment-rail.count-0 .upload-card-picture-icon>svg>.badge{fill:#7047f5!important}
+.generation-attachment-rail.count-0 .generation-add-image-card>strong{color:#7047f5!important}
+
 /* Final reference detail: solid lower picture shape and three rays outside, converging at the top-right corner. */
 .upload-card-picture-icon .picture-fill{
   fill:#7c59ee!important;stroke:#7c59ee!important;stroke-width:1.4!important;stroke-linejoin:round!important
