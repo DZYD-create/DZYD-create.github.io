@@ -15354,6 +15354,48 @@ button > img {
   border-color:#8a67f4!important;background:#f7f6ff!important;color:#694add!important
 }
 
+/* Final state rules with page-level specificity so older overrides cannot win. */
+.studio-page .size-selector-popover .size-quality button,
+.studio-page .size-selector-popover .ratio-grid button{
+  border:1px solid #d6d9e0!important
+}
+.studio-page .size-selector-popover .size-quality button:hover,
+.studio-page .size-selector-popover .ratio-grid button:hover,
+.studio-page .size-selector-popover .size-quality button.active,
+.studio-page .size-selector-popover .ratio-grid button.active{
+  border-color:#8a67f4!important
+}
+
+.studio-page .home-asset-popover .composer-assets-grid>button:hover,
+.studio-page .home-asset-popover .composer-assets-grid>button.active,
+.generation-page .home-asset-popover .composer-assets-grid>button:hover,
+.generation-page .home-asset-popover .composer-assets-grid>button.active,
+.new-creation-page .home-asset-popover .composer-assets-grid>button:hover,
+.new-creation-page .home-asset-popover .composer-assets-grid>button.active{
+  border:1px solid #8a67f4!important;box-shadow:none!important
+}
+
+.generation-page>.generation-composer .model-selector-popover>button:hover,
+.new-creation-page>.new-creation-composer .model-selector-popover>button:hover{
+  border:1px solid #8a67f4!important;background:#f7f6ff!important;color:#694add!important
+}
+
+/* Conversation composer artwork starts neutral gray until hover/open feedback takes over. */
+.generation-page>.generation-composer .composer-actions>button:not([aria-expanded="true"])>img{
+  filter:grayscale(1)!important;opacity:.55!important
+}
+
+/* Conversation asset choices get more vertical room. */
+.generation-page>.generation-composer.new-creation-composer .home-asset-popover.figma-composer-assets{
+  height:326px!important;padding-top:14px!important;padding-bottom:14px!important
+}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid{
+  height:160px!important
+}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid>button{
+  height:160px!important
+}
+
 /* Final reference detail: solid lower picture shape and three rays outside, converging at the top-right corner. */
 .upload-card-picture-icon .picture-fill{
   fill:#7c59ee!important;stroke:#7c59ee!important;stroke-width:1.4!important;stroke-linejoin:round!important
