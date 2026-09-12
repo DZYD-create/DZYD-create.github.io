@@ -15270,7 +15270,7 @@ button > img {
 }
 .generation-attachment-rail.count-0 .upload-card-picture-icon{color:#713fff!important}
 .generation-attachment-rail.count-0 .upload-card-picture-icon>svg>.picture-fill{
-  fill:#713fff!important;stroke:none!important;clip-path:inset(5.5px 9.5px 9.5px 5.5px round 3.6px)!important
+  fill:#713fff!important;stroke:none!important;clip-path:none!important
 }
 .generation-attachment-rail.count-0 .upload-card-picture-icon>svg>.badge{fill:#713fff!important}
 .generation-attachment-rail.count-0 .generation-add-image-card>strong{color:#713fff!important}
@@ -15317,6 +15317,41 @@ button > img {
 .asset-folder-menu button.active,
 .asset-folder-menu button.selected{
   border-color:#8a67f4!important;box-shadow:inset 0 0 0 1px #8a67f4!important
+}
+
+/* Every size chooser starts gray; violet is reserved for hover and selection. */
+.size-selector-popover .size-quality button,
+.size-selector-popover .ratio-grid button,
+.canvas-size-popover .canvas-quality-row button,
+.canvas-size-popover .canvas-ratio-grid button{
+  border:1px solid #d6d9e0!important;box-shadow:none!important
+}
+.size-selector-popover .size-quality button:hover,
+.size-selector-popover .ratio-grid button:hover,
+.size-selector-popover .size-quality button.active,
+.size-selector-popover .ratio-grid button.active,
+.canvas-size-popover .canvas-quality-row button:hover,
+.canvas-size-popover .canvas-ratio-grid button:hover,
+.canvas-size-popover .canvas-quality-row button.active,
+.canvas-size-popover .canvas-ratio-grid button.active{
+  border-color:#8a67f4!important
+}
+
+/* Conversation model options receive the same visible hover feedback. */
+.generation-page .model-selector-popover>button:hover,
+.new-creation-page .model-selector-popover>button:hover,
+.new-creation-composer .model-selector-popover>button:hover{
+  border:1px solid #8a67f4!important;background:#f7f6ff!important;box-shadow:none!important
+}
+
+/* Re-edit is neutral initially and turns violet only through interaction. */
+.generation-result-actions .action-edit{
+  border-color:#d8dbe4!important;background:#fff!important;color:#202432!important
+}
+.generation-result-actions .action-edit>img{filter:none!important}
+.generation-result-actions .action-edit:hover,
+.generation-result-actions .action-edit:focus-visible{
+  border-color:#8a67f4!important;background:#f7f6ff!important;color:#694add!important
 }
 
 /* Final reference detail: solid lower picture shape and three rays outside, converging at the top-right corner. */
