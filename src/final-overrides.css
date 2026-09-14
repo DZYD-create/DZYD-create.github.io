@@ -15624,3 +15624,80 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   box-shadow:none!important;
   outline:0!important
 }
+
+/* Match the visible trash glyph to the regenerate glyph, not just its image box. */
+.generation-result-actions .generation-more-menu .batch-delete-icon{
+  width:27px!important;
+  height:27px!important;
+  min-width:27px!important;
+  min-height:27px!important;
+  flex:0 0 27px!important;
+  object-fit:contain!important
+}
+
+/* The focus prompt must grow and wrap instead of inheriting the 27px single-line lock. */
+.canvas-node-prompt .canvas-prompt-inline-content>textarea.canvas-primary-prompt-text{
+  display:block!important;
+  flex:1 0 100%!important;
+  width:100%!important;
+  min-width:100%!important;
+  height:auto!important;
+  min-height:34px!important;
+  max-height:150px!important;
+  field-sizing:content;
+  white-space:pre-wrap!important;
+  overflow-wrap:anywhere!important;
+  word-break:break-word!important;
+  line-height:22px!important;
+  overflow-y:auto!important
+}
+
+/* Canvas History list-view toggle has complete hover and selected feedback. */
+.figma-history-panel .figma-history-title>button[aria-label="条目式排列"]{
+  width:32px!important;
+  min-width:32px!important;
+  height:32px!important;
+  padding:0!important;
+  border:1px solid transparent!important;
+  border-radius:8px!important;
+  background:#fff!important;
+  display:grid!important;
+  place-items:center!important;
+  cursor:pointer!important;
+  transition:background-color .16s ease,border-color .16s ease,color .16s ease!important
+}
+.figma-history-panel .figma-history-title>button[aria-label="条目式排列"]:hover,
+.figma-history-panel .figma-history-title>button[aria-label="条目式排列"]:focus-visible,
+.figma-history-panel .figma-history-title>button[aria-label="条目式排列"].active{
+  border-color:#8a67f4!important;
+  background:#f2edff!important;
+  color:#694add!important;
+  box-shadow:none!important;
+  outline:0!important
+}
+.figma-history-panel .figma-history-title>button[aria-label="条目式排列"]:hover>img,
+.figma-history-panel .figma-history-title>button[aria-label="条目式排列"]:focus-visible>img,
+.figma-history-panel .figma-history-title>button[aria-label="条目式排列"].active>img{
+  filter:brightness(0) saturate(100%) invert(39%) sepia(44%) saturate(1964%) hue-rotate(221deg)!important;
+  opacity:1!important
+}
+
+/* List rows retain the same lift and shadow as image cards while contents stay aligned. */
+.figma-history-panel .figma-history-cards.list-view>.figma-history-card{
+  align-items:center!important;
+  align-content:center!important;
+  grid-template-rows:26px 20px!important;
+  transform-origin:center!important
+}
+.figma-history-panel .figma-history-cards.list-view>.figma-history-card:hover,
+.figma-history-panel .figma-history-cards.list-view>.figma-history-card:focus-visible{
+  background:#f6f4ff!important;
+  transform:scale(1.022)!important;
+  box-shadow:0 8px 18px rgba(50,57,86,.1)!important;
+  outline:0!important;
+  z-index:2!important
+}
+.figma-history-panel .figma-history-cards.list-view .history-image-area{
+  align-self:center!important;
+  justify-self:start!important
+}
