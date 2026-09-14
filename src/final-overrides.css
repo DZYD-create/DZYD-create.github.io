@@ -15847,6 +15847,17 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   transform:translateY(0)!important;
   pointer-events:auto!important
 }
+
+/* Immediate History favorite reveal: no delayed or partial fade while the pointer rests on a card. */
+.history-page .history-record-shell>.history-pin{
+  transition:none!important
+}
+.history-page .history-record-shell:hover>.history-pin{
+  display:grid!important;
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important
+}
 .generation-page>.generation-composer .composer-actions>.home-model-trigger:hover>img,
 .generation-page>.generation-composer .composer-actions>.home-model-trigger[aria-expanded="true"]>img,
 .generation-page>.generation-composer .composer-actions>.home-assets-trigger:hover>img,
