@@ -15613,3 +15613,14 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
 .new-creation-page .generation-attachment-rail.count-0 .upload-card-picture-icon .badge{
   fill:#713fff!important
 }
+
+/* Past-conversation Asset cards mirror New Creation hover/selected feedback. */
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.home-asset-popover.figma-composer-assets .composer-assets-grid>button:hover,
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.home-asset-popover.figma-composer-assets .composer-assets-grid>button:focus-visible,
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.home-asset-popover.figma-composer-assets .composer-assets-grid>button.active{
+  border:1px solid #8a67f4!important;
+  background:#f7f6ff!important;
+  color:#694add!important;
+  box-shadow:none!important;
+  outline:0!important
+}
