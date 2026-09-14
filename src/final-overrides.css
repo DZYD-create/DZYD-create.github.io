@@ -15920,3 +15920,45 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   filter:brightness(0) saturate(100%) invert(39%) sepia(44%) saturate(1964%) hue-rotate(221deg)!important;
   opacity:1!important
 }
+/* Final strength-control pass: taller menu, shared violet surface and icon feedback. */
+.figma-tool-modal.modal-增强清晰度 .detail-popover{box-sizing:border-box!important;width:300px!important;padding:10px!important}
+.figma-tool-modal.modal-增强清晰度 .detail-popover>button{box-sizing:border-box!important;height:64px!important;min-height:64px!important;margin:0 0 4px!important;padding:8px 38px 8px 58px!important;border:1px solid #e2e3ea!important;background:#fff!important}
+.figma-tool-modal.modal-增强清晰度 .detail-popover>button:last-child{margin-bottom:0!important}
+.figma-tool-modal.modal-增强清晰度 .detail-popover>button:hover,
+.figma-tool-modal.modal-增强清晰度 .detail-popover>button.active,
+.figma-tool-modal.modal-增强清晰度 .detail-popover>button[aria-selected="true"]{border-color:#8a67f4!important;background:#f3f0ff!important;color:#6755df!important;box-shadow:none!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-option-wrap:first-child>button:hover,
+.figma-tool-modal.modal-增强清晰度 .enhance-option-wrap:first-child>button[aria-expanded="true"]{border-color:#8a67f4!important;background:#f3f0ff!important;color:#6755df!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-option-wrap:first-child>button:hover .detail-grid-icon,
+.figma-tool-modal.modal-增强清晰度 .enhance-option-wrap:first-child>button[aria-expanded="true"] .detail-grid-icon{color:#6755df!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-option-wrap:first-child>button:hover .detail-grid-icon>i,
+.figma-tool-modal.modal-增强清晰度 .enhance-option-wrap:first-child>button[aria-expanded="true"] .detail-grid-icon>i{background:#6755df!important;border-color:#6755df!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-spark,
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-spark>svg{color:#7b61e8!important}
+.figma-tool-modal.modal-增强清晰度 .enhance-level-icon.icon-spark>svg path{fill:#7b61e8!important;stroke:#7b61e8!important}
+
+/* New Creation and past conversations now use exactly the same interaction violet. */
+.new-creation-page>.new-creation-composer>footer>.home-model-trigger:hover,
+.new-creation-page>.new-creation-composer>footer>.home-model-trigger[aria-expanded="true"],
+.new-creation-page>.new-creation-composer>footer>.home-size-trigger:hover,
+.new-creation-page>.new-creation-composer>footer>.home-size-trigger[aria-expanded="true"],
+.new-creation-page>.new-creation-composer>footer>.home-assets-trigger:hover,
+.new-creation-page>.new-creation-composer>footer>.home-assets-trigger[aria-expanded="true"],
+.generation-page>.generation-composer .composer-actions>.home-model-trigger:hover,
+.generation-page>.generation-composer .composer-actions>.home-model-trigger[aria-expanded="true"],
+.generation-page>.generation-composer .composer-actions>.home-size-trigger:hover,
+.generation-page>.generation-composer .composer-actions>.home-size-trigger[aria-expanded="true"],
+.generation-page>.generation-composer .composer-actions>.home-assets-trigger:hover,
+.generation-page>.generation-composer .composer-actions>.home-assets-trigger[aria-expanded="true"]{border-color:#8a67f4!important;background:#f3f0ff!important;color:#6755df!important;box-shadow:none!important}
+.new-creation-page .model-selector-popover>button:hover,
+.new-creation-page .model-selector-popover>button.active,
+.new-creation-page .size-selector-popover button:hover,
+.new-creation-page .size-selector-popover button.active,
+.new-creation-page .home-asset-popover .composer-assets-grid>button:hover,
+.new-creation-page .home-asset-popover .composer-assets-grid>button.active,
+.generation-page .model-selector-popover>button:hover,
+.generation-page .model-selector-popover>button.active,
+.generation-page .size-selector-popover button:hover,
+.generation-page .size-selector-popover button.active,
+.generation-page .home-asset-popover .composer-assets-grid>button:hover,
+.generation-page .home-asset-popover .composer-assets-grid>button.active{border-color:#8a67f4!important;background:#f3f0ff!important;color:#6755df!important;box-shadow:none!important}
