@@ -15962,3 +15962,23 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
 .generation-page .size-selector-popover button.active,
 .generation-page .home-asset-popover .composer-assets-grid>button:hover,
 .generation-page .home-asset-popover .composer-assets-grid>button.active{border-color:#8a67f4!important;background:#f3f0ff!important;color:#6755df!important;box-shadow:none!important}
+
+/* Strength cards are slightly smaller, with clearer separation between choices. */
+.figma-tool-modal.modal-增强清晰度 .detail-popover{width:286px!important;padding:10px!important}
+.figma-tool-modal.modal-增强清晰度 .detail-popover>button{
+  height:56px!important;min-height:56px!important;margin:0 0 9px!important;
+  padding:6px 36px 6px 52px!important;border-radius:10px!important
+}
+.figma-tool-modal.modal-增强清晰度 .detail-popover>button:last-child{margin-bottom:0!important}
+.figma-tool-modal.modal-增强清晰度 .detail-popover .enhance-level-icon{
+  left:12px!important;width:30px!important;height:30px!important;transform:translateY(-50%) scale(.9)!important
+}
+.figma-tool-modal.modal-增强清晰度 .detail-popover .enhance-level-copy>strong{font-size:14px!important;line-height:20px!important}
+.figma-tool-modal.modal-增强清晰度 .detail-popover .enhance-level-copy>small{font-size:11px!important;line-height:16px!important}
+
+/* Image-size choices use the exact same hover and selected violet language. */
+.figma-tool-modal.modal-图片尺寸 .ratio-list>button:hover,
+.figma-tool-modal.modal-图片尺寸 .ratio-list>button.active,
+.figma-tool-modal.modal-图片尺寸 .ratio-list>button[aria-selected="true"]{
+  border-color:#8a67f4!important;background:#f3f0ff!important;color:#6755df!important;box-shadow:none!important
+}

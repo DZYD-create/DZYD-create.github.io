@@ -3257,7 +3257,7 @@ function Canvas({
         )
           return;
         event.preventDefault();
-        zoomTargetRef.current = Math.max(25, Math.min(200, zoomTargetRef.current * Math.exp(-event.deltaY * 0.00055)));
+        zoomTargetRef.current = Math.max(25, Math.min(200, zoomTargetRef.current * Math.exp(-event.deltaY * 0.0009)));
         zoomPointerRef.current = { x: event.clientX, y: event.clientY };
         if (zoomFrameRef.current === null) {
           zoomFrameRef.current = window.requestAnimationFrame(() => {
