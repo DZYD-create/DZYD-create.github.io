@@ -15820,6 +15820,33 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   filter:brightness(0) saturate(100%) invert(39%) sepia(44%) saturate(1964%) hue-rotate(221deg)!important;
   opacity:1!important
 }
+
+/* History favorite mirrors Assets exactly: stay visible for the whole card hover. */
+.history-page .history-record-shell>.history-pin{
+  opacity:0!important;
+  visibility:hidden!important;
+  transform:translateY(-3px)!important;
+  pointer-events:none!important
+}
+.history-page .history-record-shell:hover>.history-pin,
+.history-page .history-record-shell:focus-within>.history-pin,
+.history-page .history-record-shell>.history-pin.active{
+  opacity:1!important;
+  visibility:visible!important;
+  transform:translateY(0)!important;
+  pointer-events:auto!important
+}
+
+/* History favorites mirror Assets exactly: stay visible for the whole card hover. */
+.history-page .history-record-shell:hover>.history-pin,
+.history-page .history-record-shell:focus-within>.history-pin,
+.history-page .history-record-shell>.history-pin.image-hovered,
+.history-page .history-record-shell>.history-pin.active{
+  opacity:1!important;
+  visibility:visible!important;
+  transform:translateY(0)!important;
+  pointer-events:auto!important
+}
 .generation-page>.generation-composer .composer-actions>.home-model-trigger:hover>img,
 .generation-page>.generation-composer .composer-actions>.home-model-trigger[aria-expanded="true"]>img,
 .generation-page>.generation-composer .composer-actions>.home-assets-trigger:hover>img,
