@@ -1971,6 +1971,7 @@ function Editor({
   onToggleFavorite: () => void;
 }) {
   const [zoom, setZoom] = useState(100);
+  const [modalZoom, setModalZoom] = useState(100);
   const [saved, setSaved] = useState(false);
   const [modalPrompt, setModalPrompt] = useState("");
   const [brushSize, setBrushSize] = useState(48);
@@ -2084,7 +2085,14 @@ function Editor({
       <div className="figma-editor-workspace">
         <section className="editor-preview-area">
           <p className="editor-section-label">图片预览</p>
-          <div className="generated-image-canvas">
+          <div
+            className="generated-image-canvas"
+            onWheel={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              setZoom((value) => Math.max(50, Math.min(300, value + (event.deltaY < 0 ? 10 : -10))));
+            }}
+          >
             <img
               src="/assets/template-2.png"
               style={{ transform: `scale(${zoom / 100})` }}
@@ -2167,8 +2175,15 @@ function Editor({
             {(tool === "局部重绘" || tool === "擦除内容") && (
               <>
                 <div className="modal-canvas-wrap">
-                  <div className="modal-image-stage">
-                    <div className="modal-image-surface">
+                  <div
+                    className="modal-image-stage"
+                    onWheel={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      setModalZoom((value) => Math.max(50, Math.min(300, value + (event.deltaY < 0 ? 10 : -10))));
+                    }}
+                  >
+                    <div className="modal-image-surface" style={{ transform: `scale(${modalZoom / 100})` }}>
                       <img src="/assets/template-2.png" alt="待编辑图片" />
                       <svg className={`editor-mask-layer ${tool === "擦除内容" ? "erase-tool" : "redraw-tool"} brush-mode-${brushMode}`} viewBox="0 0 800 450" preserveAspectRatio="none" onPointerDown={beginEditorStroke} onPointerMove={moveEditorStroke} onPointerEnter={(event) => setEditorBrushCursor(editorPoint(event))} onPointerLeave={() => setEditorBrushCursor(null)} onPointerUp={finishEditorStroke} onPointerCancel={finishEditorStroke}>
                       <defs>
@@ -2222,9 +2237,9 @@ function Editor({
                       </button>
                     </div>
                     <div className="modal-zoom">
-                      <button>−</button>
-                      <span>100%</span>
-                      <button>＋</button>
+                      <button onClick={() => setModalZoom((value) => Math.max(50, value - 10))}>−</button>
+                      <span>{modalZoom}%</span>
+                      <button onClick={() => setModalZoom((value) => Math.min(300, value + 10))}>＋</button>
                     </div>
                   </div>
                 </div>
@@ -2302,7 +2317,7 @@ function Editor({
                           { name: "轻度细节生成", description: "优化画面噪点，轻微补充细节", icon: "spark" },
                           { name: "标准细节生成", description: "平衡画质清晰度与自然度", icon: "sliders" },
                           { name: "高清细节生成", description: "强化纹理、文字与边缘细节", icon: "hd" },
-                          { name: "超高清节生成", description: "最大程度增强画质与还原细节", icon: "diamond" },
+                          { name: "超高清细节生成", description: "最大程度增强画质与还原细节", icon: "diamond" },
                         ].map((option) => (
                           <button
                             className={detail === option.name ? "active" : ""}

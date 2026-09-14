@@ -15620,6 +15620,52 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   fill:#8b68ff!important
 }
 
+/* Wheel zoom keeps the preview and its editable mask perfectly registered. */
+.generated-image-canvas>img,
+.figma-tool-modal.modal-局部重绘 .modal-image-surface,
+.figma-tool-modal.modal-擦除内容 .modal-image-surface{
+  transform-origin:center center!important;
+  transition:transform 100ms ease-out!important;
+  will-change:transform!important
+}
+.generated-image-canvas,
+.figma-tool-modal.modal-局部重绘 .modal-image-stage,
+.figma-tool-modal.modal-擦除内容 .modal-image-stage{
+  overscroll-behavior:contain!important
+}
+
+/* Strength menu typography is uniform across every detail level. */
+.figma-tool-modal.modal-增强清晰度 .detail-popover .enhance-level-copy>strong{
+  font-size:16px!important;
+  line-height:22px!important;
+  font-weight:600!important
+}
+.figma-tool-modal.modal-增强清晰度 .detail-popover .enhance-level-copy>small{
+  font-size:13px!important;
+  line-height:19px!important;
+  font-weight:400!important
+}
+
+/* Conversation and New Creation upload cards use a calm site-violet with no shadow. */
+.generation-page .generation-attachment-rail.count-0 .generation-add-image-card,
+.new-creation-page .generation-attachment-rail.count-0 .generation-add-image-card{
+  border-color:#d9cff8!important;
+  color:#9077ed!important;
+  box-shadow:none!important
+}
+.generation-page .generation-attachment-rail.count-0 .upload-card-picture-icon,
+.new-creation-page .generation-attachment-rail.count-0 .upload-card-picture-icon,
+.generation-page .generation-attachment-rail.count-0 .generation-add-image-card>strong,
+.new-creation-page .generation-attachment-rail.count-0 .generation-add-image-card>strong{
+  color:#9077ed!important
+}
+.generation-page .generation-attachment-rail.count-0 .upload-card-picture-icon .picture-fill,
+.generation-page .generation-attachment-rail.count-0 .upload-card-picture-icon .badge,
+.new-creation-page .generation-attachment-rail.count-0 .upload-card-picture-icon .picture-fill,
+.new-creation-page .generation-attachment-rail.count-0 .upload-card-picture-icon .badge{
+  fill:#9077ed!important
+}
+
 /* Past-conversation Asset cards mirror New Creation hover/selected feedback. */
 section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.home-asset-popover.figma-composer-assets .composer-assets-grid>button:hover,
 section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.home-asset-popover.figma-composer-assets .composer-assets-grid>button:focus-visible,
