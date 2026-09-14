@@ -15597,21 +15597,21 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
 .generation-page .generation-attachment-rail.count-0 .generation-add-image-card,
 .new-creation-page .generation-attachment-rail.count-0 .generation-add-image-card{
   background:#fff!important;
-  border-color:#c9b8ff!important;
-  color:#713fff!important;
-  box-shadow:0 20px 38px rgba(113,63,255,.25),0 8px 20px rgba(113,63,255,.13)!important
+  border-color:#cdbfff!important;
+  color:#8b68ff!important;
+  box-shadow:0 20px 38px rgba(139,104,255,.26),0 8px 20px rgba(139,104,255,.15)!important
 }
 .generation-page .generation-attachment-rail.count-0 .upload-card-picture-icon,
 .new-creation-page .generation-attachment-rail.count-0 .upload-card-picture-icon,
 .generation-page .generation-attachment-rail.count-0 .generation-add-image-card>strong,
 .new-creation-page .generation-attachment-rail.count-0 .generation-add-image-card>strong{
-  color:#713fff!important
+  color:#8b68ff!important
 }
 .generation-page .generation-attachment-rail.count-0 .upload-card-picture-icon .picture-fill,
 .generation-page .generation-attachment-rail.count-0 .upload-card-picture-icon .badge,
 .new-creation-page .generation-attachment-rail.count-0 .upload-card-picture-icon .picture-fill,
 .new-creation-page .generation-attachment-rail.count-0 .upload-card-picture-icon .badge{
-  fill:#713fff!important
+  fill:#8b68ff!important
 }
 
 /* Past-conversation Asset cards mirror New Creation hover/selected feedback. */
