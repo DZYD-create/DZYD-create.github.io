@@ -15485,3 +15485,43 @@ button > img {
 .generation-attachment-rail.count-0 .upload-card-rays>b:nth-child(1){transform:rotate(12deg)!important}
 .generation-attachment-rail.count-0 .upload-card-rays>b:nth-child(2){height:9px!important;transform:rotate(46deg)!important}
 .generation-attachment-rail.count-0 .upload-card-rays>b:nth-child(3){height:7px!important;transform:rotate(76deg)!important}
+
+/* Conversation size artwork must match New Creation exactly at rest. */
+.generation-page>.generation-composer .composer-actions>.home-size-trigger[aria-expanded="false"]:not(:hover)>img{
+  content:normal!important;
+  filter:none!important;
+  opacity:1!important
+}
+
+/* Keep conversation asset thumbnails and their copy in separate vertical rows. */
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid{
+  align-items:start!important;
+  padding-top:0!important
+}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid>button{
+  top:0!important;
+  bottom:auto!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  justify-content:flex-start!important;
+  padding:6px!important
+}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid>button>span{
+  position:static!important;
+  inset:auto!important;
+  display:block!important;
+  flex:0 0 104px!important;
+  width:118px!important;
+  height:104px!important
+}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid>button>strong{
+  position:static!important;
+  margin:8px 0 0!important;
+  line-height:17px!important
+}
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid>button>small{
+  position:static!important;
+  margin-top:3px!important;
+  line-height:13px!important
+}
