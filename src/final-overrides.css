@@ -15753,7 +15753,11 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
 
 /* The History favorite control belongs to the image hover area, not the copy below it. */
 .history-page .history-record-shell>.history-pin{
+  top:8px!important;
+  right:8px!important;
+  z-index:40!important;
   opacity:0!important;
+  visibility:hidden!important;
   transform:none!important;
   pointer-events:none!important
 }
@@ -15763,6 +15767,7 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
 .history-page .history-record-shell>.history-pin:focus-visible,
 .history-page .history-record-shell>.history-pin.active{
   opacity:1!important;
+  visibility:visible!important;
   pointer-events:auto!important
 }
 
