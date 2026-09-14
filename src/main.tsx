@@ -6425,7 +6425,6 @@ function History({
   const [historyQuery, setHistoryQuery] = useState("");
   const [batch, setBatch] = useState(false);
   const [historyMenu, setHistoryMenu] = useState<string | null>(null);
-  const [hoveredHistoryImage, setHoveredHistoryImage] = useState<string | null>(null);
   const [selectedHistory, setSelectedHistory] = useState<string[]>([]);
   const [favoriteHistory, setFavoriteHistory] = useState<string[]>([]);
   const [cards, setCards] = useState([
@@ -6675,15 +6674,7 @@ function History({
             const image = name === "对话生图图片" ? "/assets/template-2.png" : featuredPeople[i % featuredPeople.length].url;
             const favorite = name === "对话生图图片" ? favoriteGenerated : favoriteHistory.includes(name);
             return (
-              <div
-                className="history-record-shell"
-                key={name}
-                onMouseMove={(event) => {
-                  const target = event.target as HTMLElement;
-                  setHoveredHistoryImage(target.closest(".history-record-preview,.history-pin") ? name : null);
-                }}
-                onMouseLeave={() => setHoveredHistoryImage(null)}
-              >
+              <div className="history-record-shell" key={name}>
                 <button
                   className={`history-record ${batch ? "batching" : ""}`}
                   onClick={() => {
@@ -6706,7 +6697,7 @@ function History({
                   <small>{name === "对话生图图片" ? "编辑于 刚刚" : i === 0 ? "编辑于 2 分钟前" : i === 1 ? "编辑于 6 分钟前" : "编辑于 17 小时前"}</small>
                 </button>
                 <button
-                  className={`history-pin ${favorite ? "active" : ""} ${hoveredHistoryImage === name ? "image-hovered" : ""}`}
+                  className={`history-pin ${favorite ? "active" : ""}`}
                   aria-label={favorite ? `取消置顶${name}` : `置顶${name}`}
                   onClick={() => name === "对话生图图片" ? onToggleGeneratedFavorite() : setFavoriteHistory((items) => favorite ? items.filter((item) => item !== name) : [...items, name])}
                 ><span>置顶</span>★</button>

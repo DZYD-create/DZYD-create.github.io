@@ -15759,8 +15759,8 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
 }
 .history-page .history-record-shell:has(.history-record-preview:hover)>.history-pin,
 .history-page .history-record-shell:has(.history-record:focus-visible)>.history-pin,
+.history-page .history-record-shell:hover>.history-pin,
 .history-page .history-record-shell>.history-pin:focus-visible,
-.history-page .history-record-shell>.history-pin.image-hovered,
 .history-page .history-record-shell>.history-pin.active{
   opacity:1!important;
   pointer-events:auto!important
