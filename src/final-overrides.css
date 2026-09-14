@@ -15701,3 +15701,46 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   align-self:center!important;
   justify-self:start!important
 }
+
+/* Both Canvas History layouts use the same violet hover surface. */
+.figma-history-panel .figma-history-cards>.figma-history-card{
+  box-sizing:border-box!important
+}
+.figma-history-panel .figma-history-cards>.figma-history-card:hover,
+.figma-history-panel .figma-history-cards>.figma-history-card:focus-visible,
+.figma-history-panel .figma-history-cards.list-view>.figma-history-card:hover,
+.figma-history-panel .figma-history-cards.list-view>.figma-history-card:focus-visible{
+  border:1px solid #8a67f4!important;
+  background:#f7f6ff!important;
+  box-shadow:0 8px 18px rgba(93,72,184,.12)!important;
+  outline:0!important
+}
+
+/* Homepage History exposes Favorite as soon as the image preview is hovered. */
+.history-page .history-record-shell:has(.history-record-preview:hover)>.history-pin,
+.history-page .history-record-shell:has(.history-record:focus-visible)>.history-pin,
+.history-page .history-record-shell:hover>.history-pin{
+  opacity:1!important;
+  transform:none!important;
+  pointer-events:auto!important
+}
+
+/* Homepage composer icons turn violet on hover; the model icon has no backing tile. */
+.studio-page .composer-actions .home-model-trigger .home-model-icon{
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important
+}
+.studio-page .composer-actions .home-model-trigger:hover .home-model-icon,
+.studio-page .composer-actions .home-model-trigger[aria-expanded="true"] .home-model-icon{
+  background:transparent!important;
+  box-shadow:none!important
+}
+.studio-page .composer-actions .home-model-trigger:hover .home-model-icon>img,
+.studio-page .composer-actions .home-model-trigger[aria-expanded="true"] .home-model-icon>img,
+.studio-page .composer-actions .home-assets-trigger:hover>img,
+.studio-page .composer-actions .home-assets-trigger[aria-expanded="true"]>img{
+  filter:brightness(0) saturate(100%) invert(39%) sepia(44%) saturate(1964%) hue-rotate(221deg)!important;
+  opacity:1!important
+}
