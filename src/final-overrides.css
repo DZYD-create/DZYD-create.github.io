@@ -15760,6 +15760,7 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
 .history-page .history-record-shell:has(.history-record-preview:hover)>.history-pin,
 .history-page .history-record-shell:has(.history-record:focus-visible)>.history-pin,
 .history-page .history-record-shell>.history-pin:focus-visible,
+.history-page .history-record-shell>.history-pin.image-hovered,
 .history-page .history-record-shell>.history-pin.active{
   opacity:1!important;
   pointer-events:auto!important
@@ -15783,8 +15784,7 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
 }
 
 /* The Assets star is intentionally icon-only: remove its small text tooltip. */
-.asset-page-figma .asset-pin>span,
-.asset-library-panel .asset-pin>span{
+.asset-pin>span{
   display:none!important
 }
 
@@ -15799,6 +15799,26 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   background:#f3f0ff!important;
   border:1px solid #8a67f4!important;
   box-shadow:none!important
+}
+
+/* New Creation uses a plain footer (not .composer-actions). */
+.new-creation-page>.new-creation-composer>footer>.home-model-trigger:hover,
+.new-creation-page>.new-creation-composer>footer>.home-model-trigger[aria-expanded="true"],
+.new-creation-page>.new-creation-composer>footer>.home-size-trigger:hover,
+.new-creation-page>.new-creation-composer>footer>.home-size-trigger[aria-expanded="true"],
+.new-creation-page>.new-creation-composer>footer>.home-assets-trigger:hover,
+.new-creation-page>.new-creation-composer>footer>.home-assets-trigger[aria-expanded="true"]{
+  color:#6755df!important;
+  background:#f3f0ff!important;
+  border:1px solid #8a67f4!important;
+  box-shadow:none!important
+}
+.new-creation-page>.new-creation-composer>footer>.home-model-trigger:hover>img,
+.new-creation-page>.new-creation-composer>footer>.home-model-trigger[aria-expanded="true"]>img,
+.new-creation-page>.new-creation-composer>footer>.home-assets-trigger:hover>img,
+.new-creation-page>.new-creation-composer>footer>.home-assets-trigger[aria-expanded="true"]>img{
+  filter:brightness(0) saturate(100%) invert(39%) sepia(44%) saturate(1964%) hue-rotate(221deg)!important;
+  opacity:1!important
 }
 .generation-page>.generation-composer .composer-actions>.home-model-trigger:hover>img,
 .generation-page>.generation-composer .composer-actions>.home-model-trigger[aria-expanded="true"]>img,
