@@ -36,22 +36,31 @@ export default {
     const prompt = typeof input.prompt === "string" ? input.prompt.trim() : "";
     if (!prompt || prompt.length > 1200) return json({ error: "请输入 1—1200 字的创作描述" }, 400, origin);
 
-    const upstream = await fetch("https://ark.cn-beijing.volces.com/api/v3/images/generations", {
-      method: "POST",
-      headers: { "Authorization": `Bearer ${env.ARK_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "doubao-seedream-5-0-260128",
-        prompt,
-        size: input.size || "2K",
-        response_format: "url",
-        watermark: false,
-        sequential_image_generation: "auto",
-        sequential_image_generation_options: { max_images: 4 },
-      }),
-    });
-    const result = await upstream.json().catch(() => ({}));
-    if (!upstream.ok) return json({ error: result?.error?.message || result?.message || "模型生成失败" }, upstream.status, origin);
-    const images = Array.isArray(result.data) ? result.data.map((item) => item?.url).filter(Boolean).slice(0, 4) : [];
+    const generateOne = async (index) => {
+      const upstream = await fetch("https://ark.cn-beijing.volces.com/api/v3/images/generations", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${env.ARK_API_KEY}`, "Content-Type": "application/json" },
+        signal: AbortSignal.timeout(180_000),
+        body: JSON.stringify({
+          model: "doubao-seedream-5-0-260128",
+          prompt,
+          size: input.size || "2K",
+          response_format: "url",
+          watermark: false,
+          seed: Math.floor(Date.now() / 1000) + index,
+          sequential_image_generation: "disabled",
+        }),
+      });
+      const result = await upstream.json().catch(() => ({}));
+      if (!upstream.ok) throw new Error(result?.error?.message || result?.message || `第 ${index + 1} 张图片生成失败`);
+      return result?.data?.[0]?.url || null;
+    };
+    let images;
+    try {
+      images = (await Promise.all([0, 1, 2, 3].map(generateOne))).filter(Boolean);
+    } catch (error) {
+      return json({ error: error instanceof Error ? error.message : "模型生成失败" }, 502, origin);
+    }
     if (!images.length) return json({ error: "模型没有返回图片" }, 502, origin);
     return json({ images, model: "doubao-seedream-5-0-260128" }, 200, origin);
   },
