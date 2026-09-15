@@ -50,10 +50,10 @@ const samples = [
   "/assets/template-6.png",
 ];
 
-const IMAGE_API_BASE = "https://dianzhen-yuedong.chenyucan310.chatgpt.site";
+const IMAGE_API_BASE = "https://dzyd-seedream-api.dzyd-create.workers.dev";
 
 async function requestGeneratedImages(prompt: string): Promise<string[]> {
-  const response = await fetch(`${IMAGE_API_BASE}/api/generate`, {
+  const response = await fetch(`${IMAGE_API_BASE}/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ prompt, size: "2K" }),

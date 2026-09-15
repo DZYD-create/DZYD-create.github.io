@@ -1,0 +1,7 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "dzyd-seedream-api",
+  "main": "index.js",
+  "compatibility_date": "2026-09-15",
+  "workers_dev": true
+}
