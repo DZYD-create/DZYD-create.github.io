@@ -2464,6 +2464,7 @@ function Canvas({
   const [assetPopoverTop, setAssetPopoverTop] = useState(0);
   const [applied, setApplied] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
+  const [addCentered, setAddCentered] = useState(false);
   const [quickOpen, setQuickOpen] = useState(false);
   const [canvasTool, setCanvasTool] = useState("移动");
   const [redrawMode, setRedrawMode] = useState("画笔");
@@ -4004,6 +4005,7 @@ function Canvas({
         }}
         onDoubleClick={(e) => {
           const box = e.currentTarget.getBoundingClientRect();
+          setAddCentered(false);
           setSelection(null);
           setAddPosition({
             x: Math.max(8, Math.min(e.clientX - box.left, box.width - 256)),
@@ -4884,7 +4886,7 @@ function Canvas({
             className={addOpen ? "active" : ""}
             aria-label="添加"
             onClick={() => {
-              setAddPosition({ x: 118, y: 210 });
+              setAddCentered(true);
               setAddOpen((v) => !v);
               setMode(null);
               setQuickOpen(false);
@@ -4940,7 +4942,11 @@ function Canvas({
         {addOpen && (
           <section
             className="canvas-add-popover positioned"
-            style={{
+            style={addCentered ? {
+              left: "50%",
+              top: "50%",
+              transform: "translate(-50%, -50%)",
+            } : {
               left: addPosition.x,
               top: addPosition.y,
               transform: "none",
