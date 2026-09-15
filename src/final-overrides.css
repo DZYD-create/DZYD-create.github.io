@@ -16203,3 +16203,49 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
 }
 .group-layout-popover .layout-horizontal-icon::before{left:1px!important}
 .group-layout-popover .layout-horizontal-icon::after{right:1px!important}
+
+/* The selected group becomes the active stacking context so its menus clear every image. */
+.canvas-node-layer>.canvas-group-frame.selected{
+  z-index:80!important
+}
+.canvas-node-layer>.canvas-group-frame.selected>.canvas-group-toolbar{
+  z-index:180!important
+}
+.canvas-node-layer>.canvas-group-frame.selected .group-color-popover,
+.canvas-node-layer>.canvas-group-frame.selected .group-layout-popover{
+  z-index:320!important
+}
+
+/* Horizontal layout squares match the 1.6px weight used by the grid icon. */
+.group-layout-popover .layout-horizontal-icon::before,
+.group-layout-popover .layout-horizontal-icon::after{
+  box-sizing:border-box!important;
+  border-width:1.6px!important
+}
+
+/* Main rail hover and selection use the product violet instead of legacy blue. */
+.rail-items>button:hover,
+.rail-items>button.active{
+  background:#f3f0ff!important;
+  color:#6755df!important
+}
+.rail-items>button:hover .nav-glyph>img,
+.rail-items>button.active .nav-glyph>img{
+  filter:brightness(0) saturate(100%) invert(39%) sepia(44%) saturate(1964%) hue-rotate(221deg)!important;
+  opacity:1!important
+}
+
+/* Past-conversation upload entry matches the brighter New Creation violet. */
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.generation-attachment-rail.count-0>.generation-add-image-card{
+  border-color:#cdbfff!important;
+  color:#8b68ff!important;
+  box-shadow:none!important
+}
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.generation-attachment-rail.count-0>.generation-add-image-card>.upload-card-picture-icon,
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.generation-attachment-rail.count-0>.generation-add-image-card>strong{
+  color:#8b68ff!important
+}
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.generation-attachment-rail.count-0>.generation-add-image-card>.upload-card-picture-icon .picture-fill,
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.generation-attachment-rail.count-0>.generation-add-image-card>.upload-card-picture-icon .badge{
+  fill:#8b68ff!important
+}
