@@ -46,7 +46,7 @@ async function generate(request, env) {
     method: "POST",
     headers: { "Authorization": `Bearer ${env.ARK_API_KEY}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: env.SEEDREAM_MODEL || "doubao-seedream-5-0-lite",
+      model: env.SEEDREAM_MODEL || "doubao-seedream-5-0-260128",
       prompt,
       size: input.size || "2K",
       response_format: "url",
@@ -59,7 +59,7 @@ async function generate(request, env) {
   if (!upstream.ok) return json({ error: result?.error?.message || result?.message || "模型生成失败" }, upstream.status, origin);
   const images = Array.isArray(result.data) ? result.data.map((item) => item?.url).filter(Boolean).slice(0, 4) : [];
   if (!images.length) return json({ error: "模型没有返回图片" }, 502, origin);
-  return json({ images, model: env.SEEDREAM_MODEL || "doubao-seedream-5-0-lite" }, 200, origin);
+  return json({ images, model: env.SEEDREAM_MODEL || "doubao-seedream-5-0-260128" }, 200, origin);
 }
 
 export default {
