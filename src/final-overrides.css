@@ -16333,3 +16333,11 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   transform:scale(1.16)!important;
   transform-origin:center center!important
 }
+
+/* New Creation popovers clear the footer controls with one consistent gap. */
+.new-creation-page>.new-creation-composer>.model-selector-popover,
+.new-creation-page>.new-creation-composer>.size-selector-popover,
+.new-creation-page>.new-creation-composer>.home-asset-popover{
+  top:auto!important;
+  bottom:66px!important
+}
