@@ -16057,3 +16057,78 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   from{opacity:0;transform:translateY(7px) scale(.98)}
   to{opacity:1;transform:translateY(0) scale(1)}
 }
+
+/* Refined menu density: compact resolution choices without changing their state language. */
+.figma-tool-modal.modal-增强清晰度 .resolution-popover>button{
+  height:48px!important;
+  min-height:48px!important;
+  border:1px solid transparent!important
+}
+.figma-tool-modal.modal-增强清晰度 .resolution-popover>button:hover,
+.figma-tool-modal.modal-增强清晰度 .resolution-popover>button.active,
+.figma-tool-modal.modal-增强清晰度 .resolution-popover>button[aria-selected="true"]{
+  border-color:#8a67f4!important
+}
+
+/* Strength choices are borderless at rest; violet appears only through interaction. */
+.figma-tool-modal.modal-增强清晰度 .detail-popover>button{
+  border-color:transparent!important
+}
+.figma-tool-modal.modal-增强清晰度 .detail-popover>button:hover,
+.figma-tool-modal.modal-增强清晰度 .detail-popover>button.active,
+.figma-tool-modal.modal-增强清晰度 .detail-popover>button[aria-selected="true"]{
+  border-color:#8a67f4!important
+}
+
+/* Workbench, New Creation and conversation size panels share one shorter rhythm. */
+.studio-page .size-selector-popover,
+.new-creation-page>.new-creation-composer .size-selector-popover,
+.generation-page>.generation-composer .size-selector-popover{
+  height:282px!important;
+  padding:10px 14px!important
+}
+.studio-page .size-selector-popover>strong,
+.new-creation-page .size-selector-popover>strong,
+.generation-page .size-selector-popover>strong{margin-bottom:3px!important}
+.studio-page .size-selector-popover>.size-quality-label,
+.studio-page .size-selector-popover>.size-section-label,
+.studio-page .size-selector-popover>small,
+.new-creation-page .size-selector-popover>.size-quality-label,
+.new-creation-page .size-selector-popover>.size-section-label,
+.new-creation-page .size-selector-popover>small,
+.generation-page .size-selector-popover>.size-quality-label,
+.generation-page .size-selector-popover>.size-section-label,
+.generation-page .size-selector-popover>small{margin-bottom:3px!important}
+.studio-page .size-selector-popover .size-quality,
+.new-creation-page .size-selector-popover .size-quality,
+.generation-page .size-selector-popover .size-quality{height:34px!important;margin-bottom:6px!important}
+.studio-page .size-selector-popover .size-quality>button,
+.new-creation-page .size-selector-popover .size-quality>button,
+.generation-page .size-selector-popover .size-quality>button{height:34px!important}
+.studio-page .size-selector-popover .size-fields,
+.new-creation-page .size-selector-popover .size-fields,
+.generation-page .size-selector-popover .size-fields{height:36px!important;margin-bottom:6px!important}
+.studio-page .size-selector-popover .ratio-grid,
+.new-creation-page .size-selector-popover .ratio-grid,
+.generation-page .size-selector-popover .ratio-grid{
+  height:82px!important;
+  grid-template-rows:repeat(2,38px)!important;
+  gap:6px!important
+}
+.studio-page .size-selector-popover .ratio-grid>button,
+.new-creation-page .size-selector-popover .ratio-grid>button,
+.generation-page .size-selector-popover .ratio-grid>button{height:38px!important}
+
+/* Canvas footer icons follow the violet hover/selected state of their buttons. */
+.canvas-node-prompt-footer>div>button:hover>img,
+.canvas-node-prompt-footer>div>button.active>img{
+  filter:brightness(0) saturate(100%) invert(39%) sepia(44%) saturate(1964%) hue-rotate(221deg)!important;
+  opacity:1!important
+}
+
+/* Canvas size panel remains slightly roomier than the page-level pickers. */
+.canvas-node-prompt>.canvas-size-popover{
+  height:270px!important;
+  padding:10px 12px!important;
+  gap:4px!important
+}
