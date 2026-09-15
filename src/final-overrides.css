@@ -1813,6 +1813,22 @@
   color: #d14343;
   font-size: 13px;
 }
+
+.asset-cloud-status{
+  position:fixed;
+  left:50%;
+  top:74px;
+  z-index:120;
+  transform:translateX(-50%);
+  padding:8px 16px;
+  border:1px solid #b9a7ff;
+  border-radius:18px;
+  background:#f5f1ff;
+  color:#6750c8;
+  font-size:13px;
+  box-shadow:0 6px 18px rgba(104,78,205,.12);
+}
+.asset-page-figma.uploading .asset-upload-entry{opacity:.65;pointer-events:none}
 .generation-result-actions .action-more {
   width: 72px !important;
   padding: 0 !important;

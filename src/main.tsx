@@ -52,6 +52,18 @@ const samples = [
 
 const IMAGE_API_BASE = "https://dzyd-seedream-api.dzyd-create.workers.dev";
 
+async function compressAssetImage(file: File): Promise<Blob> {
+  if (file.size <= 2_000_000) return file;
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, 2400 / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+  canvas.getContext("2d")?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  return new Promise((resolve, reject) => canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("图片压缩失败")), "image/webp", .86));
+}
+
 async function requestGeneratedImages(prompt: string): Promise<string[]> {
   const response = await fetch(`${IMAGE_API_BASE}/generate`, {
     method: "POST",
@@ -6877,8 +6889,9 @@ function Assets({
   onBack: () => void;
   onSendToCanvas: (item: { name: string; url: string; category?: "assets" | "live" }) => void;
 }) {
+  type StoredAsset = { id?: string; name: string; url: string; category: "assets" | "live" };
   const fileRef = useRef<HTMLInputElement>(null);
-  const [uploaded, setUploaded] = useState<{ name: string; url: string; category: "assets" | "live" }[]>([
+  const [uploaded, setUploaded] = useState<StoredAsset[]>([
     { name: "孩子开学抢跑必备神器", url: "/assets/school-kickoff-poster.png", category: "assets" },
     { name: "达人合作蓝色背景", url: "/assets/live-collaboration-blue.png", category: "live" },
   ]);
@@ -6894,13 +6907,15 @@ function Assets({
   const [addOpen, setAddOpen] = useState(false);
   const [folderMenu, setFolderMenu] = useState(false);
   const [assetMoreUrl, setAssetMoreUrl] = useState<string | null>(null);
-  const [assetContext, setAssetContext] = useState<{ x: number; y: number; item: { name: string; url: string; category: "assets" | "live" } } | null>(null);
+  const [assetContext, setAssetContext] = useState<{ x: number; y: number; item: StoredAsset } | null>(null);
   const [assetZoom, setAssetZoom] = useState(42);
   const [assetSearchOpen, setAssetSearchOpen] = useState(false);
   const [assetQuery, setAssetQuery] = useState("");
   const [assetBatch, setAssetBatch] = useState(false);
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
   const [assetTrashOpen, setAssetTrashOpen] = useState(false);
+  const [assetUploading, setAssetUploading] = useState(false);
+  const [assetUploadMessage, setAssetUploadMessage] = useState("");
   const [recycledAssets, setRecycledAssets] = useState<Array<{ kind: "subject" | "upload"; name: string; url: string; category?: "assets" | "live" }>>([]);
   useEffect(() => {
     const dismiss = () => {
@@ -6911,19 +6926,74 @@ function Assets({
     document.addEventListener("dismiss-popovers", dismiss);
     return () => document.removeEventListener("dismiss-popovers", dismiss);
   }, []);
+  useEffect(() => {
+    fetch(`${IMAGE_API_BASE}/assets`)
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error("素材加载失败")))
+      .then((payload) => setUploaded((current) => [
+        ...(payload.assets || []).map((item: StoredAsset) => ({ ...item, category: item.category === "live" ? "live" as const : "assets" as const })),
+        ...current.filter((item) => !item.id),
+      ]))
+      .catch(() => setAssetUploadMessage("云端素材暂时无法加载"));
+  }, []);
   const addFolder = () => {
     setFolders([...folders, `新建文件夹 ${folders.length + 1}`]);
     setTab("assets");
     setAddOpen(false);
     setFolderMenu(false);
   };
-  const uploadFile = (file?: File) => {
-    if (file)
-      setUploaded([
-        { name: file.name, url: URL.createObjectURL(file), category: tab === "live" ? "live" : "assets" },
-        ...uploaded,
-      ]);
-    setAddOpen(false);
+  const adminPassword = () => {
+    const saved = sessionStorage.getItem("asset-admin-password");
+    if (saved) return saved;
+    const entered = window.prompt("请输入素材库管理员密码") || "";
+    if (entered) sessionStorage.setItem("asset-admin-password", entered);
+    return entered;
+  };
+  const uploadFiles = async (files: FileList | File[]) => {
+    const images = Array.from(files).filter((file) => file.type.startsWith("image/"));
+    if (!images.length) return;
+    const password = adminPassword();
+    if (!password) return;
+    setAssetUploading(true);
+    setAssetUploadMessage(`正在上传 0/${images.length}`);
+    let completed = 0;
+    try {
+      for (const file of images) {
+        const body = await compressAssetImage(file);
+        const response = await fetch(`${IMAGE_API_BASE}/assets`, {
+          method: "POST",
+          headers: {
+            "Content-Type": body.type || file.type,
+            "X-Admin-Password": password,
+            "X-File-Name": encodeURIComponent(file.name),
+            "X-Asset-Category": tab === "live" ? "live" : "assets",
+          },
+          body,
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          if (response.status === 401) sessionStorage.removeItem("asset-admin-password");
+          throw new Error(payload.error || `${file.name} 上传失败`);
+        }
+        setUploaded((items) => [{ ...payload.asset, category: payload.asset.category === "live" ? "live" : "assets" }, ...items]);
+        completed += 1;
+        setAssetUploadMessage(`正在上传 ${completed}/${images.length}`);
+      }
+      setAssetUploadMessage(`已上传 ${completed} 张图片`);
+    } catch (error) {
+      setAssetUploadMessage(error instanceof Error ? error.message : "上传失败");
+    } finally {
+      setAssetUploading(false);
+      setAddOpen(false);
+    }
+  };
+  const deleteStoredAsset = async (item: StoredAsset) => {
+    if (!item.id) { setUploaded((items) => items.filter((value) => value.url !== item.url)); return; }
+    const password = adminPassword();
+    if (!password) return;
+    const response = await fetch(`${IMAGE_API_BASE}/assets/${encodeURIComponent(item.id)}`, { method: "DELETE", headers: { "X-Admin-Password": password } });
+    if (response.status === 401) sessionStorage.removeItem("asset-admin-password");
+    if (!response.ok) { const payload = await response.json().catch(() => ({})); window.alert(payload.error || "删除失败"); return; }
+    setUploaded((items) => items.filter((value) => value.url !== item.url));
   };
   const normalizedAssetQuery = assetQuery.trim().toLowerCase();
   const activeAssets = uploaded
@@ -6934,7 +7004,7 @@ function Assets({
     .filter((item) => item.name.toLowerCase().includes(normalizedAssetQuery));
   const empty = activeAssets.length === 0;
   return (
-    <section className="asset-page-figma">
+    <section className={`asset-page-figma${assetUploading ? " uploading" : ""}`} onDragOver={(event) => { if (event.dataTransfer.types.includes("Files")) event.preventDefault(); }} onDrop={(event) => { if (!event.dataTransfer.files.length) return; event.preventDefault(); uploadFiles(event.dataTransfer.files); }}>
       <header className="asset-page-header">
         <div>
           <button
@@ -7030,6 +7100,7 @@ function Assets({
           直播间
         </button>
       </nav>
+      {assetUploadMessage && <div className="asset-cloud-status" role="status">{assetUploadMessage}</div>}
       {folderMenu && (
         <div className="asset-folder-menu">
           <button className="selected" onClick={addFolder}>
@@ -7119,7 +7190,7 @@ function Assets({
                 {assetMoreUrl === item.url && <div className="card-more-menu" onClick={(event) => event.stopPropagation()}>
                   <button onClick={() => { setAssetMoreUrl(null); onSendToCanvas(item); }}>打开</button>
                   <button onClick={() => { const name = window.prompt("请输入新名称", item.name)?.trim(); if (name) setUploaded((items) => items.map((value) => value.url === item.url ? { ...value, name } : value)); setAssetMoreUrl(null); }}>重命名</button>
-                  <button className="danger" onClick={() => { setUploaded((items) => items.filter((value) => value.url !== item.url)); setAssetMoreUrl(null); }}>删除项目</button>
+                  <button className="danger" onClick={() => { void deleteStoredAsset(item); setAssetMoreUrl(null); }}>删除项目</button>
                 </div>}
               </div>
             </div>
@@ -7130,14 +7201,15 @@ function Assets({
         <button className="primary-action" onClick={()=>onSendToCanvas(assetContext.item)}><span>＋</span>发送到画布</button>
         <button onClick={()=>{const name=window.prompt("请输入新名称",assetContext.item.name)?.trim();if(name)setUploaded((items)=>items.map((item)=>item.url===assetContext.item.url?{...item,name}:item));setAssetContext(null);}}><span>✎</span>重命名</button>
         <button onClick={()=>{const link=document.createElement("a");link.href=assetContext.item.url;link.download=`${assetContext.item.name}.png`;link.click();setAssetContext(null);}}><span>⇩</span>下载</button>
-        <button onClick={()=>{setUploaded((items)=>items.filter((item)=>item.url!==assetContext.item.url));setAssetContext(null);}}><span>♙</span>删除</button>
+        <button onClick={()=>{void deleteStoredAsset(assetContext.item);setAssetContext(null);}}><span>♙</span>删除</button>
       </div>}
       <input
         ref={fileRef}
         hidden
+        multiple
         type="file"
         accept="image/*"
-        onChange={(e) => uploadFile(e.target.files?.[0])}
+        onChange={(e) => { if (e.target.files?.length) void uploadFiles(e.target.files); e.currentTarget.value = ""; }}
       />
       <input ref={personFile} hidden type="file" accept="image/*" onChange={(event) => { const file = event.target.files?.[0]; if (file) setUploadedPeople((items) => [{ name: file.name.replace(/\.[^.]+$/, ""), url: URL.createObjectURL(file) }, ...items]); event.currentTarget.value = ""; }} />
       {subjectOpen && (

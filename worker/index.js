@@ -7,8 +7,8 @@ const ALLOWED_ORIGINS = new Set([
 function headers(origin) {
   return {
     "Access-Control-Allow-Origin": ALLOWED_ORIGINS.has(origin) ? origin : "https://dzyd-create.github.io",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, X-Admin-Password, X-File-Name, X-Asset-Category",
     "Access-Control-Max-Age": "86400",
     "Content-Type": "application/json; charset=utf-8",
     "Vary": "Origin",
@@ -25,6 +25,57 @@ export default {
     const origin = request.headers.get("Origin") || "";
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: headers(origin) });
     if (url.pathname === "/health") return json({ ok: true }, 200, origin);
+    if (url.pathname === "/assets" && request.method === "GET") {
+      const assets = [];
+      let cursor;
+      do {
+        const page = await env.ASSETS.list({ prefix: "asset:", cursor, limit: 1000 });
+        assets.push(...page.keys.map((entry) => ({
+          id: entry.name,
+          name: entry.metadata?.name || "未命名图片",
+          category: entry.metadata?.category || "assets",
+          size: Number(entry.metadata?.size || 0),
+          createdAt: entry.metadata?.createdAt || "",
+          url: `${url.origin}/asset/${encodeURIComponent(entry.name)}`,
+        })));
+        cursor = page.list_complete ? undefined : page.cursor;
+      } while (cursor);
+      assets.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+      return json({ assets, usedBytes: assets.reduce((total, item) => total + item.size, 0), limitBytes: 800_000_000 }, 200, origin);
+    }
+    if (url.pathname.startsWith("/asset/") && request.method === "GET") {
+      const key = decodeURIComponent(url.pathname.slice(7));
+      const stored = await env.ASSETS.getWithMetadata(key, "arrayBuffer");
+      if (!stored.value) return json({ error: "素材不存在" }, 404, origin);
+      return new Response(stored.value, {
+        headers: {
+          ...headers(origin),
+          "Content-Type": stored.metadata?.type || "image/jpeg",
+          "Cache-Control": "public, max-age=31536000, immutable",
+        },
+      });
+    }
+    if (url.pathname === "/assets" && request.method === "POST") {
+      if (!env.ASSET_ADMIN_PASSWORD || request.headers.get("X-Admin-Password") !== env.ASSET_ADMIN_PASSWORD) return json({ error: "管理员密码不正确" }, 401, origin);
+      const body = await request.arrayBuffer();
+      if (!body.byteLength || body.byteLength > 10_000_000) return json({ error: "单张图片必须小于 10 MB" }, 413, origin);
+      const listing = await env.ASSETS.list({ prefix: "asset:", limit: 1000 });
+      const usedBytes = listing.keys.reduce((total, entry) => total + Number(entry.metadata?.size || 0), 0);
+      if (usedBytes + body.byteLength > 800_000_000) return json({ error: "素材库已达到 800 MB 免费容量上限" }, 507, origin);
+      const name = decodeURIComponent(request.headers.get("X-File-Name") || "未命名图片").slice(0, 120);
+      const category = request.headers.get("X-Asset-Category") === "live" ? "live" : "assets";
+      const type = request.headers.get("Content-Type") || "image/jpeg";
+      if (!type.startsWith("image/")) return json({ error: "只允许上传图片" }, 415, origin);
+      const key = `asset:${Date.now()}:${crypto.randomUUID()}`;
+      const metadata = { name, category, type, size: body.byteLength, createdAt: new Date().toISOString() };
+      await env.ASSETS.put(key, body, { metadata });
+      return json({ asset: { id: key, name, category, size: body.byteLength, createdAt: metadata.createdAt, url: `${url.origin}/asset/${encodeURIComponent(key)}` } }, 201, origin);
+    }
+    if (url.pathname.startsWith("/assets/") && request.method === "DELETE") {
+      if (!env.ASSET_ADMIN_PASSWORD || request.headers.get("X-Admin-Password") !== env.ASSET_ADMIN_PASSWORD) return json({ error: "管理员密码不正确" }, 401, origin);
+      await env.ASSETS.delete(decodeURIComponent(url.pathname.slice(8)));
+      return json({ ok: true }, 200, origin);
+    }
     if (url.pathname !== "/generate" || request.method !== "POST") return json({ error: "Not found" }, 404, origin);
     if (!ALLOWED_ORIGINS.has(origin)) return json({ error: "不允许的请求来源" }, 403, origin);
     if (!env.ARK_API_KEY) return json({ error: "服务端密钥未配置" }, 503, origin);

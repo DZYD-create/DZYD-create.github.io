@@ -3,5 +3,11 @@
   "name": "dzyd-seedream-api",
   "main": "index.js",
   "compatibility_date": "2026-09-15",
-  "workers_dev": true
+  "workers_dev": true,
+  "kv_namespaces": [
+    {
+      "binding": "ASSETS",
+      "id": "1d4de16cb9cf48eab28ecadd191eeea1"
+    }
+  ]
 }
