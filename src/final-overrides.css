@@ -16290,3 +16290,40 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
 .canvas-node-layer>.canvas-group-frame.selected .group-layout-popover{
   pointer-events:auto!important
 }
+
+/* Restore the original overlapping diamonds, aligned on one horizontal baseline. */
+.group-layout-popover .layout-horizontal-icon::before,
+.group-layout-popover .layout-horizontal-icon::after{
+  top:7px!important;
+  width:9px!important;
+  height:9px!important;
+  border:1.6px solid #17191f!important;
+  border-radius:3px!important;
+  transform:rotate(35deg)!important
+}
+.group-layout-popover .layout-horizontal-icon::before{
+  left:4px!important;
+  background:#fff!important
+}
+.group-layout-popover .layout-horizontal-icon::after{
+  right:4px!important;
+  background:transparent!important
+}
+
+/* Specificity guard: replace the legacy blue non-active hover container. */
+.rail .rail-items>button:not(.active):hover,
+.rail .rail-items>button.active{
+  background:#eee9ff!important;
+  background-color:#eee9ff!important;
+  color:#6755df!important;
+  border-color:#d6c9ff!important;
+  box-shadow:inset 0 0 0 1px rgba(138,103,244,.12)!important
+}
+.rail .rail-items>button:not(.active):hover>span:last-child,
+.rail .rail-items>button.active>span:last-child{
+  color:#6755df!important
+}
+.rail .rail-items>button:not(.active):hover .nav-glyph>img,
+.rail .rail-items>button.active .nav-glyph>img{
+  filter:brightness(0) saturate(100%) invert(39%) sepia(44%) saturate(1964%) hue-rotate(221deg)!important
+}
