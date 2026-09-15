@@ -2847,6 +2847,14 @@ function Canvas({
           setFocusTrailingText(cloud.trailingText || {});
           setCanvasGroups(cloud.groups || []);
           setCanvasComments(cloud.comments || []);
+        } else {
+          const initialSnapshot = {
+            projectTitle, folderNames, folderColors, nodes: canvasNodes, links: canvasLinks,
+            zoom: canvasZoom, promptModel, promptQuality, promptRatio,
+            promptTexts: canvasPromptTexts, toolPromptText: canvasToolPromptText,
+            trailingText: focusTrailingText, groups: canvasGroups, comments: canvasComments,
+          };
+          fetch(`${IMAGE_API_BASE}/workspace/dzyd-canvas-workspace`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(initialSnapshot) }).catch(() => undefined);
         }
         canvasCloudReady.current = true;
       })
