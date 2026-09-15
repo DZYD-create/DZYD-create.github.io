@@ -670,20 +670,18 @@ function GenerationPage({
   }, [generating]);
   useEffect(() => {
     if (!generating || generatedImages[resultRound] || apiLoadingRound === resultRound) return;
-    let cancelled = false;
     setApiLoadingRound(resultRound);
     setApiError("");
     requestGeneratedImages(roundPrompts[resultRound] || prompt)
       .then((images) => {
-        if (!cancelled) setGeneratedImages((current) => ({ ...current, [resultRound]: images }));
+        setGeneratedImages((current) => ({ ...current, [resultRound]: images }));
       })
       .catch((error) => {
-        if (!cancelled) setApiError(error instanceof Error ? error.message : "图片生成失败");
+        setApiError(error instanceof Error ? error.message : "图片生成失败");
       })
       .finally(() => {
-        if (!cancelled) setApiLoadingRound(null);
+        setApiLoadingRound(null);
       });
-    return () => { cancelled = true; };
   }, [generating, resultRound, roundPrompts, prompt, generatedImages]);
   return (
     <section className="generation-page">
