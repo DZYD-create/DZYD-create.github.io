@@ -81,6 +81,26 @@ async function compressAssetImage(file: File): Promise<Blob> {
   return new Promise((resolve, reject) => canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("图片压缩失败")), "image/webp", .86));
 }
 
+async function fileToPersistentImage(file: File): Promise<string> {
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, 1200 / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+    canvas.getContext("2d")?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close();
+    return canvas.toDataURL("image/webp", .72);
+  } catch {
+    return await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => reject(new Error("图片读取失败"));
+      reader.readAsDataURL(file);
+    });
+  }
+}
+
 async function requestGeneratedImages(prompt: string): Promise<string[]> {
   const response = await fetch(`${IMAGE_API_BASE}/generate`, {
     method: "POST",
@@ -250,9 +270,9 @@ function App() {
     localStorage.setItem("dzyd-conversations", JSON.stringify(conversations));
   }, [conversations]);
 
-  const upload = (file?: File) => {
+  const upload = async (file?: File) => {
     if (!file) return;
-    const url = URL.createObjectURL(file);
+    const url = await fileToPersistentImage(file);
     setCanvasImage(url);
   };
 
@@ -649,11 +669,12 @@ function GenerationPage({
   const [roundPrompts, setRoundPrompts] = usePersistentState("dzyd-round-prompts", [
     prompt || "生成夏日新品直播海报，突出新品卖点，风格清爽明亮。",
   ]);
-  const addGenerationImages = (files: FileList | File[]) => {
+  const addGenerationImages = async (files: FileList | File[]) => {
     const images = Array.from(files).filter((file) => file.type.startsWith("image/"));
+    const persistentImages = await Promise.all(images.map(async (file) => ({ name: file.name, url: await fileToPersistentImage(file) })));
     setAttachments((current) => [
       ...current,
-      ...images.slice(0, Math.max(0, 5 - current.length)).map((file) => ({ name: file.name, url: URL.createObjectURL(file) })),
+      ...persistentImages.slice(0, Math.max(0, 5 - current.length)),
     ].slice(0, 5));
     setUploadOpen(false);
   };
@@ -1161,14 +1182,15 @@ function NewCreationPage({
   const [sizeOpen, setSizeOpen] = useState(false);
   const [assetsOpen, setAssetsOpen] = useState(false);
   const [invocationOpen, setInvocationOpen] = useState(false);
-  const [attachments, setAttachments] = useState<Array<{ name: string; url: string }>>([]);
+  const [attachments, setAttachments] = usePersistentState<Array<{ name: string; url: string }>>("dzyd-new-creation-attachments", []);
   const [greetingLook, setGreetingLook] = useState({ x: 0, y: 0 });
   const fileRef = useRef<HTMLInputElement>(null);
-  const addNewCreationImages = (files: FileList | File[]) => {
+  const addNewCreationImages = async (files: FileList | File[]) => {
     const images = Array.from(files).filter((file) => file.type.startsWith("image/"));
+    const persistentImages = await Promise.all(images.map(async (file) => ({ name: file.name, url: await fileToPersistentImage(file) })));
     setAttachments((current) => [
       ...current,
-      ...images.slice(0, Math.max(0, 5 - current.length)).map((file) => ({ name: file.name, url: URL.createObjectURL(file) })),
+      ...persistentImages.slice(0, Math.max(0, 5 - current.length)),
     ].slice(0, 5));
     setUploadOpen(false);
   };
@@ -3900,14 +3922,15 @@ function Canvas({
             setSelection(null);
           }
         }}
-        onDrop={(event) => {
+        onDrop={async (event) => {
           const droppedImages = Array.from(event.dataTransfer.files).filter((file) => file.type.startsWith("image/"));
           if (droppedImages.length) {
             event.preventDefault();
             const point = getCanvasPoint(event.clientX, event.clientY);
+            const persistentUrls = await Promise.all(droppedImages.map(fileToPersistentImage));
             const created = droppedImages.map((file, index) => ({
               id: Date.now() + index,
-              url: URL.createObjectURL(file),
+              url: persistentUrls[index],
               name: file.name,
               x: point.x - CANVAS_WORLD_CENTER + index * 36,
               y: point.y - CANVAS_WORLD_CENTER + index * 36,
@@ -5650,16 +5673,17 @@ function Canvas({
         multiple
         type="file"
         accept="image/*"
-        onChange={(e) => {
+        onChange={async (e) => {
           const files = Array.from(e.target.files || []);
           if (!files.length) return;
+          const persistentUrls = await Promise.all(files.map(fileToPersistentImage));
           const stamp = Date.now();
           const center = getViewportCenterOffset();
           let uploadedPrimaryId: number | null = null;
           if (uploadTargetNodeId !== null) {
             uploadedPrimaryId = uploadTargetNodeId;
             const first = files[0],
-              url = URL.createObjectURL(first);
+              url = persistentUrls[0];
             setCanvasNodes((nodes) =>
               nodes.map((node) =>
                 node.id === uploadTargetNodeId
@@ -5680,7 +5704,7 @@ function Canvas({
                 .slice(1)
                 .map((file, i) => ({
                   id: stamp + i,
-                  url: URL.createObjectURL(file),
+                  url: persistentUrls[i + 1],
                   x: center.x + (i + 1) * 390,
                   y: center.y,
                   name:
@@ -5693,7 +5717,7 @@ function Canvas({
           } else {
             const added = files.map((file, i) => ({
               id: stamp + i,
-              url: URL.createObjectURL(file),
+              url: persistentUrls[i],
               x: center.x + i * 390,
               y: center.y,
               name:
@@ -7270,7 +7294,7 @@ function Assets({
         accept="image/*"
         onChange={(e) => { if (e.target.files?.length) void uploadFiles(e.target.files); e.currentTarget.value = ""; }}
       />
-      <input ref={personFile} hidden type="file" accept="image/*" onChange={(event) => { const file = event.target.files?.[0]; if (file) setUploadedPeople((items) => [{ name: file.name.replace(/\.[^.]+$/, ""), url: URL.createObjectURL(file) }, ...items]); event.currentTarget.value = ""; }} />
+      <input ref={personFile} hidden type="file" accept="image/*" onChange={async (event) => { const file = event.target.files?.[0]; if (file) { const url = await fileToPersistentImage(file); setUploadedPeople((items) => [{ name: file.name.replace(/\.[^.]+$/, ""), url }, ...items]); } event.currentTarget.value = ""; }} />
       {subjectOpen && (
         <div className="history-subject-backdrop">
           <section className="history-subject-dialog" role="dialog" aria-modal="true" aria-labelledby="asset-subject-title">
