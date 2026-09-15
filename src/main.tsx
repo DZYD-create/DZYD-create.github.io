@@ -61,6 +61,14 @@ function readSaved<T>(key: string, fallback: T): T {
   }
 }
 
+function usePersistentState<T>(key: string, fallback: T | (() => T)) {
+  const [value, setValue] = useState<T>(() => readSaved(key, typeof fallback === "function" ? (fallback as () => T)() : fallback));
+  useEffect(() => {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* Large image blobs are kept by the cloud asset store. */ }
+  }, [key, value]);
+  return [value, setValue] as const;
+}
+
 async function compressAssetImage(file: File): Promise<Blob> {
   if (file.size <= 2_000_000) return file;
   const bitmap = await createImageBitmap(file);
@@ -128,15 +136,15 @@ function WhiteDateCalendar({ value, minDate, onSelect }: { value: string; minDat
 }
 
 function App() {
-  const [section, setSection] = useState<Section>("studio");
-  const [prompt, setPrompt] = useState("");
-  const [skill, setSkill] = useState("");
+  const [section, setSection] = usePersistentState<Section>("dzyd-section", "studio");
+  const [prompt, setPrompt] = usePersistentState("dzyd-prompt", "");
+  const [skill, setSkill] = usePersistentState("dzyd-skill", "");
   const [generating, setGenerating] = useState(false);
   const [preparing, setPreparing] = useState(false);
-  const [generated, setGenerated] = useState(false);
-  const [studioView, setStudioView] = useState<
+  const [generated, setGenerated] = usePersistentState("dzyd-generated", false);
+  const [studioView, setStudioView] = usePersistentState<
     "home" | "new" | "generation" | "detail"
-  >("home");
+  >("dzyd-studio-view", "home");
   const [selectedTemplate, setSelectedTemplate] = useState(0);
   const [templateDetailOpen, setTemplateDetailOpen] = useState(false);
   const [selectedTemplateModel, setSelectedTemplateModel] =
@@ -146,10 +154,10 @@ function App() {
   const [editing, setEditing] = useState(false);
   const [editorReturn, setEditorReturn] = useState<"studio" | "history">("studio");
   const [tool, setTool] = useState<EditorTool | null>(null);
-  const [editorFavorite, setEditorFavorite] = useState(false);
-  const [canvasImage, setCanvasImage] = useState<string | null>(null);
-  const [canvasImageName, setCanvasImageName] = useState("AI 视觉创作 · 未命名项目");
-  const [pendingCanvasAssets, setPendingCanvasAssets] = useState<Array<{ name: string; url: string }>>([]);
+  const [editorFavorite, setEditorFavorite] = usePersistentState("dzyd-editor-favorite", false);
+  const [canvasImage, setCanvasImage] = usePersistentState<string | null>("dzyd-canvas-image", null);
+  const [canvasImageName, setCanvasImageName] = usePersistentState("dzyd-canvas-image-name", "AI 视觉创作 · 未命名项目");
+  const [pendingCanvasAssets, setPendingCanvasAssets] = usePersistentState<Array<{ name: string; url: string }>>("dzyd-pending-canvas-assets", []);
   const [folders, setFolders] = useState<string[]>(() => readSaved("dzyd-folders", ["品牌素材", "产品图片"]));
   const [accountOpen, setAccountOpen] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
@@ -162,7 +170,7 @@ function App() {
     ["品牌活动视觉方案", "07月29日"],
     ["门店促销物料", "07月21日"],
   ]));
-  const [activeConversation, setActiveConversation] = useState<string | null>(null);
+  const [activeConversation, setActiveConversation] = usePersistentState<string | null>("dzyd-active-conversation", null);
   const generationTimer = useRef<number | null>(null);
   const preparationTimer = useRef<number | null>(null);
 
@@ -626,19 +634,19 @@ function GenerationPage({
   const [uploadOpen, setUploadOpen] = useState(false);
   const [assetsOpen, setAssetsOpen] = useState(false);
   const [invocationOpen, setInvocationOpen] = useState(false);
-  const [attachments, setAttachments] = useState<Array<{ name: string; url: string }>>([]);
+  const [attachments, setAttachments] = usePersistentState<Array<{ name: string; url: string }>>("dzyd-conversation-attachments", []);
   const generationFile = useRef<HTMLInputElement>(null);
   const composerInput = useRef<HTMLTextAreaElement>(null);
   const [progress, setProgress] = useState(generating ? 0 : 100);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteRound, setDeleteRound] = useState<number | null>(null);
   const [moreRound, setMoreRound] = useState<number | null>(null);
-  const [deletedRounds, setDeletedRounds] = useState<number[]>([]);
-  const [resultRound, setResultRound] = useState(0);
+  const [deletedRounds, setDeletedRounds] = usePersistentState<number[]>("dzyd-deleted-rounds", []);
+  const [resultRound, setResultRound] = usePersistentState("dzyd-result-round", 0);
   const [apiLoadingRound, setApiLoadingRound] = useState<number | null>(null);
   const [apiError, setApiError] = useState("");
-  const [generatedImages, setGeneratedImages] = useState<Record<number, string[]>>({});
-  const [roundPrompts, setRoundPrompts] = useState([
+  const [generatedImages, setGeneratedImages] = usePersistentState<Record<number, string[]>>("dzyd-generated-images", {});
+  const [roundPrompts, setRoundPrompts] = usePersistentState("dzyd-round-prompts", [
     prompt || "生成夏日新品直播海报，突出新品卖点，风格清爽明亮。",
   ]);
   const addGenerationImages = (files: FileList | File[]) => {
@@ -2484,6 +2492,7 @@ function Canvas({
 }) {
   const ref = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
+  const savedCanvas = useRef(readSaved<Record<string, any>>("dzyd-canvas-workspace", {})).current;
   const [mode, setMode] = useState<
     "focus" | "assets" | "folder" | "history" | "comments" | null
   >(null);
@@ -2517,16 +2526,16 @@ function Canvas({
   const [folderDone, setFolderDone] = useState(false);
   const [folderExpanded, setFolderExpanded] = useState(false);
   const [folderIndex, setFolderIndex] = useState(2);
-  const [projectTitle, setProjectTitle] = useState(canvasImageName || "AI 视觉创作 · 未命名项目");
+  const [projectTitle, setProjectTitle] = useState(savedCanvas.projectTitle || canvasImageName || "AI 视觉创作 · 未命名项目");
   const [folderName, setFolderName] = useState("");
-  const [folderNames, setFolderNames] = useState([
+  const [folderNames, setFolderNames] = useState<string[]>(savedCanvas.folderNames || [
     "项目名称1",
     "项目名称2",
     "项目名称3",
     "项目名称4",
     "项目名称5",
   ]);
-  const [folderColors, setFolderColors] = useState([
+  const [folderColors, setFolderColors] = useState<string[]>(savedCanvas.folderColors || [
     "hsl(348 100% 96%)",
     "hsl(28 100% 96%)",
     "hsl(52 100% 96%)",
@@ -2546,7 +2555,9 @@ function Canvas({
     height: number;
   } | null>(null);
   const [canvasNodes, setCanvasNodes] = useState<CanvasNode[]>(() =>
-    initialAssets.length
+    Array.isArray(savedCanvas.nodes) && savedCanvas.nodes.length
+      ? savedCanvas.nodes
+      : initialAssets.length
       ? initialAssets.map((asset,index)=>({id:index+1,url:asset.url,name:asset.name,x:(index-(initialAssets.length-1)/2)*390,y:0}))
       : canvasImage
         ? [{ id: 1, url: canvasImage, x: 0, y: 0, name: canvasImageName }]
@@ -2622,7 +2633,7 @@ function Canvas({
     startY: number;
     origins: Record<number, { x: number; y: number }>;
   } | null>(null);
-  const [canvasLinks, setCanvasLinks] = useState<CanvasLink[]>([]);
+  const [canvasLinks, setCanvasLinks] = useState<CanvasLink[]>(savedCanvas.links || []);
   const [hdProgress, setHdProgress] = useState<Record<number, number>>({});
   const [keywordPopoverNodeId, setKeywordPopoverNodeId] = useState<number | null>(null);
   const [copiedKeywordNodeId, setCopiedKeywordNodeId] = useState<number | null>(null);
@@ -2641,7 +2652,7 @@ function Canvas({
   const [selectedNodeIds, setSelectedNodeIds] = useState<number[]>([]);
   const [activeNodeId, setActiveNodeId] = useState<number | null>(null);
   const [cropClosing, setCropClosing] = useState(false);
-  const [canvasZoom, setCanvasZoom] = useState(75);
+  const [canvasZoom, setCanvasZoom] = useState(Number(savedCanvas.zoom) || 75);
   const zoomTargetRef = useRef(75);
   const zoomAppliedRef = useRef(75);
   const zoomFrameRef = useRef<number | null>(null);
@@ -2694,9 +2705,9 @@ function Canvas({
   const [promptPopover, setPromptPopover] = useState<"model" | "size" | null>(
     null,
   );
-  const [promptModel, setPromptModel] = useState("图片 4.5");
-  const [promptQuality, setPromptQuality] = useState("高");
-  const [promptRatio, setPromptRatio] = useState("9:16");
+  const [promptModel, setPromptModel] = useState(savedCanvas.promptModel || "图片 4.5");
+  const [promptQuality, setPromptQuality] = useState(savedCanvas.promptQuality || "高");
+  const [promptRatio, setPromptRatio] = useState(savedCanvas.promptRatio || "9:16");
   const [focusEdit, setFocusEdit] = useState(false);
   const [referenceSelect, setReferenceSelect] = useState(false);
   const [focusRecenterVisible, setFocusRecenterVisible] = useState(true);
@@ -2718,11 +2729,11 @@ function Canvas({
     }>
   >([]);
   const [activeFocusTagId, setActiveFocusTagId] = useState<number | null>(null);
-  const [canvasPromptTexts, setCanvasPromptTexts] = useState<Record<number, string>>({});
-  const [canvasToolPromptText, setCanvasToolPromptText] = useState("");
+  const [canvasPromptTexts, setCanvasPromptTexts] = useState<Record<number, string>>(savedCanvas.promptTexts || {});
+  const [canvasToolPromptText, setCanvasToolPromptText] = useState(savedCanvas.toolPromptText || "");
   const [focusTrailingText, setFocusTrailingText] = useState<
     Record<number, string>
-  >({});
+  >(savedCanvas.trailingText || {});
   const [uploadTargetNodeId, setUploadTargetNodeId] = useState<number | null>(
     null,
   );
@@ -2735,7 +2746,7 @@ function Canvas({
   } | null>(null);
   const [canvasGroups, setCanvasGroups] = useState<
     Array<{ id: number; nodeIds: number[]; name: string; color?: string; colorSolid?: string; layout?: "grid" | "horizontal" | "vertical" }>
-  >([]);
+  >(savedCanvas.groups || []);
   const [activeGroupId, setActiveGroupId] = useState<number | null>(null);
   const [contextGroupId, setContextGroupId] = useState<number | null>(null);
   const [groupNameEditing, setGroupNameEditing] = useState<number | null>(null);
@@ -2766,8 +2777,28 @@ function Canvas({
       viewportY: number;
       text: string;
     }>
-  >([]);
+  >(savedCanvas.comments || []);
   const [selectedCommentIds, setSelectedCommentIds] = useState<number[]>([]);
+  useEffect(() => {
+    try {
+      localStorage.setItem("dzyd-canvas-workspace", JSON.stringify({
+        projectTitle,
+        folderNames,
+        folderColors,
+        nodes: canvasNodes,
+        links: canvasLinks,
+        zoom: canvasZoom,
+        promptModel,
+        promptQuality,
+        promptRatio,
+        promptTexts: canvasPromptTexts,
+        toolPromptText: canvasToolPromptText,
+        trailingText: focusTrailingText,
+        groups: canvasGroups,
+        comments: canvasComments,
+      }));
+    } catch { /* Cloud-backed asset URLs keep the workspace snapshot small. */ }
+  }, [projectTitle, folderNames, folderColors, canvasNodes, canvasLinks, canvasZoom, promptModel, promptQuality, promptRatio, canvasPromptTexts, canvasToolPromptText, focusTrailingText, canvasGroups, canvasComments]);
   type CanvasUndoSnapshot = {
     nodes: CanvasNode[];
     links: CanvasLink[];
@@ -6246,17 +6277,17 @@ function AssetLibrary({
 }) {
   const [scope, setScope] = useState<"个人" | "团队">("团队");
   const [query, setQuery] = useState("");
-  const [teachers, setTeachers] = useState(["冯梦飞", "李颖", "憨爸", "临风"]);
+  const [teachers, setTeachers] = usePersistentState("dzyd-canvas-asset-teachers", ["冯梦飞", "李颖", "憨爸", "临风"]);
   const teacherImages = ["/assets/feng-mengfei.png", "/assets/teacher-liying.png", "/assets/teacher-hanba.png", "/assets/teacher-linfeng.png"];
-  const [folderNames, setFolderNames] = useState({ poster: "海报", teachers: "教师形象照", logo: "logo" });
-  const [posterName, setPosterName] = useState("孩子开学抢跑必备神器");
-  const [logoName, setLogoName] = useState("洋葱学园");
+  const [folderNames, setFolderNames] = usePersistentState("dzyd-canvas-asset-folder-names", { poster: "海报", teachers: "教师形象照", logo: "logo" });
+  const [posterName, setPosterName] = usePersistentState("dzyd-canvas-poster-name", "孩子开学抢跑必备神器");
+  const [logoName, setLogoName] = usePersistentState("dzyd-canvas-logo-name", "洋葱学园");
   const [collapsed, setCollapsed] = useState({ poster: false, teachers: false, logo: false });
   const [editing, setEditing] = useState<string | null>(null);
   const [folderMore, setFolderMore] = useState<string | null>(null);
   const [folderMenuPosition, setFolderMenuPosition] = useState({ left: 0, top: 0 });
-  const [hiddenFolders, setHiddenFolders] = useState<string[]>([]);
-  const [extraFolders, setExtraFolders] = useState<Array<{ id: string; name: string }>>([]);
+  const [hiddenFolders, setHiddenFolders] = usePersistentState<string[]>("dzyd-canvas-hidden-folders", []);
+  const [extraFolders, setExtraFolders] = usePersistentState<Array<{ id: string; name: string }>>("dzyd-canvas-extra-folders", []);
   const [customCollapsed, setCustomCollapsed] = useState<Record<string, boolean>>({});
   const [renameDraft, setRenameDraft] = useState("");
   const beginInlineRename = (key: string, current: string) => { setEditing(key); setRenameDraft(current); };
@@ -6514,14 +6545,14 @@ function History({
   const [batch, setBatch] = useState(false);
   const [historyMenu, setHistoryMenu] = useState<string | null>(null);
   const [selectedHistory, setSelectedHistory] = useState<string[]>([]);
-  const [favoriteHistory, setFavoriteHistory] = useState<string[]>([]);
-  const [cards, setCards] = useState([
+  const [favoriteHistory, setFavoriteHistory] = usePersistentState<string[]>("dzyd-history-favorites", []);
+  const [cards, setCards] = usePersistentState("dzyd-history-cards", [
     "上官",
     "李狗蛋",
     "田豆花",
   ]);
   const [trashOpen, setTrashOpen] = useState(false);
-  const [recycledCards, setRecycledCards] = useState<Array<{ name: string; image: string }>>([]);
+  const [recycledCards, setRecycledCards] = usePersistentState<Array<{ name: string; image: string }>>("dzyd-history-recycled", []);
   const [subjectOpen, setSubjectOpen] = useState(false);
   const [subjectClosing, setSubjectClosing] = useState(false);
   const [subjectName, setSubjectName] = useState("");
@@ -6920,8 +6951,8 @@ function Assets({
   const [subjectOpen, setSubjectOpen] = useState(false);
   const [subjectName, setSubjectName] = useState("");
   const [subjectImages, setSubjectImages] = useState<string[]>([]);
-  const [subjects, setSubjects] = useState(featuredPeople.map((person) => person.name));
-  const [uploadedPeople, setUploadedPeople] = useState<{ name: string; url: string }[]>([]);
+  const [subjects, setSubjects] = usePersistentState<string[]>("dzyd-asset-subjects", featuredPeople.map((person) => person.name));
+  const [uploadedPeople, setUploadedPeople] = usePersistentState<{ name: string; url: string }[]>("dzyd-uploaded-people", []);
   const [favoriteAssets, setFavoriteAssets] = useState<string[]>(() => readSaved("dzyd-favorite-assets", []));
   const subjectFile = useRef<HTMLInputElement>(null);
   const personFile = useRef<HTMLInputElement>(null);
@@ -6937,7 +6968,7 @@ function Assets({
   const [assetTrashOpen, setAssetTrashOpen] = useState(false);
   const [assetUploading, setAssetUploading] = useState(false);
   const [assetUploadMessage, setAssetUploadMessage] = useState("");
-  const [recycledAssets, setRecycledAssets] = useState<Array<{ kind: "subject" | "upload"; name: string; url: string; category?: "assets" | "live" }>>([]);
+  const [recycledAssets, setRecycledAssets] = usePersistentState<Array<{ kind: "subject" | "upload"; name: string; url: string; category?: "assets" | "live" }>>("dzyd-recycled-assets", []);
   useEffect(() => {
     const dismiss = () => {
       setAddOpen(false);
