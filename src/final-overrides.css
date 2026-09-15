@@ -16341,3 +16341,11 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   top:auto!important;
   bottom:66px!important
 }
+
+/* Past-conversation popovers align vertically with New Creation. */
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.model-selector-popover,
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.size-selector-popover,
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.home-asset-popover{
+  top:auto!important;
+  bottom:66px!important
+}
