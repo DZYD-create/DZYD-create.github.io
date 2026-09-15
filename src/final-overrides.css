@@ -16327,3 +16327,9 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
 .rail .rail-items>button.active .nav-glyph>img{
   filter:brightness(0) saturate(100%) invert(39%) sepia(44%) saturate(1964%) hue-rotate(221deg)!important
 }
+
+/* Optical sizing: the overlapping horizontal glyph matches the visible mass of vertical layout. */
+.group-layout-popover .layout-horizontal-icon{
+  transform:scale(1.16)!important;
+  transform-origin:center center!important
+}
