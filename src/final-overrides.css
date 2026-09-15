@@ -15982,3 +15982,78 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
 .figma-tool-modal.modal-图片尺寸 .ratio-list>button[aria-selected="true"]{
   border-color:#8a67f4!important;background:#f3f0ff!important;color:#6755df!important;box-shadow:none!important
 }
+
+/* Resolution choices mirror the strength menu exactly. */
+.figma-tool-modal.modal-增强清晰度 .resolution-popover>button:hover,
+.figma-tool-modal.modal-增强清晰度 .resolution-popover>button.active,
+.figma-tool-modal.modal-增强清晰度 .resolution-popover>button[aria-selected="true"]{
+  border:1px solid #8a67f4!important;
+  background:#f3f0ff!important;
+  color:#6755df!important;
+  box-shadow:none!important
+}
+
+/* Every size chooser shares a compact, evenly spaced vertical rhythm. */
+.studio-page .size-selector-popover,
+.new-creation-page>.new-creation-composer .size-selector-popover,
+.generation-page>.generation-composer .size-selector-popover{
+  box-sizing:border-box!important;
+  height:300px!important;
+  padding:12px 16px!important
+}
+.studio-page .size-selector-popover>strong,
+.new-creation-page .size-selector-popover>strong,
+.generation-page .size-selector-popover>strong{height:24px!important;margin:0 0 4px!important;line-height:24px!important}
+.studio-page .size-selector-popover>.size-quality-label,
+.studio-page .size-selector-popover>.size-section-label,
+.studio-page .size-selector-popover>small,
+.new-creation-page .size-selector-popover>.size-quality-label,
+.new-creation-page .size-selector-popover>.size-section-label,
+.new-creation-page .size-selector-popover>small,
+.generation-page .size-selector-popover>.size-quality-label,
+.generation-page .size-selector-popover>.size-section-label,
+.generation-page .size-selector-popover>small{height:18px!important;margin:0 0 4px!important;line-height:18px!important}
+.studio-page .size-selector-popover .size-quality,
+.new-creation-page .size-selector-popover .size-quality,
+.generation-page .size-selector-popover .size-quality{margin:0 0 7px!important}
+.studio-page .size-selector-popover .size-fields,
+.new-creation-page .size-selector-popover .size-fields,
+.generation-page .size-selector-popover .size-fields{margin:0 0 7px!important}
+.studio-page .size-selector-popover .ratio-grid,
+.new-creation-page .size-selector-popover .ratio-grid,
+.generation-page .size-selector-popover .ratio-grid{margin:0!important}
+
+/* Homepage composer buttons use one outlined violet hover/open state. */
+.studio-page .composer-actions .home-model-trigger:hover,
+.studio-page .composer-actions .home-model-trigger[aria-expanded="true"],
+.studio-page .composer-actions .home-size-trigger:hover,
+.studio-page .composer-actions .home-size-trigger[aria-expanded="true"],
+.studio-page .composer-actions .home-assets-trigger:hover,
+.studio-page .composer-actions .home-assets-trigger[aria-expanded="true"]{
+  border:1px solid #8a67f4!important;
+  background:#f3f0ff!important;
+  color:#6755df!important;
+  box-shadow:none!important
+}
+
+/* Canvas model and size panels open above their footer buttons, over the prompt. */
+.canvas-node-prompt>.canvas-shared-model-popover,
+.canvas-node-prompt>.canvas-size-popover{
+  top:auto!important;
+  bottom:48px!important;
+  z-index:120!important;
+  transform:none!important;
+  animation:canvas-pop-over .18s cubic-bezier(.16,1,.3,1) both!important
+}
+.canvas-node-prompt>.canvas-shared-model-popover{left:18px!important}
+.canvas-node-prompt>.canvas-size-popover{
+  left:138px!important;
+  box-sizing:border-box!important;
+  height:260px!important;
+  padding:8px 12px!important;
+  gap:3px!important
+}
+@keyframes canvas-pop-over{
+  from{opacity:0;transform:translateY(7px) scale(.98)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
