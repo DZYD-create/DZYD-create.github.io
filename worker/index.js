@@ -7,7 +7,7 @@ const ALLOWED_ORIGINS = new Set([
 function headers(origin) {
   return {
     "Access-Control-Allow-Origin": ALLOWED_ORIGINS.has(origin) ? origin : "https://dzyd-create.github.io",
-    "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, X-Admin-Password, X-File-Name, X-Asset-Category",
     "Access-Control-Max-Age": "86400",
     "Content-Type": "application/json; charset=utf-8",
@@ -25,6 +25,22 @@ export default {
     const origin = request.headers.get("Origin") || "";
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: headers(origin) });
     if (url.pathname === "/health") return json({ ok: true }, 200, origin);
+    if (url.pathname.startsWith("/workspace/") && request.method === "GET") {
+      const name = decodeURIComponent(url.pathname.slice(11)).replace(/[^a-zA-Z0-9._-]/g, "").slice(0, 80);
+      if (!name) return json({ error: "工作区名称无效" }, 400, origin);
+      const value = await env.ASSETS.get(`workspace:${name}`, "json");
+      return json({ value: value ?? null }, 200, origin);
+    }
+    if (url.pathname.startsWith("/workspace/") && request.method === "PUT") {
+      const name = decodeURIComponent(url.pathname.slice(11)).replace(/[^a-zA-Z0-9._-]/g, "").slice(0, 80);
+      if (!name) return json({ error: "工作区名称无效" }, 400, origin);
+      const raw = await request.text();
+      if (!raw || raw.length > 5_000_000) return json({ error: "工作区数据过大" }, 413, origin);
+      let value;
+      try { value = JSON.parse(raw); } catch { return json({ error: "工作区数据格式不正确" }, 400, origin); }
+      await env.ASSETS.put(`workspace:${name}`, JSON.stringify(value));
+      return json({ ok: true, updatedAt: new Date().toISOString() }, 200, origin);
+    }
     if (url.pathname === "/assets" && request.method === "GET") {
       const assets = [];
       let cursor;

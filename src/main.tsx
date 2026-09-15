@@ -63,8 +63,30 @@ function readSaved<T>(key: string, fallback: T): T {
 
 function usePersistentState<T>(key: string, fallback: T | (() => T)) {
   const [value, setValue] = useState<T>(() => readSaved(key, typeof fallback === "function" ? (fallback as () => T)() : fallback));
+  const cloudReady = useRef(false);
+  const cloudTimer = useRef<number | null>(null);
+  useEffect(() => {
+    let active = true;
+    fetch(`${IMAGE_API_BASE}/workspace/${encodeURIComponent(key)}`)
+      .then((response) => response.ok ? response.json() : Promise.reject())
+      .then((payload) => {
+        if (!active) return;
+        if (payload.value !== null && payload.value !== undefined) setValue(payload.value as T);
+        cloudReady.current = true;
+        if (payload.value === null || payload.value === undefined) {
+          fetch(`${IMAGE_API_BASE}/workspace/${encodeURIComponent(key)}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(value) }).catch(() => undefined);
+        }
+      })
+      .catch(() => { cloudReady.current = true; });
+    return () => { active = false; if (cloudTimer.current) window.clearTimeout(cloudTimer.current); };
+  }, [key]);
   useEffect(() => {
     try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* Large image blobs are kept by the cloud asset store. */ }
+    if (!cloudReady.current) return;
+    if (cloudTimer.current) window.clearTimeout(cloudTimer.current);
+    cloudTimer.current = window.setTimeout(() => {
+      fetch(`${IMAGE_API_BASE}/workspace/${encodeURIComponent(key)}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(value) }).catch(() => undefined);
+    }, 500);
   }, [key, value]);
   return [value, setValue] as const;
 }
@@ -2515,6 +2537,8 @@ function Canvas({
   const ref = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const savedCanvas = useRef(readSaved<Record<string, any>>("dzyd-canvas-workspace", {})).current;
+  const canvasCloudReady = useRef(false);
+  const canvasCloudTimer = useRef<number | null>(null);
   const [mode, setMode] = useState<
     "focus" | "assets" | "folder" | "history" | "comments" | null
   >(null);
@@ -2802,24 +2826,48 @@ function Canvas({
   >(savedCanvas.comments || []);
   const [selectedCommentIds, setSelectedCommentIds] = useState<number[]>([]);
   useEffect(() => {
+    let active = true;
+    fetch(`${IMAGE_API_BASE}/workspace/dzyd-canvas-workspace`)
+      .then((response) => response.ok ? response.json() : Promise.reject())
+      .then((payload) => {
+        if (!active) return;
+        const cloud = payload.value;
+        if (cloud) {
+          setProjectTitle(cloud.projectTitle || "AI 视觉创作 · 未命名项目");
+          setFolderNames(cloud.folderNames || folderNames);
+          setFolderColors(cloud.folderColors || folderColors);
+          setCanvasNodes(cloud.nodes || []);
+          setCanvasLinks(cloud.links || []);
+          setCanvasZoom(Number(cloud.zoom) || 75);
+          setPromptModel(cloud.promptModel || "图片 4.5");
+          setPromptQuality(cloud.promptQuality || "高");
+          setPromptRatio(cloud.promptRatio || "9:16");
+          setCanvasPromptTexts(cloud.promptTexts || {});
+          setCanvasToolPromptText(cloud.toolPromptText || "");
+          setFocusTrailingText(cloud.trailingText || {});
+          setCanvasGroups(cloud.groups || []);
+          setCanvasComments(cloud.comments || []);
+        }
+        canvasCloudReady.current = true;
+      })
+      .catch(() => { canvasCloudReady.current = true; });
+    return () => { active = false; if (canvasCloudTimer.current) window.clearTimeout(canvasCloudTimer.current); };
+  }, []);
+  useEffect(() => {
+    const snapshot = {
+      projectTitle, folderNames, folderColors, nodes: canvasNodes, links: canvasLinks,
+      zoom: canvasZoom, promptModel, promptQuality, promptRatio,
+      promptTexts: canvasPromptTexts, toolPromptText: canvasToolPromptText,
+      trailingText: focusTrailingText, groups: canvasGroups, comments: canvasComments,
+    };
     try {
-      localStorage.setItem("dzyd-canvas-workspace", JSON.stringify({
-        projectTitle,
-        folderNames,
-        folderColors,
-        nodes: canvasNodes,
-        links: canvasLinks,
-        zoom: canvasZoom,
-        promptModel,
-        promptQuality,
-        promptRatio,
-        promptTexts: canvasPromptTexts,
-        toolPromptText: canvasToolPromptText,
-        trailingText: focusTrailingText,
-        groups: canvasGroups,
-        comments: canvasComments,
-      }));
+      localStorage.setItem("dzyd-canvas-workspace", JSON.stringify(snapshot));
     } catch { /* Cloud-backed asset URLs keep the workspace snapshot small. */ }
+    if (!canvasCloudReady.current) return;
+    if (canvasCloudTimer.current) window.clearTimeout(canvasCloudTimer.current);
+    canvasCloudTimer.current = window.setTimeout(() => {
+      fetch(`${IMAGE_API_BASE}/workspace/dzyd-canvas-workspace`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(snapshot) }).catch(() => undefined);
+    }, 600);
   }, [projectTitle, folderNames, folderColors, canvasNodes, canvasLinks, canvasZoom, promptModel, promptQuality, promptRatio, canvasPromptTexts, canvasToolPromptText, focusTrailingText, canvasGroups, canvasComments]);
   type CanvasUndoSnapshot = {
     nodes: CanvasNode[];
