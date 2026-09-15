@@ -4941,7 +4941,7 @@ function Canvas({
         </nav>
         {addOpen && (
           <section
-            className="canvas-add-popover positioned"
+            className={`canvas-add-popover positioned${addCentered ? " centered" : ""}`}
             style={addCentered ? {
               left: "50%",
               top: "50%",

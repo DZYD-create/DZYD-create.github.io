@@ -14436,6 +14436,16 @@ button > img {
 
 /* Canvas rail labels slide out from behind the rail and vanish cleanly on leave. */
 .canvas-vertical-nav{overflow:visible!important}
+.figma-infinite-canvas>.canvas-add-popover.centered{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  right:auto!important;
+  bottom:auto!important;
+  margin:0!important;
+  transform:translate(-50%,-50%)!important;
+  z-index:90!important;
+}
 .canvas-vertical-nav>button:not([aria-label="账户"]){position:relative!important;overflow:visible!important;z-index:1!important}
 .canvas-vertical-nav>button:not([aria-label="账户"])::after{
   content:attr(aria-label);position:absolute;left:36px;top:50%;z-index:-1;
