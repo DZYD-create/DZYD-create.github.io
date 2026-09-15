@@ -52,6 +52,15 @@ const samples = [
 
 const IMAGE_API_BASE = "https://dzyd-seedream-api.dzyd-create.workers.dev";
 
+function readSaved<T>(key: string, fallback: T): T {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) as T : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 async function compressAssetImage(file: File): Promise<Blob> {
   if (file.size <= 2_000_000) return file;
   const bitmap = await createImageBitmap(file);
@@ -141,18 +150,18 @@ function App() {
   const [canvasImage, setCanvasImage] = useState<string | null>(null);
   const [canvasImageName, setCanvasImageName] = useState("AI 视觉创作 · 未命名项目");
   const [pendingCanvasAssets, setPendingCanvasAssets] = useState<Array<{ name: string; url: string }>>([]);
-  const [folders, setFolders] = useState(["品牌素材", "产品图片"]);
+  const [folders, setFolders] = useState<string[]>(() => readSaved("dzyd-folders", ["品牌素材", "产品图片"]));
   const [accountOpen, setAccountOpen] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
   const [themeMode, setThemeMode] = useState<ThemeMode>(() => (localStorage.getItem("studio-theme") as ThemeMode) || "light");
   const [systemDark, setSystemDark] = useState(() => window.matchMedia("(prefers-color-scheme: dark)").matches);
-  const [conversations, setConversations] = useState<Array<[string, string]>>([
+  const [conversations, setConversations] = useState<Array<[string, string]>>(() => readSaved("dzyd-conversations", [
     ["夏日新品直播海报", "今天 14:32"],
     ["课程价格板设计", "昨天 18:10"],
     ["新品种草海报", "08月02日"],
     ["品牌活动视觉方案", "07月29日"],
     ["门店促销物料", "07月21日"],
-  ]);
+  ]));
   const [activeConversation, setActiveConversation] = useState<string | null>(null);
   const generationTimer = useRef<number | null>(null);
   const preparationTimer = useRef<number | null>(null);
@@ -224,6 +233,14 @@ function App() {
   useEffect(() => {
     localStorage.setItem("studio-theme", themeMode);
   }, [themeMode]);
+
+  useEffect(() => {
+    localStorage.setItem("dzyd-folders", JSON.stringify(folders));
+  }, [folders]);
+
+  useEffect(() => {
+    localStorage.setItem("dzyd-conversations", JSON.stringify(conversations));
+  }, [conversations]);
 
   const upload = (file?: File) => {
     if (!file) return;
@@ -6891,9 +6908,13 @@ function Assets({
 }) {
   type StoredAsset = { id?: string; name: string; url: string; category: "assets" | "live" };
   const fileRef = useRef<HTMLInputElement>(null);
-  const [uploaded, setUploaded] = useState<StoredAsset[]>([
+  const demoAssets: StoredAsset[] = [
     { name: "孩子开学抢跑必备神器", url: "/assets/school-kickoff-poster.png", category: "assets" },
     { name: "达人合作蓝色背景", url: "/assets/live-collaboration-blue.png", category: "live" },
+  ];
+  const [uploaded, setUploaded] = useState<StoredAsset[]>(() => [
+    ...readSaved<StoredAsset[]>("dzyd-cloud-assets", []),
+    ...demoAssets,
   ]);
   const [tab, setTab] = useState<"subject" | "assets" | "kt" | "live">("subject");
   const [subjectOpen, setSubjectOpen] = useState(false);
@@ -6901,7 +6922,7 @@ function Assets({
   const [subjectImages, setSubjectImages] = useState<string[]>([]);
   const [subjects, setSubjects] = useState(featuredPeople.map((person) => person.name));
   const [uploadedPeople, setUploadedPeople] = useState<{ name: string; url: string }[]>([]);
-  const [favoriteAssets, setFavoriteAssets] = useState<string[]>([]);
+  const [favoriteAssets, setFavoriteAssets] = useState<string[]>(() => readSaved("dzyd-favorite-assets", []));
   const subjectFile = useRef<HTMLInputElement>(null);
   const personFile = useRef<HTMLInputElement>(null);
   const [addOpen, setAddOpen] = useState(false);
@@ -6929,12 +6950,19 @@ function Assets({
   useEffect(() => {
     fetch(`${IMAGE_API_BASE}/assets`)
       .then((response) => response.ok ? response.json() : Promise.reject(new Error("素材加载失败")))
-      .then((payload) => setUploaded((current) => [
-        ...(payload.assets || []).map((item: StoredAsset) => ({ ...item, category: item.category === "live" ? "live" as const : "assets" as const })),
-        ...current.filter((item) => !item.id),
-      ]))
+      .then((payload) => setUploaded((current) => {
+        const cloud = (payload.assets || []).map((item: StoredAsset) => ({ ...item, category: item.category === "live" ? "live" as const : "assets" as const }));
+        const cached = current.filter((item) => item.id && !cloud.some((cloudItem: StoredAsset) => cloudItem.id === item.id));
+        return [...cloud, ...cached, ...current.filter((item) => !item.id)];
+      }))
       .catch(() => setAssetUploadMessage("云端素材暂时无法加载"));
   }, []);
+  useEffect(() => {
+    localStorage.setItem("dzyd-cloud-assets", JSON.stringify(uploaded.filter((item) => item.id)));
+  }, [uploaded]);
+  useEffect(() => {
+    localStorage.setItem("dzyd-favorite-assets", JSON.stringify(favoriteAssets));
+  }, [favoriteAssets]);
   const addFolder = () => {
     setFolders([...folders, `新建文件夹 ${folders.length + 1}`]);
     setTab("assets");
