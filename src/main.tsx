@@ -50,6 +50,19 @@ const samples = [
   "/assets/template-6.png",
 ];
 
+const IMAGE_API_BASE = "https://dianzhen-yuedong.chenyucan310.chatgpt.site";
+
+async function requestGeneratedImages(prompt: string): Promise<string[]> {
+  const response = await fetch(`${IMAGE_API_BASE}/api/generate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt, size: "2K" }),
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload.error || "图片生成失败");
+  return Array.isArray(payload.images) ? payload.images : [];
+}
+
 const featuredPeople = [
   { name: "上官", url: "/assets/person-teacher-1.png" },
   { name: "李狗蛋", url: "/assets/person-teacher-2.png" },
@@ -593,6 +606,9 @@ function GenerationPage({
   const [moreRound, setMoreRound] = useState<number | null>(null);
   const [deletedRounds, setDeletedRounds] = useState<number[]>([]);
   const [resultRound, setResultRound] = useState(0);
+  const [apiLoadingRound, setApiLoadingRound] = useState<number | null>(null);
+  const [apiError, setApiError] = useState("");
+  const [generatedImages, setGeneratedImages] = useState<Record<number, string[]>>({});
   const [roundPrompts, setRoundPrompts] = useState([
     prompt || "生成夏日新品直播海报，突出新品卖点，风格清爽明亮。",
   ]);
@@ -652,6 +668,23 @@ function GenerationPage({
     );
     return () => window.clearInterval(timer);
   }, [generating]);
+  useEffect(() => {
+    if (!generating || generatedImages[resultRound] || apiLoadingRound === resultRound) return;
+    let cancelled = false;
+    setApiLoadingRound(resultRound);
+    setApiError("");
+    requestGeneratedImages(roundPrompts[resultRound] || prompt)
+      .then((images) => {
+        if (!cancelled) setGeneratedImages((current) => ({ ...current, [resultRound]: images }));
+      })
+      .catch((error) => {
+        if (!cancelled) setApiError(error instanceof Error ? error.message : "图片生成失败");
+      })
+      .finally(() => {
+        if (!cancelled) setApiLoadingRound(null);
+      });
+    return () => { cancelled = true; };
+  }, [generating, resultRound, roundPrompts, prompt, generatedImages]);
   return (
     <section className="generation-page">
       <div className="generation-header">
@@ -671,7 +704,8 @@ function GenerationPage({
           if (deletedRounds.includes(round)) return null;
           const latest = round === resultRound;
           const isPreparing = latest && preparing;
-          const isGenerating = latest && generating;
+          const isGenerating = latest && (generating || apiLoadingRound === round);
+          const roundImages = generatedImages[round] || [...samples, ...samples].slice(round % samples.length, round % samples.length + 4);
           return (
             <div className="generation-round" key={round}>
               <div className="user-message-wrap">
@@ -707,9 +741,7 @@ function GenerationPage({
                 </div>
               ) : (
                 <div className={`generated-gallery ${isGenerating ? "loading" : ""}`}>
-                  {[...samples, ...samples]
-                    .slice(round % samples.length, round % samples.length + 4)
-                    .map((src, i) => (
+                  {roundImages.map((src, i) => (
                       <button className="generation-tile" key={`${round}-${src}`} onClick={onEdit} draggable={!isGenerating} onDragStart={(event)=>{if(isGenerating)return;event.dataTransfer.effectAllowed="copy";event.dataTransfer.setData("application/x-generation-image",JSON.stringify({url:src,name:`第 ${round + 1} 轮生成结果 ${i + 1}`}));}}>
                         {isGenerating ? (
                           <div className="generation-progress"><span>✦</span><strong>生成中 {progress}%</strong></div>
@@ -720,6 +752,7 @@ function GenerationPage({
                     ))}
                 </div>
               )}
+              {latest && apiError && <p className="generation-api-error">生成失败：{apiError}</p>}
               {(!latest || (!preparing && !generating && generated)) && (
                 <div className="generation-result-actions">
                   <button

@@ -1807,6 +1807,12 @@
 .generation-result-actions .action-regenerate {
   width: 128px !important;
 }
+
+.generation-api-error {
+  margin: 10px 0 0 50px;
+  color: #d14343;
+  font-size: 13px;
+}
 .generation-result-actions .action-more {
   width: 72px !important;
   padding: 0 !important;
