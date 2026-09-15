@@ -16132,3 +16132,74 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   padding:10px 12px!important;
   gap:4px!important
 }
+
+/* Resolution cards use the same compact height and 9px rhythm as strength cards. */
+.figma-tool-modal.modal-增强清晰度 .resolution-popover{padding:10px!important}
+.figma-tool-modal.modal-增强清晰度 .resolution-popover>button{
+  height:44px!important;
+  min-height:44px!important;
+  margin:0 0 9px!important;
+  border-radius:10px!important
+}
+.figma-tool-modal.modal-增强清晰度 .resolution-popover>button:last-child{margin-bottom:0!important}
+
+/* Canvas size icon changes with the button while its inner sparkle remains white. */
+.canvas-size-state-icon{
+  display:block!important;
+  width:24px!important;
+  height:24px!important;
+  flex:0 0 24px!important;
+  color:#111218!important
+}
+.canvas-size-state-icon>svg{display:block!important;width:24px!important;height:24px!important}
+.canvas-size-state-icon path:not(.canvas-size-white-spark){fill:none!important;stroke:currentColor!important;stroke-width:2.25!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+.canvas-size-state-icon rect{fill:currentColor!important}
+.canvas-size-state-icon .canvas-size-white-spark{fill:#fff!important;stroke:none!important}
+.canvas-node-prompt-footer>div>.canvas-size-trigger:hover .canvas-size-state-icon,
+.canvas-node-prompt-footer>div>.canvas-size-trigger.active .canvas-size-state-icon{color:#6755df!important}
+
+/* Group color and arrangement menus unfold beneath their toolbar controls. */
+.canvas-group-toolbar .group-color-popover,
+.canvas-group-toolbar .group-layout-popover{
+  top:calc(100% + 10px)!important;
+  bottom:auto!important;
+  z-index:160!important
+}
+
+/* Arrangement choices have separated violet hover and persistent selected cards. */
+.canvas-group-toolbar .group-layout-popover{
+  width:164px!important;
+  padding:8px!important
+}
+.canvas-group-toolbar .group-layout-popover>button{
+  box-sizing:border-box!important;
+  width:148px!important;
+  height:38px!important;
+  margin:0 0 7px!important;
+  padding:0 12px!important;
+  border:1px solid transparent!important;
+  border-radius:9px!important;
+  background:#fff!important;
+  color:#303443!important
+}
+.canvas-group-toolbar .group-layout-popover>button:last-child{margin-bottom:0!important}
+.canvas-group-toolbar .group-layout-popover>button:hover,
+.canvas-group-toolbar .group-layout-popover>button.active{
+  border-color:#8a67f4!important;
+  background:#f3f0ff!important;
+  color:#6755df!important;
+  box-shadow:none!important
+}
+
+/* Horizontal layout icon is two equal squares on one true horizontal axis. */
+.group-layout-popover .layout-horizontal-icon::before,
+.group-layout-popover .layout-horizontal-icon::after{
+  top:7px!important;
+  width:9px!important;
+  height:9px!important;
+  transform:none!important;
+  border:1.5px solid currentColor!important;
+  background:transparent!important
+}
+.group-layout-popover .layout-horizontal-icon::before{left:1px!important}
+.group-layout-popover .layout-horizontal-icon::after{right:1px!important}

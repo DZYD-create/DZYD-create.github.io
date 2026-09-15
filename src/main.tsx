@@ -4326,9 +4326,9 @@ function Canvas({
                       )}
                       {groupPopover?.id === group.id && groupPopover.kind === "layout" && (
                         <div className="group-layout-popover" aria-label="选择组排列方式">
-                          <button onClick={() => arrangeCanvasGroup(group.id, "grid")}><span className="layout-grid-icon four-grid-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="6.5" height="6.5" rx="1"/><rect x="14.5" y="3" width="6.5" height="6.5" rx="1"/><rect x="3" y="14.5" width="6.5" height="6.5" rx="1"/><rect x="14.5" y="14.5" width="6.5" height="6.5" rx="1"/></svg></span>宫格排列</button>
-                          <button onClick={() => arrangeCanvasGroup(group.id, "horizontal")}><span className="layout-horizontal-icon" />水平排列</button>
-                          <button onClick={() => arrangeCanvasGroup(group.id, "vertical")}><span className="layout-vertical-icon" />垂直排列</button>
+                          <button className={group.layout === "grid" ? "active" : ""} onClick={() => arrangeCanvasGroup(group.id, "grid")}><span className="layout-grid-icon four-grid-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="6.5" height="6.5" rx="1"/><rect x="14.5" y="3" width="6.5" height="6.5" rx="1"/><rect x="3" y="14.5" width="6.5" height="6.5" rx="1"/><rect x="14.5" y="14.5" width="6.5" height="6.5" rx="1"/></svg></span>宫格排列</button>
+                          <button className={group.layout === "horizontal" ? "active" : ""} onClick={() => arrangeCanvasGroup(group.id, "horizontal")}><span className="layout-horizontal-icon" />水平排列</button>
+                          <button className={group.layout === "vertical" ? "active" : ""} onClick={() => arrangeCanvasGroup(group.id, "vertical")}><span className="layout-vertical-icon" />垂直排列</button>
                         </div>
                       )}
                     </div>
@@ -4810,7 +4810,14 @@ function Canvas({
                         setPromptPopover((v) => (v === "size" ? null : "size"))
                       }
                     >
-                      <img src="/assets/figma-home-size.svg" />
+                      <span className="canvas-size-state-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none">
+                          <path d="M4 7V5.8C4 4.806 4.806 4 5.8 4H8M11 4H14M18 4H18.2C19.194 4 20 4.806 20 5.8V8M20 11V14M20 18V18.2C20 19.194 19.194 20 18.2 20H16M13 20H10" />
+                          <rect x="3" y="10" width="11" height="11" rx="3" />
+                          <path className="canvas-size-white-spark" d="M8.5 12.15C8.78 14.35 10 15.57 12.2 15.85C10 16.13 8.78 17.35 8.5 19.55C8.22 17.35 7 16.13 4.8 15.85C7 15.57 8.22 14.35 8.5 12.15Z" />
+                          <path d="M14.2 9.8 20 4M16.65 4H20V7.35" />
+                        </svg>
+                      </span>
                       尺寸选择
                     </button>
                   </div>
