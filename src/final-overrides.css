@@ -16249,3 +16249,44 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
 section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.generation-attachment-rail.count-0>.generation-add-image-card>.upload-card-picture-icon .badge{
   fill:#8b68ff!important
 }
+
+/* Rail state owns the full rounded container, label and icon as one violet unit. */
+.rail-items>button:hover,
+.rail-items>button.active{
+  border-color:#d6c9ff!important;
+  border-radius:12px!important;
+  background:#eee9ff!important;
+  color:#6755df!important;
+  box-shadow:inset 0 0 0 1px rgba(138,103,244,.12)!important
+}
+.rail-items>button:hover>span:last-child,
+.rail-items>button.active>span:last-child{
+  color:#6755df!important
+}
+
+/* All arrangement glyphs use the same dark 1.6px visual stroke. */
+.group-layout-popover .layout-grid-icon::before,
+.group-layout-popover .layout-grid-icon::after,
+.group-layout-popover .layout-horizontal-icon::before,
+.group-layout-popover .layout-horizontal-icon::after{
+  border-width:1.6px!important;
+  border-color:#17191f!important
+}
+.group-layout-popover .layout-horizontal-icon::before,
+.group-layout-popover .layout-horizontal-icon::after{
+  width:8px!important;
+  height:8px!important;
+  border-radius:1.5px!important
+}
+
+/* Selected groups keep their menus above images but let individual cards receive clicks and drags. */
+.canvas-node-layer>.canvas-group-frame.selected{
+  pointer-events:none!important
+}
+.canvas-node-layer>.canvas-group-frame.selected>.canvas-group-name,
+.canvas-node-layer>.canvas-group-frame.selected>.canvas-group-toolbar,
+.canvas-node-layer>.canvas-group-frame.selected>.canvas-ungroup-button,
+.canvas-node-layer>.canvas-group-frame.selected .group-color-popover,
+.canvas-node-layer>.canvas-group-frame.selected .group-layout-popover{
+  pointer-events:auto!important
+}
