@@ -789,12 +789,12 @@ function GenerationPage({
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteRound, setDeleteRound] = useState<number | null>(null);
   const [moreRound, setMoreRound] = useState<number | null>(null);
-  const [deletedRounds, setDeletedRounds] = usePersistentState<number[]>("dzyd-deleted-rounds", []);
-  const [resultRound, setResultRound] = usePersistentState("dzyd-result-round", 0);
+  const [deletedRounds, setDeletedRounds] = useState<number[]>([]);
+  const [resultRound, setResultRound] = useState(0);
   const [apiLoadingRound, setApiLoadingRound] = useState<number | null>(null);
   const [apiError, setApiError] = useState("");
-  const [generatedImages, setGeneratedImages] = usePersistentState<Record<number, string[]>>("dzyd-generated-images", {});
-  const [roundPrompts, setRoundPrompts] = usePersistentState("dzyd-round-prompts", [
+  const [generatedImages, setGeneratedImages] = useState<Record<number, string[]>>({});
+  const [roundPrompts, setRoundPrompts] = useState([
     prompt || "生成夏日新品直播海报，突出新品卖点，风格清爽明亮。",
   ]);
   const handledEditorGeneration = useRef(0);
@@ -832,28 +832,25 @@ function GenerationPage({
     setDraft(prompt);
   }, [prompt]);
   useEffect(() => {
-    if (!editorGenerationToken || handledEditorGeneration.current === editorGenerationToken) return;
-    handledEditorGeneration.current = editorGenerationToken;
-    setRoundPrompts((items) => [...items, prompt]);
-    setResultRound((round) => {
-      const nextRound = round + 1;
-      setGeneratedImages((images) => {
-        const next = { ...images };
-        delete next[nextRound];
-        return next;
-      });
-      return nextRound;
-    });
-  }, [editorGenerationToken, prompt]);
-  useEffect(() => {
-    if (generating || preparing) return;
     const saved = records.filter((record) => record.conversation === conversationTitle).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
-    if (!saved.length) return;
-    setRoundPrompts(saved.map((record) => record.prompt));
-    setGeneratedImages(Object.fromEntries(saved.map((record, index) => [index, record.images])));
-    setResultRound(saved.length - 1);
+    const savedPrompts = saved.map((record) => record.prompt);
+    const savedImages = Object.fromEntries(saved.map((record, index) => [index, record.images]));
+    if (editorGenerationToken && handledEditorGeneration.current !== editorGenerationToken) {
+      handledEditorGeneration.current = editorGenerationToken;
+      setRoundPrompts([...savedPrompts, prompt]);
+      setGeneratedImages(savedImages);
+      setResultRound(saved.length);
+    } else if (saved.length) {
+      setRoundPrompts(savedPrompts);
+      setGeneratedImages(savedImages);
+      setResultRound(saved.length - 1);
+    } else {
+      setRoundPrompts([prompt]);
+      setGeneratedImages({});
+      setResultRound(0);
+    }
     setDeletedRounds([]);
-  }, [conversationTitle]);
+  }, [conversationTitle, editorGenerationToken]);
   useEffect(() => {
     const dismiss = () => {
       setModelOpen(false);
