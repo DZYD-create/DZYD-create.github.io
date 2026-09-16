@@ -16464,3 +16464,13 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   font-size:18px;
   cursor:pointer
 }
+
+/* The editor preview is part of the workspace, not a fixed white picture mat. */
+.figma-editor-page .editor-preview-area,
+.figma-editor-page .generated-image-canvas{
+  background:transparent!important
+}
+.figma-editor-page .generated-image-canvas{
+  border-color:transparent!important;
+  box-shadow:none!important
+}

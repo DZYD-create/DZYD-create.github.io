@@ -522,7 +522,9 @@ function App() {
             generated={false}
             onEdit={(image) => {
               if (image) setSelectedEditorImage(image);
+              setTool(null);
               setEditorReturn("studio");
+              setSection("studio");
               setEditing(true);
             }}
             onTemplate={(index) => {
@@ -574,7 +576,9 @@ function App() {
             onOpenImage={(image, imagePrompt) => {
               setSelectedEditorImage(image);
               setPrompt(imagePrompt);
+              setTool(null);
               setEditorReturn("studio");
+              setSection("studio");
               setEditing(true);
             }}
             collapsed={conversationCollapsed}
@@ -612,6 +616,7 @@ function App() {
             favorite={editorFavorite}
             onToggleFavorite={() => setEditorFavorite((value) => !value)}
             onClose={() => {
+              setTool(null);
               setEditing(false);
               if (editorReturn === "history") setSection("history");
             }}
