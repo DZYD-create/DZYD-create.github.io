@@ -16536,3 +16536,33 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   left:auto!important;
   width:290px!important
 }
+
+/* Every editing tool shows the complete source image; never crop it to the preview frame. */
+.figma-tool-modal.modal-局部重绘 .modal-image-surface>img,
+.figma-tool-modal.modal-擦除内容 .modal-image-surface>img{
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important
+}
+.figma-tool-modal.modal-图片尺寸 .resize-frame{
+  overflow:visible!important
+}
+.figma-tool-modal.modal-图片尺寸 .resize-frame>img{
+  width:auto!important;
+  height:auto!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important
+}
+.figma-tool-modal.modal-增强清晰度 .enhance-stage>img{
+  width:auto!important;
+  height:auto!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important
+}
