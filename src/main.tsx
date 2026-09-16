@@ -130,7 +130,15 @@ async function fileToPersistentImage(file: File): Promise<string> {
   }
 }
 
-async function requestGeneratedImages(prompt: string): Promise<string[]> {
+async function requestGeneratedImages(prompt: string, referenceImage?: string | null): Promise<string[]> {
+  const image = referenceImage ? new URL(referenceImage, window.location.origin).href : undefined;
+  if (image) {
+    return Promise.all([0, 1, 2, 3].map((index) => requestEditedImage(
+      image,
+      `${prompt}。生成第 ${index + 1} 个自然且有差异的编辑方案，保持未要求修改的画面内容不变。`,
+      "2K",
+    )));
+  }
   const response = await fetch(`${IMAGE_API_BASE}/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -217,6 +225,8 @@ function App() {
   const [tool, setTool] = useState<EditorTool | null>(null);
   const [editorFavorite, setEditorFavorite] = usePersistentState("dzyd-editor-favorite", false);
   const [selectedEditorImage, setSelectedEditorImage] = usePersistentState("dzyd-selected-editor-image", "/assets/template-2.png");
+  const [generationReferenceImage, setGenerationReferenceImage] = useState<string | null>(null);
+  const [editorGenerationToken, setEditorGenerationToken] = useState(0);
   const [generationRecords, setGenerationRecords] = usePersistentState<GenerationRecord[]>("dzyd-generation-records", []);
   const [canvasImage, setCanvasImage] = usePersistentState<string | null>("dzyd-canvas-image", null);
   const [canvasImageName, setCanvasImageName] = usePersistentState("dzyd-canvas-image-name", "AI 视觉创作 · 未命名项目");
@@ -257,12 +267,12 @@ function App() {
     }).catch(() => undefined);
   }, []);
 
-  const generate = () => {
+  const startGeneration = (requestedPrompt: string, conversationOverride?: string | null) => {
     if (generationTimer.current) window.clearTimeout(generationTimer.current);
     if (preparationTimer.current) window.clearTimeout(preparationTimer.current);
-    const nextPrompt = prompt.trim() || "夏日新品预热海报，清爽明亮的蓝色视觉";
+    const nextPrompt = requestedPrompt.trim() || "夏日新品预热海报，清爽明亮的蓝色视觉";
     if (!prompt.trim()) setPrompt(nextPrompt);
-    const title = nextPrompt.length > 18 ? `${nextPrompt.slice(0, 18)}…` : nextPrompt;
+    const title = conversationOverride || (nextPrompt.length > 18 ? `${nextPrompt.slice(0, 18)}…` : nextPrompt);
     setActiveConversation(title);
     setConversations((items) =>
       items.some(([name]) => name === title)
@@ -283,6 +293,10 @@ function App() {
         generationTimer.current = null;
       }, 3200);
     }, 2600);
+  };
+  const generate = () => {
+    setGenerationReferenceImage(null);
+    startGeneration(prompt);
   };
 
   const newCreation = () => {
@@ -572,7 +586,13 @@ function App() {
             generated={generated}
             conversationTitle={activeConversation || prompt}
             records={generationRecords}
-            onImagesGenerated={(record) => setGenerationRecords((items) => [record, ...items.filter((item) => item.id !== record.id)])}
+            referenceImage={generationReferenceImage}
+            editorGenerationToken={editorGenerationToken}
+            onImagesGenerated={(record) => {
+              setGenerationRecords((items) => [record, ...items.filter((item) => item.id !== record.id)]);
+              setGenerationReferenceImage(null);
+              setEditorGenerationToken(0);
+            }}
             onOpenImage={(image, imagePrompt) => {
               setSelectedEditorImage(image);
               setPrompt(imagePrompt);
@@ -625,11 +645,15 @@ function App() {
               setSection("canvas");
               setEditing(false);
             }}
-            onGenerate={() => {
+            onGenerate={(instruction, sourceImage) => {
+              setPrompt(instruction);
+              setGenerationReferenceImage(sourceImage);
               setTool(null);
               setEditing(false);
               setSection("studio");
-              generate();
+              setStudioView("generation");
+              setEditorGenerationToken(Date.now());
+              startGeneration(instruction, activeConversation);
             }}
           />
         )}
@@ -721,6 +745,8 @@ function GenerationPage({
   generated,
   conversationTitle,
   records,
+  referenceImage,
+  editorGenerationToken,
   onImagesGenerated,
   onOpenImage,
   collapsed,
@@ -739,6 +765,8 @@ function GenerationPage({
   generated: boolean;
   conversationTitle: string;
   records: GenerationRecord[];
+  referenceImage: string | null;
+  editorGenerationToken: number;
   onImagesGenerated: (record: GenerationRecord) => void;
   onOpenImage: (image: string, prompt: string) => void;
   collapsed: boolean;
@@ -769,6 +797,7 @@ function GenerationPage({
   const [roundPrompts, setRoundPrompts] = usePersistentState("dzyd-round-prompts", [
     prompt || "生成夏日新品直播海报，突出新品卖点，风格清爽明亮。",
   ]);
+  const handledEditorGeneration = useRef(0);
   const addGenerationImages = async (files: FileList | File[]) => {
     const images = Array.from(files).filter((file) => file.type.startsWith("image/"));
     const persistentImages = await Promise.all(images.map(async (file) => ({ name: file.name, url: await fileToPersistentImage(file) })));
@@ -802,6 +831,20 @@ function GenerationPage({
   useEffect(() => {
     setDraft(prompt);
   }, [prompt]);
+  useEffect(() => {
+    if (!editorGenerationToken || handledEditorGeneration.current === editorGenerationToken) return;
+    handledEditorGeneration.current = editorGenerationToken;
+    setRoundPrompts((items) => [...items, prompt]);
+    setResultRound((round) => {
+      const nextRound = round + 1;
+      setGeneratedImages((images) => {
+        const next = { ...images };
+        delete next[nextRound];
+        return next;
+      });
+      return nextRound;
+    });
+  }, [editorGenerationToken, prompt]);
   useEffect(() => {
     if (generating || preparing) return;
     const saved = records.filter((record) => record.conversation === conversationTitle).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
@@ -839,7 +882,7 @@ function GenerationPage({
     if (!generating || generatedImages[resultRound] || apiLoadingRound === resultRound) return;
     setApiLoadingRound(resultRound);
     setApiError("");
-    requestGeneratedImages(roundPrompts[resultRound] || prompt)
+    requestGeneratedImages(roundPrompts[resultRound] || prompt, referenceImage)
       .then((images) => {
         setGeneratedImages((current) => ({ ...current, [resultRound]: images }));
         const recordPrompt = roundPrompts[resultRound] || prompt;
@@ -857,7 +900,7 @@ function GenerationPage({
       .finally(() => {
         setApiLoadingRound(null);
       });
-  }, [generating, resultRound, roundPrompts, prompt, generatedImages]);
+  }, [generating, resultRound, roundPrompts, prompt, generatedImages, referenceImage]);
   return (
     <section className="generation-page">
       <div className="generation-header">
@@ -2177,7 +2220,7 @@ function Editor({
   onImageChange: (image: string) => void;
   onClose: () => void;
   onCanvas: () => void;
-  onGenerate: () => void;
+  onGenerate: (instruction: string, sourceImage: string) => void;
   favorite: boolean;
   onToggleFavorite: () => void;
 }) {
@@ -2233,7 +2276,7 @@ function Editor({
     setEditorRedo([]);
   };
   const closeTool = () => setTool(null);
-  const applyEditorTool = async () => {
+  const applyEditorTool = () => {
     if (!tool || toolGenerating) return;
     const instruction = tool === "局部重绘"
       ? `${modalPrompt.trim() || "自然重绘用户标记的区域"}。仅修改目标区域，其他画面保持不变。`
@@ -2242,21 +2285,9 @@ function Editor({
         : tool === "图片尺寸"
           ? `将原图调整为${ratio === "原比例" ? "原始比例" : ratio}，${modalPrompt.trim() || "智能补全画面边缘"}，保持主体和原始风格不变。`
           : `提升原图清晰度，使用${detail}，${resolution}，保持构图、文字和主体内容不变。`;
-    setToolGenerating(true);
     setToolError("");
-    try {
-      const nextImage = await requestEditedImage(workingImage, instruction, resolution.includes("4K") ? "4K" : "2K");
-      setWorkingImage(nextImage);
-      onImageChange(nextImage);
-      setSaved(true);
-      setTool(null);
-      setEditorStrokes([]);
-      setModalPrompt("");
-    } catch (error) {
-      setToolError(error instanceof Error ? error.message : "图片编辑失败");
-    } finally {
-      setToolGenerating(false);
-    }
+    setToolGenerating(true);
+    onGenerate(instruction, workingImage);
   };
   const editorPoint = (event: React.PointerEvent<SVGSVGElement>) => {
     const box = event.currentTarget.getBoundingClientRect();
