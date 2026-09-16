@@ -520,7 +520,8 @@ function App() {
             generate={generate}
             generating={false}
             generated={false}
-            onEdit={() => {
+            onEdit={(image) => {
+              if (image) setSelectedEditorImage(image);
               setEditorReturn("studio");
               setEditing(true);
             }}
@@ -1507,7 +1508,7 @@ function Studio({
   generate: () => void;
   generating: boolean;
   generated: boolean;
-  onEdit: () => void;
+  onEdit: (image?: string) => void;
   onTemplate: (index: number) => void;
 }) {
   const skills = ["预热海报", "横/竖kt板", "小红书海报", "PPT优化", "更多类型"];
@@ -1715,7 +1716,7 @@ function Studio({
           </div>
           <div className="generation-grid">
             {samples.slice(0, 4).map((src, i) => (
-              <button className="result-card" onClick={onEdit} key={src}>
+              <button className="result-card" onClick={() => onEdit(src)} key={src}>
                 <img src={src} />
                 <span>编辑图片</span>
                 <b>图 {i + 1}</b>
@@ -2805,6 +2806,7 @@ function Canvas({
   } | null>(null);
   const [canvasLinks, setCanvasLinks] = useState<CanvasLink[]>(savedCanvas.links || []);
   const [hdProgress, setHdProgress] = useState<Record<number, number>>({});
+  const [canvasGenerationError, setCanvasGenerationError] = useState("");
   const [keywordPopoverNodeId, setKeywordPopoverNodeId] = useState<number | null>(null);
   const [copiedKeywordNodeId, setCopiedKeywordNodeId] = useState<number | null>(null);
   const [expandFrame, setExpandFrame] = useState<{ id: number; width: number; height: number } | null>(null);
@@ -3831,9 +3833,19 @@ function Canvas({
     setCanvasTool(label);
     if (label === "上传") ref.current?.click();
   };
-  const generateFromCanvasNode = (source: CanvasNode, keywordOverride?: string) => {
+  const generateFromCanvasNode = async (source: CanvasNode, keywordOverride?: string) => {
     const nextId = Math.max(0, ...canvasNodes.map((node) => node.id)) + 1;
     const sourceGeometry = getNodeGeometry(source);
+    const rawPrompt = (keywordOverride ?? (canvasTool === "移动" ? (canvasPromptTexts[source.id] || "") : canvasToolPromptText)).trim();
+    const generationPrompt = canvasTool === "局部重绘"
+      ? `${rawPrompt || "自然重绘标记区域"}。只修改目标区域，保持其余画面不变。`
+      : canvasTool === "擦除"
+        ? `${rawPrompt || "擦除标记区域中的内容并自然修复背景"}。保持其余画面不变。`
+        : canvasTool === "扩图"
+          ? `${rawPrompt || "自然扩展原图画面边缘"}。保持主体、构图风格和光影一致。`
+          : canvasTool === "高清画质"
+            ? "增强图片清晰度与细节，保持原始构图、主体、文字和风格不变。"
+            : rawPrompt || "基于原图继续生成一张视觉风格一致的新图片";
     const nextNode: CanvasNode = {
       ...source,
       id: nextId,
@@ -3843,8 +3855,9 @@ function Canvas({
       mediaWidth: sourceGeometry.mediaWidth,
       mediaHeight: sourceGeometry.mediaHeight,
       generated: true,
-      generationPrompt: (keywordOverride ?? (canvasTool === "移动" ? (canvasPromptTexts[source.id] || "") : canvasToolPromptText)).trim() || "基于原图继续生成",
+      generationPrompt,
     };
+    setCanvasGenerationError("");
     setCanvasNodes((nodes) => [...nodes, nextNode]);
     setCanvasLinks((links) => [
       ...links,
@@ -3868,18 +3881,35 @@ function Canvas({
           window.clearInterval(timer);
           return items;
         }
-        const next = Math.min(100, current + Math.max(3, Math.round(Math.random() * 9)));
-        if (next >= 100) {
-          window.clearInterval(timer);
-          window.setTimeout(() => setHdProgress((values) => {
-            const copy = { ...values };
-            delete copy[nextId];
-            return copy;
-          }), 500);
-        }
+        const next = Math.min(92, current + Math.max(2, Math.round(Math.random() * 6)));
         return { ...items, [nextId]: next };
       });
     }, 150);
+    try {
+      const result = await requestEditedImage(source.url, generationPrompt, promptQuality.includes("4K") ? "4K" : "2K");
+      setCanvasNodes((nodes) => nodes.map((node) => node.id === nextId ? { ...node, url: result } : node));
+      setCanvasImage(result);
+      setHdProgress((items) => ({ ...items, [nextId]: 100 }));
+      window.setTimeout(() => setHdProgress((values) => {
+        const copy = { ...values };
+        delete copy[nextId];
+        return copy;
+      }), 500);
+      setRedrawStrokes([]);
+      setCanvasToolPromptText("");
+      setCanvasPromptTexts((values) => ({ ...values, [source.id]: "" }));
+    } catch (error) {
+      setCanvasGenerationError(error instanceof Error ? error.message : "画布生图失败");
+      setCanvasNodes((nodes) => nodes.filter((node) => node.id !== nextId));
+      setCanvasLinks((links) => links.filter((link) => link.to !== nextId));
+      setHdProgress((items) => {
+        const copy = { ...items };
+        delete copy[nextId];
+        return copy;
+      });
+    } finally {
+      window.clearInterval(timer);
+    }
   };
   const cropNode = canvasNodes.find((node) => node.id === activeNodeId);
   const selectedLibraryAsset: Record<number, { name: string; url: string; group: string; description: string }> = {
@@ -4051,6 +4081,12 @@ function Canvas({
         }
       }}
     >
+      {canvasGenerationError && (
+        <div className="canvas-generation-error" role="alert">
+          <span>生成失败：{canvasGenerationError}</span>
+          <button aria-label="关闭错误提示" onClick={() => setCanvasGenerationError("")}>×</button>
+        </div>
+      )}
       <header className="project-bar">
         <button className="project-logo" onClick={onBack}>
           <span className="canvas-brand-mark">

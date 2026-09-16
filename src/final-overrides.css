@@ -16437,3 +16437,30 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   justify-content:start!important;
   align-items:start!important
 }
+
+.canvas-generation-error{
+  position:fixed;
+  z-index:100000;
+  top:76px;
+  left:50%;
+  transform:translateX(-50%);
+  max-width:min(560px,calc(100vw - 48px));
+  padding:10px 12px 10px 16px;
+  border:1px solid #e1d7ff;
+  border-radius:12px;
+  background:#faf7ff;
+  color:#6f4cf5;
+  box-shadow:0 10px 30px rgba(111,76,245,.14);
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-size:13px
+}
+.canvas-generation-error button{
+  flex:none;
+  border:0;
+  background:transparent;
+  color:#6f4cf5;
+  font-size:18px;
+  cursor:pointer
+}
