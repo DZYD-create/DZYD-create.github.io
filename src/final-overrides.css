@@ -16474,3 +16474,30 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   border-color:transparent!important;
   box-shadow:none!important
 }
+
+/* Every conversation result opens the same complete editor, independent of page scroll/layout. */
+.figma-editor-page{
+  position:fixed!important;
+  inset:0 0 0 88px!important;
+  width:auto!important;
+  height:100vh!important;
+  min-height:620px!important;
+  z-index:99990!important;
+  overflow:hidden!important
+}
+.figma-editor-page .figma-editor-workspace{
+  height:calc(100vh - 60px)!important;
+  min-height:560px!important
+}
+.figma-editor-page .figma-edit-panel{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  min-height:560px!important;
+  z-index:2!important
+}
+.figma-editor-page .edit-functions,
+.figma-editor-page .figma-tool-grid{
+  visibility:visible!important;
+  opacity:1!important
+}

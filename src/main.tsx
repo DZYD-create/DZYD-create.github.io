@@ -955,7 +955,7 @@ function GenerationPage({
               ) : (
                 <div className={`generated-gallery ${isGenerating ? "loading" : ""}`}>
                   {roundImages.map((src, i) => (
-                      <button className="generation-tile" key={`${round}-${src}`} onClick={() => !isGenerating && onOpenImage(src, roundPrompts[round] || prompt)} draggable={!isGenerating} onDragStart={(event)=>{if(isGenerating)return;event.dataTransfer.effectAllowed="copy";event.dataTransfer.setData("application/x-generation-image",JSON.stringify({url:src,name:`第 ${round + 1} 轮生成结果 ${i + 1}`}));}}>
+                      <button type="button" className="generation-tile" key={`${round}-${i}-${src}`} aria-label={`打开第 ${round + 1} 轮第 ${i + 1} 张图片的编辑功能`} onClick={() => !isGenerating && onOpenImage(src, roundPrompts[round] || prompt)} draggable={!isGenerating} onDragStart={(event)=>{if(isGenerating)return;event.dataTransfer.effectAllowed="copy";event.dataTransfer.setData("application/x-generation-image",JSON.stringify({url:src,name:`第 ${round + 1} 轮生成结果 ${i + 1}`}));}}>
                         {isGenerating ? (
                           <div className="generation-progress"><span>✦</span><strong>生成中 {progress}%</strong></div>
                         ) : (
