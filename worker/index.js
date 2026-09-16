@@ -92,6 +92,58 @@ export default {
       await env.ASSETS.delete(decodeURIComponent(url.pathname.slice(8)));
       return json({ ok: true }, 200, origin);
     }
+    if (url.pathname === "/edit" && request.method === "POST") {
+      if (!ALLOWED_ORIGINS.has(origin)) return json({ error: "不允许的请求来源" }, 403, origin);
+      if (!env.ARK_API_KEY) return json({ error: "服务端密钥未配置" }, 503, origin);
+      const contentLength = Number(request.headers.get("Content-Length") || 0);
+      if (contentLength > 8_000_000) return json({ error: "编辑请求内容过大" }, 413, origin);
+
+      let input;
+      try { input = await request.json(); } catch { return json({ error: "请求格式不正确" }, 400, origin); }
+      const prompt = typeof input.prompt === "string" ? input.prompt.trim() : "";
+      const image = typeof input.image === "string" ? input.image.trim() : "";
+      if (!prompt || prompt.length > 1200) return json({ error: "请输入 1—1200 字的编辑描述" }, 400, origin);
+      if (!image || !/^(https?:\/\/|data:image\/)/i.test(image)) return json({ error: "待编辑图片无效" }, 400, origin);
+
+      let editedImage;
+      try {
+        const upstream = await fetch("https://ark.cn-beijing.volces.com/api/v3/images/generations", {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${env.ARK_API_KEY}`, "Content-Type": "application/json" },
+          signal: AbortSignal.timeout(180_000),
+          body: JSON.stringify({
+            model: "doubao-seedream-5-0-260128",
+            prompt,
+            image,
+            size: input.size || "2K",
+            response_format: "url",
+            watermark: false,
+            sequential_image_generation: "disabled",
+          }),
+        });
+        const result = await upstream.json().catch(() => ({}));
+        if (!upstream.ok) throw new Error(result?.error?.message || result?.message || "图片编辑失败");
+        editedImage = result?.data?.[0]?.url || "";
+      } catch (error) {
+        return json({ error: error instanceof Error ? error.message : "图片编辑失败" }, 502, origin);
+      }
+      if (!editedImage) return json({ error: "模型没有返回编辑后的图片" }, 502, origin);
+
+      let permanentImage = editedImage;
+      try {
+        const imageResponse = await fetch(editedImage, { signal: AbortSignal.timeout(60_000) });
+        if (imageResponse.ok) {
+          const body = await imageResponse.arrayBuffer();
+          if (body.byteLength && body.byteLength <= 25_000_000) {
+            const type = imageResponse.headers.get("Content-Type") || "image/jpeg";
+            const key = `generated-edit:${Date.now()}:${crypto.randomUUID()}`;
+            await env.ASSETS.put(key, body, { metadata: { name: "AI 编辑图片", category: "generated", type, size: body.byteLength, createdAt: new Date().toISOString() } });
+            permanentImage = `${url.origin}/asset/${encodeURIComponent(key)}`;
+          }
+        }
+      } catch {}
+      return json({ image: permanentImage, model: "doubao-seedream-5-0-260128" }, 200, origin);
+    }
     if (url.pathname !== "/generate" || request.method !== "POST") return json({ error: "Not found" }, 404, origin);
     if (!ALLOWED_ORIGINS.has(origin)) return json({ error: "不允许的请求来源" }, 403, origin);
     if (!env.ARK_API_KEY) return json({ error: "服务端密钥未配置" }, 503, origin);

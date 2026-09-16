@@ -141,6 +141,18 @@ async function requestGeneratedImages(prompt: string): Promise<string[]> {
   return Array.isArray(payload.images) ? payload.images : [];
 }
 
+async function requestEditedImage(image: string, prompt: string, size = "2K"): Promise<string> {
+  const response = await fetch(`${IMAGE_API_BASE}/edit`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image, prompt, size }),
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload.error || "图片编辑失败");
+  if (!payload.image) throw new Error("模型没有返回编辑后的图片");
+  return payload.image;
+}
+
 const featuredPeople = [
   { name: "上官", url: "/assets/person-teacher-1.png" },
   { name: "李狗蛋", url: "/assets/person-teacher-2.png" },
@@ -595,6 +607,7 @@ function App() {
             setTool={setTool}
             prompt={prompt}
             image={selectedEditorImage}
+            onImageChange={setSelectedEditorImage}
             favorite={editorFavorite}
             onToggleFavorite={() => setEditorFavorite((value) => !value)}
             onClose={() => {
@@ -635,11 +648,10 @@ function App() {
           <History
             generatedRecords={generationRecords}
             onOpenGenerated={(image, imagePrompt) => {
-              setSelectedEditorImage(image);
-              setPrompt(imagePrompt);
-              setEditorReturn("history");
-              setSection("studio");
-              setEditing(true);
+              setCanvasImage(image);
+              setCanvasImageName(imagePrompt.length > 24 ? `${imagePrompt.slice(0, 24)}…` : imagePrompt);
+              setPendingCanvasAssets([{ name: imagePrompt, url: image }]);
+              setSection("canvas");
             }}
             favoriteGenerated={editorFavorite}
             onToggleGeneratedFavorite={() => setEditorFavorite((value) => !value)}
@@ -2145,6 +2157,7 @@ function Editor({
   setTool,
   prompt,
   image,
+  onImageChange,
   onClose,
   onCanvas,
   onGenerate,
@@ -2155,6 +2168,7 @@ function Editor({
   setTool: (v: EditorTool | null) => void;
   prompt: string;
   image: string;
+  onImageChange: (image: string) => void;
   onClose: () => void;
   onCanvas: () => void;
   onGenerate: () => void;
@@ -2164,6 +2178,9 @@ function Editor({
   const [zoom, setZoom] = useState(100);
   const [modalZoom, setModalZoom] = useState(100);
   const [saved, setSaved] = useState(false);
+  const [workingImage, setWorkingImage] = useState(image);
+  const [toolGenerating, setToolGenerating] = useState(false);
+  const [toolError, setToolError] = useState("");
   const [modalPrompt, setModalPrompt] = useState("");
   const [brushSize, setBrushSize] = useState(48);
   const [brushMode, setBrushMode] = useState("画笔");
@@ -2172,6 +2189,7 @@ function Editor({
   const [resolution, setResolution] = useState("放大至 2K");
   const [detailOpen, setDetailOpen] = useState(false);
   const [resolutionOpen, setResolutionOpen] = useState(false);
+  useEffect(() => setWorkingImage(image), [image]);
   type EditorStroke = { size: number; kind: "paint" | "erase" | "select"; points: Array<{ x: number; y: number }> };
   const [editorStrokes, setEditorStrokes] = useState<EditorStroke[]>([]);
   const [activeEditorStroke, setActiveEditorStroke] = useState<EditorStroke | null>(null);
@@ -2209,6 +2227,31 @@ function Editor({
     setEditorRedo([]);
   };
   const closeTool = () => setTool(null);
+  const applyEditorTool = async () => {
+    if (!tool || toolGenerating) return;
+    const instruction = tool === "局部重绘"
+      ? `${modalPrompt.trim() || "自然重绘用户标记的区域"}。仅修改目标区域，其他画面保持不变。`
+      : tool === "擦除内容"
+        ? `${modalPrompt.trim() || "删除用户标记区域内的内容并自然修复背景"}。其他画面保持不变。`
+        : tool === "图片尺寸"
+          ? `将原图调整为${ratio === "原比例" ? "原始比例" : ratio}，${modalPrompt.trim() || "智能补全画面边缘"}，保持主体和原始风格不变。`
+          : `提升原图清晰度，使用${detail}，${resolution}，保持构图、文字和主体内容不变。`;
+    setToolGenerating(true);
+    setToolError("");
+    try {
+      const nextImage = await requestEditedImage(workingImage, instruction, resolution.includes("4K") ? "4K" : "2K");
+      setWorkingImage(nextImage);
+      onImageChange(nextImage);
+      setSaved(true);
+      setTool(null);
+      setEditorStrokes([]);
+      setModalPrompt("");
+    } catch (error) {
+      setToolError(error instanceof Error ? error.message : "图片编辑失败");
+    } finally {
+      setToolGenerating(false);
+    }
+  };
   const editorPoint = (event: React.PointerEvent<SVGSVGElement>) => {
     const box = event.currentTarget.getBoundingClientRect();
     return { x: ((event.clientX - box.left) / box.width) * 800, y: ((event.clientY - box.top) / box.height) * 450 };
@@ -2267,7 +2310,7 @@ function Editor({
         <strong>编辑生成图片</strong>
         <div className="editor-top-actions">
           <button className={`editor-favorite ${favorite ? "active" : ""}`} aria-label={favorite ? "取消收藏" : "收藏"} aria-pressed={favorite} onClick={onToggleFavorite}>{favorite ? "★" : "☆"}</button>
-          <button className="editor-download" onClick={() => { const link = document.createElement("a"); link.href = image; link.download = "对话生图.png"; document.body.appendChild(link); link.click(); link.remove(); }}>
+          <button className="editor-download" onClick={() => { const link = document.createElement("a"); link.href = workingImage; link.download = "对话生图.png"; document.body.appendChild(link); link.click(); link.remove(); }}>
             <img src="/assets/editor-download.svg" />
             下载
           </button>
@@ -2285,7 +2328,7 @@ function Editor({
             }}
           >
             <img
-              src={image}
+              src={workingImage}
               style={{ transform: `scale(${zoom / 100})` }}
               alt="生成图片预览"
             />
@@ -2375,7 +2418,7 @@ function Editor({
                     }}
                   >
                     <div className="modal-image-surface" style={{ transform: `scale(${modalZoom / 100})` }}>
-                      <img src={image} alt="待编辑图片" />
+                      <img src={workingImage} alt="待编辑图片" />
                       <svg className={`editor-mask-layer ${tool === "擦除内容" ? "erase-tool" : "redraw-tool"} brush-mode-${brushMode}`} viewBox="0 0 800 450" preserveAspectRatio="none" onPointerDown={beginEditorStroke} onPointerMove={moveEditorStroke} onPointerEnter={(event) => setEditorBrushCursor(editorPoint(event))} onPointerLeave={() => setEditorBrushCursor(null)} onPointerUp={finishEditorStroke} onPointerCancel={finishEditorStroke}>
                       <defs>
                         <pattern id="editor-checker" width="18" height="18" patternUnits="userSpaceOnUse"><rect width="18" height="18" fill="rgba(238,238,238,.28)"/><rect width="9" height="9" fill="rgba(190,194,204,.28)"/><rect x="9" y="9" width="9" height="9" fill="rgba(190,194,204,.28)"/></pattern>
@@ -2452,7 +2495,7 @@ function Editor({
                   <div
                     className={`resize-frame ratio-${ratio.replace(":", "-")}`}
                   >
-                    <img src={image} alt="尺寸预览" />
+                    <img src={workingImage} alt="尺寸预览" />
                     <i />
                     <i />
                     <i />
@@ -2484,7 +2527,7 @@ function Editor({
             {tool === "增强清晰度" && (
               <>
                 <div className="enhance-stage">
-                  <img src={image} alt="清晰度预览" />
+                  <img src={workingImage} alt="清晰度预览" />
                 </div>
                 <div className="enhance-options">
                   <div className="enhance-option-wrap">
@@ -2578,13 +2621,15 @@ function Editor({
             )}
             <button
               className="modal-generate"
-              onClick={onGenerate}
+              onClick={applyEditorTool}
+              disabled={toolGenerating}
             >
               <span className="modal-generate-content">
                 <span className="modal-generate-stars" aria-hidden="true"><svg viewBox="0 0 52 52"><path d="M20 5c1.8 10.3 5.7 14.2 16 16-10.3 1.8-14.2 5.7-16 16-1.8-10.3-5.7-14.2-16-16C14.3 19.2 18.2 15.3 20 5Z"/><path d="M39 2c.8 4.8 2.7 6.7 7.5 7.5C41.7 10.3 39.8 12.2 39 17c-.8-4.8-2.7-6.7-7.5-7.5C36.3 8.7 38.2 6.8 39 2Z"/></svg></span>
-                <span className="modal-generate-label">生成</span>
+                <span className="modal-generate-label">{toolGenerating ? "生成中…" : "生成"}</span>
               </span>
             </button>
+            {toolError && <p className="generation-api-error" role="alert">{toolError}</p>}
           </section>
         </div>
       )}
