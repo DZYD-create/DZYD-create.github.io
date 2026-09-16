@@ -225,6 +225,7 @@ function App() {
   const [tool, setTool] = useState<EditorTool | null>(null);
   const [editorFavorite, setEditorFavorite] = usePersistentState("dzyd-editor-favorite", false);
   const [selectedEditorImage, setSelectedEditorImage] = usePersistentState("dzyd-selected-editor-image", "/assets/template-2.png");
+  const [editorSession, setEditorSession] = useState<{ image: string; prompt: string } | null>(null);
   const [generationReferenceImage, setGenerationReferenceImage] = useState<string | null>(null);
   const [editorGenerationToken, setEditorGenerationToken] = useState(0);
   const [generationRecords, setGenerationRecords] = usePersistentState<GenerationRecord[]>("dzyd-generation-records", []);
@@ -535,7 +536,10 @@ function App() {
             generating={false}
             generated={false}
             onEdit={(image) => {
-              if (image) setSelectedEditorImage(image);
+              if (image) {
+                setSelectedEditorImage(image);
+                setEditorSession({ image, prompt });
+              }
               setTool(null);
               setEditorReturn("studio");
               setSection("studio");
@@ -594,6 +598,7 @@ function App() {
               setEditorGenerationToken(0);
             }}
             onOpenImage={(image, imagePrompt) => {
+              setEditorSession({ image, prompt: imagePrompt });
               setSelectedEditorImage(image);
               setPrompt(imagePrompt);
               setTool(null);
@@ -626,29 +631,35 @@ function App() {
             }}
           />
         )}
-        {section === "studio" && editing && (
+        {editing && (
           <Editor
             tool={tool}
             setTool={setTool}
-            prompt={prompt}
-            image={selectedEditorImage}
-            onImageChange={setSelectedEditorImage}
+            prompt={editorSession?.prompt || prompt}
+            image={editorSession?.image || selectedEditorImage}
+            onImageChange={(nextImage) => {
+              setSelectedEditorImage(nextImage);
+              setEditorSession((session) => session ? { ...session, image: nextImage } : session);
+            }}
             favorite={editorFavorite}
             onToggleFavorite={() => setEditorFavorite((value) => !value)}
             onClose={() => {
               setTool(null);
+              setEditorSession(null);
               setEditing(false);
               if (editorReturn === "history") setSection("history");
             }}
             onCanvas={() => {
-              setCanvasImage(selectedEditorImage);
+              setCanvasImage(editorSession?.image || selectedEditorImage);
               setSection("canvas");
+              setEditorSession(null);
               setEditing(false);
             }}
             onGenerate={(instruction, sourceImage) => {
               setPrompt(instruction);
               setGenerationReferenceImage(sourceImage);
               setTool(null);
+              setEditorSession(null);
               setEditing(false);
               setSection("studio");
               setStudioView("generation");
