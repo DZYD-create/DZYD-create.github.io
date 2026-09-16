@@ -2276,15 +2276,29 @@ function Editor({
     setEditorRedo([]);
   };
   const closeTool = () => setTool(null);
+  const describeMarkedEditorRegion = () => {
+    const points = editorStrokes.filter((stroke) => stroke.kind !== "erase").flatMap((stroke) => stroke.points);
+    if (!points.length) return "";
+    const left = Math.max(0, Math.min(...points.map((point) => point.x)) / 8);
+    const right = Math.min(100, Math.max(...points.map((point) => point.x)) / 8);
+    const top = Math.max(0, Math.min(...points.map((point) => point.y)) / 4.5);
+    const bottom = Math.min(100, Math.max(...points.map((point) => point.y)) / 4.5);
+    return `编辑区域约位于原图横向 ${left.toFixed(0)}%—${right.toFixed(0)}%、纵向 ${top.toFixed(0)}%—${bottom.toFixed(0)}% 的范围内。`;
+  };
   const buildMarkedEditorReference = async () => {
     if (!editorStrokes.some((stroke) => stroke.kind !== "erase")) return workingImage;
-    const source = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const next = new Image();
-      next.crossOrigin = "anonymous";
-      next.onload = () => resolve(next);
-      next.onerror = () => reject(new Error("无法读取当前编辑图片"));
-      next.src = new URL(workingImage, window.location.origin).href;
-    });
+    let source: HTMLImageElement;
+    try {
+      source = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const next = new Image();
+        next.crossOrigin = "anonymous";
+        next.onload = () => resolve(next);
+        next.onerror = () => reject(new Error("图片不允许浏览器跨域读取"));
+        next.src = new URL(workingImage, window.location.origin).href;
+      });
+    } catch {
+      return workingImage;
+    }
     const canvas = document.createElement("canvas");
     canvas.width = 800;
     canvas.height = 450;
@@ -2317,8 +2331,9 @@ function Editor({
   const applyEditorTool = async () => {
     if (!tool || toolGenerating) return;
     const hasMarkedRegion = editorStrokes.some((stroke) => stroke.kind !== "erase");
+    const regionPosition = describeMarkedEditorRegion();
     const regionRule = hasMarkedRegion
-      ? "参考图中的亮粉色覆盖区是唯一允许编辑的区域；亮粉色只是位置标记，不是画面内容，结果中必须彻底移除该标记。"
+      ? `只允许编辑以下坐标范围：${regionPosition}若参考图中可见亮粉色覆盖区，该颜色只是位置标记而不是画面内容，结果中必须彻底移除该标记。`
       : "严格以输入原图为基础，保持未指定区域、主体、构图、颜色和文字不变。";
     const instruction = tool === "局部重绘"
       ? `${regionRule}${modalPrompt.trim() || "自然重绘标记区域"}。只修改目标区域。`
