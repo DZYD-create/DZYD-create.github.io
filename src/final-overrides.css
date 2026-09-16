@@ -16381,3 +16381,39 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   top:auto!important;
   bottom:66px!important
 }
+
+/* Keep the past-conversation generate controls anchored inside the composer at every zoom/viewport width. */
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.composer-actions{
+  box-sizing:border-box!important;
+  padding-right:166px!important;
+  min-width:0!important
+}
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.composer-actions>i{
+  display:none!important
+}
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.composer-actions>.invocation-trigger{
+  position:absolute!important;
+  right:118px!important;
+  top:3px!important;
+  margin:0!important
+}
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.composer-actions>.new-generate{
+  position:absolute!important;
+  right:0!important;
+  top:0!important;
+  margin:0!important;
+  flex:none!important
+}
+@media (max-width:1400px){
+  section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.composer-actions{
+    gap:6px!important
+  }
+  section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.composer-actions>.home-model-trigger,
+  section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.composer-actions>.home-size-trigger,
+  section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.composer-actions>.home-assets-trigger{
+    min-width:0!important;
+    padding:0 8px!important;
+    font-size:12px!important;
+    white-space:nowrap!important
+  }
+}
