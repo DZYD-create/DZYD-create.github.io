@@ -2276,18 +2276,66 @@ function Editor({
     setEditorRedo([]);
   };
   const closeTool = () => setTool(null);
-  const applyEditorTool = () => {
+  const buildMarkedEditorReference = async () => {
+    if (!editorStrokes.some((stroke) => stroke.kind !== "erase")) return workingImage;
+    const source = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const next = new Image();
+      next.crossOrigin = "anonymous";
+      next.onload = () => resolve(next);
+      next.onerror = () => reject(new Error("无法读取当前编辑图片"));
+      next.src = new URL(workingImage, window.location.origin).href;
+    });
+    const canvas = document.createElement("canvas");
+    canvas.width = 800;
+    canvas.height = 450;
+    const context = canvas.getContext("2d");
+    if (!context) return workingImage;
+    context.drawImage(source, 0, 0, canvas.width, canvas.height);
+    context.strokeStyle = "rgba(255, 0, 170, .9)";
+    context.fillStyle = "rgba(255, 0, 170, .68)";
+    context.lineCap = "round";
+    context.lineJoin = "round";
+    editorStrokes.filter((stroke) => stroke.kind !== "erase").forEach((stroke) => {
+      context.lineWidth = Math.max(8, stroke.size);
+      if (stroke.kind === "select") {
+        const first = stroke.points[0];
+        const last = stroke.points[stroke.points.length - 1] || first;
+        if (first) context.fillRect(Math.min(first.x, last.x), Math.min(first.y, last.y), Math.abs(last.x - first.x), Math.abs(last.y - first.y));
+        return;
+      }
+      if (!stroke.points.length) return;
+      context.beginPath();
+      context.moveTo(stroke.points[0].x, stroke.points[0].y);
+      stroke.points.slice(1).forEach((point) => context.lineTo(point.x, point.y));
+      if (stroke.points.length === 1) {
+        context.arc(stroke.points[0].x, stroke.points[0].y, stroke.size / 2, 0, Math.PI * 2);
+        context.fill();
+      } else context.stroke();
+    });
+    return canvas.toDataURL("image/jpeg", .9);
+  };
+  const applyEditorTool = async () => {
     if (!tool || toolGenerating) return;
+    const hasMarkedRegion = editorStrokes.some((stroke) => stroke.kind !== "erase");
+    const regionRule = hasMarkedRegion
+      ? "参考图中的亮粉色覆盖区是唯一允许编辑的区域；亮粉色只是位置标记，不是画面内容，结果中必须彻底移除该标记。"
+      : "严格以输入原图为基础，保持未指定区域、主体、构图、颜色和文字不变。";
     const instruction = tool === "局部重绘"
-      ? `${modalPrompt.trim() || "自然重绘用户标记的区域"}。仅修改目标区域，其他画面保持不变。`
+      ? `${regionRule}${modalPrompt.trim() || "自然重绘标记区域"}。只修改目标区域。`
       : tool === "擦除内容"
-        ? `${modalPrompt.trim() || "删除用户标记区域内的内容并自然修复背景"}。其他画面保持不变。`
+        ? `${regionRule}${modalPrompt.trim() || "删除标记区域内的内容并根据周围画面自然修复背景"}。只修改目标区域。`
         : tool === "图片尺寸"
-          ? `将原图调整为${ratio === "原比例" ? "原始比例" : ratio}，${modalPrompt.trim() || "智能补全画面边缘"}，保持主体和原始风格不变。`
-          : `提升原图清晰度，使用${detail}，${resolution}，保持构图、文字和主体内容不变。`;
+          ? `严格使用输入原图，将画面调整为${ratio === "原比例" ? "原始比例" : ratio}，${modalPrompt.trim() || "只在必要处智能补全画面边缘"}，保持主体、文字和原始风格不变。`
+          : `严格使用输入原图，仅提升清晰度与细节，使用${detail}，${resolution}，不得改变构图、文字、主体、颜色和风格。`;
     setToolError("");
     setToolGenerating(true);
-    onGenerate(instruction, workingImage);
+    try {
+      const reference = (tool === "局部重绘" || tool === "擦除内容") ? await buildMarkedEditorReference() : workingImage;
+      onGenerate(instruction, reference);
+    } catch (error) {
+      setToolGenerating(false);
+      setToolError(error instanceof Error ? error.message : "无法提交编辑内容");
+    }
   };
   const editorPoint = (event: React.PointerEvent<SVGSVGElement>) => {
     const box = event.currentTarget.getBoundingClientRect();
