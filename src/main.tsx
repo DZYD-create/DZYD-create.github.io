@@ -135,7 +135,7 @@ async function requestGeneratedImages(prompt: string, referenceImage?: string | 
   if (image) {
     return Promise.all([0, 1, 2, 3].map((index) => requestEditedImage(
       image,
-      `${prompt}。生成第 ${index + 1} 个自然且有差异的编辑方案，保持未要求修改的画面内容不变。`,
+      `${prompt}这是同一编辑任务的第 ${index + 1} 个结果，只执行指定修改，不要重新设计整张图片。`,
       "2K",
     )));
   }
@@ -2300,29 +2300,32 @@ function Editor({
       return workingImage;
     }
     const canvas = document.createElement("canvas");
-    canvas.width = 800;
-    canvas.height = 450;
+    const imageScale = Math.min(1, 2048 / Math.max(source.naturalWidth, source.naturalHeight));
+    canvas.width = Math.max(1, Math.round(source.naturalWidth * imageScale));
+    canvas.height = Math.max(1, Math.round(source.naturalHeight * imageScale));
     const context = canvas.getContext("2d");
     if (!context) return workingImage;
     context.drawImage(source, 0, 0, canvas.width, canvas.height);
+    const scaleX = canvas.width / 800;
+    const scaleY = canvas.height / 450;
     context.strokeStyle = "rgba(255, 0, 170, .9)";
     context.fillStyle = "rgba(255, 0, 170, .68)";
     context.lineCap = "round";
     context.lineJoin = "round";
     editorStrokes.filter((stroke) => stroke.kind !== "erase").forEach((stroke) => {
-      context.lineWidth = Math.max(8, stroke.size);
+      context.lineWidth = Math.max(4, stroke.size * ((scaleX + scaleY) / 2));
       if (stroke.kind === "select") {
         const first = stroke.points[0];
         const last = stroke.points[stroke.points.length - 1] || first;
-        if (first) context.fillRect(Math.min(first.x, last.x), Math.min(first.y, last.y), Math.abs(last.x - first.x), Math.abs(last.y - first.y));
+        if (first) context.fillRect(Math.min(first.x, last.x) * scaleX, Math.min(first.y, last.y) * scaleY, Math.abs(last.x - first.x) * scaleX, Math.abs(last.y - first.y) * scaleY);
         return;
       }
       if (!stroke.points.length) return;
       context.beginPath();
-      context.moveTo(stroke.points[0].x, stroke.points[0].y);
-      stroke.points.slice(1).forEach((point) => context.lineTo(point.x, point.y));
+      context.moveTo(stroke.points[0].x * scaleX, stroke.points[0].y * scaleY);
+      stroke.points.slice(1).forEach((point) => context.lineTo(point.x * scaleX, point.y * scaleY));
       if (stroke.points.length === 1) {
-        context.arc(stroke.points[0].x, stroke.points[0].y, stroke.size / 2, 0, Math.PI * 2);
+        context.arc(stroke.points[0].x * scaleX, stroke.points[0].y * scaleY, stroke.size * ((scaleX + scaleY) / 4), 0, Math.PI * 2);
         context.fill();
       } else context.stroke();
     });
