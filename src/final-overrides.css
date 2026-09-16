@@ -16417,3 +16417,23 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
     white-space:nowrap!important
   }
 }
+
+/* History and Assets fill every available column before wrapping; card scale and aspect ratio stay unchanged. */
+.history-page .history-cards{
+  grid-template-columns:repeat(auto-fill,var(--shared-card-width,262px))!important;
+  grid-auto-flow:row!important;
+  justify-content:start!important;
+  align-items:start!important
+}
+.asset-page-figma .asset-subject-grid{
+  grid-template-columns:repeat(auto-fill,var(--shared-card-width,262px))!important;
+  grid-auto-flow:row!important;
+  justify-content:start!important;
+  align-items:start!important
+}
+.asset-page-figma .asset-content-grid{
+  grid-template-columns:repeat(auto-fill,var(--asset-card-width,262px))!important;
+  grid-auto-flow:row!important;
+  justify-content:start!important;
+  align-items:start!important
+}
