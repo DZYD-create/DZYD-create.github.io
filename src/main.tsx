@@ -10,6 +10,13 @@ import "./final-overrides.css";
 type Section = "studio" | "canvas" | "history" | "assets";
 type ThemeMode = "system" | "dark" | "light";
 type EditorTool = "局部重绘" | "擦除内容" | "图片尺寸" | "增强清晰度";
+type GenerationRecord = {
+  id: string;
+  conversation: string;
+  prompt: string;
+  images: string[];
+  createdAt: string;
+};
 type CanvasNode = {
   id: number;
   url: string;
@@ -197,6 +204,8 @@ function App() {
   const [editorReturn, setEditorReturn] = useState<"studio" | "history">("studio");
   const [tool, setTool] = useState<EditorTool | null>(null);
   const [editorFavorite, setEditorFavorite] = usePersistentState("dzyd-editor-favorite", false);
+  const [selectedEditorImage, setSelectedEditorImage] = usePersistentState("dzyd-selected-editor-image", "/assets/template-2.png");
+  const [generationRecords, setGenerationRecords] = usePersistentState<GenerationRecord[]>("dzyd-generation-records", []);
   const [canvasImage, setCanvasImage] = usePersistentState<string | null>("dzyd-canvas-image", null);
   const [canvasImageName, setCanvasImageName] = usePersistentState("dzyd-canvas-image-name", "AI 视觉创作 · 未命名项目");
   const [pendingCanvasAssets, setPendingCanvasAssets] = usePersistentState<Array<{ name: string; url: string }>>("dzyd-pending-canvas-assets", []);
@@ -215,6 +224,26 @@ function App() {
   const [activeConversation, setActiveConversation] = usePersistentState<string | null>("dzyd-active-conversation", null);
   const generationTimer = useRef<number | null>(null);
   const preparationTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    Promise.all([
+      fetch(`${IMAGE_API_BASE}/workspace/dzyd-generated-images`).then((response) => response.ok ? response.json() : null),
+      fetch(`${IMAGE_API_BASE}/workspace/dzyd-round-prompts`).then((response) => response.ok ? response.json() : null),
+    ]).then(([imagePayload, promptPayload]) => {
+      const imageRounds = imagePayload?.value as Record<string, string[]> | null;
+      if (!imageRounds || !Object.keys(imageRounds).length) return;
+      const prompts = Array.isArray(promptPayload?.value) ? promptPayload.value as string[] : [];
+      const conversation = activeConversation || conversations[0]?.[0] || "过往对话";
+      const migrated = Object.entries(imageRounds).filter(([, images]) => Array.isArray(images) && images.length).map(([round, images]) => ({
+        id: `legacy:${round}`,
+        conversation,
+        prompt: prompts[Number(round)] || conversation,
+        images,
+        createdAt: new Date(Date.now() - Number(round) * 1000).toISOString(),
+      }));
+      setGenerationRecords((items) => items.length ? items : migrated);
+    }).catch(() => undefined);
+  }, []);
 
   const generate = () => {
     if (generationTimer.current) window.clearTimeout(generationTimer.current);
@@ -441,16 +470,19 @@ function App() {
               );
               if (activeConversation === previous) setActiveConversation(next);
               if (prompt === previous) setPrompt(next);
+              setGenerationRecords((items) => items.map((record) => record.conversation === previous ? { ...record, conversation: next, id: record.id.replace(`${previous}:`, `${next}:`) } : record));
             }}
             onNewWork={newCreation}
             onCollapse={() => setConversationCollapsed(true)}
             onClear={() => {
               setConversations([]);
+              setGenerationRecords([]);
               setActiveConversation(null);
               newCreation();
             }}
             onOpenConversation={(title) => {
-              setPrompt(title);
+              const latest = generationRecords.filter((record) => record.conversation === title).sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+              setPrompt(latest?.prompt || title);
               setActiveConversation(title);
               setStudioView("generation");
               setPreparing(false);
@@ -523,6 +555,15 @@ function App() {
             preparing={preparing}
             generating={generating}
             generated={generated}
+            conversationTitle={activeConversation || prompt}
+            records={generationRecords}
+            onImagesGenerated={(record) => setGenerationRecords((items) => [record, ...items.filter((item) => item.id !== record.id)])}
+            onOpenImage={(image, imagePrompt) => {
+              setSelectedEditorImage(image);
+              setPrompt(imagePrompt);
+              setEditorReturn("studio");
+              setEditing(true);
+            }}
             collapsed={conversationCollapsed}
             onToggleCollapsed={() => setConversationCollapsed((v) => !v)}
             onBack={() => {
@@ -538,10 +579,12 @@ function App() {
               generate();
             }}
             onDeleteConversation={() => {
-              if (activeConversation)
+              if (activeConversation) {
                 setConversations((items) =>
                   items.filter(([title]) => title !== activeConversation),
                 );
+                setGenerationRecords((items) => items.filter((record) => record.conversation !== activeConversation));
+              }
               newCreation();
             }}
           />
@@ -551,6 +594,7 @@ function App() {
             tool={tool}
             setTool={setTool}
             prompt={prompt}
+            image={selectedEditorImage}
             favorite={editorFavorite}
             onToggleFavorite={() => setEditorFavorite((value) => !value)}
             onClose={() => {
@@ -558,7 +602,7 @@ function App() {
               if (editorReturn === "history") setSection("history");
             }}
             onCanvas={() => {
-              setCanvasImage("/assets/template-2.png");
+              setCanvasImage(selectedEditorImage);
               setSection("canvas");
               setEditing(false);
             }}
@@ -589,6 +633,14 @@ function App() {
         )}
         {section === "history" && (
           <History
+            generatedRecords={generationRecords}
+            onOpenGenerated={(image, imagePrompt) => {
+              setSelectedEditorImage(image);
+              setPrompt(imagePrompt);
+              setEditorReturn("history");
+              setSection("studio");
+              setEditing(true);
+            }}
             favoriteGenerated={editorFavorite}
             onToggleGeneratedFavorite={() => setEditorFavorite((value) => !value)}
             onEdit={() => {
@@ -649,6 +701,10 @@ function GenerationPage({
   preparing,
   generating,
   generated,
+  conversationTitle,
+  records,
+  onImagesGenerated,
+  onOpenImage,
   collapsed,
   onToggleCollapsed,
   onBack,
@@ -663,6 +719,10 @@ function GenerationPage({
   preparing: boolean;
   generating: boolean;
   generated: boolean;
+  conversationTitle: string;
+  records: GenerationRecord[];
+  onImagesGenerated: (record: GenerationRecord) => void;
+  onOpenImage: (image: string, prompt: string) => void;
   collapsed: boolean;
   onToggleCollapsed: () => void;
   onBack: () => void;
@@ -725,6 +785,15 @@ function GenerationPage({
     setDraft(prompt);
   }, [prompt]);
   useEffect(() => {
+    if (generating || preparing) return;
+    const saved = records.filter((record) => record.conversation === conversationTitle).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+    if (!saved.length) return;
+    setRoundPrompts(saved.map((record) => record.prompt));
+    setGeneratedImages(Object.fromEntries(saved.map((record, index) => [index, record.images])));
+    setResultRound(saved.length - 1);
+    setDeletedRounds([]);
+  }, [conversationTitle]);
+  useEffect(() => {
     const dismiss = () => {
       setModelOpen(false);
       setSizeOpen(false);
@@ -755,6 +824,14 @@ function GenerationPage({
     requestGeneratedImages(roundPrompts[resultRound] || prompt)
       .then((images) => {
         setGeneratedImages((current) => ({ ...current, [resultRound]: images }));
+        const recordPrompt = roundPrompts[resultRound] || prompt;
+        onImagesGenerated({
+          id: `${conversationTitle}:${resultRound}`,
+          conversation: conversationTitle,
+          prompt: recordPrompt,
+          images,
+          createdAt: new Date().toISOString(),
+        });
       })
       .catch((error) => {
         setApiError(error instanceof Error ? error.message : "图片生成失败");
@@ -820,7 +897,7 @@ function GenerationPage({
               ) : (
                 <div className={`generated-gallery ${isGenerating ? "loading" : ""}`}>
                   {roundImages.map((src, i) => (
-                      <button className="generation-tile" key={`${round}-${src}`} onClick={onEdit} draggable={!isGenerating} onDragStart={(event)=>{if(isGenerating)return;event.dataTransfer.effectAllowed="copy";event.dataTransfer.setData("application/x-generation-image",JSON.stringify({url:src,name:`第 ${round + 1} 轮生成结果 ${i + 1}`}));}}>
+                      <button className="generation-tile" key={`${round}-${src}`} onClick={() => !isGenerating && onOpenImage(src, roundPrompts[round] || prompt)} draggable={!isGenerating} onDragStart={(event)=>{if(isGenerating)return;event.dataTransfer.effectAllowed="copy";event.dataTransfer.setData("application/x-generation-image",JSON.stringify({url:src,name:`第 ${round + 1} 轮生成结果 ${i + 1}`}));}}>
                         {isGenerating ? (
                           <div className="generation-progress"><span>✦</span><strong>生成中 {progress}%</strong></div>
                         ) : (
@@ -2067,6 +2144,7 @@ function Editor({
   tool,
   setTool,
   prompt,
+  image,
   onClose,
   onCanvas,
   onGenerate,
@@ -2076,6 +2154,7 @@ function Editor({
   tool: EditorTool | null;
   setTool: (v: EditorTool | null) => void;
   prompt: string;
+  image: string;
   onClose: () => void;
   onCanvas: () => void;
   onGenerate: () => void;
@@ -2188,7 +2267,7 @@ function Editor({
         <strong>编辑生成图片</strong>
         <div className="editor-top-actions">
           <button className={`editor-favorite ${favorite ? "active" : ""}`} aria-label={favorite ? "取消收藏" : "收藏"} aria-pressed={favorite} onClick={onToggleFavorite}>{favorite ? "★" : "☆"}</button>
-          <button className="editor-download" onClick={() => { const link = document.createElement("a"); link.href = "/assets/template-2.png"; link.download = "对话生图.png"; document.body.appendChild(link); link.click(); link.remove(); }}>
+          <button className="editor-download" onClick={() => { const link = document.createElement("a"); link.href = image; link.download = "对话生图.png"; document.body.appendChild(link); link.click(); link.remove(); }}>
             <img src="/assets/editor-download.svg" />
             下载
           </button>
@@ -2206,7 +2285,7 @@ function Editor({
             }}
           >
             <img
-              src="/assets/template-2.png"
+              src={image}
               style={{ transform: `scale(${zoom / 100})` }}
               alt="生成图片预览"
             />
@@ -2296,7 +2375,7 @@ function Editor({
                     }}
                   >
                     <div className="modal-image-surface" style={{ transform: `scale(${modalZoom / 100})` }}>
-                      <img src="/assets/template-2.png" alt="待编辑图片" />
+                      <img src={image} alt="待编辑图片" />
                       <svg className={`editor-mask-layer ${tool === "擦除内容" ? "erase-tool" : "redraw-tool"} brush-mode-${brushMode}`} viewBox="0 0 800 450" preserveAspectRatio="none" onPointerDown={beginEditorStroke} onPointerMove={moveEditorStroke} onPointerEnter={(event) => setEditorBrushCursor(editorPoint(event))} onPointerLeave={() => setEditorBrushCursor(null)} onPointerUp={finishEditorStroke} onPointerCancel={finishEditorStroke}>
                       <defs>
                         <pattern id="editor-checker" width="18" height="18" patternUnits="userSpaceOnUse"><rect width="18" height="18" fill="rgba(238,238,238,.28)"/><rect width="9" height="9" fill="rgba(190,194,204,.28)"/><rect x="9" y="9" width="9" height="9" fill="rgba(190,194,204,.28)"/></pattern>
@@ -2373,7 +2452,7 @@ function Editor({
                   <div
                     className={`resize-frame ratio-${ratio.replace(":", "-")}`}
                   >
-                    <img src="/assets/template-2.png" alt="尺寸预览" />
+                    <img src={image} alt="尺寸预览" />
                     <i />
                     <i />
                     <i />
@@ -2405,7 +2484,7 @@ function Editor({
             {tool === "增强清晰度" && (
               <>
                 <div className="enhance-stage">
-                  <img src="/assets/template-2.png" alt="清晰度预览" />
+                  <img src={image} alt="清晰度预览" />
                 </div>
                 <div className="enhance-options">
                   <div className="enhance-option-wrap">
@@ -6598,12 +6677,16 @@ function HistoryDrawer({ onClose }: { onClose: () => void }) {
 }
 
 function History({
+  generatedRecords,
+  onOpenGenerated,
   onEdit,
   onBack,
   onCanvas,
   favoriteGenerated,
   onToggleGeneratedFavorite,
 }: {
+  generatedRecords: GenerationRecord[];
+  onOpenGenerated: (image: string, prompt: string) => void;
   onEdit: () => void;
   onBack: () => void;
   onCanvas: (image?: string, name?: string, assets?: string[]) => void;
@@ -6869,6 +6952,21 @@ function History({
               </div>
             </button>
           )}
+          {tab === "workspace" && generatedRecords.flatMap((record) => record.images.map((image, imageIndex) => ({ record, image, imageIndex }))).filter(({ record, imageIndex }) => record.prompt.toLowerCase().includes(historyQuery.trim().toLowerCase()) && (filter !== "收藏" || favoriteHistory.includes(`${record.id}:${imageIndex}`))).map(({ record, image, imageIndex }) => {
+            const name = record.prompt.length > 18 ? `${record.prompt.slice(0, 18)}…` : record.prompt;
+            const key = `${record.id}:${imageIndex}`;
+            return <div className="history-record-shell" key={key}>
+              <button className={`history-record ${batch ? "batching" : ""}`} onClick={() => batch ? setSelectedHistory((items) => items.includes(key) ? items.filter((item) => item !== key) : [...items, key]) : onOpenGenerated(image, record.prompt)}>
+                <div className="history-record-preview">
+                  <img src={image} alt={name} />
+                  {batch && <i className={`batch-check ${selectedHistory.includes(key) ? "selected" : ""}`}>{selectedHistory.includes(key) ? "✓" : ""}</i>}
+                </div>
+                <strong>{name}</strong>
+                <small>生成于 {new Date(record.createdAt).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</small>
+              </button>
+              <button className={`history-pin ${favoriteHistory.includes(key) ? "active" : ""}`} aria-label="收藏生成图片" onClick={() => setFavoriteHistory((items) => items.includes(key) ? items.filter((item) => item !== key) : [...items, key])}><span>置顶</span>★</button>
+            </div>;
+          })}
           {tab === "workspace" && sortedHistoryCards.filter(({ name }) => name.toLowerCase().includes(historyQuery.trim().toLowerCase()) && (filter !== "收藏" || name === "对话生图图片" || favoriteHistory.includes(name))).map(({ name, originalIndex: i }) => {
             const image = name === "对话生图图片" ? "/assets/template-2.png" : featuredPeople[i % featuredPeople.length].url;
             const favorite = name === "对话生图图片" ? favoriteGenerated : favoriteHistory.includes(name);

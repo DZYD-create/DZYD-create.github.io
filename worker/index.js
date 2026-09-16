@@ -129,6 +129,18 @@ export default {
       return json({ error: error instanceof Error ? error.message : "模型生成失败" }, 502, origin);
     }
     if (!images.length) return json({ error: "模型没有返回图片" }, 502, origin);
-    return json({ images, model: "doubao-seedream-5-0-260128" }, 200, origin);
+    const permanentImages = await Promise.all(images.map(async (imageUrl, index) => {
+      try {
+        const imageResponse = await fetch(imageUrl, { signal: AbortSignal.timeout(60_000) });
+        if (!imageResponse.ok) return imageUrl;
+        const body = await imageResponse.arrayBuffer();
+        if (!body.byteLength || body.byteLength > 25_000_000) return imageUrl;
+        const type = imageResponse.headers.get("Content-Type") || "image/jpeg";
+        const key = `generated:${Date.now()}:${index}:${crypto.randomUUID()}`;
+        await env.ASSETS.put(key, body, { metadata: { name: `AI 生成图片 ${index + 1}`, category: "generated", type, size: body.byteLength, createdAt: new Date().toISOString() } });
+        return `${url.origin}/asset/${encodeURIComponent(key)}`;
+      } catch { return imageUrl; }
+    }));
+    return json({ images: permanentImages, model: "doubao-seedream-5-0-260128" }, 200, origin);
   },
 };
