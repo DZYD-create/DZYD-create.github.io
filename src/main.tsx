@@ -58,6 +58,12 @@ const samples = [
 ];
 
 const IMAGE_API_BASE = "https://dzyd-seedream-api.dzyd-create.workers.dev";
+type GenerationSize = { quality: string; ratio: string; width: number; height: number };
+const DEFAULT_GENERATION_SIZE: GenerationSize = { quality: "高", ratio: "16:9(2k)", width: 1920, height: 1080 };
+
+function currentGenerationSize(): GenerationSize {
+  return readSaved<GenerationSize>("dzyd-generation-size", DEFAULT_GENERATION_SIZE);
+}
 
 function readSaved<T>(key: string, fallback: T): T {
   try {
@@ -132,6 +138,7 @@ async function fileToPersistentImage(file: File): Promise<string> {
 
 async function requestGeneratedImages(prompt: string, referenceImage?: string | null): Promise<string[]> {
   const image = referenceImage ? await prepareFluxReference(new URL(referenceImage, window.location.origin).href) : undefined;
+  const size = currentGenerationSize();
   if (image) {
     return Promise.all([0, 1, 2, 3].map((index) => requestEditedImage(
       image,
@@ -142,7 +149,7 @@ async function requestGeneratedImages(prompt: string, referenceImage?: string | 
   const response = await fetch(`${IMAGE_API_BASE}/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt, size: "2K" }),
+    body: JSON.stringify({ prompt, width: size.width, height: size.height, size: size.ratio }),
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(payload.error || "图片生成失败");
@@ -167,10 +174,11 @@ async function prepareFluxReference(source: string): Promise<string> {
 }
 
 async function requestEditedImage(image: string, prompt: string, size = "2K"): Promise<string> {
+  const selectedSize = currentGenerationSize();
   const response = await fetch(`${IMAGE_API_BASE}/edit`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ image, prompt, size }),
+    body: JSON.stringify({ image, prompt, size, width: selectedSize.width, height: selectedSize.height }),
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(payload.error || "图片编辑失败");
@@ -1953,11 +1961,23 @@ function UploadCardPictureIcon() {
 }
 
 function SizePopover({ onClose }: { onClose: () => void }) {
-  const [quality, setQuality] = useState("高");
-  const [ratio, setRatio] = useState("9:16");
-  const [width, setWidth] = useState("1456");
-  const [height, setHeight] = useState("816");
+  const savedSize = currentGenerationSize();
+  const [quality, setQuality] = useState(savedSize.quality);
+  const [ratio, setRatio] = useState(savedSize.ratio);
+  const [width, setWidth] = useState(String(savedSize.width));
+  const [height, setHeight] = useState(String(savedSize.height));
   const [linked, setLinked] = useState(true);
+  const ratioSizes: Record<string, [number, number]> = {
+    "1:1": [1024, 1024], "3:2": [1200, 800], "2:3": [800, 1200],
+    "4:3": [1152, 864], "3:4": [864, 1152], "9:16": [576, 1024],
+    "1:1(2k)": [1536, 1536], "16:9(2k)": [1920, 1080], "9:16(2k)": [1080, 1920],
+    "16:9(4k)": [1920, 1080], "9:16(4k)": [1080, 1920], "智能": [1024, 1024],
+  };
+  useEffect(() => {
+    const parsedWidth = Math.max(256, Math.min(1920, Number(width) || 1024));
+    const parsedHeight = Math.max(256, Math.min(1920, Number(height) || 1024));
+    localStorage.setItem("dzyd-generation-size", JSON.stringify({ quality, ratio, width: parsedWidth, height: parsedHeight }));
+  }, [quality, ratio, width, height]);
   const ratios = [
     "1:1",
     "3:2",
@@ -2004,8 +2024,8 @@ function SizePopover({ onClose }: { onClose: () => void }) {
             className={ratio === v ? "active" : ""}
             onClick={() => {
               setRatio(v);
-              const match=v.match(/^(\d+):(\d+)/);
-              if(linked&&match) setHeight(String(Math.round(Number(width||1456)*Number(match[2])/Number(match[1]))));
+              const dimensions = ratioSizes[v];
+              if (dimensions) { setWidth(String(dimensions[0])); setHeight(String(dimensions[1])); }
               if (v === "智能") setTimeout(onClose, 120);
             }}
             key={v}

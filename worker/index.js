@@ -24,10 +24,11 @@ async function imageBlobFromInput(env, image) {
 }
 
 async function runFlux(env, prompt, options = {}) {
+  const normalizeDimension = (value, fallback) => Math.max(256, Math.min(1920, Math.round((Number(value) || fallback) / 16) * 16));
   const form = new FormData();
   form.append("prompt", `Follow the user's instruction precisely. Preserve every unspecified subject, detail, color, layout and text. User instruction: ${prompt}`);
-  form.append("width", String(options.width || 1024));
-  form.append("height", String(options.height || 1024));
+  form.append("width", String(normalizeDimension(options.width, 1024)));
+  form.append("height", String(normalizeDimension(options.height, 1024)));
   form.append("guidance", "5");
   if (Number.isInteger(options.seed)) form.append("seed", String(options.seed));
   if (options.image) form.append("input_image_0", await imageBlobFromInput(env, options.image), "reference-image.jpg");
@@ -142,7 +143,7 @@ export default {
 
       let editedImage;
       try {
-        const result = await runFlux(env, prompt, { image });
+        const result = await runFlux(env, prompt, { image, width: input.width, height: input.height });
         editedImage = result?.image || "";
       } catch (error) {
         return json({ error: error instanceof Error ? error.message : "图片编辑失败" }, 502, origin);
@@ -165,7 +166,7 @@ export default {
     if (!prompt || prompt.length > 1200) return json({ error: "请输入 1—1200 字的创作描述" }, 400, origin);
 
     const generateOne = async (index) => {
-      const result = await runFlux(env, prompt, { seed: Math.floor(Date.now() / 1000) + index });
+      const result = await runFlux(env, prompt, { seed: Math.floor(Date.now() / 1000) + index, width: input.width, height: input.height });
       if (!result?.image) throw new Error(`第 ${index + 1} 张图片生成失败`);
       const binary = Uint8Array.from(atob(result.image), (character) => character.charCodeAt(0));
       const key = `generated:${Date.now()}:${index}:${crypto.randomUUID()}`;

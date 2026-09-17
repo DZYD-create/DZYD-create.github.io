@@ -14096,6 +14096,23 @@ button > img {
 .figma-tool-modal.modal-增强清晰度 .enhance-stage>img{
   display:block!important;width:auto!important;height:auto!important;max-width:78%!important;max-height:244px!important;margin:0!important
 }
+
+/* Image details always fit the complete artwork inside the visible viewport. */
+.figma-editor-page .figma-editor-workspace{
+  height:calc(100dvh - 60px)!important;min-height:0!important;overflow:hidden!important
+}
+.figma-editor-page .editor-preview-area{
+  box-sizing:border-box!important;min-width:0!important;min-height:0!important;padding:54px 32px 78px!important;
+  display:flex!important;align-items:stretch!important;overflow:hidden!important
+}
+.figma-editor-page .generated-image-canvas{
+  box-sizing:border-box!important;width:100%!important;height:100%!important;min-height:0!important;padding:16px!important;
+  display:grid!important;place-items:center!important;overflow:hidden!important
+}
+.figma-editor-page .generated-image-canvas>img{
+  display:block!important;width:auto!important;height:auto!important;max-width:100%!important;max-height:100%!important;
+  object-fit:contain!important;object-position:center!important;margin:auto!important;box-shadow:0 8px 24px rgba(31,43,65,.12)!important
+}
 .figma-tool-modal.modal-增强清晰度 .enhance-options{bottom:72px!important;height:54px!important}
 
 /* Compact resolution trigger with a shared baseline for label and chevron. */
