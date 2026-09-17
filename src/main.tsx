@@ -131,7 +131,7 @@ async function fileToPersistentImage(file: File): Promise<string> {
 }
 
 async function requestGeneratedImages(prompt: string, referenceImage?: string | null): Promise<string[]> {
-  const image = referenceImage ? new URL(referenceImage, window.location.origin).href : undefined;
+  const image = referenceImage ? await prepareFluxReference(new URL(referenceImage, window.location.origin).href) : undefined;
   if (image) {
     return Promise.all([0, 1, 2, 3].map((index) => requestEditedImage(
       image,
@@ -147,6 +147,23 @@ async function requestGeneratedImages(prompt: string, referenceImage?: string | 
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(payload.error || "图片生成失败");
   return Array.isArray(payload.images) ? payload.images : [];
+}
+
+async function prepareFluxReference(source: string): Promise<string> {
+  try {
+    const image = new Image();
+    image.crossOrigin = "anonymous";
+    image.src = source;
+    await image.decode();
+    const scale = Math.min(1, 500 / Math.max(image.naturalWidth, image.naturalHeight));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+    canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+    canvas.getContext("2d")?.drawImage(image, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL("image/jpeg", .9);
+  } catch {
+    return source;
+  }
 }
 
 async function requestEditedImage(image: string, prompt: string, size = "2K"): Promise<string> {

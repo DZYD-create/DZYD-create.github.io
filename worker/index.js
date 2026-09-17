@@ -3,6 +3,42 @@ const ALLOWED_ORIGINS = new Set([
   "http://127.0.0.1:5173",
   "http://localhost:5173",
 ]);
+const FLUX_MODEL = "@cf/black-forest-labs/flux-2-klein-9b";
+
+async function imageBlobFromInput(env, image) {
+  if (/^data:image\//i.test(image)) {
+    const match = image.match(/^data:(image\/[^;,]+);base64,(.+)$/i);
+    if (!match) throw new Error("参考图片格式不受支持");
+    const bytes = Uint8Array.from(atob(match[2]), (character) => character.charCodeAt(0));
+    return new Blob([bytes], { type: match[1] });
+  }
+  const sourceUrl = new URL(image);
+  if (sourceUrl.hostname === "dzyd-seedream-api.dzyd-create.workers.dev" && sourceUrl.pathname.startsWith("/asset/")) {
+    const stored = await env.ASSETS.getWithMetadata(decodeURIComponent(sourceUrl.pathname.slice(7)), "arrayBuffer");
+    if (!stored.value) throw new Error("无法读取参考图片");
+    return new Blob([stored.value], { type: stored.metadata?.type || "image/jpeg" });
+  }
+  const response = await fetch(image, { signal: AbortSignal.timeout(60_000) });
+  if (!response.ok) throw new Error("无法读取参考图片");
+  return new Blob([await response.arrayBuffer()], { type: response.headers.get("Content-Type") || "image/jpeg" });
+}
+
+async function runFlux(env, prompt, options = {}) {
+  const form = new FormData();
+  form.append("prompt", `Follow the user's instruction precisely. Preserve every unspecified subject, detail, color, layout and text. User instruction: ${prompt}`);
+  form.append("width", String(options.width || 1024));
+  form.append("height", String(options.height || 1024));
+  form.append("guidance", "5");
+  if (Number.isInteger(options.seed)) form.append("seed", String(options.seed));
+  if (options.image) form.append("input_image_0", await imageBlobFromInput(env, options.image), "reference-image.jpg");
+  const serialized = new Response(form);
+  return env.AI.run(FLUX_MODEL, {
+    multipart: {
+      body: serialized.body,
+      contentType: serialized.headers.get("content-type"),
+    },
+  });
+}
 
 function headers(origin) {
   return {
@@ -94,7 +130,6 @@ export default {
     }
     if (url.pathname === "/edit" && request.method === "POST") {
       if (!ALLOWED_ORIGINS.has(origin)) return json({ error: "不允许的请求来源" }, 403, origin);
-      if (!env.ARK_API_KEY) return json({ error: "服务端密钥未配置" }, 503, origin);
       const contentLength = Number(request.headers.get("Content-Length") || 0);
       if (contentLength > 8_000_000) return json({ error: "编辑请求内容过大" }, 413, origin);
 
@@ -107,42 +142,17 @@ export default {
 
       let editedImage;
       try {
-        const upstream = await fetch("https://ark.cn-beijing.volces.com/api/v3/images/generations", {
-          method: "POST",
-          headers: { "Authorization": `Bearer ${env.ARK_API_KEY}`, "Content-Type": "application/json" },
-          signal: AbortSignal.timeout(180_000),
-          body: JSON.stringify({
-            model: "doubao-seedream-5-0-260128",
-            prompt,
-            image,
-            size: input.size || "2K",
-            response_format: "url",
-            watermark: false,
-            sequential_image_generation: "disabled",
-          }),
-        });
-        const result = await upstream.json().catch(() => ({}));
-        if (!upstream.ok) throw new Error(result?.error?.message || result?.message || "图片编辑失败");
-        editedImage = result?.data?.[0]?.url || "";
+        const result = await runFlux(env, prompt, { image });
+        editedImage = result?.image || "";
       } catch (error) {
         return json({ error: error instanceof Error ? error.message : "图片编辑失败" }, 502, origin);
       }
       if (!editedImage) return json({ error: "模型没有返回编辑后的图片" }, 502, origin);
 
-      let permanentImage = editedImage;
-      try {
-        const imageResponse = await fetch(editedImage, { signal: AbortSignal.timeout(60_000) });
-        if (imageResponse.ok) {
-          const body = await imageResponse.arrayBuffer();
-          if (body.byteLength && body.byteLength <= 25_000_000) {
-            const type = imageResponse.headers.get("Content-Type") || "image/jpeg";
-            const key = `generated-edit:${Date.now()}:${crypto.randomUUID()}`;
-            await env.ASSETS.put(key, body, { metadata: { name: "AI 编辑图片", category: "generated", type, size: body.byteLength, createdAt: new Date().toISOString() } });
-            permanentImage = `${url.origin}/asset/${encodeURIComponent(key)}`;
-          }
-        }
-      } catch {}
-      return json({ image: permanentImage, model: "doubao-seedream-5-0-260128" }, 200, origin);
+      const body = Uint8Array.from(atob(editedImage), (character) => character.charCodeAt(0));
+      const key = `generated-edit:${Date.now()}:${crypto.randomUUID()}`;
+      await env.ASSETS.put(key, body, { metadata: { name: "AI 编辑图片", category: "generated", type: "image/jpeg", size: body.byteLength, createdAt: new Date().toISOString() } });
+      return json({ image: `${url.origin}/asset/${encodeURIComponent(key)}`, model: FLUX_MODEL }, 200, origin);
     }
     if (url.pathname !== "/generate" || request.method !== "POST") return json({ error: "Not found" }, 404, origin);
     if (!ALLOWED_ORIGINS.has(origin)) return json({ error: "不允许的请求来源" }, 403, origin);
@@ -155,10 +165,7 @@ export default {
     if (!prompt || prompt.length > 1200) return json({ error: "请输入 1—1200 字的创作描述" }, 400, origin);
 
     const generateOne = async (index) => {
-      const result = await env.AI.run("@cf/black-forest-labs/flux-1-schnell", {
-        prompt,
-        steps: 4,
-      });
+      const result = await runFlux(env, prompt, { seed: Math.floor(Date.now() / 1000) + index });
       if (!result?.image) throw new Error(`第 ${index + 1} 张图片生成失败`);
       const binary = Uint8Array.from(atob(result.image), (character) => character.charCodeAt(0));
       const key = `generated:${Date.now()}:${index}:${crypto.randomUUID()}`;
@@ -180,6 +187,6 @@ export default {
       return json({ error: error instanceof Error ? error.message : "模型生成失败" }, 502, origin);
     }
     if (!images.length) return json({ error: "模型没有返回图片" }, 502, origin);
-    return json({ images, model: "@cf/black-forest-labs/flux-1-schnell" }, 200, origin);
+    return json({ images, model: FLUX_MODEL }, 200, origin);
   },
 };
