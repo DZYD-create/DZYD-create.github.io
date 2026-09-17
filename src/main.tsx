@@ -1834,21 +1834,31 @@ function ModelInvocationPopover() {
 
 function HomeAssetPopover({ onChoose }: { onChoose: () => void }) {
   type ComposerAsset = { id?: string; name: string; url: string; category?: "assets" | "live"; createdAt?: string };
+  const builtInAssets: ComposerAsset[] = [
+    { name: "孩子开学抢跑必备神器", url: "/assets/school-kickoff-poster.png", category: "assets" },
+    { name: "达人合作蓝色背景", url: "/assets/live-collaboration-blue.png", category: "live" },
+  ];
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
   const [tab, setTab] = useState("海报");
   const [query, setQuery] = useState("");
-  const [cloudAssets, setCloudAssets] = useState<ComposerAsset[]>([]);
+  const [cloudAssets, setCloudAssets] = useState<ComposerAsset[]>(() => [
+    ...readSaved<ComposerAsset[]>("dzyd-cloud-assets", []),
+    ...builtInAssets,
+  ]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     let active = true;
     fetch(`${IMAGE_API_BASE}/assets`)
       .then((response) => response.ok ? response.json() : Promise.reject(new Error("素材加载失败")))
       .then((payload) => {
-        if (active) setCloudAssets(Array.isArray(payload.assets) ? payload.assets : []);
+        if (!active) return;
+        const remote = Array.isArray(payload.assets) ? payload.assets as ComposerAsset[] : [];
+        setCloudAssets((cached) => {
+          const merged = [...remote, ...cached, ...builtInAssets];
+          return merged.filter((asset, index) => merged.findIndex((item) => item.url === asset.url) === index);
+        });
       })
-      .catch(() => {
-        if (active) setCloudAssets([]);
-      })
+      .catch(() => undefined)
       .finally(() => {
         if (active) setLoading(false);
       });
