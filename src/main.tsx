@@ -2283,6 +2283,31 @@ function Editor({
   const [resolution, setResolution] = useState("放大至 2K");
   const [detailOpen, setDetailOpen] = useState(false);
   const [resolutionOpen, setResolutionOpen] = useState(false);
+  const resizeImageOnly = async () => {
+    if (ratio === "原比例") return workingImage;
+    const match = ratio.match(/^(\d+):(\d+)$/);
+    if (!match) return workingImage;
+    const source = new Image();
+    source.crossOrigin = "anonymous";
+    source.src = workingImage;
+    await source.decode();
+    const ratioWidth = Number(match[1]);
+    const ratioHeight = Number(match[2]);
+    const longestEdge = Math.min(1920, Math.max(source.naturalWidth, source.naturalHeight));
+    const targetWidth = ratioWidth >= ratioHeight ? longestEdge : Math.max(1, Math.round(longestEdge * ratioWidth / ratioHeight));
+    const targetHeight = ratioHeight >= ratioWidth ? longestEdge : Math.max(1, Math.round(longestEdge * ratioHeight / ratioWidth));
+    const canvas = document.createElement("canvas");
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("无法修改图片尺寸");
+    const scale = Math.min(targetWidth / source.naturalWidth, targetHeight / source.naturalHeight);
+    const drawWidth = source.naturalWidth * scale;
+    const drawHeight = source.naturalHeight * scale;
+    context.clearRect(0, 0, targetWidth, targetHeight);
+    context.drawImage(source, (targetWidth - drawWidth) / 2, (targetHeight - drawHeight) / 2, drawWidth, drawHeight);
+    return canvas.toDataURL("image/png");
+  };
   useEffect(() => setWorkingImage(image), [image]);
   type EditorStroke = { size: number; kind: "paint" | "erase" | "select"; points: Array<{ x: number; y: number }> };
   const [editorStrokes, setEditorStrokes] = useState<EditorStroke[]>([]);
@@ -2378,6 +2403,21 @@ function Editor({
   };
   const applyEditorTool = async () => {
     if (!tool || toolGenerating) return;
+    if (tool === "图片尺寸") {
+      setToolError("");
+      setToolGenerating(true);
+      try {
+        const resizedImage = await resizeImageOnly();
+        setWorkingImage(resizedImage);
+        onImageChange(resizedImage);
+        setTool(null);
+      } catch (error) {
+        setToolError(error instanceof Error ? error.message : "无法修改图片尺寸");
+      } finally {
+        setToolGenerating(false);
+      }
+      return;
+    }
     const hasMarkedRegion = editorStrokes.some((stroke) => stroke.kind !== "erase");
     const regionPosition = describeMarkedEditorRegion();
     const regionRule = hasMarkedRegion
@@ -2387,9 +2427,7 @@ function Editor({
       ? `${regionRule}${modalPrompt.trim() || "自然重绘标记区域"}。只修改目标区域。`
       : tool === "擦除内容"
         ? `${regionRule}${modalPrompt.trim() || "删除标记区域内的内容并根据周围画面自然修复背景"}。只修改目标区域。`
-        : tool === "图片尺寸"
-          ? `严格使用输入原图，将画面调整为${ratio === "原比例" ? "原始比例" : ratio}，${modalPrompt.trim() || "只在必要处智能补全画面边缘"}，保持主体、文字和原始风格不变。`
-          : `严格使用输入原图，仅提升清晰度与细节，使用${detail}，${resolution}，不得改变构图、文字、主体、颜色和风格。`;
+        : `严格使用输入原图，仅提升清晰度与细节，使用${detail}，${resolution}，不得改变构图、文字、主体、颜色和风格。`;
     setToolError("");
     setToolGenerating(true);
     try {
@@ -2662,14 +2700,6 @@ function Editor({
                     </button>
                   ))}
                 </div>
-                <div className="modal-prompt">
-                  <input
-                    value={modalPrompt}
-                    onChange={(e) => setModalPrompt(e.target.value)}
-                    placeholder="描述想要如何更改画面，或涂抹后输入要更改的文案"
-                  />
-                  <span className="resize-pencil" aria-hidden="true"><svg viewBox="0 0 28 28"><path d="m6 20.5-1 4.5 4.5-1L22.7 10.8a2.2 2.2 0 0 0 0-3.1l-2.4-2.4a2.2 2.2 0 0 0-3.1 0L6 20.5Z"/><path d="m15.4 7.1 5.5 5.5M5 25h18"/></svg></span>
-                </div>
               </>
             )}
             {tool === "增强清晰度" && (
@@ -2774,7 +2804,7 @@ function Editor({
             >
               <span className="modal-generate-content">
                 <span className="modal-generate-stars" aria-hidden="true"><svg viewBox="0 0 52 52"><path d="M20 5c1.8 10.3 5.7 14.2 16 16-10.3 1.8-14.2 5.7-16 16-1.8-10.3-5.7-14.2-16-16C14.3 19.2 18.2 15.3 20 5Z"/><path d="M39 2c.8 4.8 2.7 6.7 7.5 7.5C41.7 10.3 39.8 12.2 39 17c-.8-4.8-2.7-6.7-7.5-7.5C36.3 8.7 38.2 6.8 39 2Z"/></svg></span>
-                <span className="modal-generate-label">{toolGenerating ? "生成中…" : "生成"}</span>
+                <span className="modal-generate-label">{toolGenerating ? "处理中…" : tool === "图片尺寸" ? "应用尺寸" : "生成"}</span>
               </span>
             </button>
             {toolError && <p className="generation-api-error" role="alert">{toolError}</p>}

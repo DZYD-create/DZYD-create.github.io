@@ -14097,6 +14097,26 @@ button > img {
   display:block!important;width:auto!important;height:auto!important;max-width:78%!important;max-height:244px!important;margin:0!important
 }
 
+/* Size and enhance previews always stay completely inside their dialogs. */
+.figma-tool-modal.modal-图片尺寸,
+.figma-tool-modal.modal-增强清晰度{
+  box-sizing:border-box!important;max-height:calc(100dvh - 32px)!important;overflow:hidden!important
+}
+.figma-tool-modal.modal-图片尺寸 .resize-stage,
+.figma-tool-modal.modal-增强清晰度 .enhance-stage{
+  box-sizing:border-box!important;overflow:hidden!important
+}
+.figma-tool-modal.modal-图片尺寸 .resize-frame{
+  box-sizing:border-box!important;overflow:hidden!important;padding:12px!important
+}
+.figma-tool-modal.modal-图片尺寸 .resize-frame>img,
+.figma-tool-modal.modal-增强清晰度 .enhance-stage>img{
+  display:block!important;width:auto!important;height:auto!important;max-width:100%!important;max-height:100%!important;
+  object-fit:contain!important;object-position:center!important;margin:auto!important
+}
+.figma-tool-modal.modal-图片尺寸 .ratio-list{margin-bottom:0!important}
+.figma-tool-modal.modal-图片尺寸>.modal-generate{bottom:22px!important}
+
 /* Image details always fit the complete artwork inside the visible viewport. */
 .figma-editor-page .figma-editor-workspace{
   height:calc(100dvh - 60px)!important;min-height:0!important;overflow:hidden!important
