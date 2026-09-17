@@ -1278,6 +1278,7 @@ function GenerationPage({
                 ? current
                 : [...current, { name: asset.name, url: asset.url }].slice(0, 5));
             }}
+            onUnpick={(asset) => setAttachments((current) => current.filter((item) => item.url !== asset.url))}
             onChoose={(assets) => {
               setAssetsOpen(false);
               setAttachments((current) => [
@@ -1620,6 +1621,7 @@ function NewCreationPage({
                 ? current
                 : [...current, { name: asset.name, url: asset.url }].slice(0, 5));
             }}
+            onUnpick={(asset) => setAttachments((current) => current.filter((item) => item.url !== asset.url))}
             onChoose={(assets) => {
               setAssetsOpen(false);
               setAttachments((current) => [
@@ -1839,6 +1841,7 @@ function Studio({
         {assetsOpen && (
           <HomeAssetPopover
             onPick={(asset) => setAttachment({ name: asset.name, url: asset.url })}
+            onUnpick={(asset) => setAttachment((current) => current?.url === asset.url ? null : current)}
             onChoose={(assets) => {
               setAssetsOpen(false);
               if (assets[0]) setAttachment({ name: assets[0].name, url: assets[0].url });
@@ -1914,7 +1917,7 @@ function ModelInvocationPopover() {
 
 type ComposerAsset = { id?: string; name: string; url: string; category?: "assets" | "live"; createdAt?: string };
 
-function HomeAssetPopover({ onChoose, onPick }: { onChoose: (assets: ComposerAsset[]) => void; onPick?: (asset: ComposerAsset) => void }) {
+function HomeAssetPopover({ onChoose, onPick, onUnpick }: { onChoose: (assets: ComposerAsset[]) => void; onPick?: (asset: ComposerAsset) => void; onUnpick?: (asset: ComposerAsset) => void }) {
   const builtInAssets: ComposerAsset[] = [
     { name: "孩子开学抢跑必备神器", url: "/assets/school-kickoff-poster.png", category: "assets" },
     { name: "达人合作蓝色背景", url: "/assets/live-collaboration-blue.png", category: "live" },
@@ -1988,7 +1991,10 @@ function HomeAssetPopover({ onChoose, onPick }: { onChoose: (assets: ComposerAss
             className={selected.has(asset.url) ? "active" : ""}
             onClick={() => setSelected((current) => {
               const next = new Set(current);
-              if (next.has(asset.url)) next.delete(asset.url);
+              if (next.has(asset.url)) {
+                next.delete(asset.url);
+                onUnpick?.(asset);
+              }
               else {
                 next.add(asset.url);
                 onPick?.(asset);

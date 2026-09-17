@@ -16719,3 +16719,23 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   object-fit:contain!important;
   object-position:center center!important
 }
+
+/* History and Asset batch-delete controls keep the trash glyph and label on one baseline. */
+.history-batch-actions>button,
+.history-batch-actions.asset-batch-actions>button{
+  display:inline-flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  white-space:nowrap!important;
+  line-height:1!important
+}
+.history-batch-actions>button>img,
+.history-batch-actions.asset-batch-actions>button>img{
+  display:block!important;
+  flex:0 0 18px!important;
+  width:18px!important;
+  height:18px!important;
+  margin:0!important
+}
