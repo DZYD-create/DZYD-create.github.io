@@ -198,6 +198,34 @@ async function prepareFluxReference(source: string): Promise<string> {
   }
 }
 
+async function prepareCombinedReferences(sources: string[]): Promise<string> {
+  const uniqueSources = [...new Set(sources.filter(Boolean))].slice(0, 2);
+  if (!uniqueSources.length) throw new Error("请选择至少一张参考图片");
+  if (uniqueSources.length === 1) return prepareFluxReference(new URL(uniqueSources[0], window.location.origin).href);
+  const prepared = await Promise.all(uniqueSources.map((source) => prepareFluxReference(new URL(source, window.location.origin).href)));
+  const images = await Promise.all(prepared.map(async (src) => {
+    const image = new Image();
+    image.src = src;
+    await image.decode();
+    return image;
+  }));
+  const canvas = document.createElement("canvas");
+  canvas.width = 1024;
+  canvas.height = 576;
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("无法合并参考图片");
+  context.fillStyle = "#ffffff";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  images.forEach((image, index) => {
+    const cellX = index * 512;
+    const scale = Math.min(480 / image.naturalWidth, 544 / image.naturalHeight);
+    const width = image.naturalWidth * scale;
+    const height = image.naturalHeight * scale;
+    context.drawImage(image, cellX + (512 - width) / 2, (576 - height) / 2, width, height);
+  });
+  return canvas.toDataURL("image/jpeg", .88);
+}
+
 async function requestEditedImage(
   image: string,
   prompt: string,
@@ -1939,7 +1967,7 @@ function HomeAssetPopover({ onChoose }: { onChoose: (assets: ComposerAsset[]) =>
         />
       </label>
       <div className="composer-assets-grid">
-        {visibleAssets.slice(0, 3).map((asset) => (
+        {visibleAssets.map((asset) => (
           <button
             className={selected.has(asset.url) ? "active" : ""}
             onClick={() => setSelected((current) => {
@@ -1965,7 +1993,7 @@ function HomeAssetPopover({ onChoose }: { onChoose: (assets: ComposerAsset[]) =>
           ×
         </button>
         <span>已选 {selected.size} 个</span>
-        <button className="assets-download" aria-label="使用选中素材" onClick={() => onChoose(visibleAssets.filter((asset) => selected.has(asset.url)))}>
+        <button className="assets-download" aria-label="使用选中素材" disabled={!selected.size} onClick={() => onChoose(visibleAssets.filter((asset) => selected.has(asset.url)))}>
           <img src="/assets/figma-download-tray.svg" alt="" />
         </button>
       </footer>
@@ -4153,10 +4181,25 @@ function Canvas({
       });
     }, 150);
     try {
-      const sourceImage = await prepareFluxReference(new URL(source.url, window.location.origin).href);
+      const linkedNodeIds = canvasLinks
+        .filter((link) => link.from === source.id || link.to === source.id)
+        .map((link) => ({ link, id: link.from === source.id ? link.to : link.from }))
+        .filter(({ link, id }) => {
+          const linkedNode = canvasNodes.find((node) => node.id === id);
+          return linkedNode && !(link.from === source.id && link.to === id && linkedNode.generated);
+        })
+        .map(({ id }) => id);
+      const referenceNodes = [
+        source,
+        ...linkedNodeIds.map((id) => canvasNodes.find((node) => node.id === id)).filter((node): node is CanvasNode => Boolean(node)),
+      ].filter((node) => node.url && !node.placeholder).filter((node, index, nodes) => nodes.findIndex((item) => item.url === node.url) === index).slice(0, 2);
+      const sourceImage = await prepareCombinedReferences(referenceNodes.map((node) => node.url));
+      const multiReferencePrompt = referenceNodes.length > 1
+        ? `输入参考图由两张图片组成：左侧是主要编辑对象，右侧是需要结合的第二张参考图。请综合两张图的主体、元素或风格生成一张完整的新图片，禁止输出左右拼接图或参考图版式。${generationPrompt}`
+        : generationPrompt;
       const result = await requestEditedImage(
         sourceImage,
-        generationPrompt,
+        multiReferencePrompt,
         promptQuality.includes("4K") ? "4K" : "2K",
         { width: promptWidth, height: promptHeight },
       );

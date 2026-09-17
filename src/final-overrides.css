@@ -16632,3 +16632,12 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   grid-column:1/-1!important;display:grid!important;place-items:center!important;
   width:100%!important;height:130px!important;margin:0!important;color:#8b93a1!important;font-size:13px!important
 }
+
+/* Asset pickers keep their controls fixed and scroll all library cards internally. */
+.figma-composer-assets .composer-assets-grid,
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid{
+  align-content:start!important;overflow-x:hidden!important;overflow-y:auto!important;scrollbar-gutter:stable!important;padding-right:4px!important
+}
+.figma-composer-assets .composer-assets-grid::-webkit-scrollbar{width:6px!important}
+.figma-composer-assets .composer-assets-grid::-webkit-scrollbar-thumb{background:#cbc5f7!important;border-radius:6px!important}
+.figma-composer-assets .assets-download:disabled{opacity:.4!important;cursor:not-allowed!important}
