@@ -16615,3 +16615,20 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   width:calc(100% - 32px)!important;height:calc(100% - 32px)!important;max-width:none!important;max-height:none!important;
   object-fit:contain!important;object-position:center!important;margin:0!important;transform:none!important
 }
+
+/* Final editor preview guard: always show the complete image, centred in the viewport. */
+.figma-editor-page .generated-image-canvas{
+  position:relative!important;box-sizing:border-box!important;display:block!important;
+  width:100%!important;height:100%!important;min-height:0!important;padding:0!important;overflow:hidden!important
+}
+.figma-editor-page .generated-image-canvas>img{
+  position:absolute!important;inset:20px!important;box-sizing:border-box!important;
+  width:calc(100% - 40px)!important;height:calc(100% - 40px)!important;
+  max-width:none!important;max-height:none!important;margin:0!important;
+  object-fit:contain!important;object-position:center center!important;
+  transform-origin:center center!important;box-shadow:none!important
+}
+.composer-assets-empty{
+  grid-column:1/-1!important;display:grid!important;place-items:center!important;
+  width:100%!important;height:130px!important;margin:0!important;color:#8b93a1!important;font-size:13px!important
+}

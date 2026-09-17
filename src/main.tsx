@@ -1833,9 +1833,32 @@ function ModelInvocationPopover() {
 }
 
 function HomeAssetPopover({ onChoose }: { onChoose: () => void }) {
-  const [selected, setSelected] = useState<Set<number>>(() => new Set());
+  type ComposerAsset = { id?: string; name: string; url: string; category?: "assets" | "live"; createdAt?: string };
+  const [selected, setSelected] = useState<Set<string>>(() => new Set());
   const [tab, setTab] = useState("海报");
   const [query, setQuery] = useState("");
+  const [cloudAssets, setCloudAssets] = useState<ComposerAsset[]>([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    let active = true;
+    fetch(`${IMAGE_API_BASE}/assets`)
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error("素材加载失败")))
+      .then((payload) => {
+        if (active) setCloudAssets(Array.isArray(payload.assets) ? payload.assets : []);
+      })
+      .catch(() => {
+        if (active) setCloudAssets([]);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => { active = false; };
+  }, []);
+  const normalizedQuery = query.trim().toLowerCase();
+  const visibleAssets = cloudAssets.filter((asset) => {
+    const matchesTab = tab === "直播间" ? asset.category === "live" : asset.category !== "live";
+    return matchesTab && asset.name.toLowerCase().includes(normalizedQuery);
+  });
   return (
     <div className="home-asset-popover figma-composer-assets">
       <div className="composer-assets-tabs">
@@ -1858,25 +1881,26 @@ function HomeAssetPopover({ onChoose }: { onChoose: () => void }) {
         />
       </label>
       <div className="composer-assets-grid">
-        {samples.slice(0, 2).map((src, i) => (
+        {visibleAssets.slice(0, 3).map((asset) => (
           <button
-            className={selected.has(i) ? "active" : ""}
+            className={selected.has(asset.url) ? "active" : ""}
             onClick={() => setSelected((current) => {
               const next = new Set(current);
-              if (next.has(i)) next.delete(i);
-              else next.add(i);
+              if (next.has(asset.url)) next.delete(asset.url);
+              else next.add(asset.url);
               return next;
             })}
-            key={src}
+            key={asset.id || asset.url}
           >
             <span>
-              <img src={src} />
+              <img src={asset.url} alt={asset.name} />
             </span>
-            <strong>{tab === "PPT" ? "课程演示稿" : "小学全科卡"}</strong>
-            <small>图片 · 今天</small>
-            {selected.has(i) && <b>✓</b>}
+            <strong>{asset.name}</strong>
+            <small>图片 · {asset.createdAt ? "云端素材" : "素材库"}</small>
+            {selected.has(asset.url) && <b>✓</b>}
           </button>
         ))}
+        {!visibleAssets.length && <p className="composer-assets-empty">{loading ? "正在同步素材库…" : "该分类暂无素材"}</p>}
       </div>
       <footer>
         <button className="assets-clear" onClick={() => setSelected(new Set())}>
@@ -2308,7 +2332,11 @@ function Editor({
     context.drawImage(source, (targetWidth - drawWidth) / 2, (targetHeight - drawHeight) / 2, drawWidth, drawHeight);
     return canvas.toDataURL("image/png");
   };
-  useEffect(() => setWorkingImage(image), [image]);
+  useEffect(() => {
+    setWorkingImage(image);
+    setZoom(100);
+    setModalZoom(100);
+  }, [image]);
   type EditorStroke = { size: number; kind: "paint" | "erase" | "select"; points: Array<{ x: number; y: number }> };
   const [editorStrokes, setEditorStrokes] = useState<EditorStroke[]>([]);
   const [activeEditorStroke, setActiveEditorStroke] = useState<EditorStroke | null>(null);
