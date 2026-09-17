@@ -157,19 +157,30 @@ async function requestGeneratedImages(prompt: string, referenceImage?: string | 
 }
 
 async function prepareFluxReference(source: string): Promise<string> {
+  let objectUrl = "";
   try {
+    let renderSource = source;
+    if (!/^data:image\//i.test(source)) {
+      const response = await fetch(source, { cache: "force-cache" });
+      if (!response.ok) throw new Error("无法读取画布图片");
+      const blob = await response.blob();
+      if (!blob.type.startsWith("image/")) throw new Error("画布内容不是有效图片");
+      objectUrl = URL.createObjectURL(blob);
+      renderSource = objectUrl;
+    }
     const image = new Image();
-    image.crossOrigin = "anonymous";
-    image.src = source;
+    image.src = renderSource;
     await image.decode();
-    const scale = Math.min(1, 500 / Math.max(image.naturalWidth, image.naturalHeight));
+    const scale = Math.min(1, 768 / Math.max(image.naturalWidth, image.naturalHeight));
     const canvas = document.createElement("canvas");
     canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
     canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
     canvas.getContext("2d")?.drawImage(image, 0, 0, canvas.width, canvas.height);
-    return canvas.toDataURL("image/jpeg", .9);
-  } catch {
-    return source;
+    const prepared = canvas.toDataURL("image/jpeg", .86);
+    if (!prepared.startsWith("data:image/")) throw new Error("画布图片转换失败");
+    return prepared;
+  } finally {
+    if (objectUrl) URL.revokeObjectURL(objectUrl);
   }
 }
 
