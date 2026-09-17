@@ -52,7 +52,9 @@ async function runSiliconFlow(env, prompt, options = {}) {
   const [width, height] = closestKolorsSize(options.width, options.height);
   const requestBody = {
     model: "Kwai-Kolors/Kolors",
-    prompt,
+    prompt: options.image
+      ? `必须读取并以输入参考图片为基础进行图生图。保留参考图中未被要求修改的主体身份、构图、姿态、文字、颜色与细节，只执行用户明确要求的变化。用户要求：${prompt}`
+      : prompt,
     image_size: `${width}x${height}`,
     num_inference_steps: 20,
     guidance_scale: 9,

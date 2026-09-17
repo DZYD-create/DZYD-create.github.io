@@ -184,8 +184,13 @@ async function prepareFluxReference(source: string): Promise<string> {
   }
 }
 
-async function requestEditedImage(image: string, prompt: string, size = "2K"): Promise<string> {
-  const selectedSize = currentGenerationSize();
+async function requestEditedImage(
+  image: string,
+  prompt: string,
+  size = "2K",
+  dimensions?: { width: number; height: number },
+): Promise<string> {
+  const selectedSize = dimensions || currentGenerationSize();
   const response = await fetch(`${IMAGE_API_BASE}/edit`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -3123,6 +3128,8 @@ function Canvas({
   const [promptModel, setPromptModel] = useState(savedCanvas.promptModel || "图片 4.5");
   const [promptQuality, setPromptQuality] = useState(savedCanvas.promptQuality || "高");
   const [promptRatio, setPromptRatio] = useState(savedCanvas.promptRatio || "9:16");
+  const [promptWidth, setPromptWidth] = useState(Number(savedCanvas.promptWidth) || 576);
+  const [promptHeight, setPromptHeight] = useState(Number(savedCanvas.promptHeight) || 1024);
   const [focusEdit, setFocusEdit] = useState(false);
   const [referenceSelect, setReferenceSelect] = useState(false);
   const [focusRecenterVisible, setFocusRecenterVisible] = useState(true);
@@ -3211,6 +3218,8 @@ function Canvas({
           setPromptModel(cloud.promptModel || "图片 4.5");
           setPromptQuality(cloud.promptQuality || "高");
           setPromptRatio(cloud.promptRatio || "9:16");
+          setPromptWidth(Number(cloud.promptWidth) || 576);
+          setPromptHeight(Number(cloud.promptHeight) || 1024);
           setCanvasPromptTexts(cloud.promptTexts || {});
           setCanvasToolPromptText(cloud.toolPromptText || "");
           setFocusTrailingText(cloud.trailingText || {});
@@ -3219,7 +3228,7 @@ function Canvas({
         } else {
           const initialSnapshot = {
             projectTitle, folderNames, folderColors, nodes: canvasNodes, links: canvasLinks,
-            zoom: canvasZoom, promptModel, promptQuality, promptRatio,
+            zoom: canvasZoom, promptModel, promptQuality, promptRatio, promptWidth, promptHeight,
             promptTexts: canvasPromptTexts, toolPromptText: canvasToolPromptText,
             trailingText: focusTrailingText, groups: canvasGroups, comments: canvasComments,
           };
@@ -3233,7 +3242,7 @@ function Canvas({
   useEffect(() => {
     const snapshot = {
       projectTitle, folderNames, folderColors, nodes: canvasNodes, links: canvasLinks,
-      zoom: canvasZoom, promptModel, promptQuality, promptRatio,
+      zoom: canvasZoom, promptModel, promptQuality, promptRatio, promptWidth, promptHeight,
       promptTexts: canvasPromptTexts, toolPromptText: canvasToolPromptText,
       trailingText: focusTrailingText, groups: canvasGroups, comments: canvasComments,
     };
@@ -3245,7 +3254,7 @@ function Canvas({
     canvasCloudTimer.current = window.setTimeout(() => {
       fetch(`${IMAGE_API_BASE}/workspace/dzyd-canvas-workspace`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(snapshot) }).catch(() => undefined);
     }, 600);
-  }, [projectTitle, folderNames, folderColors, canvasNodes, canvasLinks, canvasZoom, promptModel, promptQuality, promptRatio, canvasPromptTexts, canvasToolPromptText, focusTrailingText, canvasGroups, canvasComments]);
+  }, [projectTitle, folderNames, folderColors, canvasNodes, canvasLinks, canvasZoom, promptModel, promptQuality, promptRatio, promptWidth, promptHeight, canvasPromptTexts, canvasToolPromptText, focusTrailingText, canvasGroups, canvasComments]);
   type CanvasUndoSnapshot = {
     nodes: CanvasNode[];
     links: CanvasLink[];
@@ -4130,7 +4139,12 @@ function Canvas({
     }, 150);
     try {
       const sourceImage = await prepareFluxReference(new URL(source.url, window.location.origin).href);
-      const result = await requestEditedImage(sourceImage, generationPrompt, promptQuality.includes("4K") ? "4K" : "2K");
+      const result = await requestEditedImage(
+        sourceImage,
+        generationPrompt,
+        promptQuality.includes("4K") ? "4K" : "2K",
+        { width: promptWidth, height: promptHeight },
+      );
       setCanvasNodes((nodes) => nodes.map((node) => node.id === nextId ? { ...node, url: result } : node));
       setCanvasImage(result);
       setHdProgress((items) => ({ ...items, [nextId]: 100 }));
@@ -5414,8 +5428,12 @@ function Canvas({
                   <CanvasSizePopover
                     quality={promptQuality}
                     ratio={promptRatio}
+                    width={promptWidth}
+                    height={promptHeight}
                     onQuality={setPromptQuality}
                     onRatio={setPromptRatio}
+                    onWidth={setPromptWidth}
+                    onHeight={setPromptHeight}
                   />
                 )}
               </section>
@@ -6241,17 +6259,29 @@ function CanvasModelPopover({
 function CanvasSizePopover({
   quality,
   ratio,
+  width,
+  height,
   onQuality,
   onRatio,
+  onWidth,
+  onHeight,
 }: {
   quality: string;
   ratio: string;
+  width: number;
+  height: number;
   onQuality: (value: string) => void;
   onRatio: (value: string) => void;
+  onWidth: (value: number) => void;
+  onHeight: (value: number) => void;
 }) {
-  const [width, setWidth] = useState("1456"),
-    [height, setHeight] = useState("816");
   const [linked, setLinked] = useState(true);
+  const ratioSizes: Record<string, [number, number]> = {
+    "1:1": [1024, 1024], "3:2": [1200, 800], "2:3": [800, 1200],
+    "4:3": [1152, 864], "3:4": [864, 1152], "9:16": [576, 1024],
+    "1:1(2k)": [1536, 1536], "16:9(2k)": [1920, 1080], "9:16(2k)": [1080, 1920],
+    "16:9(4k)": [1920, 1080], "9:16(4k)": [1080, 1920], "智能": [1024, 1024],
+  };
   const ratios = [
     "1:1",
     "3:2",
@@ -6287,7 +6317,7 @@ function CanvasSizePopover({
           W
           <input
             value={width}
-            onChange={(e) => { const next=e.target.value.replace(/\D/g, ""); setWidth(next); const match=ratio.match(/^(\d+):(\d+)/); if(linked&&next&&match) setHeight(String(Math.round(Number(next)*Number(match[2])/Number(match[1])))); }}
+            onChange={(e) => { const next=Math.max(256,Math.min(1920,Number(e.target.value.replace(/\D/g, ""))||256)); onWidth(next); const match=ratio.match(/^(\d+):(\d+)/); if(linked&&match) onHeight(Math.max(256,Math.min(1920,Math.round(next*Number(match[2])/Number(match[1]))))); }}
           />
         </span>
         <button className={`size-link-toggle ${linked ? "active" : ""}`} aria-label={linked ? "取消宽高关联" : "关联宽高"} aria-pressed={linked} onClick={()=>setLinked((value)=>!value)}><img src="/assets/figma-size-link.svg" /></button>
@@ -6295,7 +6325,7 @@ function CanvasSizePopover({
           H
           <input
             value={height}
-            onChange={(e) => { const next=e.target.value.replace(/\D/g, ""); setHeight(next); const match=ratio.match(/^(\d+):(\d+)/); if(linked&&next&&match) setWidth(String(Math.round(Number(next)*Number(match[1])/Number(match[2])))); }}
+            onChange={(e) => { const next=Math.max(256,Math.min(1920,Number(e.target.value.replace(/\D/g, ""))||256)); onHeight(next); const match=ratio.match(/^(\d+):(\d+)/); if(linked&&match) onWidth(Math.max(256,Math.min(1920,Math.round(next*Number(match[1])/Number(match[2]))))); }}
           />
         </span>
       </div>
@@ -6305,7 +6335,7 @@ function CanvasSizePopover({
           <button
             key={item}
             className={ratio === item ? "active" : ""}
-            onClick={() => { onRatio(item); const match=item.match(/^(\d+):(\d+)/); if(linked&&match) setHeight(String(Math.round(Number(width||1456)*Number(match[2])/Number(match[1])))); }}
+            onClick={() => { onRatio(item); const dimensions=ratioSizes[item]; if(dimensions){onWidth(dimensions[0]);onHeight(dimensions[1]);} }}
           >
             <i className={`ratio-shape ratio-${item.replace(/[^0-9]/g, "")}`} />
             <small>{item}</small>
