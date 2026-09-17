@@ -41,6 +41,39 @@ async function runFlux(env, prompt, options = {}) {
   });
 }
 
+function closestKolorsSize(width, height) {
+  const candidates = [[1024, 1024], [960, 1280], [768, 1024], [720, 1440], [720, 1280], [1280, 960], [1024, 768], [1440, 720], [1280, 720]];
+  const target = Math.max(0.25, Math.min(4, (Number(width) || 1024) / (Number(height) || 1024)));
+  return candidates.reduce((best, current) => Math.abs(current[0] / current[1] - target) < Math.abs(best[0] / best[1] - target) ? current : best);
+}
+
+async function runSiliconFlow(env, prompt, options = {}) {
+  if (!env.SILICONFLOW_API_KEY) throw new Error("备用生图服务尚未配置");
+  const [width, height] = closestKolorsSize(options.width, options.height);
+  const response = await fetch("https://api.siliconflow.cn/v1/images/generations", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${env.SILICONFLOW_API_KEY}`,
+      "Content-Type": "application/json",
+      "X-Enable-Watermark": "1",
+    },
+    signal: AbortSignal.timeout(180_000),
+    body: JSON.stringify({
+      model: "Kwai-Kolors/Kolors",
+      prompt,
+      image_size: `${width}x${height}`,
+      num_inference_steps: 20,
+      guidance_scale: 9,
+      seed: options.seed,
+    }),
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result?.message || result?.error?.message || "备用模型生成失败");
+  const imageUrl = result?.images?.[0]?.url;
+  if (!imageUrl) throw new Error("备用模型没有返回图片");
+  return imageUrl;
+}
+
 function headers(origin) {
   return {
     "Access-Control-Allow-Origin": ALLOWED_ORIGINS.has(origin) ? origin : "https://dzyd-create.github.io",
@@ -166,15 +199,28 @@ export default {
     if (!prompt || prompt.length > 1200) return json({ error: "请输入 1—1200 字的创作描述" }, 400, origin);
 
     const generateOne = async (index) => {
-      const result = await runFlux(env, prompt, { seed: Math.floor(Date.now() / 1000) + index, width: input.width, height: input.height });
-      if (!result?.image) throw new Error(`第 ${index + 1} 张图片生成失败`);
-      const binary = Uint8Array.from(atob(result.image), (character) => character.charCodeAt(0));
+      const seed = Math.floor(Date.now() / 1000) + index;
+      let binary;
+      let type = "image/jpeg";
+      try {
+        const result = await runFlux(env, prompt, { seed, width: input.width, height: input.height });
+        if (!result?.image) throw new Error(`第 ${index + 1} 张图片生成失败`);
+        binary = Uint8Array.from(atob(result.image), (character) => character.charCodeAt(0));
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (!/4006|3036|allocation|neurons|daily free|429/i.test(message)) throw error;
+        const fallbackUrl = await runSiliconFlow(env, prompt, { seed, width: input.width, height: input.height });
+        const fallbackResponse = await fetch(fallbackUrl, { signal: AbortSignal.timeout(60_000) });
+        if (!fallbackResponse.ok) throw new Error("无法保存备用模型生成的图片");
+        binary = new Uint8Array(await fallbackResponse.arrayBuffer());
+        type = fallbackResponse.headers.get("Content-Type") || "image/jpeg";
+      }
       const key = `generated:${Date.now()}:${index}:${crypto.randomUUID()}`;
       await env.ASSETS.put(key, binary, {
         metadata: {
           name: `AI 生成图片 ${index + 1}`,
           category: "generated",
-          type: "image/jpeg",
+          type,
           size: binary.byteLength,
           createdAt: new Date().toISOString(),
         },
