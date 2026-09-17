@@ -16603,3 +16603,15 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   object-fit:contain!important;
   object-position:center!important
 }
+
+/* Final containment guard: preview media can never escape either editing dialog. */
+.figma-tool-modal.modal-图片尺寸 .resize-frame,
+.figma-tool-modal.modal-增强清晰度 .enhance-stage{
+  position:relative!important;box-sizing:border-box!important;display:block!important;overflow:hidden!important;contain:paint!important
+}
+.figma-tool-modal.modal-图片尺寸 .resize-frame>img,
+.figma-tool-modal.modal-增强清晰度 .enhance-stage>img{
+  position:absolute!important;inset:16px!important;box-sizing:border-box!important;
+  width:calc(100% - 32px)!important;height:calc(100% - 32px)!important;max-width:none!important;max-height:none!important;
+  object-fit:contain!important;object-position:center!important;margin:0!important;transform:none!important
+}
