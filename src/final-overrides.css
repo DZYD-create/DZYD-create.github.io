@@ -16641,3 +16641,38 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
 .figma-composer-assets .composer-assets-grid::-webkit-scrollbar{width:6px!important}
 .figma-composer-assets .composer-assets-grid::-webkit-scrollbar-thumb{background:#cbc5f7!important;border-radius:6px!important}
 .figma-composer-assets .assets-download:disabled{opacity:.4!important;cursor:not-allowed!important}
+
+/* Keep the first Asset Library column, its hover border, and the full thumbnail inside the scroll viewport. */
+.figma-composer-assets .composer-assets-grid,
+.generation-page>.generation-composer.new-creation-composer .figma-composer-assets .composer-assets-grid,
+.studio-page .figma-composer-assets .composer-assets-grid{
+  box-sizing:border-box!important;
+  width:100%!important;
+  margin:0!important;
+  padding:4px 10px 10px!important;
+  scroll-padding-left:10px!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important
+}
+.figma-composer-assets .composer-assets-grid>button{
+  transform:none!important;
+  flex:none!important
+}
+.figma-composer-assets .composer-assets-grid>button:hover,
+.figma-composer-assets .composer-assets-grid>button.active{transform:none!important}
+.figma-composer-assets .composer-assets-grid>button>span>img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important
+}
+
+/* Homepage Asset Library choices occupy the same left-hand image rail as uploaded images. */
+.studio-page>.figma-composer{position:relative!important}
+.studio-page>.figma-composer>.studio-attachment-rail{
+  display:block!important;
+  position:absolute!important;
+  right:calc(100% + 20px)!important;
+  left:auto!important;
+  bottom:0!important
+}

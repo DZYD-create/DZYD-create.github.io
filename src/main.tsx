@@ -1663,7 +1663,7 @@ function Studio({
   const [sizeOpen, setSizeOpen] = useState(false);
   const [assetsOpen, setAssetsOpen] = useState(false);
   const [invocationOpen, setInvocationOpen] = useState(false);
-  const [attachment, setAttachment] = useState("");
+  const [attachment, setAttachment] = useState<{ name: string; url: string } | null>(null);
   const studioFile = useRef<HTMLInputElement>(null);
   useEffect(() => {
     const dismiss = () => {
@@ -1709,25 +1709,28 @@ function Studio({
           const image = Array.from(event.dataTransfer.files).find((file) => file.type.startsWith("image/"));
           if (!image) return;
           event.preventDefault();
-          setAttachment(image.name);
+          setAttachment({ name: image.name, url: URL.createObjectURL(image) });
           setUploadOpen(false);
         }}
       >
+        {attachment && (
+          <div className="generation-attachment-rail count-1 studio-attachment-rail">
+            <div className="generation-attachment-stack">
+              <div className="generation-attachment-thumb">
+                <img src={attachment.url} alt={attachment.name} />
+                <button className="generation-attachment-remove" aria-label={`移除图片 ${attachment.name}`} onClick={() => setAttachment(null)}>×</button>
+              </div>
+              <button className="generation-add-image-card" onClick={() => studioFile.current?.click()} aria-label="添加图片">
+                <UploadCardPictureIcon /><strong>添加图片</strong><i aria-hidden="true">＋</i>
+              </button>
+            </div>
+          </div>
+        )}
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder={attachment || prompt ? "" : "描述你的设计需求，输入 @ 可引用素材或 Skill"}
         />
-        {attachment && (
-          <div className="attachment">
-            <img src="/assets/upload.svg" /> {attachment}
-            <button
-              className="css-close"
-              aria-label="移除附件"
-              onClick={() => setAttachment("")}
-            />
-          </div>
-        )}
         <div className="composer-actions">
           <button
             data-popover-trigger
@@ -1827,7 +1830,7 @@ function Studio({
           <HomeAssetPopover
             onChoose={(assets) => {
               setAssetsOpen(false);
-              if (assets[0]) setAttachment(assets[0].name);
+              if (assets[0]) setAttachment({ name: assets[0].name, url: assets[0].url });
             }}
           />
         )}
@@ -1838,7 +1841,8 @@ function Studio({
           type="file"
           accept="image/*,.pdf,.doc,.docx"
           onChange={(e) => {
-            setAttachment(e.target.files?.[0]?.name || "");
+            const file = e.target.files?.[0];
+            setAttachment(file ? { name: file.name, url: URL.createObjectURL(file) } : null);
             setUploadOpen(false);
           }}
         />
@@ -1945,6 +1949,7 @@ function HomeAssetPopover({ onChoose }: { onChoose: (assets: ComposerAsset[]) =>
       ? []
       : cloudAssets.filter((asset) => tab === "直播间" ? asset.category === "live" : asset.category !== "live");
   const visibleAssets = tabAssets.filter((asset) => asset.name.toLowerCase().includes(normalizedQuery));
+  const allAssets = [...peopleAssets, ...cloudAssets].filter((asset, index, items) => items.findIndex((item) => item.url === asset.url) === index);
   return (
     <div className="home-asset-popover figma-composer-assets">
       <div className="composer-assets-tabs">
@@ -1993,7 +1998,7 @@ function HomeAssetPopover({ onChoose }: { onChoose: (assets: ComposerAsset[]) =>
           ×
         </button>
         <span>已选 {selected.size} 个</span>
-        <button className="assets-download" aria-label="使用选中素材" disabled={!selected.size} onClick={() => onChoose(visibleAssets.filter((asset) => selected.has(asset.url)))}>
+        <button className="assets-download" aria-label="使用选中素材" disabled={!selected.size} onClick={() => onChoose(allAssets.filter((asset) => selected.has(asset.url)))}>
           <img src="/assets/figma-download-tray.svg" alt="" />
         </button>
       </footer>
