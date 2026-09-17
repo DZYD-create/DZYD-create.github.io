@@ -1214,9 +1214,12 @@ function GenerationPage({
         {sizeOpen && <SizePopover onClose={() => setSizeOpen(false)} />}{" "}
         {assetsOpen && (
           <HomeAssetPopover
-            onChoose={() => {
+            onChoose={(assets) => {
               setAssetsOpen(false);
-              generationFile.current?.click();
+              setAttachments((current) => [
+                ...current,
+                ...assets.filter((asset) => !current.some((item) => item.url === asset.url)).map(({ name, url }) => ({ name, url })),
+              ].slice(0, 5));
             }}
           />
         )}
@@ -1548,9 +1551,12 @@ function NewCreationPage({
         {sizeOpen && <SizePopover onClose={() => setSizeOpen(false)} />}{" "}
         {assetsOpen && (
           <HomeAssetPopover
-            onChoose={() => {
+            onChoose={(assets) => {
               setAssetsOpen(false);
-              fileRef.current?.click();
+              setAttachments((current) => [
+                ...current,
+                ...assets.filter((asset) => !current.some((item) => item.url === asset.url)).map(({ name, url }) => ({ name, url })),
+              ].slice(0, 5));
             }}
           />
         )}
@@ -1760,9 +1766,9 @@ function Studio({
         {sizeOpen && <SizePopover onClose={() => setSizeOpen(false)} />}
         {assetsOpen && (
           <HomeAssetPopover
-            onChoose={() => {
+            onChoose={(assets) => {
               setAssetsOpen(false);
-              studioFile.current?.click();
+              if (assets[0]) setAttachment(assets[0].name);
             }}
           />
         )}
@@ -1832,8 +1838,9 @@ function ModelInvocationPopover() {
   );
 }
 
-function HomeAssetPopover({ onChoose }: { onChoose: () => void }) {
-  type ComposerAsset = { id?: string; name: string; url: string; category?: "assets" | "live"; createdAt?: string };
+type ComposerAsset = { id?: string; name: string; url: string; category?: "assets" | "live"; createdAt?: string };
+
+function HomeAssetPopover({ onChoose }: { onChoose: (assets: ComposerAsset[]) => void }) {
   const builtInAssets: ComposerAsset[] = [
     { name: "孩子开学抢跑必备神器", url: "/assets/school-kickoff-poster.png", category: "assets" },
     { name: "达人合作蓝色背景", url: "/assets/live-collaboration-blue.png", category: "live" },
@@ -1841,6 +1848,14 @@ function HomeAssetPopover({ onChoose }: { onChoose: () => void }) {
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
   const [tab, setTab] = useState("海报");
   const [query, setQuery] = useState("");
+  const peopleAssets: ComposerAsset[] = [
+    ...readSaved<{ name: string; url: string }[]>("dzyd-uploaded-people", []),
+    ...readSaved<string[]>("dzyd-asset-subjects", featuredPeople.map((person) => person.name)).map((name, index) => ({
+      name,
+      url: featuredPeople[index % featuredPeople.length].url,
+      category: "assets" as const,
+    })),
+  ];
   const [cloudAssets, setCloudAssets] = useState<ComposerAsset[]>(() => [
     ...readSaved<ComposerAsset[]>("dzyd-cloud-assets", []),
     ...builtInAssets,
@@ -1865,14 +1880,16 @@ function HomeAssetPopover({ onChoose }: { onChoose: () => void }) {
     return () => { active = false; };
   }, []);
   const normalizedQuery = query.trim().toLowerCase();
-  const visibleAssets = cloudAssets.filter((asset) => {
-    const matchesTab = tab === "直播间" ? asset.category === "live" : asset.category !== "live";
-    return matchesTab && asset.name.toLowerCase().includes(normalizedQuery);
-  });
+  const tabAssets = tab === "人物"
+    ? peopleAssets
+    : tab === "KT板"
+      ? []
+      : cloudAssets.filter((asset) => tab === "直播间" ? asset.category === "live" : asset.category !== "live");
+  const visibleAssets = tabAssets.filter((asset) => asset.name.toLowerCase().includes(normalizedQuery));
   return (
     <div className="home-asset-popover figma-composer-assets">
       <div className="composer-assets-tabs">
-        {["海报", "直播间", "PPT"].map((item) => (
+        {["人物", "海报", "KT板", "直播间"].map((item) => (
           <button
             className={tab === item ? "active" : ""}
             onClick={() => setTab(item)}
@@ -1917,7 +1934,7 @@ function HomeAssetPopover({ onChoose }: { onChoose: () => void }) {
           ×
         </button>
         <span>已选 {selected.size} 个</span>
-        <button className="assets-download" aria-label="下载" onClick={onChoose}>
+        <button className="assets-download" aria-label="使用选中素材" onClick={() => onChoose(visibleAssets.filter((asset) => selected.has(asset.url)))}>
           <img src="/assets/figma-download-tray.svg" alt="" />
         </button>
       </footer>
@@ -4101,7 +4118,8 @@ function Canvas({
       });
     }, 150);
     try {
-      const result = await requestEditedImage(source.url, generationPrompt, promptQuality.includes("4K") ? "4K" : "2K");
+      const sourceImage = await prepareFluxReference(new URL(source.url, window.location.origin).href);
+      const result = await requestEditedImage(sourceImage, generationPrompt, promptQuality.includes("4K") ? "4K" : "2K");
       setCanvasNodes((nodes) => nodes.map((node) => node.id === nextId ? { ...node, url: result } : node));
       setCanvasImage(result);
       setHdProgress((items) => ({ ...items, [nextId]: 100 }));
