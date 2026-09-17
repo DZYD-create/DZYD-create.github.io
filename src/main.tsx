@@ -140,11 +140,16 @@ async function requestGeneratedImages(prompt: string, referenceImage?: string | 
   const image = referenceImage ? await prepareFluxReference(new URL(referenceImage, window.location.origin).href) : undefined;
   const size = currentGenerationSize();
   if (image) {
-    return Promise.all([0, 1, 2, 3].map((index) => requestEditedImage(
-      image,
-      `${prompt}这是同一编辑任务的第 ${index + 1} 个结果，只执行指定修改，不要重新设计整张图片。`,
-      "2K",
-    )));
+    const images: string[] = [];
+    for (let index = 0; index < 4; index += 1) {
+      images.push(await requestEditedImage(
+        image,
+        `必须读取并以本轮上传的参考图片为唯一基础。${prompt}。这是同一图片编辑任务的第 ${index + 1} 个结果，只执行文字要求的修改，保留未要求改变的主体身份、构图、姿态、文字、颜色和细节，不得重新设计整张图片。`,
+        "2K",
+        { width: size.width, height: size.height },
+      ));
+    }
+    return images;
   }
   const response = await fetch(`${IMAGE_API_BASE}/generate`, {
     method: "POST",
@@ -336,8 +341,8 @@ function App() {
       }, 3200);
     }, 2600);
   };
-  const generate = () => {
-    setGenerationReferenceImage(null);
+  const generate = (referenceImage?: string | null) => {
+    setGenerationReferenceImage(referenceImage || null);
     startGeneration(prompt);
   };
 
@@ -657,9 +662,10 @@ function App() {
               setGenerated(false);
             }}
             onEdit={() => setEditing(true)}
-            onRegenerate={(value) => {
+            onRegenerate={(value, referenceImage) => {
               setPrompt(value);
-              generate();
+              setGenerationReferenceImage(referenceImage || null);
+              startGeneration(value);
             }}
             onDeleteConversation={() => {
               if (activeConversation) {
@@ -825,7 +831,7 @@ function GenerationPage({
   onToggleCollapsed: () => void;
   onBack: () => void;
   onEdit: () => void;
-  onRegenerate: (value: string) => void;
+  onRegenerate: (value: string, referenceImage?: string | null) => void;
   onDeleteConversation: () => void;
 }) {
   const [draft, setDraft] = useState(prompt);
@@ -878,7 +884,7 @@ function GenerationPage({
     const nextRequest = request.trim() || prompt;
     setRoundPrompts((items) => [...items, nextRequest]);
     setResultRound((round) => round + 1);
-    onRegenerate(nextRequest);
+    onRegenerate(nextRequest, attachments[0]?.url || referenceImage);
   };
   useEffect(() => {
     setDraft(prompt);
@@ -1386,7 +1392,7 @@ function NewCreationPage({
 }: {
   prompt: string;
   setPrompt: (value: string) => void;
-  generate: () => void;
+  generate: (referenceImage?: string | null) => void;
   onBack: () => void;
 }) {
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -1549,7 +1555,7 @@ function NewCreationPage({
               setAssetsOpen(false);
             }}
           ><img src="/assets/figma-invocation-chip.svg" alt="" /></button>
-          <button className="new-generate" onClick={generate}>
+          <button className="new-generate" onClick={() => generate(attachments[0]?.url || null)}>
             立即生成
           </button>
         </footer>
