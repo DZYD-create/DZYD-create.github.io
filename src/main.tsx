@@ -4130,6 +4130,8 @@ function Canvas({
   };
   const generateFromCanvasNode = async (source: CanvasNode, keywordOverride?: string) => {
     const nextId = Math.max(0, ...canvasNodes.map((node) => node.id)) + 1;
+    const replaceUploadEntry = Boolean(source.placeholder);
+    const targetId = replaceUploadEntry ? source.id : nextId;
     const sourceGeometry = getNodeGeometry(source);
     const rawPrompt = (keywordOverride ?? (canvasTool === "移动" ? (canvasPromptTexts[source.id] || "") : canvasToolPromptText)).trim();
     const generationPrompt = canvasTool === "局部重绘"
@@ -4153,31 +4155,33 @@ function Canvas({
       generationPrompt,
     };
     setCanvasGenerationError("");
-    setCanvasNodes((nodes) => [...nodes, nextNode]);
-    setCanvasLinks((links) => [
-      ...links,
-      { id: Date.now(), from: source.id, side: "right", to: nextId, targetSide: "left" },
-    ]);
-    setHdProgress((items) => ({ ...items, [nextId]: 1 }));
+    if (!replaceUploadEntry) {
+      setCanvasNodes((nodes) => [...nodes, nextNode]);
+      setCanvasLinks((links) => [
+        ...links,
+        { id: Date.now(), from: source.id, side: "right", to: nextId, targetSide: "left" },
+      ]);
+    }
+    setHdProgress((items) => ({ ...items, [targetId]: 1 }));
     setPromptPopover(null);
     window.requestAnimationFrame(() => {
       const canvas = canvasRef.current;
       if (!canvas) return;
-      canvas.scrollBy({
-        left: (nextNode.x - source.x) * (canvasZoom / 75) / 2,
-        top: 0,
-        behavior: "smooth",
-      });
+      if (!replaceUploadEntry) canvas.scrollBy({
+          left: (nextNode.x - source.x) * (canvasZoom / 75) / 2,
+          top: 0,
+          behavior: "smooth",
+        });
     });
     const timer = window.setInterval(() => {
       setHdProgress((items) => {
-        const current = items[nextId];
+        const current = items[targetId];
         if (current === undefined) {
           window.clearInterval(timer);
           return items;
         }
         const next = Math.min(92, current + Math.max(2, Math.round(Math.random() * 6)));
-        return { ...items, [nextId]: next };
+        return { ...items, [targetId]: next };
       });
     }, 150);
     try {
@@ -4203,12 +4207,19 @@ function Canvas({
         promptQuality.includes("4K") ? "4K" : "2K",
         { width: promptWidth, height: promptHeight },
       );
-      setCanvasNodes((nodes) => nodes.map((node) => node.id === nextId ? { ...node, url: result } : node));
+      setCanvasNodes((nodes) => nodes.map((node) => node.id === targetId ? {
+        ...node,
+        url: result,
+        placeholder: false,
+        generated: true,
+        name: replaceUploadEntry ? "双图生成结果" : node.name,
+        generationPrompt: multiReferencePrompt,
+      } : node));
       setCanvasImage(result);
-      setHdProgress((items) => ({ ...items, [nextId]: 100 }));
+      setHdProgress((items) => ({ ...items, [targetId]: 100 }));
       window.setTimeout(() => setHdProgress((values) => {
         const copy = { ...values };
-        delete copy[nextId];
+        delete copy[targetId];
         return copy;
       }), 500);
       setRedrawStrokes([]);
@@ -4216,11 +4227,13 @@ function Canvas({
       setCanvasPromptTexts((values) => ({ ...values, [source.id]: "" }));
     } catch (error) {
       setCanvasGenerationError(error instanceof Error ? error.message : "画布生图失败");
-      setCanvasNodes((nodes) => nodes.filter((node) => node.id !== nextId));
-      setCanvasLinks((links) => links.filter((link) => link.to !== nextId));
+      if (!replaceUploadEntry) {
+        setCanvasNodes((nodes) => nodes.filter((node) => node.id !== nextId));
+        setCanvasLinks((links) => links.filter((link) => link.to !== nextId));
+      }
       setHdProgress((items) => {
         const copy = { ...items };
-        delete copy[nextId];
+        delete copy[targetId];
         return copy;
       });
     } finally {
