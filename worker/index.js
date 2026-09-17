@@ -50,6 +50,15 @@ function closestKolorsSize(width, height) {
 async function runSiliconFlow(env, prompt, options = {}) {
   if (!env.SILICONFLOW_API_KEY) throw new Error("备用生图服务尚未配置");
   const [width, height] = closestKolorsSize(options.width, options.height);
+  const requestBody = {
+    model: "Kwai-Kolors/Kolors",
+    prompt,
+    image_size: `${width}x${height}`,
+    num_inference_steps: 20,
+    guidance_scale: 9,
+    seed: options.seed,
+  };
+  if (options.image) requestBody.image = options.image;
   const response = await fetch("https://api.siliconflow.cn/v1/images/generations", {
     method: "POST",
     headers: {
@@ -58,14 +67,7 @@ async function runSiliconFlow(env, prompt, options = {}) {
       "X-Enable-Watermark": "1",
     },
     signal: AbortSignal.timeout(180_000),
-    body: JSON.stringify({
-      model: "Kwai-Kolors/Kolors",
-      prompt,
-      image_size: `${width}x${height}`,
-      num_inference_steps: 20,
-      guidance_scale: 9,
-      seed: options.seed,
-    }),
+    body: JSON.stringify(requestBody),
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(result?.message || result?.error?.message || "备用模型生成失败");
@@ -174,19 +176,31 @@ export default {
       if (!prompt || prompt.length > 1200) return json({ error: "请输入 1—1200 字的编辑描述" }, 400, origin);
       if (!image || !/^(https?:\/\/|data:image\/)/i.test(image)) return json({ error: "待编辑图片无效" }, 400, origin);
 
-      let editedImage;
+      let binary;
+      let type = "image/jpeg";
+      let model = FLUX_MODEL;
       try {
         const result = await runFlux(env, prompt, { image, width: input.width, height: input.height });
-        editedImage = result?.image || "";
+        const editedImage = result?.image || "";
+        if (!editedImage) throw new Error("模型没有返回编辑后的图片");
+        binary = Uint8Array.from(atob(editedImage), (character) => character.charCodeAt(0));
       } catch (error) {
-        return json({ error: error instanceof Error ? error.message : "图片编辑失败" }, 502, origin);
+        const message = error instanceof Error ? error.message : String(error);
+        if (!/4006|3036|allocation|neurons|daily free|429/i.test(message)) return json({ error: message || "图片编辑失败" }, 502, origin);
+        try {
+          const fallbackUrl = await runSiliconFlow(env, prompt, { image, width: input.width, height: input.height });
+          const fallbackResponse = await fetch(fallbackUrl, { signal: AbortSignal.timeout(60_000) });
+          if (!fallbackResponse.ok) throw new Error("无法保存免费备用模型编辑的图片");
+          binary = new Uint8Array(await fallbackResponse.arrayBuffer());
+          type = fallbackResponse.headers.get("Content-Type") || "image/jpeg";
+          model = "Kwai-Kolors/Kolors";
+        } catch (fallbackError) {
+          return json({ error: fallbackError instanceof Error ? fallbackError.message : "免费备用模型编辑失败" }, 502, origin);
+        }
       }
-      if (!editedImage) return json({ error: "模型没有返回编辑后的图片" }, 502, origin);
-
-      const body = Uint8Array.from(atob(editedImage), (character) => character.charCodeAt(0));
       const key = `generated-edit:${Date.now()}:${crypto.randomUUID()}`;
-      await env.ASSETS.put(key, body, { metadata: { name: "AI 编辑图片", category: "generated", type: "image/jpeg", size: body.byteLength, createdAt: new Date().toISOString() } });
-      return json({ image: `${url.origin}/asset/${encodeURIComponent(key)}`, model: FLUX_MODEL }, 200, origin);
+      await env.ASSETS.put(key, binary, { metadata: { name: "AI 编辑图片", category: "generated", type, size: binary.byteLength, createdAt: new Date().toISOString() } });
+      return json({ image: `${url.origin}/asset/${encodeURIComponent(key)}`, model }, 200, origin);
     }
     if (url.pathname !== "/generate" || request.method !== "POST") return json({ error: "Not found" }, 404, origin);
     if (!ALLOWED_ORIGINS.has(origin)) return json({ error: "不允许的请求来源" }, 403, origin);
