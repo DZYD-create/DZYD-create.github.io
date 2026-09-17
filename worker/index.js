@@ -5,6 +5,13 @@ const ALLOWED_ORIGINS = new Set([
 ]);
 const FLUX_MODEL = "@cf/black-forest-labs/flux-2-klein-9b";
 
+function detectImageType(bytes, fallback = "image/jpeg") {
+  if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) return "image/png";
+  if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return "image/jpeg";
+  if (bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46 && bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50) return "image/webp";
+  return fallback.startsWith("image/") ? fallback : "image/jpeg";
+}
+
 async function imageBlobFromInput(env, image) {
   if (/^data:image\//i.test(image)) {
     const match = image.match(/^data:(image\/[^;,]+);base64,(.+)$/i);
@@ -194,7 +201,7 @@ export default {
           const fallbackResponse = await fetch(fallbackUrl, { signal: AbortSignal.timeout(60_000) });
           if (!fallbackResponse.ok) throw new Error("无法保存免费备用模型编辑的图片");
           binary = new Uint8Array(await fallbackResponse.arrayBuffer());
-          type = fallbackResponse.headers.get("Content-Type") || "image/jpeg";
+          type = detectImageType(binary, fallbackResponse.headers.get("Content-Type") || "image/jpeg");
           model = "Kwai-Kolors/Kolors";
         } catch (fallbackError) {
           return json({ error: fallbackError instanceof Error ? fallbackError.message : "免费备用模型编辑失败" }, 502, origin);
@@ -229,7 +236,7 @@ export default {
         const fallbackResponse = await fetch(fallbackUrl, { signal: AbortSignal.timeout(60_000) });
         if (!fallbackResponse.ok) throw new Error("无法保存备用模型生成的图片");
         binary = new Uint8Array(await fallbackResponse.arrayBuffer());
-        type = fallbackResponse.headers.get("Content-Type") || "image/jpeg";
+        type = detectImageType(binary, fallbackResponse.headers.get("Content-Type") || "image/jpeg");
       }
       const key = `generated:${Date.now()}:${index}:${crypto.randomUUID()}`;
       await env.ASSETS.put(key, binary, {

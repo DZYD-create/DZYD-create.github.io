@@ -168,8 +168,17 @@ async function prepareFluxReference(source: string): Promise<string> {
     if (!/^data:image\//i.test(source)) {
       const response = await fetch(source, { cache: "force-cache" });
       if (!response.ok) throw new Error("无法读取画布图片");
-      const blob = await response.blob();
-      if (!blob.type.startsWith("image/")) throw new Error("画布内容不是有效图片");
+      const sourceBlob = await response.blob();
+      const bytes = new Uint8Array(await sourceBlob.arrayBuffer());
+      const detectedType = bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47
+        ? "image/png"
+        : bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff
+          ? "image/jpeg"
+          : bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46 && bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50
+            ? "image/webp"
+            : sourceBlob.type.startsWith("image/") ? sourceBlob.type : "";
+      if (!detectedType) throw new Error("画布内容不是有效图片");
+      const blob = new Blob([bytes], { type: detectedType });
       objectUrl = URL.createObjectURL(blob);
       renderSource = objectUrl;
     }
