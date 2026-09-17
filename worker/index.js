@@ -146,7 +146,6 @@ export default {
     }
     if (url.pathname !== "/generate" || request.method !== "POST") return json({ error: "Not found" }, 404, origin);
     if (!ALLOWED_ORIGINS.has(origin)) return json({ error: "不允许的请求来源" }, 403, origin);
-    if (!env.ARK_API_KEY) return json({ error: "服务端密钥未配置" }, 503, origin);
     const contentLength = Number(request.headers.get("Content-Length") || 0);
     if (contentLength > 20_000) return json({ error: "请求内容过大" }, 413, origin);
 
@@ -156,23 +155,23 @@ export default {
     if (!prompt || prompt.length > 1200) return json({ error: "请输入 1—1200 字的创作描述" }, 400, origin);
 
     const generateOne = async (index) => {
-      const upstream = await fetch("https://ark.cn-beijing.volces.com/api/v3/images/generations", {
-        method: "POST",
-        headers: { "Authorization": `Bearer ${env.ARK_API_KEY}`, "Content-Type": "application/json" },
-        signal: AbortSignal.timeout(180_000),
-        body: JSON.stringify({
-          model: "doubao-seedream-5-0-260128",
-          prompt,
-          size: input.size || "2K",
-          response_format: "url",
-          watermark: false,
-          seed: Math.floor(Date.now() / 1000) + index,
-          sequential_image_generation: "disabled",
-        }),
+      const result = await env.AI.run("@cf/black-forest-labs/flux-1-schnell", {
+        prompt,
+        steps: 4,
       });
-      const result = await upstream.json().catch(() => ({}));
-      if (!upstream.ok) throw new Error(result?.error?.message || result?.message || `第 ${index + 1} 张图片生成失败`);
-      return result?.data?.[0]?.url || null;
+      if (!result?.image) throw new Error(`第 ${index + 1} 张图片生成失败`);
+      const binary = Uint8Array.from(atob(result.image), (character) => character.charCodeAt(0));
+      const key = `generated:${Date.now()}:${index}:${crypto.randomUUID()}`;
+      await env.ASSETS.put(key, binary, {
+        metadata: {
+          name: `AI 生成图片 ${index + 1}`,
+          category: "generated",
+          type: "image/jpeg",
+          size: binary.byteLength,
+          createdAt: new Date().toISOString(),
+        },
+      });
+      return `${url.origin}/asset/${encodeURIComponent(key)}`;
     };
     let images;
     try {
@@ -181,18 +180,6 @@ export default {
       return json({ error: error instanceof Error ? error.message : "模型生成失败" }, 502, origin);
     }
     if (!images.length) return json({ error: "模型没有返回图片" }, 502, origin);
-    const permanentImages = await Promise.all(images.map(async (imageUrl, index) => {
-      try {
-        const imageResponse = await fetch(imageUrl, { signal: AbortSignal.timeout(60_000) });
-        if (!imageResponse.ok) return imageUrl;
-        const body = await imageResponse.arrayBuffer();
-        if (!body.byteLength || body.byteLength > 25_000_000) return imageUrl;
-        const type = imageResponse.headers.get("Content-Type") || "image/jpeg";
-        const key = `generated:${Date.now()}:${index}:${crypto.randomUUID()}`;
-        await env.ASSETS.put(key, body, { metadata: { name: `AI 生成图片 ${index + 1}`, category: "generated", type, size: body.byteLength, createdAt: new Date().toISOString() } });
-        return `${url.origin}/asset/${encodeURIComponent(key)}`;
-      } catch { return imageUrl; }
-    }));
-    return json({ images: permanentImages, model: "doubao-seedream-5-0-260128" }, 200, origin);
+    return json({ images, model: "@cf/black-forest-labs/flux-1-schnell" }, 200, origin);
   },
 };
