@@ -1273,6 +1273,11 @@ function GenerationPage({
         {sizeOpen && <SizePopover onClose={() => setSizeOpen(false)} />}{" "}
         {assetsOpen && (
           <HomeAssetPopover
+            onPick={(asset) => {
+              setAttachments((current) => current.some((item) => item.url === asset.url)
+                ? current
+                : [...current, { name: asset.name, url: asset.url }].slice(0, 5));
+            }}
             onChoose={(assets) => {
               setAssetsOpen(false);
               setAttachments((current) => [
@@ -1610,6 +1615,11 @@ function NewCreationPage({
         {sizeOpen && <SizePopover onClose={() => setSizeOpen(false)} />}{" "}
         {assetsOpen && (
           <HomeAssetPopover
+            onPick={(asset) => {
+              setAttachments((current) => current.some((item) => item.url === asset.url)
+                ? current
+                : [...current, { name: asset.name, url: asset.url }].slice(0, 5));
+            }}
             onChoose={(assets) => {
               setAssetsOpen(false);
               setAttachments((current) => [
@@ -1828,6 +1838,7 @@ function Studio({
         {sizeOpen && <SizePopover onClose={() => setSizeOpen(false)} />}
         {assetsOpen && (
           <HomeAssetPopover
+            onPick={(asset) => setAttachment({ name: asset.name, url: asset.url })}
             onChoose={(assets) => {
               setAssetsOpen(false);
               if (assets[0]) setAttachment({ name: assets[0].name, url: assets[0].url });
@@ -1903,7 +1914,7 @@ function ModelInvocationPopover() {
 
 type ComposerAsset = { id?: string; name: string; url: string; category?: "assets" | "live"; createdAt?: string };
 
-function HomeAssetPopover({ onChoose }: { onChoose: (assets: ComposerAsset[]) => void }) {
+function HomeAssetPopover({ onChoose, onPick }: { onChoose: (assets: ComposerAsset[]) => void; onPick?: (asset: ComposerAsset) => void }) {
   const builtInAssets: ComposerAsset[] = [
     { name: "孩子开学抢跑必备神器", url: "/assets/school-kickoff-poster.png", category: "assets" },
     { name: "达人合作蓝色背景", url: "/assets/live-collaboration-blue.png", category: "live" },
@@ -1978,7 +1989,10 @@ function HomeAssetPopover({ onChoose }: { onChoose: (assets: ComposerAsset[]) =>
             onClick={() => setSelected((current) => {
               const next = new Set(current);
               if (next.has(asset.url)) next.delete(asset.url);
-              else next.add(asset.url);
+              else {
+                next.add(asset.url);
+                onPick?.(asset);
+              }
               return next;
             })}
             key={asset.id || asset.url}

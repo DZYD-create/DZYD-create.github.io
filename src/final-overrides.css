@@ -16676,3 +16676,46 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   left:auto!important;
   bottom:0!important
 }
+
+/* Final Asset Library viewport: reserve real space around the first column and fit every image without cropping. */
+.home-asset-popover.figma-composer-assets{
+  box-sizing:border-box!important;
+  overflow:visible!important
+}
+.home-asset-popover.figma-composer-assets .composer-assets-grid,
+.generation-page>.generation-composer.new-creation-composer .home-asset-popover.figma-composer-assets .composer-assets-grid,
+.new-creation-page>.new-creation-composer .home-asset-popover.figma-composer-assets .composer-assets-grid,
+.studio-page .home-asset-popover.figma-composer-assets .composer-assets-grid{
+  width:calc(100% + 2px)!important;
+  height:166px!important;
+  margin-left:-1px!important;
+  padding:5px 9px 10px!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  column-gap:10px!important;
+  row-gap:12px!important;
+  overflow-x:visible!important;
+  overflow-y:auto!important
+}
+.home-asset-popover.figma-composer-assets .composer-assets-grid>button{
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  height:146px!important;
+  margin:0!important;
+  overflow:hidden!important
+}
+.home-asset-popover.figma-composer-assets .composer-assets-grid>button>span{
+  box-sizing:border-box!important;
+  width:100%!important;
+  height:96px!important;
+  overflow:hidden!important
+}
+.home-asset-popover.figma-composer-assets .composer-assets-grid>button>span>img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center center!important
+}
