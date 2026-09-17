@@ -772,6 +772,13 @@ function App() {
         {section === "history" && (
           <History
             generatedRecords={generationRecords}
+            onDeleteGenerated={(keys) => {
+              const selected = new Set(keys);
+              setGenerationRecords((records) => records.flatMap((record) => {
+                const images = record.images.filter((_, imageIndex) => !selected.has(`${record.id}:${imageIndex}`));
+                return images.length ? [{ ...record, images }] : [];
+              }));
+            }}
             onOpenGenerated={(image, imagePrompt) => {
               setCanvasImage(image);
               setCanvasImageName(imagePrompt.length > 24 ? `${imagePrompt.slice(0, 24)}…` : imagePrompt);
@@ -7129,6 +7136,7 @@ function HistoryDrawer({ onClose }: { onClose: () => void }) {
 
 function History({
   generatedRecords,
+  onDeleteGenerated,
   onOpenGenerated,
   onEdit,
   onBack,
@@ -7137,6 +7145,7 @@ function History({
   onToggleGeneratedFavorite,
 }: {
   generatedRecords: GenerationRecord[];
+  onDeleteGenerated: (keys: string[]) => void;
   onOpenGenerated: (image: string, prompt: string) => void;
   onEdit: () => void;
   onBack: () => void;
@@ -7231,6 +7240,7 @@ function History({
                 <button
                   disabled={!selectedHistory.length}
                   onClick={() => {
+                    const generatedKeys = selectedHistory.filter((key) => key.includes(":"));
                     setRecycledCards((existing) => [
                       ...cards.flatMap((name, index) => selectedHistory.includes(name)
                         ? [{ name, image: `/assets/template-${(index % 5) + 1}.png` }]
@@ -7238,6 +7248,8 @@ function History({
                       ...existing,
                     ]);
                     setCards((items) => items.filter((name) => !selectedHistory.includes(name)));
+                    if (generatedKeys.length) onDeleteGenerated(generatedKeys);
+                    setFavoriteHistory((items) => items.filter((item) => !selectedHistory.includes(item)));
                     setSelectedHistory([]);
                   }}
                 ><img src="/assets/action-trash.svg" alt="" />删除</button>
@@ -7416,6 +7428,17 @@ function History({
                 <small>生成于 {new Date(record.createdAt).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</small>
               </button>
               <button className={`history-pin ${favoriteHistory.includes(key) ? "active" : ""}`} aria-label="收藏生成图片" onClick={() => setFavoriteHistory((items) => items.includes(key) ? items.filter((item) => item !== key) : [...items, key])}><span>置顶</span>★</button>
+              {!batch && <div className="card-more-wrap">
+                <button className="card-more-button" aria-label={`${name}更多操作`} onClick={(event) => { event.stopPropagation(); setHistoryMenu((current) => current === key ? null : key); }}>•••</button>
+                {historyMenu === key && <div className="card-more-menu" onClick={(event) => event.stopPropagation()}>
+                  <button onClick={() => { setHistoryMenu(null); onOpenGenerated(image, record.prompt); }}>打开</button>
+                  <button className="danger" onClick={() => {
+                    onDeleteGenerated([key]);
+                    setFavoriteHistory((items) => items.filter((item) => item !== key));
+                    setHistoryMenu(null);
+                  }}>删除项目</button>
+                </div>}
+              </div>}
             </div>;
           })}
           {tab === "workspace" && sortedHistoryCards.filter(({ name }) => name.toLowerCase().includes(historyQuery.trim().toLowerCase()) && (filter !== "收藏" || name === "对话生图图片" || favoriteHistory.includes(name))).map(({ name, originalIndex: i }) => {
