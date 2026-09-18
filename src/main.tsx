@@ -320,6 +320,7 @@ function App() {
   const [generationRecords, setGenerationRecords] = usePersistentState<GenerationRecord[]>("dzyd-generation-records", []);
   const [templateAttachment, setTemplateAttachment] = useState<{ name: string; url: string } | null>(null);
   const [canvasImage, setCanvasImage] = usePersistentState<string | null>("dzyd-canvas-image", null);
+  const [canvasSession, setCanvasSession] = useState(0);
   const [canvasImageName, setCanvasImageName] = usePersistentState("dzyd-canvas-image-name", "AI 视觉创作 · 未命名项目");
   const [pendingCanvasAssets, setPendingCanvasAssets] = usePersistentState<Array<{ name: string; url: string }>>("dzyd-pending-canvas-assets", []);
   const [folders, setFolders] = useState<string[]>(() => readSaved("dzyd-folders", ["品牌素材", "产品图片"]));
@@ -536,6 +537,12 @@ function App() {
                     : ""
                 }
                 onClick={() => {
+                  if (item.id === "canvas") {
+                    setCanvasSession((value) => value + 1);
+                    setCanvasImage(null);
+                    setCanvasImageName("AI 视觉创作 · 未命名项目");
+                    setPendingCanvasAssets([]);
+                  }
                   setSection(item.id);
                   setEditing(false);
                   if (item.id === "studio") {
@@ -653,13 +660,14 @@ function App() {
                 setTemplateDetailOpen(false);
                 setPrompt(text);
                 setTemplateAttachment({ name: templateDetails[selectedTemplate]?.title || "一键同款参考图", url: image });
+                setGenerationReferenceImage(image);
                 setSelectedTemplateModel(model);
                 setSelectedTemplateRatio(ratio);
                 setSkill("预热海报");
                 setPreparing(false);
                 setGenerating(false);
                 setGenerated(false);
-                setStudioView("home");
+                startGeneration(text);
               }}
             />
           )}
@@ -763,6 +771,7 @@ function App() {
         )}
         {section === "canvas" && (
           <Canvas
+            key={`canvas-session-${canvasSession}`}
             canvasImage={canvasImage}
             canvasImageName={canvasImageName}
             initialAssets={pendingCanvasAssets}
@@ -894,6 +903,9 @@ function GenerationPage({
   const [assetsOpen, setAssetsOpen] = useState(false);
   const [invocationOpen, setInvocationOpen] = useState(false);
   const [attachments, setAttachments] = usePersistentState<Array<{ name: string; url: string }>>("dzyd-conversation-attachments", []);
+  useEffect(() => {
+    if (referenceImage) setAttachments([{ name: "一键同款参考图", url: referenceImage }]);
+  }, [referenceImage]);
   const generationFile = useRef<HTMLInputElement>(null);
   const composerInput = useRef<HTMLTextAreaElement>(null);
   const [progress, setProgress] = useState(generating ? 0 : 100);
@@ -3001,7 +3013,7 @@ function Canvas({
   const ref = useRef<HTMLInputElement>(null);
   const [, setCanvasHistory] = usePersistentState<CanvasHistoryRecord[]>("dzyd-canvas-generation-history", []);
   const canvasRef = useRef<HTMLDivElement>(null);
-  const savedCanvas = useRef(readSaved<Record<string, any>>("dzyd-canvas-workspace", {})).current;
+  const savedCanvas = useRef<Record<string, any>>({}).current;
   const canvasCloudReady = useRef(false);
   const canvasCloudTimer = useRef<number | null>(null);
   const [mode, setMode] = useState<
@@ -3294,42 +3306,8 @@ function Canvas({
   >(savedCanvas.comments || []);
   const [selectedCommentIds, setSelectedCommentIds] = useState<number[]>([]);
   useEffect(() => {
-    let active = true;
-    fetch(`${IMAGE_API_BASE}/workspace/dzyd-canvas-workspace`)
-      .then((response) => response.ok ? response.json() : Promise.reject())
-      .then((payload) => {
-        if (!active) return;
-        const cloud = payload.value;
-        if (cloud) {
-          setProjectTitle(cloud.projectTitle || "AI 视觉创作 · 未命名项目");
-          setFolderNames(cloud.folderNames || folderNames);
-          setFolderColors(cloud.folderColors || folderColors);
-          setCanvasNodes(cloud.nodes || []);
-          setCanvasLinks(cloud.links || []);
-          setCanvasZoom(Number(cloud.zoom) || 75);
-          setPromptModel(cloud.promptModel || "图片 4.5");
-          setPromptQuality(cloud.promptQuality || "高");
-          setPromptRatio(cloud.promptRatio || "9:16");
-          setPromptWidth(Number(cloud.promptWidth) || 576);
-          setPromptHeight(Number(cloud.promptHeight) || 1024);
-          setCanvasPromptTexts(cloud.promptTexts || {});
-          setCanvasToolPromptText(cloud.toolPromptText || "");
-          setFocusTrailingText(cloud.trailingText || {});
-          setCanvasGroups(cloud.groups || []);
-          setCanvasComments(cloud.comments || []);
-        } else {
-          const initialSnapshot = {
-            projectTitle, folderNames, folderColors, nodes: canvasNodes, links: canvasLinks,
-            zoom: canvasZoom, promptModel, promptQuality, promptRatio, promptWidth, promptHeight,
-            promptTexts: canvasPromptTexts, toolPromptText: canvasToolPromptText,
-            trailingText: focusTrailingText, groups: canvasGroups, comments: canvasComments,
-          };
-          fetch(`${IMAGE_API_BASE}/workspace/dzyd-canvas-workspace`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(initialSnapshot) }).catch(() => undefined);
-        }
-        canvasCloudReady.current = true;
-      })
-      .catch(() => { canvasCloudReady.current = true; });
-    return () => { active = false; if (canvasCloudTimer.current) window.clearTimeout(canvasCloudTimer.current); };
+    canvasCloudReady.current = true;
+    return () => { if (canvasCloudTimer.current) window.clearTimeout(canvasCloudTimer.current); };
   }, []);
   useEffect(() => {
     const snapshot = {
