@@ -667,7 +667,12 @@ function App() {
                 setPreparing(false);
                 setGenerating(false);
                 setGenerated(false);
-                startGeneration(text);
+                const conversationTitle = templateDetails[selectedTemplate]?.title || "一键同款创作";
+                setActiveConversation(conversationTitle);
+                setConversations((items) => items.some(([title]) => title === conversationTitle)
+                  ? items
+                  : [[conversationTitle, "刚刚"], ...items]);
+                setStudioView("generation");
               }}
             />
           )}
@@ -3012,6 +3017,7 @@ function Canvas({
 }) {
   const ref = useRef<HTMLInputElement>(null);
   const [, setCanvasHistory] = usePersistentState<CanvasHistoryRecord[]>("dzyd-canvas-generation-history", []);
+  const canvasHistoryId = useRef(`canvas:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`).current;
   const canvasRef = useRef<HTMLDivElement>(null);
   const savedCanvas = useRef<Record<string, any>>({}).current;
   const canvasCloudReady = useRef(false);
@@ -4226,7 +4232,7 @@ function Canvas({
       ].filter((node) => node.url && !node.placeholder).filter((node, index, nodes) => nodes.findIndex((item) => item.url === node.url) === index).slice(0, 2);
       const sourceImage = await prepareCombinedReferences(referenceNodes.map((node) => node.url));
       const multiReferencePrompt = referenceNodes.length > 1
-        ? `输入参考图由两张图片组成：左侧是主要编辑对象，右侧是需要结合的第二张参考图。请综合两张图的主体、元素或风格生成一张完整的新图片，禁止输出左右拼接图或参考图版式。${generationPrompt}`
+        ? `这是严格的双图融合编辑任务，必须同时读取并使用输入参考图中的左右两张图片。左图和右图都属于用户指定素材：保留左图的主要主体与构图，同时明确融入右图可辨认的主体、元素、材质或视觉特征。生成结果必须能看出两张参考图都被使用，禁止忽略任意一张，禁止脱离参考图自由文生图，也禁止直接输出左右拼接图或参考图版式。${generationPrompt}`
         : generationPrompt;
       const result = await requestEditedImage(
         sourceImage,
@@ -4248,7 +4254,7 @@ function Canvas({
           ? canvasNodes.map((node) => node.id === targetId ? result : node.url).filter(Boolean)
           : [...canvasNodes.map((node) => node.url).filter(Boolean), result];
         const record: CanvasHistoryRecord = {
-          id: `canvas:${projectTitle}`,
+          id: canvasHistoryId,
           name: projectTitle,
           images: images.filter((url, index) => images.indexOf(url) === index),
           createdAt: new Date().toISOString(),
