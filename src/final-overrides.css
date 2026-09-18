@@ -16739,3 +16739,34 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   height:18px!important;
   margin:0!important
 }
+
+/* Image detail exits from the former preview-label position with a functional back arrow. */
+.figma-editor-page .editor-preview-area>.editor-preview-back{
+  position:absolute!important;
+  z-index:100010!important;
+  left:22px!important;
+  top:18px!important;
+  width:38px!important;
+  height:38px!important;
+  padding:0!important;
+  border:1px solid #e5e1f5!important;
+  border-radius:11px!important;
+  background:#fff!important;
+  color:#343844!important;
+  display:grid!important;
+  place-items:center!important;
+  box-shadow:0 5px 14px rgba(42,36,78,.08)!important;
+  cursor:pointer!important
+}
+.figma-editor-page .editor-preview-area>.editor-preview-back>span{
+  display:block!important;
+  font:400 25px/1 Arial,sans-serif!important;
+  transform:translateY(-1px)!important
+}
+.figma-editor-page .editor-preview-area>.editor-preview-back:hover,
+.figma-editor-page .editor-preview-area>.editor-preview-back:focus-visible{
+  border-color:#8a67f4!important;
+  background:#f3f0ff!important;
+  color:#6755df!important;
+  outline:0!important
+}

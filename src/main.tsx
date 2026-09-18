@@ -2650,7 +2650,9 @@ function Editor({
       </header>
       <div className="figma-editor-workspace">
         <section className="editor-preview-area">
-          <p className="editor-section-label">图片预览</p>
+          <button className="editor-preview-back" onClick={onClose} aria-label="退出图片编辑并返回对话">
+            <span aria-hidden="true">←</span>
+          </button>
           <div
             className="generated-image-canvas"
             onWheel={(event) => {
@@ -7407,14 +7409,6 @@ function History({
           </div>
         </div>
         <div className="history-cards" style={{ "--history-columns": zoom < 35 ? 5 : zoom < 68 ? 4 : 3, "--history-card-height": `${227 + zoom * 1.4}px`, "--shared-card-width": `${210 + zoom * 1.25}px` } as React.CSSProperties}>
-          {tab === "canvas" && (
-            <button className="history-record history-create-record" onClick={() => onCanvas(samples[0], "新建画布", [samples[0]])}>
-              <div className="history-record-preview">
-                <span>＋</span>
-                <em className="add-entry-copy">点击添加内容</em>
-              </div>
-            </button>
-          )}
           {tab === "workspace" && generatedRecords.flatMap((record) => record.images.map((image, imageIndex) => ({ record, image, imageIndex }))).filter(({ record, imageIndex }) => record.prompt.toLowerCase().includes(historyQuery.trim().toLowerCase()) && (filter !== "收藏" || favoriteHistory.includes(`${record.id}:${imageIndex}`))).map(({ record, image, imageIndex }) => {
             const name = record.prompt.length > 18 ? `${record.prompt.slice(0, 18)}…` : record.prompt;
             const key = `${record.id}:${imageIndex}`;
