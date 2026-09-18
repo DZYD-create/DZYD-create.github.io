@@ -16749,19 +16749,22 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   width:38px!important;
   height:38px!important;
   padding:0!important;
-  border:1px solid #e5e1f5!important;
-  border-radius:11px!important;
-  background:#fff!important;
+  border:0!important;
+  border-radius:8px!important;
+  background:transparent!important;
   color:#343844!important;
   display:grid!important;
   place-items:center!important;
-  box-shadow:0 5px 14px rgba(42,36,78,.08)!important;
+  box-shadow:none!important;
   cursor:pointer!important
 }
 .figma-editor-page .editor-preview-area>.editor-preview-back>span{
   display:block!important;
-  font:400 25px/1 Arial,sans-serif!important;
-  transform:translateY(-1px)!important
+  width:11px!important;
+  height:11px!important;
+  border-left:2px solid currentColor!important;
+  border-bottom:2px solid currentColor!important;
+  transform:rotate(45deg)!important
 }
 .figma-editor-page .editor-preview-area>.editor-preview-back:hover,
 .figma-editor-page .editor-preview-area>.editor-preview-back:focus-visible{
@@ -16769,4 +16772,25 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   background:#f3f0ff!important;
   color:#6755df!important;
   outline:0!important
+}
+
+/* Past-conversation Asset Library reserves a protected left gutter; its first image can never be clipped. */
+section.generation-page>div.generation-composer>.home-asset-popover.figma-composer-assets .composer-assets-grid{
+  box-sizing:border-box!important;
+  width:100%!important;
+  margin:0!important;
+  padding:6px 12px 12px 18px!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important
+}
+section.generation-page>div.generation-composer>.home-asset-popover.figma-composer-assets .composer-assets-grid>button,
+section.generation-page>div.generation-composer>.home-asset-popover.figma-composer-assets .composer-assets-grid>button>span{
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:100%!important
+}
+section.generation-page>div.generation-composer>.home-asset-popover.figma-composer-assets .composer-assets-grid>button>span>img{
+  object-fit:contain!important;
+  object-position:center!important
 }

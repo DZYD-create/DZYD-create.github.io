@@ -17,6 +17,12 @@ type GenerationRecord = {
   images: string[];
   createdAt: string;
 };
+type CanvasHistoryRecord = {
+  id: string;
+  name: string;
+  images: string[];
+  createdAt: string;
+};
 type CanvasNode = {
   id: number;
   url: string;
@@ -312,6 +318,7 @@ function App() {
   const [generationReferenceImage, setGenerationReferenceImage] = useState<string | null>(null);
   const [editorGenerationToken, setEditorGenerationToken] = useState(0);
   const [generationRecords, setGenerationRecords] = usePersistentState<GenerationRecord[]>("dzyd-generation-records", []);
+  const [templateAttachment, setTemplateAttachment] = useState<{ name: string; url: string } | null>(null);
   const [canvasImage, setCanvasImage] = usePersistentState<string | null>("dzyd-canvas-image", null);
   const [canvasImageName, setCanvasImageName] = usePersistentState("dzyd-canvas-image-name", "AI 视觉创作 · 未命名项目");
   const [pendingCanvasAssets, setPendingCanvasAssets] = usePersistentState<Array<{ name: string; url: string }>>("dzyd-pending-canvas-assets", []);
@@ -618,6 +625,7 @@ function App() {
             generate={generate}
             generating={false}
             generated={false}
+            templateAttachment={templateAttachment}
             onEdit={(image) => {
               if (image) {
                 setSelectedEditorImage(image);
@@ -641,16 +649,17 @@ function App() {
             <TemplateDetail
               index={selectedTemplate}
               onClose={() => setTemplateDetailOpen(false)}
-              onUse={(text, model, ratio) => {
+              onUse={(text, model, ratio, image) => {
                 setTemplateDetailOpen(false);
                 setPrompt(text);
+                setTemplateAttachment({ name: templateDetails[selectedTemplate]?.title || "一键同款参考图", url: image });
                 setSelectedTemplateModel(model);
                 setSelectedTemplateRatio(ratio);
                 setSkill("预热海报");
                 setPreparing(false);
                 setGenerating(false);
                 setGenerated(false);
-                setStudioView("generation");
+                setStudioView("home");
               }}
             />
           )}
@@ -1663,6 +1672,7 @@ function Studio({
   generate,
   generating,
   generated,
+  templateAttachment,
   onEdit,
   onTemplate,
 }: {
@@ -1670,9 +1680,10 @@ function Studio({
   setSkill: (v: string) => void;
   prompt: string;
   setPrompt: (v: string) => void;
-  generate: () => void;
+  generate: (referenceImage?: string | null) => void;
   generating: boolean;
   generated: boolean;
+  templateAttachment: { name: string; url: string } | null;
   onEdit: (image?: string) => void;
   onTemplate: (index: number) => void;
 }) {
@@ -1683,6 +1694,9 @@ function Studio({
   const [assetsOpen, setAssetsOpen] = useState(false);
   const [invocationOpen, setInvocationOpen] = useState(false);
   const [attachment, setAttachment] = useState<{ name: string; url: string } | null>(null);
+  useEffect(() => {
+    if (templateAttachment) setAttachment(templateAttachment);
+  }, [templateAttachment]);
   const studioFile = useRef<HTMLInputElement>(null);
   useEffect(() => {
     const dismiss = () => {
@@ -1829,7 +1843,7 @@ function Studio({
           >
             <img src="/assets/figma-invocation-chip.svg" alt="" />
           </button>
-          <button className="generate" onClick={generate} disabled={generating}>
+          <button className="generate" onClick={() => generate(attachment?.url || null)} disabled={generating}>
             {generating ? "生成中…" : "立即生成"}
           </button>
         </div>
@@ -2333,7 +2347,7 @@ function TemplateDetail({
 }: {
   index: number;
   onClose: () => void;
-  onUse: (prompt: string, model: string, ratio: string) => void;
+  onUse: (prompt: string, model: string, ratio: string, image: string) => void;
 }) {
   const item = templateDetails[index] || templateDetails[0];
   const extra = templateExtras[index] || templateExtras[0];
@@ -2378,7 +2392,7 @@ function TemplateDetail({
         </div>
         <button
           className="template-detail-use"
-          onClick={() => onUse(item.prompt, item.model, item.ratio)}
+          onClick={() => onUse(item.prompt, item.model, item.ratio, samples[index] || samples[0])}
         >
           <img src="/assets/magic.svg" />
           一键同款
@@ -2651,7 +2665,7 @@ function Editor({
       <div className="figma-editor-workspace">
         <section className="editor-preview-area">
           <button className="editor-preview-back" onClick={onClose} aria-label="退出图片编辑并返回对话">
-            <span aria-hidden="true">←</span>
+            <span aria-hidden="true" />
           </button>
           <div
             className="generated-image-canvas"
@@ -2985,6 +2999,7 @@ function Canvas({
   onBack: () => void;
 }) {
   const ref = useRef<HTMLInputElement>(null);
+  const [, setCanvasHistory] = usePersistentState<CanvasHistoryRecord[]>("dzyd-canvas-generation-history", []);
   const canvasRef = useRef<HTMLDivElement>(null);
   const savedCanvas = useRef(readSaved<Record<string, any>>("dzyd-canvas-workspace", {})).current;
   const canvasCloudReady = useRef(false);
@@ -4250,6 +4265,18 @@ function Canvas({
         generationPrompt: multiReferencePrompt,
       } : node));
       setCanvasImage(result);
+      setCanvasHistory((items) => {
+        const images = replaceUploadEntry
+          ? canvasNodes.map((node) => node.id === targetId ? result : node.url).filter(Boolean)
+          : [...canvasNodes.map((node) => node.url).filter(Boolean), result];
+        const record: CanvasHistoryRecord = {
+          id: `canvas:${projectTitle}`,
+          name: projectTitle,
+          images: images.filter((url, index) => images.indexOf(url) === index),
+          createdAt: new Date().toISOString(),
+        };
+        return [record, ...items.filter((item) => item.id !== record.id)];
+      });
       setHdProgress((items) => ({ ...items, [targetId]: 100 }));
       window.setTimeout(() => setHdProgress((values) => {
         const copy = { ...values };
@@ -7199,11 +7226,7 @@ function History({
       const delta = right[field] - left[field];
       return order === "近-远" ? delta : -delta;
     });
-  const canvasHistoryCards = [
-    { name: "品牌活动画布", images: [samples[0], samples[1]], edited: "编辑于 6 分钟前" },
-    { name: "直播海报画布", images: [samples[1], samples[2], samples[3]], edited: "编辑于 2 小时前" },
-    { name: "课程视觉画布", images: [samples[0], samples[2], samples[3], samples[4]], edited: "编辑于 1 天前" },
-  ];
+  const [canvasHistoryCards] = usePersistentState<CanvasHistoryRecord[]>("dzyd-canvas-generation-history", []);
   return (
     <section className="history-page" onClick={() => {
       if (popup) setPopup(null);
@@ -7492,7 +7515,7 @@ function History({
                   {canvasItem.images.map((image, imageIndex) => <img key={`${canvasItem.name}-${imageIndex}`} src={image} alt="" />)}
                 </div>
                 <strong>{canvasItem.name}</strong>
-                <small>{canvasItem.edited}</small>
+                <small>编辑于 {new Date(canvasItem.createdAt).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</small>
               </button>
             </div>
           ))}
