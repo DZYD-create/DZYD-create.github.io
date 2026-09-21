@@ -7331,8 +7331,8 @@ function History({
   const [popup, setPopup] = useState<"filter" | "time" | "sort" | null>(null);
   const [filter, setFilter] = useState("操作");
   const [time, setTime] = useState("全部");
-  const [order, setOrder] = useState("近-远");
-  const [sortBy, setSortBy] = useState("修改时间");
+  const [order, setOrder] = usePersistentState("dzyd-history-sort-order", "近-远");
+  const [sortBy, setSortBy] = usePersistentState("dzyd-history-sort-field", "修改时间");
   const [datePicker, setDatePicker] = useState<"start" | "end" | null>(null);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("2026-08-17");
@@ -7363,8 +7363,8 @@ function History({
     .map((name, originalIndex) => ({
       name,
       originalIndex,
-      modifiedAt: [202608051906, 202608051300, 202608031657][originalIndex] ?? 0,
-      createdAt: [202608010900, 202608041200, 202608021000][originalIndex] ?? 0,
+      modifiedAt: [new Date(2026,7,5,19,6).getTime(),new Date(2026,7,5,13).getTime(),new Date(2026,7,3,16,57).getTime()][originalIndex] ?? 0,
+      createdAt: [new Date(2026,7,1,9).getTime(),new Date(2026,7,4,12).getTime(),new Date(2026,7,2,10).getTime()][originalIndex] ?? 0,
     }))
     .sort((left, right) => {
       const field = sortBy === "创建时间" ? "createdAt" : "modifiedAt";
@@ -7372,6 +7372,26 @@ function History({
       return order === "近-远" ? delta : -delta;
     });
   const [canvasHistoryCards] = usePersistentState<CanvasHistoryRecord[]>("dzyd-canvas-generation-history", []);
+  const sortedGeneratedImages = generatedRecords
+    .flatMap((record) => record.images.map((image, imageIndex) => ({ record, image, imageIndex, timestamp: new Date(record.createdAt).getTime() || 0 })))
+    .sort((left,right)=>{
+      const delta=right.timestamp-left.timestamp || left.imageIndex-right.imageIndex;
+      return order==="近-远"?delta:-delta;
+    });
+  const sortedCanvasHistoryCards = [...canvasHistoryCards].sort((left,right)=>{
+    const delta=(new Date(right.createdAt).getTime()||0)-(new Date(left.createdAt).getTime()||0);
+    return order==="近-远"?delta:-delta;
+  });
+  const workspaceRanks = new Map(
+    [
+      ...sortedGeneratedImages.map(({record,imageIndex,timestamp})=>({key:`${record.id}:${imageIndex}`,createdAt:timestamp,modifiedAt:timestamp})),
+      ...sortedHistoryCards.map(({name,createdAt,modifiedAt})=>({key:name,createdAt,modifiedAt})),
+    ].sort((left,right)=>{
+      const field=sortBy==="创建时间"?"createdAt":"modifiedAt";
+      const difference=left[field]-right[field];
+      return order==="近-远"?-difference:difference;
+    }).map((item,index)=>[item.key,index] as const),
+  );
   return (
     <section className="history-page" onClick={() => {
       if (popup) setPopup(null);
@@ -7577,10 +7597,10 @@ function History({
           </div>
         </div>
         <div className="history-cards" style={{ "--history-columns": zoom < 35 ? 5 : zoom < 68 ? 4 : 3, "--history-card-height": `${227 + zoom * 1.4}px`, "--shared-card-width": `${210 + zoom * 1.25}px` } as React.CSSProperties}>
-          {tab === "workspace" && generatedRecords.flatMap((record) => record.images.map((image, imageIndex) => ({ record, image, imageIndex }))).filter(({ record, imageIndex }) => record.prompt.toLowerCase().includes(historyQuery.trim().toLowerCase()) && (filter !== "收藏" || favoriteHistory.includes(`${record.id}:${imageIndex}`))).map(({ record, image, imageIndex }) => {
+          {tab === "workspace" && sortedGeneratedImages.filter(({ record, imageIndex }) => record.prompt.toLowerCase().includes(historyQuery.trim().toLowerCase()) && (filter !== "收藏" || favoriteHistory.includes(`${record.id}:${imageIndex}`))).map(({ record, image, imageIndex }) => {
             const name = record.prompt.length > 18 ? `${record.prompt.slice(0, 18)}…` : record.prompt;
             const key = `${record.id}:${imageIndex}`;
-            return <div className="history-record-shell" key={key}>
+            return <div className="history-record-shell" key={key} style={{order:workspaceRanks.get(key)}}>
               <button className={`history-record ${batch ? "batching" : ""}`} onClick={() => batch ? setSelectedHistory((items) => items.includes(key) ? items.filter((item) => item !== key) : [...items, key]) : onOpenGenerated(image, record.prompt)}>
                 <div className="history-record-preview">
                   <img src={image} alt={name} />
@@ -7589,7 +7609,7 @@ function History({
                 <strong>{name}</strong>
                 <small>生成于 {new Date(record.createdAt).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</small>
               </button>
-              <button className={`history-pin ${favoriteHistory.includes(key) ? "active" : ""}`} aria-label="收藏生成图片" onClick={() => setFavoriteHistory((items) => items.includes(key) ? items.filter((item) => item !== key) : [...items, key])}><span>置顶</span>★</button>
+              <button className={`history-pin ${favoriteHistory.includes(key) ? "active" : ""}`} aria-label="收藏生成图片" onClick={() => setFavoriteHistory((items) => items.includes(key) ? items.filter((item) => item !== key) : [...items, key])}>★</button>
               {!batch && <div className="card-more-wrap">
                 <button className="card-more-button" aria-label={`${name}更多操作`} onClick={(event) => { event.stopPropagation(); setHistoryMenu((current) => current === key ? null : key); }}>•••</button>
                 {historyMenu === key && <div className="card-more-menu" onClick={(event) => event.stopPropagation()}>
@@ -7607,7 +7627,7 @@ function History({
             const image = name === "对话生图图片" ? "/assets/template-2.png" : featuredPeople[i % featuredPeople.length].url;
             const favorite = name === "对话生图图片" ? favoriteGenerated : favoriteHistory.includes(name);
             return (
-              <div className="history-record-shell" key={name}>
+              <div className="history-record-shell" key={name} style={{order:workspaceRanks.get(name)}}>
                 <button
                   className={`history-record ${batch ? "batching" : ""}`}
                   onClick={() => {
@@ -7633,7 +7653,7 @@ function History({
                   className={`history-pin ${favorite ? "active" : ""}`}
                   aria-label={favorite ? `取消置顶${name}` : `置顶${name}`}
                   onClick={() => name === "对话生图图片" ? onToggleGeneratedFavorite() : setFavoriteHistory((items) => favorite ? items.filter((item) => item !== name) : [...items, name])}
-                ><span>置顶</span>★</button>
+                >★</button>
                 {!batch && <div className="card-more-wrap">
                   <button
                     className="card-more-button"
@@ -7653,7 +7673,7 @@ function History({
               </div>
             );
           })}
-          {tab === "canvas" && canvasHistoryCards.map((canvasItem) => (
+          {tab === "canvas" && sortedCanvasHistoryCards.map((canvasItem) => (
             <div className="history-record-shell canvas-history-shell" key={canvasItem.name}>
               <button className="history-record canvas-history-record" onClick={() => onCanvas(canvasItem.images[0], canvasItem.name, canvasItem.images)}>
                 <div className={`history-record-preview canvas-history-strip image-count-${canvasItem.images.length}`}>

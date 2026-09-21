@@ -16987,6 +16987,11 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
 .canvas-node-prompt .canvas-inline-focus-tag[draggable="true"]{cursor:grab!important}
 .canvas-node-prompt .canvas-inline-focus-tag[draggable="true"]:active{cursor:grabbing!important}
 
+/* History favorites remain icon-only, with no hover caption. */
+.history-page .history-pin>span,
+.history-page .history-pin::before,
+.history-page .history-pin::after{display:none!important;content:none!important}
+
 /* Uploaded folder images share the normal draggable asset-row geometry. */
 .asset-library-panel .uploaded-folder-file>img{
   width:26px!important;
