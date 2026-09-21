@@ -179,6 +179,7 @@ export default {
       let input;
       try { input = await request.json(); } catch { return json({ error: "请求格式不正确" }, 400, origin); }
       const image = typeof input.image === "string" ? input.image.trim() : "";
+      const fullImage = typeof input.fullImage === "string" ? input.fullImage.trim() : "";
       const rect = input.rect || {};
       if (!image || !/^(https?:\/\/|data:image\/)/i.test(image)) return json({ error: "图片无效" }, 400, origin);
       const x = Math.max(0, Math.min(1, Number(rect.x) || 0));
@@ -209,23 +210,46 @@ export default {
         const rawLabel = String(answer?.answer || answer?.response || answer?.text || "").replace(/[\r\n"'`。,.，：:]/g, "").trim();
         const english = rawLabel.toLowerCase();
         const englishNames = [
-          [/\b(hand|hands|finger|fingers|palm)\b/, "人物手部"],
-          [/\b(head|hair|hairstyle)\b/, "人物头部"],
-          [/\b(face|eyes|eye|nose|mouth|ear)\b/, "人物面部"],
-          [/\b(arm|arms)\b/, "人物手臂"],
-          [/\b(leg|legs|foot|feet)\b/, "人物腿部"],
-          [/\b(torso|body|chest)\b/, "人物躯干"],
-          [/\b(shirt|jacket|dress|clothing|clothes|garment)\b/, "人物服装"],
-          [/\b(title|headline|heading)\b/, "标题文字"],
-          [/\b(subtitle|subheading)\b/, "副标题文字"],
-          [/\b(logo|emblem|brand mark)\b/, "品牌标志"],
-          [/\b(text|word|letter|caption)\b/, "图片文字"],
+          [/\b(hand|hands|finger|fingers|palm)\b/, "人物手部", "hand"],
+          [/\b(head|hair|hairstyle)\b/, "人物头部", "head"],
+          [/\b(face|eyes|eye|nose|mouth|ear)\b/, "人物面部", "face"],
+          [/\b(arm|arms)\b/, "人物手臂", "arm"],
+          [/\b(leg|legs|foot|feet)\b/, "人物腿部", "leg"],
+          [/\b(upper body|torso|chest)\b/, "人物上半身", "upper body"],
+          [/\b(shirt|jacket|dress|clothing|clothes|garment)\b/, "人物服装", "clothing"],
+          [/\b(subtitle|subheading)\b/, "副标题文字", "subtitle text"],
+          [/\b(title|headline|heading)\b/, "标题文字", "title text"],
+          [/\b(logo|emblem|brand mark)\b/, "品牌标志", "logo"],
+          [/\b(text|word|letter|caption)\b/, "图片文字", "text"],
+          [/\b(person|human|body)\b/, "人物全身", "person"],
         ];
+        const match = englishNames.find(([pattern]) => pattern.test(english));
         const label = /^[\x00-\x7F]+$/.test(rawLabel)
-          ? englishNames.find(([pattern]) => pattern.test(english))?.[1] || ""
+          ? match?.[1] || ""
           : rawLabel.slice(0, 16);
         if (!label || /左侧|右侧|上方|下方|画面|图片区域|选区|区域|面积|无法|不能|不确定|身份/.test(label) || /^(主体|背景|人物|文字|内容)$/.test(label)) throw new Error("未识别到具体选区内容");
-        return json({ label }, 200, origin);
+        let bounds = null;
+        if (fullImage && /^(https?:\/\/|data:image\/)/i.test(fullImage) && match?.[2]) {
+          try {
+            const detected = await env.AI.run(VISION_MODEL, { image: fullImage, task: "detect", target: match[2], max_objects: 20, stream: false });
+            const parsed = detected instanceof Response ? await detected.json() : detected instanceof ReadableStream ? JSON.parse(await new Response(detected).text()) : detected;
+            const data = parsed?.result || parsed;
+            const pointX = Math.max(0, Math.min(1, Number(input.point?.x) || 0));
+            const pointY = Math.max(0, Math.min(1, Number(input.point?.y) || 0));
+            const candidates = (data?.objects || []).map((object) => {
+              const x = Number(object.x_min), y = Number(object.y_min);
+              const right = Number(object.x_max), bottom = Number(object.y_max);
+              if (![x, y, right, bottom].every(Number.isFinite) || right <= x || bottom <= y) return null;
+              const distance = Math.hypot(Math.max(x - pointX, 0, pointX - right), Math.max(y - pointY, 0, pointY - bottom));
+              return { x, y, width: right - x, height: bottom - y, distance };
+            }).filter(Boolean).sort((a, b) => a.distance - b.distance || a.width * a.height - b.width * b.height);
+            if (candidates[0] && candidates[0].distance < .06) {
+              const { x, y, width, height } = candidates[0];
+              bounds = { x, y, width, height };
+            }
+          } catch { /* Keep the user's provisional selection if detection is unavailable. */ }
+        }
+        return json({ label, bounds }, 200, origin);
       } catch (error) {
         return json({ error: error instanceof Error ? error.message : "选区识别失败" }, 502, origin);
       }

@@ -257,7 +257,8 @@ async function requestEditedImage(
   return payload.image;
 }
 
-async function analyzeCanvasFocus(image: string, rect: { x: number; y: number; width: number; height: number }, fallback: string) {
+type FocusRect = { x: number; y: number; width: number; height: number };
+async function analyzeCanvasFocus(image: string, rect: FocusRect, fallback: string): Promise<{ label: string; bounds?: FocusRect }> {
   try {
     const source = await prepareFluxReference(image);
     const preview = new Image();
@@ -273,16 +274,23 @@ async function analyzeCanvasFocus(image: string, rect: { x: number; y: number; w
     crop.height = Math.max(2, Math.round(sourceHeight * scale));
     crop.getContext("2d")?.drawImage(preview, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, crop.width, crop.height);
     const preparedImage = crop.toDataURL("image/jpeg", .9);
+    const full = document.createElement("canvas");
+    const fullScale = Math.min(1, 1024 / Math.max(preview.naturalWidth, preview.naturalHeight));
+    full.width = Math.max(2, Math.round(preview.naturalWidth * fullScale));
+    full.height = Math.max(2, Math.round(preview.naturalHeight * fullScale));
+    full.getContext("2d")?.drawImage(preview, 0, 0, full.width, full.height);
     const response = await fetch(`${IMAGE_API_BASE}/analyze-focus`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ image: preparedImage, rect }),
+      body: JSON.stringify({ image: preparedImage, fullImage: full.toDataURL("image/jpeg", .85), rect, point: { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 } }),
       signal: AbortSignal.timeout(18_000),
     });
     const payload = await response.json().catch(() => ({}));
     const label = typeof payload.label === "string" ? payload.label.trim() : "";
-    return response.ok && label ? label.replace(/[。,.，：:]/g, "").slice(0, 16) : fallback;
-  } catch { return fallback; }
+    const b = payload.bounds;
+    const bounds = b && [b.x, b.y, b.width, b.height].every((value) => typeof value === "number" && Number.isFinite(value)) && b.x >= 0 && b.y >= 0 && b.width > 0 && b.height > 0 && b.x + b.width <= 1.01 && b.y + b.height <= 1.01 ? { x: b.x, y: b.y, width: b.width, height: b.height } : undefined;
+    return response.ok && label ? { label: label.replace(/[。,.，：:]/g, "").slice(0, 16), bounds } : { label: fallback };
+  } catch { return { label: fallback }; }
 }
 
 const featuredPeople = [
@@ -4075,7 +4083,7 @@ function Canvas({
           open: false,
         },
       ]);
-      if(node?.url) analyzeCanvasFocus(new URL(node.url,window.location.origin).href,{x,y,width,height},"未识别，双击命名").then((label)=>setFocusPicks((items)=>items.map((item)=>item.id===id?{...item,label}:item)));
+      if(node?.url) analyzeCanvasFocus(new URL(node.url,window.location.origin).href,{x,y,width,height},"未识别，双击命名").then(({label,bounds})=>setFocusPicks((items)=>items.map((item)=>item.id===id?{...item,label,...(bounds?{normalizedX:bounds.x+bounds.width/2,normalizedY:bounds.y+bounds.height/2,normalizedW:bounds.width,normalizedH:bounds.height}:{})}:item)));
       else setFocusPicks((items)=>items.map((item)=>item.id===id?{...item,label:"未识别，双击命名"}:item));
       event.preventDefault();event.stopPropagation();
     };
@@ -4378,14 +4386,9 @@ function Canvas({
     canvasNodes.find((node) => node.id === activeNodeId) || canvasNodes[0];
   const promptOwnerId =
     focusEdit && focusNodeId !== null ? focusNodeId : activeNodeId;
-  const focusChoices = [
-    { name: "白色绒毛质地", width: 116, height: 46, dx: -58, dy: -8 },
-    { name: "卡通头部", width: 142, height: 126, dx: -71, dy: -88 },
-    { name: "卡通动物角色", width: 196, height: 254, dx: -98, dy: -174 },
-    { name: "卡通熊手臂", width: 92, height: 142, dx: -46, dy: -72 },
-  ];
+  const focusFallback = { name: "未识别，双击命名", width: 116, height: 100, dx: -58, dy: -50 };
   const getFocusPickBox = (pick: (typeof focusPicks)[number]) => {
-    const choice = focusChoices[pick.choice];
+    const choice = focusFallback;
     const node = canvasNodes.find((item)=>item.id===pick.nodeId);
     if (node && pick.normalizedX != null && pick.normalizedY != null) {
       const geometry=getNodeGeometry(node), scale=canvasZoom/75;
@@ -5434,7 +5437,7 @@ function Canvas({
                     onClick={(e) => e.stopPropagation()}
                   >
                     <button onClick={()=>{const next=window.prompt("修改焦点名称",pick.label||"")?.trim();if(next)setFocusPicks((items)=>items.map((item)=>item.id===pick.id?{...item,label:next.slice(0,16),open:false}:item));}}>修改名称</button>
-                    <button onClick={()=>{const node=canvasNodes.find((item)=>item.id===pick.nodeId);if(!node||pick.normalizedX==null||pick.normalizedY==null)return;const rect={x:Math.max(0,pick.normalizedX-(pick.normalizedW||.2)/2),y:Math.max(0,pick.normalizedY-(pick.normalizedH||.2)/2),width:pick.normalizedW||.2,height:pick.normalizedH||.2};setFocusPicks((items)=>items.map((item)=>item.id===pick.id?{...item,label:"识别中…",open:false}:item));analyzeCanvasFocus(new URL(node.url,window.location.origin).href,rect,"未识别，双击命名").then((label)=>setFocusPicks((items)=>items.map((item)=>item.id===pick.id?{...item,label}:item)));}}>重新识别</button>
+                    <button onClick={()=>{const node=canvasNodes.find((item)=>item.id===pick.nodeId);if(!node||pick.normalizedX==null||pick.normalizedY==null)return;const rect={x:Math.max(0,pick.normalizedX-(pick.normalizedW||.2)/2),y:Math.max(0,pick.normalizedY-(pick.normalizedH||.2)/2),width:pick.normalizedW||.2,height:pick.normalizedH||.2};setFocusPicks((items)=>items.map((item)=>item.id===pick.id?{...item,label:"识别中…",open:false}:item));analyzeCanvasFocus(new URL(node.url,window.location.origin).href,rect,"未识别，双击命名").then(({label,bounds})=>setFocusPicks((items)=>items.map((item)=>item.id===pick.id?{...item,label,...(bounds?{normalizedX:bounds.x+bounds.width/2,normalizedY:bounds.y+bounds.height/2,normalizedW:bounds.width,normalizedH:bounds.height}:{})}:item)));}}>重新识别</button>
                   </div>
                 )}
                 <i />
@@ -5568,11 +5571,11 @@ function Canvas({
                         onDragEnd={()=>{draggedFocusPickId.current=null;}}
                       >
                         <b>✦</b>
-                        <span>{pick.label || focusChoices[pick.choice].name}</span>
+                        <span>{pick.label || focusFallback.name}</span>
                         <i
                           className="canvas-inline-focus-remove"
                           role="button"
-                          aria-label={`删除焦点${pick.label || focusChoices[pick.choice].name}`}
+                          aria-label={`删除焦点${pick.label || focusFallback.name}`}
                           tabIndex={0}
                           onClick={(event) => { event.stopPropagation(); removeFocusPick(pick.id); }}
                           onKeyDown={(event) => {
@@ -5584,7 +5587,7 @@ function Canvas({
                       </button>
                       <input
                         className="canvas-inline-text"
-                        aria-label={`在${pick.label || focusChoices[pick.choice].name}后输入文字`}
+                        aria-label={`在${pick.label || focusFallback.name}后输入文字`}
                         value={focusTrailingText[pick.id] || ""}
                         onChange={(e) => setFocusTrailingText((values) => ({ ...values, [pick.id]: e.target.value }))}
                         style={{ width: focusTrailingText[pick.id] ? Math.min(420, focusTrailingText[pick.id].length * 14 + 4) : 1 }}
