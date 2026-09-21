@@ -6923,6 +6923,8 @@ function AssetLibrary({
   const [hiddenFolders, setHiddenFolders] = usePersistentState<string[]>("dzyd-canvas-hidden-folders", []);
   const [extraFolders, setExtraFolders] = usePersistentState<Array<{ id: string; name: string }>>("dzyd-canvas-extra-folders", []);
   const [folderUploads, setFolderUploads] = usePersistentState<Record<string, Array<{ name: string; url: string }>>>("dzyd-canvas-folder-uploads", {});
+  const [hiddenAssetFiles, setHiddenAssetFiles] = usePersistentState<string[]>("dzyd-canvas-hidden-asset-files", []);
+  const [assetFileContext, setAssetFileContext] = useState<null | { x: number; y: number; id: string; folder?: string; index?: number }>(null);
   const folderUploadInput = useRef<HTMLInputElement>(null);
   const [folderUploadTarget, setFolderUploadTarget] = useState<string | null>(null);
   const [customCollapsed, setCustomCollapsed] = useState<Record<string, boolean>>({});
@@ -6934,6 +6936,11 @@ function AssetLibrary({
       if (key.startsWith("teacher-")) { const index=Number(key.split("-")[1]); setTeachers((items)=>items.map((item,i)=>i===index?value:item)); }
       else if (key === "poster-file") setPosterName(value);
       else if (key === "logo-file") setLogoName(value);
+      else if (key.startsWith("upload:")) {
+        const [, folder, rawIndex] = key.split(":");
+        const index = Number(rawIndex);
+        setFolderUploads((folders)=>({...folders,[folder]:(folders[folder]||[]).map((item,i)=>i===index?{...item,name:value}:item)}));
+      }
       else if (["poster","teachers","logo"].includes(key)) setFolderNames((names)=>({...names,[key]:value}));
       else if (key.startsWith("custom-")) setExtraFolders((folders)=>folders.map((folder)=>folder.id===key?{...folder,name:value}:folder));
     }
@@ -6983,9 +6990,21 @@ function AssetLibrary({
     event.dataTransfer.setData("application/x-canvas-asset", payload);
     event.dataTransfer.setData("text/plain", payload);
   };
+  const openAssetFileContext = (event: React.MouseEvent, id: string, folder?: string, index?: number) => {
+    event.preventDefault(); event.stopPropagation();
+    setAssetFileContext({ x: Math.min(event.clientX, window.innerWidth - 130), y: Math.min(event.clientY, window.innerHeight - 58), id, folder, index });
+  };
+  const deleteAssetFile = () => {
+    if (!assetFileContext) return;
+    if (assetFileContext.folder != null && assetFileContext.index != null) {
+      const { folder, index } = assetFileContext;
+      setFolderUploads((folders)=>({...folders,[folder]:(folders[folder]||[]).filter((_,i)=>i!==index)}));
+    } else setHiddenAssetFiles((items)=>items.includes(assetFileContext.id)?items:[...items,assetFileContext.id]);
+    setAssetFileContext(null);
+  };
   const uploadedFolderEntries = (key: string) => !customCollapsed[key] && (folderUploads[key] || []).map((item, index) => (
-    <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,item.name,item.url)} className="asset-tree-entry uploaded-folder-file" key={`${key}-${item.url}-${index}`}>
-      <img src={item.url} alt="" /><span>{item.name}</span>
+    <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,item.name,item.url)} onContextMenu={(event)=>openAssetFileContext(event,`upload:${key}:${index}`,key,index)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename(`upload:${key}:${index}`,item.name);}} className="asset-tree-entry uploaded-folder-file" key={`${key}-${item.url}-${index}`}>
+      <img src={item.url} alt="" />{editing===`upload:${key}:${index}`?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(event)=>event.stopPropagation()} onChange={(event)=>setRenameDraft(event.target.value)} onBlur={commitInlineRename} onKeyDown={(event)=>{if(event.key==="Enter")commitInlineRename();if(event.key==="Escape")setEditing(null);}}/>:<span>{item.name}</span>}
     </div>
   ));
   return (
@@ -7017,8 +7036,7 @@ function AssetLibrary({
           <button className="asset-folder-more" aria-label={`${folderNames.poster}更多操作`} aria-expanded={folderMore==="poster"} onClick={(event)=>toggleFolderActions(event,"poster")}>•••</button>
           {folderActions("poster",folderNames.poster)}
         </div>}
-        {posterMatches && !hiddenFolders.includes("poster") && !collapsed.poster &&
-        <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,posterName,"/assets/school-kickoff-poster.png")} className={`asset-tree-entry asset-poster-file ${selected===5?"selected":""}`} onClick={(event)=>onSelect(5,event.currentTarget.getBoundingClientRect().top)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("poster-file",posterName);}}>
+        {posterMatches && !hiddenFolders.includes("poster") && !collapsed.poster && !hiddenAssetFiles.includes("poster-file") && <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,posterName,"/assets/school-kickoff-poster.png")} onContextMenu={(event)=>openAssetFileContext(event,"poster-file")} className={`asset-tree-entry asset-poster-file ${selected===5?"selected":""}`} onClick={(event)=>onSelect(5,event.currentTarget.getBoundingClientRect().top)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("poster-file",posterName);}}>
           <img src="/assets/school-kickoff-poster.png" />
           {editing==="poster-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{posterName}</span>}
         </div>}
@@ -7030,7 +7048,7 @@ function AssetLibrary({
           <button className="asset-folder-more" aria-label={`${folderNames.teachers}更多操作`} aria-expanded={folderMore==="teachers"} onClick={(event)=>toggleFolderActions(event,"teachers")}>•••</button>
           {folderActions("teachers",folderNames.teachers)}
         </div>}
-        {!hiddenFolders.includes("teachers") && !collapsed.teachers && visibleTeachers.map(({name:v,index:i}) => (
+        {!hiddenFolders.includes("teachers") && !collapsed.teachers && visibleTeachers.filter(({index})=>!hiddenAssetFiles.includes(`teacher-${index}`)).map(({name:v,index:i}) => (
           <div
             role="button"
             tabIndex={0}
@@ -7039,6 +7057,7 @@ function AssetLibrary({
             className={`asset-tree-entry ${selected === i + 1 ? "selected" : ""}`}
             onClick={(event) => onSelect(i + 1, event.currentTarget.getBoundingClientRect().top)}
             onDoubleClick={(event) => { event.preventDefault(); event.stopPropagation(); beginInlineRename(`teacher-${i}`, v); }}
+            onContextMenu={(event)=>openAssetFileContext(event,`teacher-${i}`)}
             key={v}
           >
             <img src={teacherImages[i]} />
@@ -7054,7 +7073,7 @@ function AssetLibrary({
           <button className="asset-folder-more" aria-label={`${folderNames.logo}更多操作`} aria-expanded={folderMore==="logo"} onClick={(event)=>toggleFolderActions(event,"logo")}>•••</button>
           {folderActions("logo",folderNames.logo)}
         </div>}
-        {logoMatches && !hiddenFolders.includes("logo") && !collapsed.logo && <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,logoName,"/assets/brand-logo-kcle.png")} className={`asset-tree-entry asset-logo-file ${selected===6?"selected":""}`} onClick={(event)=>onSelect(6,event.currentTarget.getBoundingClientRect().top)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("logo-file",logoName);}}><img src="/assets/brand-logo-kcle.png" />{editing==="logo-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{logoName}</span>}</div>}
+        {logoMatches && !hiddenFolders.includes("logo") && !collapsed.logo && !hiddenAssetFiles.includes("logo-file") && <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,logoName,"/assets/brand-logo-kcle.png")} onContextMenu={(event)=>openAssetFileContext(event,"logo-file")} className={`asset-tree-entry asset-logo-file ${selected===6?"selected":""}`} onClick={(event)=>onSelect(6,event.currentTarget.getBoundingClientRect().top)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("logo-file",logoName);}}><img src="/assets/brand-logo-kcle.png" />{editing==="logo-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{logoName}</span>}</div>}
         {!hiddenFolders.includes("logo") && !collapsed.logo && uploadedFolderEntries("logo")}
         {extraFolders.map((folder) => <React.Fragment key={folder.id}><div className={`tree-row custom-folder-row ${folderMore===folder.id ? "menu-open" : ""}`}>
           <button className="custom-folder-chevron" aria-label={customCollapsed[folder.id] ? `展开${folder.name}` : `收起${folder.name}`} onClick={()=>setCustomCollapsed((values)=>({...values,[folder.id]:!values[folder.id]}))}>
@@ -7066,6 +7085,7 @@ function AssetLibrary({
           {folderActions(folder.id,folder.name)}
         </div>{uploadedFolderEntries(folder.id)}</React.Fragment>)}
       </div>
+      {assetFileContext && createPortal(<div className="asset-file-context-menu" style={{left:assetFileContext.x,top:assetFileContext.y}} onMouseDown={(event)=>event.stopPropagation()}><button onClick={deleteAssetFile}><span>⌫</span>删除</button></div>,document.body)}
     </aside>
   );
 }
@@ -7102,12 +7122,15 @@ function CanvasDrawer({ mode }: { mode: "assets" | "history" | "comments" }) {
 }
 
 function HistoryDrawer({ onClose }: { onClose: () => void }) {
-  const [tab, setTab] = useState<"海报" | "直播间" | "PPT">("海报");
+  const [tab, setTab] = useState<"海报" | "直播间" | "画布">("海报");
   const [listView, setListView] = useState(false);
   const [query, setQuery] = useState("");
-  const historyItems = [
-    ...featuredPeople,
-  ].filter((item) => item.name.toLowerCase().includes(query.trim().toLowerCase()));
+  const [canvasHistoryCards] = usePersistentState<CanvasHistoryRecord[]>("dzyd-canvas-generation-history", []);
+  const normalizedHistoryQuery = query.trim().toLowerCase();
+  const historyItems = (tab === "画布"
+    ? canvasHistoryCards.map((item)=>({ name:item.name, url:item.images[0] || "", images:item.images }))
+    : featuredPeople.map((item)=>({...item,images:[item.url]})))
+    .filter((item) => item.url && item.name.toLowerCase().includes(normalizedHistoryQuery));
   return (
     <aside className="figma-history-panel">
       <div className="figma-history-title">
@@ -7121,7 +7144,7 @@ function HistoryDrawer({ onClose }: { onClose: () => void }) {
         </button>
       </div>
       <div className="figma-history-tabs">
-        {(["海报", "直播间", "PPT"] as const).map((item) => (
+        {(["海报", "直播间", "画布"] as const).map((item) => (
           <button
             key={item}
             className={tab === item ? "active" : ""}
@@ -7153,7 +7176,7 @@ function HistoryDrawer({ onClose }: { onClose: () => void }) {
             }}
             key={item.url}
           >
-            <div className="history-image-area"><img src={item.url} alt="历史图片缩略图" /></div>
+            <div className={`history-image-area ${tab==="画布"?"canvas-history-preview":""}`}>{item.images.slice(0,3).map((image,index)=><img src={image} alt="历史图片缩略图" key={`${image}-${index}`} />)}</div>
             <strong>{item.name}</strong>
             <small>图片 · 今天</small>
           </button>

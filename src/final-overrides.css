@@ -16928,10 +16928,9 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
 /* Comment send keeps one stable appearance; replies are real persisted conversation rows. */
 .canvas-comment-panel footer>button:hover,
 .canvas-comment-panel footer>button:focus-visible{
-  transform:none!important;
+  transform:scale(1.05)!important;
   filter:none!important;
   box-shadow:none!important;
-  background:inherit!important;
   outline:0!important
 }
 .canvas-comment-reply-item{
@@ -16948,6 +16947,22 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
 }
 .canvas-comment-reply-item>strong{color:#6d55df!important;font-weight:600!important;flex:none!important}
 .canvas-comment-reply-item>span{min-width:0!important;overflow-wrap:anywhere!important}
+
+/* Asset contents: direct right-click deletion and canvas-history previews. */
+.asset-file-context-menu{
+  position:fixed!important;z-index:10050!important;width:122px!important;padding:6px!important;
+  border:1px solid #e6e1ff!important;border-radius:10px!important;background:#fff!important;
+  box-shadow:0 10px 28px rgba(72,54,145,.16)!important
+}
+.asset-file-context-menu>button{
+  width:100%!important;height:36px!important;display:flex!important;align-items:center!important;gap:9px!important;
+  padding:0 11px!important;border:1px solid transparent!important;border-radius:7px!important;background:#fff!important;
+  color:#ef4444!important;font-size:14px!important;text-align:left!important
+}
+.asset-file-context-menu>button:hover{border-color:#b8a9ff!important;background:#f5f1ff!important}
+.asset-file-context-menu>button>span{font-size:17px!important;line-height:1!important}
+.figma-history-panel .history-image-area.canvas-history-preview{display:flex!important;gap:2px!important;overflow:hidden!important}
+.figma-history-panel .history-image-area.canvas-history-preview>img{min-width:0!important;flex:1 1 0!important;width:0!important;height:100%!important;object-fit:cover!important}
 
 /* Uploaded folder images share the normal draggable asset-row geometry. */
 .asset-library-panel .uploaded-folder-file>img{
