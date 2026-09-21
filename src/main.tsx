@@ -22,6 +22,13 @@ type CanvasHistoryRecord = {
   name: string;
   images: string[];
   createdAt: string;
+  workspace?: {
+    nodes: CanvasNode[];
+    links: CanvasLink[];
+    groups: Array<{ id: number; nodeIds: number[]; name: string; color?: string; colorSolid?: string; layout?: "grid" | "horizontal" | "vertical" }>;
+    comments: Array<{ id: number; x: number; y: number; viewportX: number; viewportY: number; text: string; replies?: string[] }>;
+    zoom: number;
+  };
 };
 type CanvasNode = {
   id: number;
@@ -3256,6 +3263,9 @@ function Canvas({
       mediaY: number;
       mediaW: number;
       mediaH: number;
+      normalizedX?: number;
+      normalizedY?: number;
+      label?: string;
       choice: number;
       open: boolean;
     }>
@@ -3995,12 +4005,11 @@ function Canvas({
       if (target.closest(".canvas-focus-label,.canvas-focus-options")) return;
       const media = target.closest<HTMLElement>(".canvas-node-media");
       const card = target.closest<HTMLElement>(".canvas-node-card");
-      if (!media || !card || Number(card.dataset.nodeId) === focusNodeId)
-        return;
-      const box = canvas.getBoundingClientRect(),
-        mediaBox = media.getBoundingClientRect();
-      const relativeY = (event.clientY - mediaBox.top) / mediaBox.height;
-      const choice = relativeY < 0.34 ? 1 : relativeY > 0.67 ? 3 : 0;
+      if (!media || !card) return;
+      const box = canvas.getBoundingClientRect(), mediaBox = media.getBoundingClientRect();
+      const normalizedX = Math.max(0,Math.min(1,(event.clientX-mediaBox.left)/mediaBox.width));
+      const normalizedY = Math.max(0,Math.min(1,(event.clientY-mediaBox.top)/mediaBox.height));
+      const choice = normalizedY < .33 ? 1 : normalizedY > .67 ? 3 : 0;
       setFocusPicks((items) => [
         ...items,
         {
@@ -4012,6 +4021,9 @@ function Canvas({
           mediaY: mediaBox.top - box.top + canvas.scrollTop,
           mediaW: mediaBox.width,
           mediaH: mediaBox.height,
+          normalizedX,
+          normalizedY,
+          label:`焦点 ${focusPicks.length+1}`,
           choice,
           open: false,
         },
@@ -4019,7 +4031,7 @@ function Canvas({
     };
     canvas.addEventListener("click", pick, { capture: true });
     return () => canvas.removeEventListener("click", pick, { capture: true });
-  }, [focusEdit, focusNodeId]);
+  }, [focusEdit, focusNodeId, focusPicks.length]);
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || !focusEdit) return;
@@ -4260,6 +4272,13 @@ function Canvas({
           name: projectTitle,
           images: images.filter((url, index) => images.indexOf(url) === index),
           createdAt: new Date().toISOString(),
+          workspace: {
+            nodes: canvasNodes.map((node)=>node.id===targetId?{...node,url:result,placeholder:false,generated:true,generationPrompt:multiReferencePrompt}:{...node}),
+            links: canvasLinks.map((link)=>({...link})),
+            groups: canvasGroups.map((group)=>({...group,nodeIds:[...group.nodeIds]})),
+            comments: canvasComments.map((comment)=>({...comment,replies:[...(comment.replies||[])]})),
+            zoom: canvasZoom,
+          },
         };
         return [record, ...items.filter((item) => item.id !== record.id)];
       });
@@ -4309,8 +4328,20 @@ function Canvas({
   ];
   const getFocusPickBox = (pick: (typeof focusPicks)[number]) => {
     const choice = focusChoices[pick.choice];
-    const width = Math.min(choice.width, pick.mediaW),
-      height = Math.min(choice.height, pick.mediaH);
+    const node = canvasNodes.find((item)=>item.id===pick.nodeId);
+    if (node && pick.normalizedX != null && pick.normalizedY != null) {
+      const geometry=getNodeGeometry(node), scale=canvasZoom/75;
+      const mediaLeft=CANVAS_WORLD_CENTER+node.x-geometry.mediaWidth/2;
+      const mediaTop=geometry.centerY-geometry.mediaHeight/2;
+      const worldWidth=Math.max(54,Math.min(geometry.mediaWidth*.34,150));
+      const worldHeight=Math.max(42,Math.min(geometry.mediaHeight*.28,132));
+      const centerX=mediaLeft+pick.normalizedX*geometry.mediaWidth;
+      const centerY=mediaTop+pick.normalizedY*geometry.mediaHeight;
+      const left=Math.max(mediaLeft,Math.min(centerX-worldWidth/2,mediaLeft+geometry.mediaWidth-worldWidth));
+      const top=Math.max(mediaTop,Math.min(centerY-worldHeight/2,mediaTop+geometry.mediaHeight-worldHeight));
+      return {choice:{...choice,name:pick.label||choice.name},width:worldWidth*scale,height:worldHeight*scale,left:CANVAS_WORLD_CENTER+(left-CANVAS_WORLD_CENTER)*scale,top:top*scale};
+    }
+    const width = Math.min(choice.width, pick.mediaW), height = Math.min(choice.height, pick.mediaH);
     return {
       choice,
       width,
@@ -4329,6 +4360,20 @@ function Canvas({
     to.x >= from.x
       ? { side: "right" as const, targetSide: "left" as const }
       : { side: "left" as const, targetSide: "right" as const };
+  const openCanvasHistoryRecord = (record: CanvasHistoryRecord) => {
+    const restoredNodes = record.workspace?.nodes?.length
+      ? record.workspace.nodes.map((node)=>({...node}))
+      : record.images.map((url,index)=>({id:Date.now()+index,url,name:`${record.name} ${index+1}`,x:(index-(record.images.length-1)/2)*390,y:0}));
+    setProjectTitle(record.name);
+    setCanvasNodes(restoredNodes);
+    setCanvasLinks(record.workspace?.links?.map((link)=>({...link})) || []);
+    setCanvasGroups(record.workspace?.groups?.map((group)=>({...group,nodeIds:[...group.nodeIds]})) || []);
+    setCanvasComments(record.workspace?.comments?.map((comment)=>({...comment,replies:[...(comment.replies||[])]})) || []);
+    if (record.workspace?.zoom) { setCanvasZoom(record.workspace.zoom); zoomTargetRef.current=record.workspace.zoom; zoomAppliedRef.current=record.workspace.zoom; }
+    setCanvasImage(restoredNodes[0]?.url || null);
+    setActiveNodeId(null); setSelectedNodeIds([]); setSelection(null); setMode(null);
+    canvasWasEmpty.current=true;
+  };
   const groupedBounds = canvasGroups.flatMap((group) => {
     const nodes = canvasNodes.filter((node) => group.nodeIds.includes(node.id));
     if (nodes.length < 2) return [];
@@ -5310,7 +5355,7 @@ function Canvas({
                   }}
                 >
                   <span>✦</span>
-                  {box.choice.name}
+                  {pick.label || box.choice.name}
                   <b>⌄</b>
                 </button>
                 <button
@@ -6052,7 +6097,7 @@ function Canvas({
             )}
           </>
         )}
-        {mode === "history" && <HistoryDrawer onClose={() => setMode(null)} />}{" "}
+        {mode === "history" && <HistoryDrawer onClose={() => setMode(null)} onOpenCanvas={openCanvasHistoryRecord} />}{" "}
         {mode !== "folder" && (
           <div className="canvas-comment-world-layer">
             {canvasComments.map((comment) => (
@@ -7085,7 +7130,7 @@ function AssetLibrary({
           {folderActions(folder.id,folder.name)}
         </div>{uploadedFolderEntries(folder.id)}</React.Fragment>)}
       </div>
-      {assetFileContext && createPortal(<div className="asset-file-context-menu" style={{left:assetFileContext.x,top:assetFileContext.y}} onMouseDown={(event)=>event.stopPropagation()}><button onClick={deleteAssetFile}><span>⌫</span>删除</button></div>,document.body)}
+      {assetFileContext && createPortal(<div className="asset-file-context-menu" style={{left:assetFileContext.x,top:assetFileContext.y}} onMouseDown={(event)=>event.stopPropagation()}><button onClick={deleteAssetFile}><span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.5 6h11M8 3.5h4M6.2 6l.7 10.5h6.2L13.8 6M8.5 9v4.5M11.5 9v4.5" /></svg></span>删除</button></div>,document.body)}
     </aside>
   );
 }
@@ -7121,15 +7166,15 @@ function CanvasDrawer({ mode }: { mode: "assets" | "history" | "comments" }) {
   );
 }
 
-function HistoryDrawer({ onClose }: { onClose: () => void }) {
+function HistoryDrawer({ onClose, onOpenCanvas }: { onClose: () => void; onOpenCanvas: (record: CanvasHistoryRecord) => void }) {
   const [tab, setTab] = useState<"海报" | "直播间" | "画布">("海报");
   const [listView, setListView] = useState(false);
   const [query, setQuery] = useState("");
   const [canvasHistoryCards] = usePersistentState<CanvasHistoryRecord[]>("dzyd-canvas-generation-history", []);
   const normalizedHistoryQuery = query.trim().toLowerCase();
   const historyItems = (tab === "画布"
-    ? canvasHistoryCards.map((item)=>({ name:item.name, url:item.images[0] || "", images:item.images }))
-    : featuredPeople.map((item)=>({...item,images:[item.url]})))
+    ? canvasHistoryCards.map((item)=>({ name:item.name, url:item.images[0] || "", images:item.images, record:item }))
+    : featuredPeople.map((item)=>({...item,images:[item.url],record:undefined as CanvasHistoryRecord|undefined})))
     .filter((item) => item.url && item.name.toLowerCase().includes(normalizedHistoryQuery));
   return (
     <aside className="figma-history-panel">
@@ -7163,6 +7208,7 @@ function HistoryDrawer({ onClose }: { onClose: () => void }) {
         {historyItems.map((item) => (
           <button
             className="figma-history-card"
+            onClick={()=>{if(item.record)onOpenCanvas(item.record);}}
             draggable
             onDragStart={(event) => {
               pendingCanvasAssetDrag = {
