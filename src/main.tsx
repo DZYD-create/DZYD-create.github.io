@@ -3276,6 +3276,7 @@ function Canvas({
     viewportX: number;
     viewportY: number;
   } | null>(null);
+  const [commentReplyDrafts, setCommentReplyDrafts] = useState<Record<number, string>>({});
   const [canvasGroups, setCanvasGroups] = useState<
     Array<{ id: number; nodeIds: number[]; name: string; color?: string; colorSolid?: string; layout?: "grid" | "horizontal" | "vertical" }>
   >(savedCanvas.groups || []);
@@ -3308,6 +3309,7 @@ function Canvas({
       viewportX: number;
       viewportY: number;
       text: string;
+      replies?: string[];
     }>
   >(savedCanvas.comments || []);
   const [selectedCommentIds, setSelectedCommentIds] = useState<number[]>([]);
@@ -6084,10 +6086,11 @@ function Canvas({
                 </button>
               </header>
               <p>{comment.text}</p>
+              {(comment.replies || []).map((reply, replyIndex) => <div className="canvas-comment-reply-item" key={`${comment.id}-${replyIndex}`}><strong>yhdd_1009</strong><span>{reply}</span></div>)}
               <div className="canvas-comment-reply">
-                <input placeholder="回复讨论…" maxLength={200} />
-                <span>0/200</span>
-                <button aria-label="发送回复">↑</button>
+                <input value={commentReplyDrafts[comment.id] || ""} onChange={(event) => setCommentReplyDrafts((drafts) => ({ ...drafts, [comment.id]: event.target.value }))} onKeyDown={(event) => { if (event.key === "Enter" && (commentReplyDrafts[comment.id] || "").trim()) { const reply=(commentReplyDrafts[comment.id] || "").trim(); setCanvasComments((items)=>items.map((item)=>item.id===comment.id?{...item,replies:[...(item.replies||[]),reply]}:item)); setCommentReplyDrafts((drafts)=>({...drafts,[comment.id]:""})); } }} placeholder="回复讨论…" maxLength={200} />
+                <span>{(commentReplyDrafts[comment.id] || "").length}/200</span>
+                <button disabled={!(commentReplyDrafts[comment.id] || "").trim()} aria-label="发送回复" onClick={() => { const reply=(commentReplyDrafts[comment.id] || "").trim(); if(!reply)return; setCanvasComments((items)=>items.map((item)=>item.id===comment.id?{...item,replies:[...(item.replies||[]),reply]}:item)); setCommentReplyDrafts((drafts)=>({...drafts,[comment.id]:""})); }}>↑</button>
               </div>
             </aside>
           </div>
@@ -6107,6 +6110,7 @@ function Canvas({
                   viewportX: commentPosition.viewportX,
                   viewportY: commentPosition.viewportY,
                   text,
+                  replies: [],
                 },
               ]);
               setCommentPosition(null);
@@ -6918,6 +6922,9 @@ function AssetLibrary({
   const [folderMenuPosition, setFolderMenuPosition] = useState({ left: 0, top: 0 });
   const [hiddenFolders, setHiddenFolders] = usePersistentState<string[]>("dzyd-canvas-hidden-folders", []);
   const [extraFolders, setExtraFolders] = usePersistentState<Array<{ id: string; name: string }>>("dzyd-canvas-extra-folders", []);
+  const [folderUploads, setFolderUploads] = usePersistentState<Record<string, Array<{ name: string; url: string }>>>("dzyd-canvas-folder-uploads", {});
+  const folderUploadInput = useRef<HTMLInputElement>(null);
+  const [folderUploadTarget, setFolderUploadTarget] = useState<string | null>(null);
   const [customCollapsed, setCustomCollapsed] = useState<Record<string, boolean>>({});
   const [renameDraft, setRenameDraft] = useState("");
   const beginInlineRename = (key: string, current: string) => { setEditing(key); setRenameDraft(current); };
@@ -6948,7 +6955,7 @@ function AssetLibrary({
     event.stopPropagation();
     if (folderMore === key) { setFolderMore(null); return; }
     const rect = event.currentTarget.getBoundingClientRect();
-    const menuHeight = 116;
+    const menuHeight = 154;
     const safeBottom = 84;
     const preferredTop = rect.bottom + 4;
     const top = Math.max(8, Math.min(preferredTop, document.documentElement.clientHeight - menuHeight - safeBottom));
@@ -6958,6 +6965,7 @@ function AssetLibrary({
   const folderActions = (key: string, name: string) => folderMore===key && createPortal(
     <div className="asset-folder-more-menu asset-folder-more-menu-portal" style={{ left: folderMenuPosition.left, top: folderMenuPosition.top }} onClick={(event)=>event.stopPropagation()}>
       <button onClick={createAssetFolder}><span><svg viewBox="0 0 20 20"><path d="M10 4v12M4 10h12" /></svg></span>新建文件夹</button>
+      <button onClick={()=>{setFolderUploadTarget(key);setFolderMore(null);window.setTimeout(()=>folderUploadInput.current?.click(),0);}}><span><svg viewBox="0 0 20 20"><path d="M10 14V4M6.5 7.5 10 4l3.5 3.5"/><path d="M4 12.5v3h12v-3"/></svg></span>上传</button>
       <button onClick={()=>{setFolderMore(null);beginInlineRename(key,name);}}><span><svg viewBox="0 0 20 20"><path d="m4 14-.7 3.1 3.2-.7L15 7.9 12.1 5Z" /><path d="m10.8 6.3 2.9 2.9" /></svg></span>重命名</button>
       <button className="danger" onClick={()=>deleteAssetFolder(key)}><span><svg viewBox="0 0 20 20"><path d="M4.5 6h11M8 3.5h4M6.2 6l.7 10.5h6.2L13.8 6M8.5 9v4.5M11.5 9v4.5" /></svg></span>删除</button>
     </div>, document.body
@@ -6975,8 +6983,14 @@ function AssetLibrary({
     event.dataTransfer.setData("application/x-canvas-asset", payload);
     event.dataTransfer.setData("text/plain", payload);
   };
+  const uploadedFolderEntries = (key: string) => !customCollapsed[key] && (folderUploads[key] || []).map((item, index) => (
+    <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,item.name,item.url)} className="asset-tree-entry uploaded-folder-file" key={`${key}-${item.url}-${index}`}>
+      <img src={item.url} alt="" /><span>{item.name}</span>
+    </div>
+  ));
   return (
     <aside className="asset-library-panel" onDoubleClick={(event) => event.stopPropagation()}>
+      <input ref={folderUploadInput} hidden type="file" accept="image/*" multiple onChange={async (event)=>{const key=folderUploadTarget;const files=Array.from(event.target.files||[]).filter((file)=>file.type.startsWith("image/"));event.target.value="";if(!key||!files.length)return;const uploaded=await Promise.all(files.map(async(file)=>({name:file.name,url:await fileToPersistentImage(file)})));setFolderUploads((folders)=>({...folders,[key]:[...(folders[key]||[]),...uploaded]}));if(key==="poster")setCollapsed((value)=>({...value,poster:false}));if(key==="teachers")setCollapsed((value)=>({...value,teachers:false}));if(key==="logo")setCollapsed((value)=>({...value,logo:false}));if(key.startsWith("custom-"))setCustomCollapsed((values)=>({...values,[key]:false}));setFolderUploadTarget(null);}} />
       <div className="asset-title">
         <button onClick={onClose} aria-label="关闭素材库">
           <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12.5 5-5 5 5 5" /></svg>
@@ -7008,6 +7022,7 @@ function AssetLibrary({
           <img src="/assets/school-kickoff-poster.png" />
           {editing==="poster-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{posterName}</span>}
         </div>}
+        {!hiddenFolders.includes("poster") && !collapsed.poster && uploadedFolderEntries("poster")}
         {(teacherFolderMatches || visibleTeachers.length > 0) && !hiddenFolders.includes("teachers") && <div className={`tree-row ${collapsed.teachers ? "" : "expanded"}`}>
           <img className="tree-chevron" src={collapsed.teachers ? "/assets/asset-chevron-right.svg" : "/assets/asset-chevron.svg"} onClick={() => setCollapsed((value)=>({...value,teachers:!value.teachers}))} />
           <i className="folder-icon blue" />
@@ -7030,6 +7045,7 @@ function AssetLibrary({
             {editing===`teacher-${i}`?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{v}</span>}
           </div>
         ))}
+        {!hiddenFolders.includes("teachers") && !collapsed.teachers && uploadedFolderEntries("teachers")}
         {!hasSearchResults && <p className="asset-search-empty">未找到“{query}”</p>}
         {logoMatches && !hiddenFolders.includes("logo") && <div className="tree-row logo-row">
           <img className="tree-chevron" src={collapsed.logo ? "/assets/asset-chevron-right.svg" : "/assets/asset-chevron.svg"} onClick={() => setCollapsed((value)=>({...value,logo:!value.logo}))} />
@@ -7039,7 +7055,8 @@ function AssetLibrary({
           {folderActions("logo",folderNames.logo)}
         </div>}
         {logoMatches && !hiddenFolders.includes("logo") && !collapsed.logo && <div role="button" tabIndex={0} draggable onDragStart={(event)=>beginAssetDrag(event,logoName,"/assets/brand-logo-kcle.png")} className={`asset-tree-entry asset-logo-file ${selected===6?"selected":""}`} onClick={(event)=>onSelect(6,event.currentTarget.getBoundingClientRect().top)} onDoubleClick={(event)=>{event.preventDefault();event.stopPropagation();beginInlineRename("logo-file",logoName);}}><img src="/assets/brand-logo-kcle.png" />{editing==="logo-file"?<input className="asset-inline-rename" autoFocus value={renameDraft} onClick={(e)=>e.stopPropagation()} onChange={(e)=>setRenameDraft(e.target.value)} onBlur={commitInlineRename} onKeyDown={(e)=>{if(e.key==="Enter")commitInlineRename();if(e.key==="Escape")setEditing(null);}}/>:<span>{logoName}</span>}</div>}
-        {extraFolders.map((folder) => <div className={`tree-row custom-folder-row ${folderMore===folder.id ? "menu-open" : ""}`} key={folder.id}>
+        {!hiddenFolders.includes("logo") && !collapsed.logo && uploadedFolderEntries("logo")}
+        {extraFolders.map((folder) => <React.Fragment key={folder.id}><div className={`tree-row custom-folder-row ${folderMore===folder.id ? "menu-open" : ""}`}>
           <button className="custom-folder-chevron" aria-label={customCollapsed[folder.id] ? `展开${folder.name}` : `收起${folder.name}`} onClick={()=>setCustomCollapsed((values)=>({...values,[folder.id]:!values[folder.id]}))}>
             <img className="tree-chevron" src={customCollapsed[folder.id] ? "/assets/asset-chevron-right.svg" : "/assets/asset-chevron.svg"} />
           </button>
@@ -7047,7 +7064,7 @@ function AssetLibrary({
           {editing===folder.id?<input className="asset-inline-rename" autoFocus value={renameDraft} placeholder="请输入文件夹名称" onChange={(event)=>setRenameDraft(event.target.value)} onBlur={()=>{if(!renameDraft.trim())setRenameDraft(folder.name);commitInlineRename();}} onKeyDown={(event)=>{if(event.key==="Enter")commitInlineRename();if(event.key==="Escape")setEditing(null);}}/>:<b onDoubleClick={()=>beginInlineRename(folder.id,folder.name)}>{folder.name}</b>}
           <button className="asset-folder-more" aria-label={`${folder.name}更多操作`} aria-expanded={folderMore===folder.id} onClick={(event)=>toggleFolderActions(event,folder.id)}>•••</button>
           {folderActions(folder.id,folder.name)}
-        </div>)}
+        </div>{uploadedFolderEntries(folder.id)}</React.Fragment>)}
       </div>
     </aside>
   );

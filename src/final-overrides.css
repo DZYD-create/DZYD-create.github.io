@@ -16907,3 +16907,52 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   gap:6px!important
 }
 section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.size-selector-popover .ratio-grid>button{height:36px!important}
+
+/* Conversation Asset Library gives the first column a permanent unclipped gutter. */
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.home-asset-popover.figma-composer-assets{
+  overflow:visible!important
+}
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.home-asset-popover.figma-composer-assets .composer-assets-grid{
+  box-sizing:border-box!important;
+  width:calc(100% - 4px)!important;
+  margin:0 2px!important;
+  padding-left:24px!important;
+  padding-right:10px!important;
+  overflow-x:visible!important
+}
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.home-asset-popover.figma-composer-assets .composer-assets-grid>button:first-child{
+  margin-left:0!important;
+  transform:none!important
+}
+
+/* Comment send keeps one stable appearance; replies are real persisted conversation rows. */
+.canvas-comment-panel footer>button:hover,
+.canvas-comment-panel footer>button:focus-visible{
+  transform:none!important;
+  filter:none!important;
+  box-shadow:none!important;
+  background:inherit!important;
+  outline:0!important
+}
+.canvas-comment-reply-item{
+  display:flex!important;
+  align-items:flex-start!important;
+  gap:6px!important;
+  margin:7px 0!important;
+  padding:7px 9px!important;
+  border-radius:8px!important;
+  background:#f6f4ff!important;
+  color:#343746!important;
+  font-size:12px!important;
+  line-height:18px!important
+}
+.canvas-comment-reply-item>strong{color:#6d55df!important;font-weight:600!important;flex:none!important}
+.canvas-comment-reply-item>span{min-width:0!important;overflow-wrap:anywhere!important}
+
+/* Uploaded folder images share the normal draggable asset-row geometry. */
+.asset-library-panel .uploaded-folder-file>img{
+  width:26px!important;
+  height:26px!important;
+  object-fit:cover!important;
+  border-radius:5px!important
+}
