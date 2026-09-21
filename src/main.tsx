@@ -4010,6 +4010,10 @@ function Canvas({
       const normalizedX = Math.max(0,Math.min(1,(event.clientX-mediaBox.left)/mediaBox.width));
       const normalizedY = Math.max(0,Math.min(1,(event.clientY-mediaBox.top)/mediaBox.height));
       const choice = normalizedY < .33 ? 1 : normalizedY > .67 ? 3 : 0;
+      const node = canvasNodes.find((item)=>item.id===Number(card.dataset.nodeId));
+      const horizontal = normalizedX < .34 ? "左侧" : normalizedX > .66 ? "右侧" : "中央";
+      const vertical = normalizedY < .34 ? "上部" : normalizedY > .66 ? "下部" : "主体";
+      const imageName = (node?.name || "图片").replace(/\s+\d+$/, "").trim();
       setFocusPicks((items) => [
         ...items,
         {
@@ -4023,7 +4027,7 @@ function Canvas({
           mediaH: mediaBox.height,
           normalizedX,
           normalizedY,
-          label:`焦点 ${focusPicks.length+1}`,
+          label:`${imageName} · ${horizontal}${vertical}`,
           choice,
           open: false,
         },
@@ -4333,8 +4337,11 @@ function Canvas({
       const geometry=getNodeGeometry(node), scale=canvasZoom/75;
       const mediaLeft=CANVAS_WORLD_CENTER+node.x-geometry.mediaWidth/2;
       const mediaTop=geometry.centerY-geometry.mediaHeight/2;
-      const worldWidth=Math.max(54,Math.min(geometry.mediaWidth*.34,150));
-      const worldHeight=Math.max(42,Math.min(geometry.mediaHeight*.28,132));
+      const centerWeightX=1-Math.abs(pick.normalizedX-.5)*2;
+      const centerWeightY=1-Math.abs(pick.normalizedY-.5)*2;
+      const aspectWeight=Math.max(.82,Math.min(1.2,geometry.mediaWidth/Math.max(1,geometry.mediaHeight)));
+      const worldWidth=Math.max(46,Math.min(geometry.mediaWidth*(.2+.19*centerWeightX)*aspectWeight,geometry.mediaWidth*.48));
+      const worldHeight=Math.max(38,Math.min(geometry.mediaHeight*(.18+.2*centerWeightY)/aspectWeight,geometry.mediaHeight*.46));
       const centerX=mediaLeft+pick.normalizedX*geometry.mediaWidth;
       const centerY=mediaTop+pick.normalizedY*geometry.mediaHeight;
       const left=Math.max(mediaLeft,Math.min(centerX-worldWidth/2,mediaLeft+geometry.mediaWidth-worldWidth));
@@ -5506,11 +5513,11 @@ function Canvas({
                         onClick={() => setActiveFocusTagId(pick.id)}
                       >
                         <b>✦</b>
-                        <span>{focusChoices[pick.choice].name}</span>
+                        <span>{pick.label || focusChoices[pick.choice].name}</span>
                         <i
                           className="canvas-inline-focus-remove"
                           role="button"
-                          aria-label={`删除焦点${focusChoices[pick.choice].name}`}
+                          aria-label={`删除焦点${pick.label || focusChoices[pick.choice].name}`}
                           tabIndex={0}
                           onClick={(event) => { event.stopPropagation(); removeFocusPick(pick.id); }}
                           onKeyDown={(event) => {
@@ -5522,10 +5529,10 @@ function Canvas({
                       </button>
                       <input
                         className="canvas-inline-text"
-                        aria-label={`在${focusChoices[pick.choice].name}后输入文字`}
+                        aria-label={`在${pick.label || focusChoices[pick.choice].name}后输入文字`}
                         value={focusTrailingText[pick.id] || ""}
                         onChange={(e) => setFocusTrailingText((values) => ({ ...values, [pick.id]: e.target.value }))}
-                        style={{ width: focusTrailingText[pick.id] ? Math.min(420, focusTrailingText[pick.id].length * 14 + 14) : 10 }}
+                        style={{ width: focusTrailingText[pick.id] ? Math.min(420, focusTrailingText[pick.id].length * 14 + 4) : 1 }}
                       />
                     </React.Fragment>
                   ))}
@@ -7045,6 +7052,7 @@ function AssetLibrary({
       const { folder, index } = assetFileContext;
       setFolderUploads((folders)=>({...folders,[folder]:(folders[folder]||[]).filter((_,i)=>i!==index)}));
     } else setHiddenAssetFiles((items)=>items.includes(assetFileContext.id)?items:[...items,assetFileContext.id]);
+    onSelect(0,0);
     setAssetFileContext(null);
   };
   const uploadedFolderEntries = (key: string) => !customCollapsed[key] && (folderUploads[key] || []).map((item, index) => (

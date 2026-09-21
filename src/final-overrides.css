@@ -16967,6 +16967,14 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
 .figma-history-panel .history-image-area.canvas-history-preview{display:flex!important;gap:2px!important;overflow:hidden!important}
 .figma-history-panel .history-image-area.canvas-history-preview>img{min-width:0!important;flex:1 1 0!important;width:0!important;height:100%!important;object-fit:cover!important}
 
+/* Focus tags sit directly against the adjoining copy; empty continuation fields consume no visual gap. */
+.canvas-node-prompt .canvas-prompt-inline-content{column-gap:0!important}
+.canvas-node-prompt .canvas-prompt-inline-content>input.canvas-inline-text{
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important
+}
+
 /* Uploaded folder images share the normal draggable asset-row geometry. */
 .asset-library-panel .uploaded-folder-file>img{
   width:26px!important;
