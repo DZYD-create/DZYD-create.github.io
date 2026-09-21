@@ -189,7 +189,7 @@ export default {
         const rawResult = await env.AI.run(VISION_MODEL, {
           image,
           task: "query",
-          question: `识别归一化矩形 x=${x.toFixed(3)}, y=${y.toFixed(3)}, width=${width.toFixed(3)}, height=${height.toFixed(3)} 内最主要的具体内容。只输出一个2到8字的中文名词短语，例如人物头像、主标题文字、品牌Logo、蓝色外套或手持商品；不要回答方位、区域、主体或画面，不要解释。`,
+          question: "这张图片是用户从原图中精确裁出的焦点选区。识别其中最主要、最具体的视觉内容或可读文字。只输出一个2到8字的中文名词短语，例如人物头像、主标题文字、品牌Logo、蓝色外套或手持商品；如果有醒目文字则优先概括文字用途。不要回答区域、主体、画面、图片或选区，不要解释。",
         });
         let result = rawResult;
         if (rawResult instanceof Response) result = await rawResult.json();

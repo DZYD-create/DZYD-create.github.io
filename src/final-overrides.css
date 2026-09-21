@@ -16976,8 +16976,8 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
 }
 .canvas-focus-edit-mode .canvas-node-prompt .canvas-prompt-inline-content:has(.canvas-inline-focus-tag)>textarea.canvas-primary-prompt-text{
   display:inline-block!important;
-  flex:0 1 auto!important;
-  width:auto!important;
+  flex:0 0 var(--prompt-inline-width,1px)!important;
+  width:var(--prompt-inline-width,1px)!important;
   min-width:1px!important;
   max-width:100%!important;
   padding-left:0!important;

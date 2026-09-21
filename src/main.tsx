@@ -259,7 +259,20 @@ async function requestEditedImage(
 
 async function analyzeCanvasFocus(image: string, rect: { x: number; y: number; width: number; height: number }, fallback: string) {
   try {
-    const preparedImage = await prepareFluxReference(image);
+    const source = await prepareFluxReference(image);
+    const preview = new Image();
+    preview.src = source;
+    await preview.decode();
+    const sourceX = Math.max(0, Math.round(rect.x * preview.naturalWidth));
+    const sourceY = Math.max(0, Math.round(rect.y * preview.naturalHeight));
+    const sourceWidth = Math.max(2, Math.round(rect.width * preview.naturalWidth));
+    const sourceHeight = Math.max(2, Math.round(rect.height * preview.naturalHeight));
+    const scale = Math.min(1, 512 / Math.max(sourceWidth, sourceHeight));
+    const crop = document.createElement("canvas");
+    crop.width = Math.max(2, Math.round(sourceWidth * scale));
+    crop.height = Math.max(2, Math.round(sourceHeight * scale));
+    crop.getContext("2d")?.drawImage(preview, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, crop.width, crop.height);
+    const preparedImage = crop.toDataURL("image/jpeg", .9);
     const response = await fetch(`${IMAGE_API_BASE}/analyze-focus`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -4164,6 +4177,14 @@ function Canvas({
   const switchMode = (
     next: "focus" | "assets" | "folder" | "history" | "comments",
   ) => {
+    if (next === "folder" && focusEdit) {
+      setFocusEdit(false);
+      setReferenceSelect(false);
+      setFocusNodeId(null);
+      setFocusMasterId(null);
+      setFocusSelectionDraft(null);
+      setActiveFocusTagId(null);
+    }
     setMode((v) => (v === next ? null : next));
     setCommentPosition(null);
     setAddOpen(false);
@@ -5552,6 +5573,7 @@ function Canvas({
                     aria-label="描述生成内容"
                     rows={1}
                     value={canvasPromptTexts[node.id] || ""}
+                    style={{ "--prompt-inline-width": focusPicks.length ? `${Math.max(1,Math.min(420,(canvasPromptTexts[node.id]||"").length*14+2))}px` : "100%" } as React.CSSProperties}
                     onChange={(e) => {
                       setCanvasPromptTexts((values) => ({ ...values, [node.id]: e.target.value }));
                       e.currentTarget.style.height = "auto";
