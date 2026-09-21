@@ -257,6 +257,21 @@ async function requestEditedImage(
   return payload.image;
 }
 
+async function analyzeCanvasFocus(image: string, rect: { x: number; y: number; width: number; height: number }, fallback: string) {
+  try {
+    const preparedImage = await prepareFluxReference(image);
+    const response = await fetch(`${IMAGE_API_BASE}/analyze-focus`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image: preparedImage, rect }),
+      signal: AbortSignal.timeout(18_000),
+    });
+    const payload = await response.json().catch(() => ({}));
+    const label = typeof payload.label === "string" ? payload.label.trim() : "";
+    return response.ok && label ? label.replace(/[。,.，：:]/g, "").slice(0, 16) : fallback;
+  } catch { return fallback; }
+}
+
 const featuredPeople = [
   { name: "上官", url: "/assets/person-teacher-1.png" },
   { name: "李狗蛋", url: "/assets/person-teacher-2.png" },
@@ -3265,12 +3280,15 @@ function Canvas({
       mediaH: number;
       normalizedX?: number;
       normalizedY?: number;
+      normalizedW?: number;
+      normalizedH?: number;
       label?: string;
       choice: number;
       open: boolean;
     }>
   >([]);
   const [activeFocusTagId, setActiveFocusTagId] = useState<number | null>(null);
+  const [focusSelectionDraft, setFocusSelectionDraft] = useState<null | { nodeId:number; startX:number; startY:number; x:number; y:number }>(null);
   const [canvasPromptTexts, setCanvasPromptTexts] = useState<Record<number, string>>(savedCanvas.promptTexts || {});
   const [canvasToolPromptText, setCanvasToolPromptText] = useState(savedCanvas.toolPromptText || "");
   const [focusTrailingText, setFocusTrailingText] = useState<
@@ -4001,17 +4019,28 @@ function Canvas({
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || !focusEdit) return;
-    const pick = (event: MouseEvent) => {
+    let draft: null | { nodeId:number; media:HTMLElement; card:HTMLElement; startX:number; startY:number } = null;
+    const pointInMedia = (event: PointerEvent, media: HTMLElement) => { const box=media.getBoundingClientRect(); return {x:Math.max(0,Math.min(1,(event.clientX-box.left)/box.width)),y:Math.max(0,Math.min(1,(event.clientY-box.top)/box.height)),box}; };
+    const down = (event: PointerEvent) => {
       const target = event.target as HTMLElement;
       if (target.closest(".canvas-focus-label,.canvas-focus-options")) return;
       const media = target.closest<HTMLElement>(".canvas-node-media");
       const card = target.closest<HTMLElement>(".canvas-node-card");
       if (!media || !card) return;
-      const box = canvas.getBoundingClientRect(), mediaBox = media.getBoundingClientRect();
-      const normalizedX = Math.max(0,Math.min(1,(event.clientX-mediaBox.left)/mediaBox.width));
-      const normalizedY = Math.max(0,Math.min(1,(event.clientY-mediaBox.top)/mediaBox.height));
+      const point=pointInMedia(event,media), nodeId=Number(card.dataset.nodeId);
+      draft={nodeId,media,card,startX:point.x,startY:point.y};
+      setFocusSelectionDraft({nodeId,startX:point.x,startY:point.y,x:point.x,y:point.y});
+      event.preventDefault(); event.stopPropagation();
+    };
+    const move = (event: PointerEvent) => { if(!draft)return;const point=pointInMedia(event,draft.media);setFocusSelectionDraft({nodeId:draft.nodeId,startX:draft.startX,startY:draft.startY,x:point.x,y:point.y});event.preventDefault();event.stopPropagation(); };
+    const up = (event: PointerEvent) => {
+      if(!draft)return;
+      const current=draft;draft=null;const point=pointInMedia(event,current.media);setFocusSelectionDraft(null);
+      let x=Math.min(current.startX,point.x),y=Math.min(current.startY,point.y),width=Math.abs(point.x-current.startX),height=Math.abs(point.y-current.startY);
+      if(width<.025&&height<.025){width=.24;height=.2;x=Math.max(0,Math.min(1-width,current.startX-width/2));y=Math.max(0,Math.min(1-height,current.startY-height/2));}
+      const normalizedX=x+width/2,normalizedY=y+height/2;
       const choice = normalizedY < .33 ? 1 : normalizedY > .67 ? 3 : 0;
-      const node = canvasNodes.find((item)=>item.id===Number(card.dataset.nodeId));
+      const node = canvasNodes.find((item)=>item.id===current.nodeId);
       const horizontal = normalizedX < .34 ? 0 : normalizedX > .66 ? 2 : 1;
       const vertical = normalizedY < .34 ? 0 : normalizedY > .66 ? 2 : 1;
       const sourceHint = `${node?.name || ""} ${node?.url || ""}`.toLowerCase();
@@ -4022,27 +4051,33 @@ function Canvas({
       const labels = /教师|人物|头像|teacher|portrait|person|character|girl|boy/.test(sourceHint) ? portraitLabels : /海报|poster|banner|标题|活动/.test(sourceHint) ? posterLabels : /logo|标志|品牌/.test(sourceHint) ? logoLabels : generalLabels;
       const baseLabel=labels[vertical][horizontal];
       const duplicateCount=focusPicks.filter((item)=>(item.label||"").startsWith(baseLabel)).length;
+      const id=Date.now()+Math.random(),fallback=duplicateCount?`${baseLabel} ${duplicateCount+1}`:baseLabel;
+      const canvasBox=canvas.getBoundingClientRect(),mediaBox=current.media.getBoundingClientRect();
       setFocusPicks((items) => [
         ...items,
         {
-          id: Date.now() + Math.random(),
-          nodeId: Number(card.dataset.nodeId),
-          anchorX: event.clientX - box.left + canvas.scrollLeft,
-          anchorY: event.clientY - box.top + canvas.scrollTop,
-          mediaX: mediaBox.left - box.left + canvas.scrollLeft,
-          mediaY: mediaBox.top - box.top + canvas.scrollTop,
+          id,
+          nodeId: current.nodeId,
+          anchorX: event.clientX - canvasBox.left + canvas.scrollLeft,
+          anchorY: event.clientY - canvasBox.top + canvas.scrollTop,
+          mediaX: mediaBox.left - canvasBox.left + canvas.scrollLeft,
+          mediaY: mediaBox.top - canvasBox.top + canvas.scrollTop,
           mediaW: mediaBox.width,
           mediaH: mediaBox.height,
           normalizedX,
           normalizedY,
-          label:duplicateCount?`${baseLabel} ${duplicateCount+1}`:baseLabel,
+          normalizedW:width,
+          normalizedH:height,
+          label:"识别中…",
           choice,
           open: false,
         },
       ]);
+      if(node?.url) analyzeCanvasFocus(new URL(node.url,window.location.origin).href,{x,y,width,height},fallback).then((label)=>setFocusPicks((items)=>items.map((item)=>item.id===id?{...item,label}:item)));
+      event.preventDefault();event.stopPropagation();
     };
-    canvas.addEventListener("click", pick, { capture: true });
-    return () => canvas.removeEventListener("click", pick, { capture: true });
+    canvas.addEventListener("pointerdown",down,{capture:true});canvas.addEventListener("pointermove",move,{capture:true});canvas.addEventListener("pointerup",up,{capture:true});
+    return()=>{canvas.removeEventListener("pointerdown",down,{capture:true});canvas.removeEventListener("pointermove",move,{capture:true});canvas.removeEventListener("pointerup",up,{capture:true});};
   }, [focusEdit, focusNodeId, focusPicks.length]);
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -4345,11 +4380,8 @@ function Canvas({
       const geometry=getNodeGeometry(node), scale=canvasZoom/75;
       const mediaLeft=CANVAS_WORLD_CENTER+node.x-geometry.mediaWidth/2;
       const mediaTop=geometry.centerY-geometry.mediaHeight/2;
-      const centerWeightX=1-Math.abs(pick.normalizedX-.5)*2;
-      const centerWeightY=1-Math.abs(pick.normalizedY-.5)*2;
-      const aspectWeight=Math.max(.82,Math.min(1.2,geometry.mediaWidth/Math.max(1,geometry.mediaHeight)));
-      const worldWidth=Math.max(46,Math.min(geometry.mediaWidth*(.2+.19*centerWeightX)*aspectWeight,geometry.mediaWidth*.48));
-      const worldHeight=Math.max(38,Math.min(geometry.mediaHeight*(.18+.2*centerWeightY)/aspectWeight,geometry.mediaHeight*.46));
+      const worldWidth=pick.normalizedW!=null?Math.max(12,geometry.mediaWidth*pick.normalizedW):Math.max(46,geometry.mediaWidth*.24);
+      const worldHeight=pick.normalizedH!=null?Math.max(12,geometry.mediaHeight*pick.normalizedH):Math.max(38,geometry.mediaHeight*.2);
       const centerX=mediaLeft+pick.normalizedX*geometry.mediaWidth;
       const centerY=mediaTop+pick.normalizedY*geometry.mediaHeight;
       const left=Math.max(mediaLeft,Math.min(centerX-worldWidth/2,mediaLeft+geometry.mediaWidth-worldWidth));
@@ -5342,6 +5374,7 @@ function Canvas({
             </div>
           </>
         )}
+        {focusEdit && focusSelectionDraft && (()=>{const x=Math.min(focusSelectionDraft.startX,focusSelectionDraft.x),y=Math.min(focusSelectionDraft.startY,focusSelectionDraft.y),width=Math.max(.01,Math.abs(focusSelectionDraft.x-focusSelectionDraft.startX)),height=Math.max(.01,Math.abs(focusSelectionDraft.y-focusSelectionDraft.startY));const draftBox=getFocusPickBox({id:-1,nodeId:focusSelectionDraft.nodeId,anchorX:0,anchorY:0,mediaX:0,mediaY:0,mediaW:0,mediaH:0,normalizedX:x+width/2,normalizedY:y+height/2,normalizedW:width,normalizedH:height,label:"",choice:0,open:false});return <div className="canvas-focus-pick is-drafting" style={{left:draftBox.left,top:draftBox.top,width:draftBox.width,height:draftBox.height}}/>;})()}
         {focusEdit &&
           focusPicks.map((pick) => {
             const box = getFocusPickBox(pick);
@@ -5368,6 +5401,7 @@ function Canvas({
                       ),
                     );
                   }}
+                  onDoubleClick={(e)=>{e.stopPropagation();const next=window.prompt("修改焦点名称",pick.label||box.choice.name)?.trim();if(next)setFocusPicks((items)=>items.map((item)=>item.id===pick.id?{...item,label:next.slice(0,16)}:item));}}
                 >
                   <span>✦</span>
                   {pick.label || box.choice.name}

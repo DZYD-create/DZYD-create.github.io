@@ -4,6 +4,7 @@ const ALLOWED_ORIGINS = new Set([
   "http://localhost:5173",
 ]);
 const FLUX_MODEL = "@cf/black-forest-labs/flux-2-klein-9b";
+const VISION_MODEL = "@cf/moondream/moondream3.1-9B-A2B";
 
 function detectImageType(bytes, fallback = "image/jpeg") {
   if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) return "image/png";
@@ -172,6 +173,41 @@ export default {
       if (!env.ASSET_ADMIN_PASSWORD || request.headers.get("X-Admin-Password") !== env.ASSET_ADMIN_PASSWORD) return json({ error: "管理员密码不正确" }, 401, origin);
       await env.ASSETS.delete(decodeURIComponent(url.pathname.slice(8)));
       return json({ ok: true }, 200, origin);
+    }
+    if (url.pathname === "/analyze-focus" && request.method === "POST") {
+      if (!ALLOWED_ORIGINS.has(origin)) return json({ error: "不允许的请求来源" }, 403, origin);
+      let input;
+      try { input = await request.json(); } catch { return json({ error: "请求格式不正确" }, 400, origin); }
+      const image = typeof input.image === "string" ? input.image.trim() : "";
+      const rect = input.rect || {};
+      if (!image || !/^(https?:\/\/|data:image\/)/i.test(image)) return json({ error: "图片无效" }, 400, origin);
+      const x = Math.max(0, Math.min(1, Number(rect.x) || 0));
+      const y = Math.max(0, Math.min(1, Number(rect.y) || 0));
+      const width = Math.max(.01, Math.min(1 - x, Number(rect.width) || .2));
+      const height = Math.max(.01, Math.min(1 - y, Number(rect.height) || .2));
+      try {
+        const rawResult = await env.AI.run(VISION_MODEL, {
+          image,
+          task: "query",
+          question: `识别归一化矩形 x=${x.toFixed(3)}, y=${y.toFixed(3)}, width=${width.toFixed(3)}, height=${height.toFixed(3)} 内最主要的具体内容。只输出一个2到8字的中文名词短语，例如人物头像、主标题文字、品牌Logo、蓝色外套或手持商品；不要回答方位、区域、主体或画面，不要解释。`,
+        });
+        let result = rawResult;
+        if (rawResult instanceof Response) result = await rawResult.json();
+        else if (rawResult instanceof ReadableStream) {
+          const text = await new Response(rawResult).text();
+          try { result = JSON.parse(text); } catch {
+            const events = text.split("\n").filter((line) => line.startsWith("data: ") && !line.includes("[DONE]")).map((line) => { try { return JSON.parse(line.slice(6)); } catch { return {}; } });
+            const failed = events.find((event) => event.error);
+            if (failed) throw new Error(failed.error);
+            result = { response: events.map((event) => event.response || event.text || event.delta || "").join("") };
+          }
+        }
+        const label = String(result?.response || result?.answer || result?.text || "").replace(/[\r\n"'`。,.，：:]/g, "").trim().slice(0, 16);
+        if (!label) throw new Error("未识别到选区内容");
+        return json({ label }, 200, origin);
+      } catch (error) {
+        return json({ error: error instanceof Error ? error.message : "选区识别失败" }, 502, origin);
+      }
     }
     if (url.pathname === "/edit" && request.method === "POST") {
       if (!ALLOWED_ORIGINS.has(origin)) return json({ error: "不允许的请求来源" }, 403, origin);
