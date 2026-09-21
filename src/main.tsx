@@ -4052,19 +4052,8 @@ function Canvas({
       let x=Math.min(current.startX,point.x),y=Math.min(current.startY,point.y),width=Math.abs(point.x-current.startX),height=Math.abs(point.y-current.startY);
       if(width<.025&&height<.025){width=.24;height=.2;x=Math.max(0,Math.min(1-width,current.startX-width/2));y=Math.max(0,Math.min(1-height,current.startY-height/2));}
       const normalizedX=x+width/2,normalizedY=y+height/2;
-      const choice = normalizedY < .33 ? 1 : normalizedY > .67 ? 3 : 0;
       const node = canvasNodes.find((item)=>item.id===current.nodeId);
-      const horizontal = normalizedX < .34 ? 0 : normalizedX > .66 ? 2 : 1;
-      const vertical = normalizedY < .34 ? 0 : normalizedY > .66 ? 2 : 1;
-      const sourceHint = `${node?.name || ""} ${node?.url || ""}`.toLowerCase();
-      const portraitLabels = [["人物发型","人物头像","面部轮廓"],["肩部服饰","人物五官","上身服饰"],["手部动作","下半身造型","人物配饰"]];
-      const posterLabels = [["顶部装饰","主标题","品牌标识"],["左侧文案","核心视觉","右侧文案"],["活动信息","副标题","底部落款"]];
-      const logoLabels = [["标志图形","品牌图标","标志边缘"],["图形左部","品牌主体","图形右部"],["辅助文字","品牌名称","底部说明"]];
-      const generalLabels = [["左上元素","画面标题","右上元素"],["左侧主体","核心主体","右侧主体"],["前景元素","底部文字","右下元素"]];
-      const labels = /教师|人物|头像|teacher|portrait|person|character|girl|boy/.test(sourceHint) ? portraitLabels : /海报|poster|banner|标题|活动/.test(sourceHint) ? posterLabels : /logo|标志|品牌/.test(sourceHint) ? logoLabels : generalLabels;
-      const baseLabel=labels[vertical][horizontal];
-      const duplicateCount=focusPicks.filter((item)=>(item.label||"").startsWith(baseLabel)).length;
-      const id=Date.now()+Math.random(),fallback=duplicateCount?`${baseLabel} ${duplicateCount+1}`:baseLabel;
+      const id=Date.now()+Math.random();
       const canvasBox=canvas.getBoundingClientRect(),mediaBox=current.media.getBoundingClientRect();
       setFocusPicks((items) => [
         ...items,
@@ -4082,11 +4071,12 @@ function Canvas({
           normalizedW:width,
           normalizedH:height,
           label:"识别中…",
-          choice,
+          choice:0,
           open: false,
         },
       ]);
-      if(node?.url) analyzeCanvasFocus(new URL(node.url,window.location.origin).href,{x,y,width,height},fallback).then((label)=>setFocusPicks((items)=>items.map((item)=>item.id===id?{...item,label}:item)));
+      if(node?.url) analyzeCanvasFocus(new URL(node.url,window.location.origin).href,{x,y,width,height},"未识别，双击命名").then((label)=>setFocusPicks((items)=>items.map((item)=>item.id===id?{...item,label}:item)));
+      else setFocusPicks((items)=>items.map((item)=>item.id===id?{...item,label:"未识别，双击命名"}:item));
       event.preventDefault();event.stopPropagation();
     };
     canvas.addEventListener("pointerdown",down,{capture:true});canvas.addEventListener("pointermove",move,{capture:true});canvas.addEventListener("pointerup",up,{capture:true});
@@ -5443,24 +5433,8 @@ function Canvas({
                     className="canvas-focus-options"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {focusChoices.map((choice, index) => (
-                      <button
-                        className={index === pick.choice ? "active" : ""}
-                        key={choice.name}
-                        onClick={() =>
-                          setFocusPicks((items) =>
-                            items.map((item) =>
-                              item.id === pick.id
-                                ? { ...item, choice: index, open: false }
-                                : item,
-                            ),
-                          )
-                        }
-                      >
-                        {choice.name}
-                        {index === pick.choice && <i />}
-                      </button>
-                    ))}
+                    <button onClick={()=>{const next=window.prompt("修改焦点名称",pick.label||"")?.trim();if(next)setFocusPicks((items)=>items.map((item)=>item.id===pick.id?{...item,label:next.slice(0,16),open:false}:item));}}>修改名称</button>
+                    <button onClick={()=>{const node=canvasNodes.find((item)=>item.id===pick.nodeId);if(!node||pick.normalizedX==null||pick.normalizedY==null)return;const rect={x:Math.max(0,pick.normalizedX-(pick.normalizedW||.2)/2),y:Math.max(0,pick.normalizedY-(pick.normalizedH||.2)/2),width:pick.normalizedW||.2,height:pick.normalizedH||.2};setFocusPicks((items)=>items.map((item)=>item.id===pick.id?{...item,label:"识别中…",open:false}:item));analyzeCanvasFocus(new URL(node.url,window.location.origin).href,rect,"未识别，双击命名").then((label)=>setFocusPicks((items)=>items.map((item)=>item.id===pick.id?{...item,label}:item)));}}>重新识别</button>
                   </div>
                 )}
                 <i />
@@ -7343,6 +7317,7 @@ function History({
   const [historyMenu, setHistoryMenu] = useState<string | null>(null);
   const [selectedHistory, setSelectedHistory] = useState<string[]>([]);
   const [favoriteHistory, setFavoriteHistory] = usePersistentState<string[]>("dzyd-history-favorites", []);
+  const [favoriteCanvasHistory, setFavoriteCanvasHistory] = usePersistentState<string[]>("dzyd-canvas-history-favorites", []);
   const [cards, setCards] = usePersistentState("dzyd-history-cards", [
     "上官",
     "李狗蛋",
@@ -7673,8 +7648,8 @@ function History({
               </div>
             );
           })}
-          {tab === "canvas" && sortedCanvasHistoryCards.map((canvasItem) => (
-            <div className="history-record-shell canvas-history-shell" key={canvasItem.name}>
+          {tab === "canvas" && sortedCanvasHistoryCards.filter((item)=>item.name.toLowerCase().includes(historyQuery.trim().toLowerCase()) && (filter!=="收藏"||favoriteCanvasHistory.includes(item.id))).map((canvasItem) => (
+            <div className="history-record-shell canvas-history-shell" key={canvasItem.id}>
               <button className="history-record canvas-history-record" onClick={() => onCanvas(canvasItem.images[0], canvasItem.name, canvasItem.images)}>
                 <div className={`history-record-preview canvas-history-strip image-count-${canvasItem.images.length}`}>
                   {canvasItem.images.map((image, imageIndex) => <img key={`${canvasItem.name}-${imageIndex}`} src={image} alt="" />)}
@@ -7682,6 +7657,7 @@ function History({
                 <strong>{canvasItem.name}</strong>
                 <small>编辑于 {new Date(canvasItem.createdAt).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</small>
               </button>
+              <button className={`history-pin ${favoriteCanvasHistory.includes(canvasItem.id)?"active":""}`} aria-label={favoriteCanvasHistory.includes(canvasItem.id)?`取消收藏${canvasItem.name}`:`收藏${canvasItem.name}`} aria-pressed={favoriteCanvasHistory.includes(canvasItem.id)} onClick={()=>setFavoriteCanvasHistory((items)=>items.includes(canvasItem.id)?items.filter((id)=>id!==canvasItem.id):[...items,canvasItem.id])}>★</button>
             </div>
           ))}
           {tab === "workspace" && historyQuery.trim() && !cards.some((name) => name.toLowerCase().includes(historyQuery.trim().toLowerCase())) && <p className="history-search-empty">未找到相关内容</p>}

@@ -189,7 +189,10 @@ export default {
         const rawResult = await env.AI.run(VISION_MODEL, {
           image,
           task: "query",
-          question: "这张图片是用户从原图中精确裁出的焦点选区。识别其中最主要、最具体的视觉内容或可读文字。只输出一个2到8字的中文名词短语，例如人物头像、主标题文字、品牌Logo、蓝色外套或手持商品；如果有醒目文字则优先概括文字用途。不要回答区域、主体、画面、图片或选区，不要解释。",
+          question: "What specific object or human body part is visible in this cropped image? Answer with a short English noun phrase only.",
+          reasoning: false,
+          max_tokens: 48,
+          stream: false,
         });
         let result = rawResult;
         if (rawResult instanceof Response) result = await rawResult.json();
@@ -199,11 +202,29 @@ export default {
             const events = text.split("\n").filter((line) => line.startsWith("data: ") && !line.includes("[DONE]")).map((line) => { try { return JSON.parse(line.slice(6)); } catch { return {}; } });
             const failed = events.find((event) => event.error);
             if (failed) throw new Error(failed.error);
-            result = { response: events.map((event) => event.response || event.text || event.delta || "").join("") };
+            result = { answer: events.map((event) => event.answer || event.response || event.text || event.delta || "").join("") };
           }
         }
-        const label = String(result?.response || result?.answer || result?.text || "").replace(/[\r\n"'`。,.，：:]/g, "").trim().slice(0, 16);
-        if (!label) throw new Error("未识别到选区内容");
+        const answer = result?.result || result;
+        const rawLabel = String(answer?.answer || answer?.response || answer?.text || "").replace(/[\r\n"'`。,.，：:]/g, "").trim();
+        const english = rawLabel.toLowerCase();
+        const englishNames = [
+          [/\b(hand|hands|finger|fingers|palm)\b/, "人物手部"],
+          [/\b(head|hair|hairstyle)\b/, "人物头部"],
+          [/\b(face|eyes|eye|nose|mouth|ear)\b/, "人物面部"],
+          [/\b(arm|arms)\b/, "人物手臂"],
+          [/\b(leg|legs|foot|feet)\b/, "人物腿部"],
+          [/\b(torso|body|chest)\b/, "人物躯干"],
+          [/\b(shirt|jacket|dress|clothing|clothes|garment)\b/, "人物服装"],
+          [/\b(title|headline|heading)\b/, "标题文字"],
+          [/\b(subtitle|subheading)\b/, "副标题文字"],
+          [/\b(logo|emblem|brand mark)\b/, "品牌标志"],
+          [/\b(text|word|letter|caption)\b/, "图片文字"],
+        ];
+        const label = /^[\x00-\x7F]+$/.test(rawLabel)
+          ? englishNames.find(([pattern]) => pattern.test(english))?.[1] || ""
+          : rawLabel.slice(0, 16);
+        if (!label || /左侧|右侧|上方|下方|画面|图片区域|选区|区域|面积|无法|不能|不确定|身份/.test(label) || /^(主体|背景|人物|文字|内容)$/.test(label)) throw new Error("未识别到具体选区内容");
         return json({ label }, 200, origin);
       } catch (error) {
         return json({ error: error instanceof Error ? error.message : "选区识别失败" }, 502, origin);
