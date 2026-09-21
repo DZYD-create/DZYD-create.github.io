@@ -23,11 +23,23 @@ type CanvasHistoryRecord = {
   images: string[];
   createdAt: string;
   workspace?: {
+    projectTitle?: string;
+    folderNames?: string[];
+    folderColors?: string[];
     nodes: CanvasNode[];
     links: CanvasLink[];
     groups: Array<{ id: number; nodeIds: number[]; name: string; color?: string; colorSolid?: string; layout?: "grid" | "horizontal" | "vertical" }>;
     comments: Array<{ id: number; x: number; y: number; viewportX: number; viewportY: number; text: string; replies?: string[] }>;
     zoom: number;
+    promptModel?: string;
+    promptQuality?: string;
+    promptRatio?: string;
+    promptWidth?: number;
+    promptHeight?: number;
+    promptTexts?: Record<number, string>;
+    toolPromptText?: string;
+    trailingText?: Record<number, string>;
+    focusPicks?: Array<{ id: number; nodeId: number; label?: string; normalizedX?: number; normalizedY?: number; normalizedW?: number; normalizedH?: number; [key: string]: unknown }>;
   };
 };
 type CanvasNode = {
@@ -91,16 +103,33 @@ function usePersistentState<T>(key: string, fallback: T | (() => T)) {
   const [value, setValue] = useState<T>(() => readSaved(key, typeof fallback === "function" ? (fallback as () => T)() : fallback));
   const cloudReady = useRef(false);
   const cloudTimer = useRef<number | null>(null);
+  const changedBeforeCloudRead = useRef(false);
+  const latestValue = useRef(value);
+  latestValue.current = value;
+  const updateValue: React.Dispatch<React.SetStateAction<T>> = (next) => {
+    if (!cloudReady.current) changedBeforeCloudRead.current = true;
+    setValue(next);
+  };
   useEffect(() => {
     let active = true;
     fetch(`${IMAGE_API_BASE}/workspace/${encodeURIComponent(key)}`)
       .then((response) => response.ok ? response.json() : Promise.reject())
       .then((payload) => {
         if (!active) return;
-        if (payload.value !== null && payload.value !== undefined) setValue(payload.value as T);
+        if (payload.value !== null && payload.value !== undefined) {
+          setValue((current) => {
+            if (!changedBeforeCloudRead.current) return payload.value as T;
+            if (Array.isArray(current) && Array.isArray(payload.value) && ["dzyd-generation-records", "dzyd-canvas-generation-history", "dzyd-conversations"].includes(key)) {
+              const identity = (item: any) => key === "dzyd-conversations" ? item[0] : item.id;
+              const localIds = new Set(current.map(identity));
+              return [...current, ...payload.value.filter((item: any) => !localIds.has(identity(item)))] as T;
+            }
+            return current;
+          });
+        }
         cloudReady.current = true;
-        if (payload.value === null || payload.value === undefined) {
-          fetch(`${IMAGE_API_BASE}/workspace/${encodeURIComponent(key)}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(value) }).catch(() => undefined);
+        if (payload.value === null || payload.value === undefined || changedBeforeCloudRead.current) {
+          window.setTimeout(() => fetch(`${IMAGE_API_BASE}/workspace/${encodeURIComponent(key)}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(latestValue.current) }).catch(() => undefined), 100);
         }
       })
       .catch(() => { cloudReady.current = true; });
@@ -112,9 +141,9 @@ function usePersistentState<T>(key: string, fallback: T | (() => T)) {
     if (cloudTimer.current) window.clearTimeout(cloudTimer.current);
     cloudTimer.current = window.setTimeout(() => {
       fetch(`${IMAGE_API_BASE}/workspace/${encodeURIComponent(key)}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(value) }).catch(() => undefined);
-    }, 500);
+    }, ["dzyd-generation-records", "dzyd-canvas-generation-history", "dzyd-conversations"].includes(key) ? 100 : 500);
   }, [key, value]);
-  return [value, setValue] as const;
+  return [value, updateValue] as const;
 }
 
 async function compressAssetImage(file: File): Promise<Blob> {
@@ -364,6 +393,7 @@ function App() {
   const [templateAttachment, setTemplateAttachment] = useState<{ name: string; url: string } | null>(null);
   const [canvasImage, setCanvasImage] = usePersistentState<string | null>("dzyd-canvas-image", null);
   const [canvasSession, setCanvasSession] = useState(0);
+  const [selectedCanvasHistory, setSelectedCanvasHistory] = useState<CanvasHistoryRecord | null>(null);
   const [canvasImageName, setCanvasImageName] = usePersistentState("dzyd-canvas-image-name", "AI 视觉创作 · 未命名项目");
   const [pendingCanvasAssets, setPendingCanvasAssets] = usePersistentState<Array<{ name: string; url: string }>>("dzyd-pending-canvas-assets", []);
   const [folders, setFolders] = useState<string[]>(() => readSaved("dzyd-folders", ["品牌素材", "产品图片"]));
@@ -371,14 +401,23 @@ function App() {
   const [themeOpen, setThemeOpen] = useState(false);
   const [themeMode, setThemeMode] = useState<ThemeMode>(() => (localStorage.getItem("studio-theme") as ThemeMode) || "light");
   const [systemDark, setSystemDark] = useState(() => window.matchMedia("(prefers-color-scheme: dark)").matches);
-  const [conversations, setConversations] = useState<Array<[string, string]>>(() => readSaved("dzyd-conversations", [
+  const [conversations, setConversations] = usePersistentState<Array<[string, string]>>("dzyd-conversations", [
     ["夏日新品直播海报", "今天 14:32"],
     ["课程价格板设计", "昨天 18:10"],
     ["新品种草海报", "08月02日"],
     ["品牌活动视觉方案", "07月29日"],
     ["门店促销物料", "07月21日"],
-  ]));
+  ]);
   const [activeConversation, setActiveConversation] = usePersistentState<string | null>("dzyd-active-conversation", null);
+  useEffect(() => {
+    if (!generationRecords.length) return;
+    const fromRecords = [...generationRecords].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).map((record) => record.conversation).filter(Boolean);
+    setConversations((items) => {
+      const existing = new Set(items.map(([title]) => title));
+      const missing = [...new Set(fromRecords)].filter((title) => !existing.has(title));
+      return missing.length ? [...missing.map((title) => [title, "已保存"] as [string, string]), ...items] : items;
+    });
+  }, [generationRecords]);
   const generationTimer = useRef<number | null>(null);
   const preparationTimer = useRef<number | null>(null);
 
@@ -478,9 +517,6 @@ function App() {
     localStorage.setItem("dzyd-folders", JSON.stringify(folders));
   }, [folders]);
 
-  useEffect(() => {
-    localStorage.setItem("dzyd-conversations", JSON.stringify(conversations));
-  }, [conversations]);
 
   const upload = async (file?: File) => {
     if (!file) return;
@@ -582,6 +618,7 @@ function App() {
                 onClick={() => {
                   if (item.id === "canvas") {
                     setCanvasSession((value) => value + 1);
+                    setSelectedCanvasHistory(null);
                     setCanvasImage(null);
                     setCanvasImageName("AI 视觉创作 · 未命名项目");
                     setPendingCanvasAssets([]);
@@ -773,8 +810,9 @@ function App() {
             onRegenerate={(value, referenceImage) => {
               setPrompt(value);
               setGenerationReferenceImage(referenceImage || null);
-              startGeneration(value);
+              startGeneration(value, activeConversation);
             }}
+            onDeleteRound={(recordId) => setGenerationRecords((items) => items.filter((record) => record.id !== recordId))}
             onDeleteConversation={() => {
               if (activeConversation) {
                 setConversations((items) =>
@@ -805,6 +843,8 @@ function App() {
               if (editorReturn === "history") setSection("history");
             }}
             onCanvas={() => {
+              setSelectedCanvasHistory(null);
+              setCanvasSession((value) => value + 1);
               setCanvasImage(editorSession?.image || selectedEditorImage);
               setSection("canvas");
               setEditorSession(null);
@@ -826,6 +866,7 @@ function App() {
         {section === "canvas" && (
           <Canvas
             key={`canvas-session-${canvasSession}`}
+            initialRecord={selectedCanvasHistory}
             canvasImage={canvasImage}
             canvasImageName={canvasImageName}
             initialAssets={pendingCanvasAssets}
@@ -852,6 +893,8 @@ function App() {
               }));
             }}
             onOpenGenerated={(image, imagePrompt) => {
+              setSelectedCanvasHistory(null);
+              setCanvasSession((value) => value + 1);
               setCanvasImage(image);
               setCanvasImageName(imagePrompt.length > 24 ? `${imagePrompt.slice(0, 24)}…` : imagePrompt);
               setPendingCanvasAssets([{ name: imagePrompt, url: image }]);
@@ -869,7 +912,9 @@ function App() {
               setStudioView("home");
               setConversationCollapsed(false);
             }}
-            onCanvas={(image, name, assets) => {
+            onCanvas={(image, name, assets, record) => {
+              setSelectedCanvasHistory(record || null);
+              setCanvasSession((value) => value + 1);
               setSection("canvas");
               setPendingCanvasAssets((assets ?? []).map((url, index) => ({ name: `${name || "画布"} ${index + 1}`, url })));
               setCanvasImage(image || null);
@@ -887,6 +932,8 @@ function App() {
               setConversationCollapsed(false);
             }}
             onSendToCanvas={(item) => {
+              setSelectedCanvasHistory(null);
+              setCanvasSession((value) => value + 1);
               const liveParts = [
                 { name: "直播间下贴片", url: "/assets/live-lower-strip.png" },
                 { name: "直播间上贴片背景", url: "/assets/live-upper-background.png" },
@@ -922,6 +969,7 @@ function GenerationPage({
   referenceImage,
   editorGenerationToken,
   onImagesGenerated,
+  onDeleteRound,
   onOpenImage,
   collapsed,
   onToggleCollapsed,
@@ -942,6 +990,7 @@ function GenerationPage({
   referenceImage: string | null;
   editorGenerationToken: number;
   onImagesGenerated: (record: GenerationRecord) => void;
+  onDeleteRound: (recordId: string) => void;
   onOpenImage: (image: string, prompt: string) => void;
   collapsed: boolean;
   onToggleCollapsed: () => void;
@@ -974,6 +1023,7 @@ function GenerationPage({
   const [roundPrompts, setRoundPrompts] = useState([
     prompt || "生成夏日新品直播海报，突出新品卖点，风格清爽明亮。",
   ]);
+  const threadRef = useRef<HTMLDivElement>(null);
   const handledEditorGeneration = useRef(0);
   const addGenerationImages = async (files: FileList | File[]) => {
     const images = Array.from(files).filter((file) => file.type.startsWith("image/"));
@@ -1009,6 +1059,7 @@ function GenerationPage({
     setDraft(prompt);
   }, [prompt]);
   useEffect(() => {
+    if ((preparing || generating) && !editorGenerationToken) return;
     const saved = records.filter((record) => record.conversation === conversationTitle).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
     const savedPrompts = saved.map((record) => record.prompt);
     const savedImages = Object.fromEntries(saved.map((record, index) => [index, record.images]));
@@ -1027,7 +1078,13 @@ function GenerationPage({
       setResultRound(0);
     }
     setDeletedRounds([]);
-  }, [conversationTitle, editorGenerationToken]);
+  }, [conversationTitle, editorGenerationToken, records]);
+  useEffect(() => {
+    const scrollToLatest = () => { if (threadRef.current) threadRef.current.scrollTop = threadRef.current.scrollHeight; };
+    const frame = window.requestAnimationFrame(scrollToLatest);
+    const timer = window.setTimeout(scrollToLatest, 180);
+    return () => { window.cancelAnimationFrame(frame); window.clearTimeout(timer); };
+  }, [conversationTitle, records]);
   useEffect(() => {
     const dismiss = () => {
       setModelOpen(false);
@@ -1061,7 +1118,7 @@ function GenerationPage({
         setGeneratedImages((current) => ({ ...current, [resultRound]: images }));
         const recordPrompt = roundPrompts[resultRound] || prompt;
         onImagesGenerated({
-          id: `${conversationTitle}:${resultRound}`,
+          id: `${conversationTitle}:${crypto.randomUUID()}`,
           conversation: conversationTitle,
           prompt: recordPrompt,
           images,
@@ -1088,6 +1145,7 @@ function GenerationPage({
         <strong>与跃动的对话</strong>
       </div>
       <div
+        ref={threadRef}
         className={`generation-thread ${!preparing && !generating && !generated ? "idle" : ""}`}
       >
         {Array.from({ length: resultRound + 1 }, (_, round) => {
@@ -1095,7 +1153,7 @@ function GenerationPage({
           const latest = round === resultRound;
           const isPreparing = latest && preparing;
           const isGenerating = latest && (generating || apiLoadingRound === round);
-          const roundImages = generatedImages[round] || [...samples, ...samples].slice(round % samples.length, round % samples.length + 4);
+          const roundImages = generatedImages[round] || (isGenerating ? Array(4).fill("") : []);
           return (
             <div className="generation-round" key={round}>
               <div className="user-message-wrap">
@@ -1104,7 +1162,7 @@ function GenerationPage({
                 </div>
                 <img src="/assets/user-avatar.svg" alt="用户" />
               </div>
-              {!isPreparing && (
+              {!isPreparing && (isGenerating || roundImages.length > 0) && (
                 <div className="assistant-message">
                   <img
                     src={isGenerating ? "/assets/dog-thinking-public.gif" : "/assets/dog-complete-public.gif"}
@@ -1142,6 +1200,7 @@ function GenerationPage({
                     ))}
                 </div>
               )}
+              {!isPreparing && !isGenerating && !roundImages.length && <p className="generation-api-error">此轮暂无已保存的图片</p>}
               {latest && apiError && <p className="generation-api-error">生成失败：{apiError}</p>}
               {(!latest || (!preparing && !generating && generated)) && (
                 <div className="generation-result-actions">
@@ -1216,7 +1275,9 @@ function GenerationPage({
                     onDeleteConversation();
                     return;
                   }
-                  setDeletedRounds((items) => [...items, deleteRound]);
+                  const savedRecord = records.filter((record) => record.conversation === conversationTitle).sort((a, b) => a.createdAt.localeCompare(b.createdAt))[deleteRound];
+                  if (savedRecord) onDeleteRound(savedRecord.id);
+                  else setDeletedRounds((items) => [...items, deleteRound]);
                 }
                 setDeleteOpen(false);
                 setDeleteRound(null);
@@ -3038,6 +3099,7 @@ function Editor({
 }
 
 function Canvas({
+  initialRecord,
   canvasImage,
   canvasImageName,
   initialAssets,
@@ -3048,6 +3110,7 @@ function Canvas({
   onEdit,
   onBack,
 }: {
+  initialRecord: CanvasHistoryRecord | null;
   canvasImage: string | null;
   canvasImageName: string;
   initialAssets: Array<{ name: string; url: string }>;
@@ -3060,9 +3123,9 @@ function Canvas({
 }) {
   const ref = useRef<HTMLInputElement>(null);
   const [, setCanvasHistory] = usePersistentState<CanvasHistoryRecord[]>("dzyd-canvas-generation-history", []);
-  const canvasHistoryId = useRef(`canvas:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`).current;
+  const canvasHistoryId = useRef(initialRecord?.id || `canvas:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`);
   const canvasRef = useRef<HTMLDivElement>(null);
-  const savedCanvas = useRef<Record<string, any>>({}).current;
+  const savedCanvas = useRef<Record<string, any>>(initialRecord?.workspace || {}).current;
   const canvasCloudReady = useRef(false);
   const canvasCloudTimer = useRef<number | null>(null);
   const [mode, setMode] = useState<
@@ -3307,7 +3370,7 @@ function Canvas({
       choice: number;
       open: boolean;
     }>
-  >([]);
+  >(savedCanvas.focusPicks || []);
   const [activeFocusTagId, setActiveFocusTagId] = useState<number | null>(null);
   const [focusSelectionDraft, setFocusSelectionDraft] = useState<null | { nodeId:number; startX:number; startY:number; x:number; y:number }>(null);
   const [canvasPromptTexts, setCanvasPromptTexts] = useState<Record<number, string>>(savedCanvas.promptTexts || {});
@@ -3361,6 +3424,7 @@ function Canvas({
       replies?: string[];
     }>
   >(savedCanvas.comments || []);
+  const historySaveTimer = useRef<number | null>(null);
   const [selectedCommentIds, setSelectedCommentIds] = useState<number[]>([]);
   useEffect(() => {
     canvasCloudReady.current = true;
@@ -3372,6 +3436,7 @@ function Canvas({
       zoom: canvasZoom, promptModel, promptQuality, promptRatio, promptWidth, promptHeight,
       promptTexts: canvasPromptTexts, toolPromptText: canvasToolPromptText,
       trailingText: focusTrailingText, groups: canvasGroups, comments: canvasComments,
+      focusPicks,
     };
     try {
       localStorage.setItem("dzyd-canvas-workspace", JSON.stringify(snapshot));
@@ -3381,7 +3446,31 @@ function Canvas({
     canvasCloudTimer.current = window.setTimeout(() => {
       fetch(`${IMAGE_API_BASE}/workspace/dzyd-canvas-workspace`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(snapshot) }).catch(() => undefined);
     }, 600);
-  }, [projectTitle, folderNames, folderColors, canvasNodes, canvasLinks, canvasZoom, promptModel, promptQuality, promptRatio, promptWidth, promptHeight, canvasPromptTexts, canvasToolPromptText, focusTrailingText, canvasGroups, canvasComments]);
+  }, [projectTitle, folderNames, folderColors, canvasNodes, canvasLinks, canvasZoom, promptModel, promptQuality, promptRatio, promptWidth, promptHeight, canvasPromptTexts, canvasToolPromptText, focusTrailingText, focusPicks, canvasGroups, canvasComments]);
+  useEffect(() => {
+    if (!canvasNodes.length && !initialRecord) return;
+    if (historySaveTimer.current) window.clearTimeout(historySaveTimer.current);
+    historySaveTimer.current = window.setTimeout(() => {
+      const record: CanvasHistoryRecord = {
+        id: canvasHistoryId.current,
+        name: projectTitle,
+        images: [...new Set(canvasNodes.map((node) => node.url).filter(Boolean))],
+        createdAt: new Date().toISOString(),
+        workspace: {
+          projectTitle, folderNames: [...folderNames], folderColors: [...folderColors],
+          nodes: canvasNodes.map((node) => ({ ...node })),
+          links: canvasLinks.map((link) => ({ ...link })),
+          groups: canvasGroups.map((group) => ({ ...group, nodeIds: [...group.nodeIds] })),
+          comments: canvasComments.map((comment) => ({ ...comment, replies: [...(comment.replies || [])] })),
+          zoom: canvasZoom, promptModel, promptQuality, promptRatio, promptWidth, promptHeight,
+          promptTexts: { ...canvasPromptTexts }, toolPromptText: canvasToolPromptText,
+          trailingText: { ...focusTrailingText }, focusPicks: focusPicks.map((pick) => ({ ...pick, open: false })),
+        },
+      };
+      setCanvasHistory((items) => [record, ...items.filter((item) => item.id !== record.id)]);
+    }, 700);
+    return () => { if (historySaveTimer.current) window.clearTimeout(historySaveTimer.current); };
+  }, [projectTitle, folderNames, folderColors, canvasNodes, canvasLinks, canvasGroups, canvasComments, canvasZoom, promptModel, promptQuality, promptRatio, promptWidth, promptHeight, canvasPromptTexts, canvasToolPromptText, focusTrailingText, focusPicks]);
   type CanvasUndoSnapshot = {
     nodes: CanvasNode[];
     links: CanvasLink[];
@@ -4334,7 +4423,7 @@ function Canvas({
           ? canvasNodes.map((node) => node.id === targetId ? result : node.url).filter(Boolean)
           : [...canvasNodes.map((node) => node.url).filter(Boolean), result];
         const record: CanvasHistoryRecord = {
-          id: canvasHistoryId,
+          id: canvasHistoryId.current,
           name: projectTitle,
           images: images.filter((url, index) => images.indexOf(url) === index),
           createdAt: new Date().toISOString(),
@@ -4422,6 +4511,7 @@ function Canvas({
       ? { side: "right" as const, targetSide: "left" as const }
       : { side: "left" as const, targetSide: "right" as const };
   const openCanvasHistoryRecord = (record: CanvasHistoryRecord) => {
+    canvasHistoryId.current = record.id;
     const restoredNodes = record.workspace?.nodes?.length
       ? record.workspace.nodes.map((node)=>({...node}))
       : record.images.map((url,index)=>({id:Date.now()+index,url,name:`${record.name} ${index+1}`,x:(index-(record.images.length-1)/2)*390,y:0}));
@@ -4430,6 +4520,17 @@ function Canvas({
     setCanvasLinks(record.workspace?.links?.map((link)=>({...link})) || []);
     setCanvasGroups(record.workspace?.groups?.map((group)=>({...group,nodeIds:[...group.nodeIds]})) || []);
     setCanvasComments(record.workspace?.comments?.map((comment)=>({...comment,replies:[...(comment.replies||[])]})) || []);
+    setFolderNames(record.workspace?.folderNames || folderNames);
+    setFolderColors(record.workspace?.folderColors || folderColors);
+    setPromptModel(record.workspace?.promptModel || promptModel);
+    setPromptQuality(record.workspace?.promptQuality || promptQuality);
+    setPromptRatio(record.workspace?.promptRatio || promptRatio);
+    setPromptWidth(record.workspace?.promptWidth || promptWidth);
+    setPromptHeight(record.workspace?.promptHeight || promptHeight);
+    setCanvasPromptTexts(record.workspace?.promptTexts || {});
+    setCanvasToolPromptText(record.workspace?.toolPromptText || "");
+    setFocusTrailingText(record.workspace?.trailingText || {});
+    setFocusPicks((record.workspace?.focusPicks || []) as typeof focusPicks);
     if (record.workspace?.zoom) { setCanvasZoom(record.workspace.zoom); zoomTargetRef.current=record.workspace.zoom; zoomAppliedRef.current=record.workspace.zoom; }
     setCanvasImage(restoredNodes[0]?.url || null);
     setActiveNodeId(null); setSelectedNodeIds([]); setSelection(null); setMode(null);
@@ -7300,7 +7401,7 @@ function History({
   onOpenGenerated: (image: string, prompt: string) => void;
   onEdit: () => void;
   onBack: () => void;
-  onCanvas: (image?: string, name?: string, assets?: string[]) => void;
+  onCanvas: (image?: string, name?: string, assets?: string[], record?: CanvasHistoryRecord) => void;
   favoriteGenerated: boolean;
   onToggleGeneratedFavorite: () => void;
 }) {
@@ -7653,7 +7754,7 @@ function History({
           })}
           {tab === "canvas" && sortedCanvasHistoryCards.filter((item)=>item.name.toLowerCase().includes(historyQuery.trim().toLowerCase()) && (filter!=="收藏"||favoriteCanvasHistory.includes(item.id))).map((canvasItem) => (
             <div className="history-record-shell canvas-history-shell" key={canvasItem.id}>
-              <button className="history-record canvas-history-record" onClick={() => onCanvas(canvasItem.images[0], canvasItem.name, canvasItem.images)}>
+              <button className="history-record canvas-history-record" onClick={() => onCanvas(canvasItem.images[0], canvasItem.name, canvasItem.images, canvasItem)}>
                 <div className={`history-record-preview canvas-history-strip image-count-${canvasItem.images.length}`}>
                   {canvasItem.images.map((image, imageIndex) => <img key={`${canvasItem.name}-${imageIndex}`} src={image} alt="" />)}
                 </div>
