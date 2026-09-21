@@ -481,7 +481,7 @@ function App() {
         const target = e.target as HTMLElement;
         if (
           !target.closest(
-            "[data-popover-trigger],.theme-picker,.popover,.model-selector-popover,.size-selector-popover,.model-invocation-popover,.canvas-add-popover,.asset-library-panel,.asset-folder-more-menu-portal,.home-asset-popover,.asset-add-menu,.asset-folder-menu,.asset-context-menu,.apply-popover,.figma-history-panel,.canvas-search-modal,.canvas-comment-panel,.canvas-comments-mode,.figma-tool-modal",
+            "[data-popover-trigger],.theme-picker,.popover,.model-selector-popover,.size-selector-popover,.model-invocation-popover,.canvas-add-popover,.asset-library-panel,.asset-folder-more-menu-portal,.asset-file-context-menu,.home-asset-popover,.asset-add-menu,.asset-folder-menu,.asset-context-menu,.apply-popover,.figma-history-panel,.canvas-search-modal,.canvas-comment-panel,.canvas-comments-mode,.figma-tool-modal",
           )
         )
           document.dispatchEvent(new Event("dismiss-popovers"));
@@ -3409,6 +3409,7 @@ function Canvas({
   const focusIconPress = useRef<{ x: number; y: number; time: number } | null>(
     null,
   );
+  const draggedFocusPickId = useRef<number | null>(null);
   const removeFocusPick = (id: number) => {
     const index = focusPicks.findIndex((pick) => pick.id === id);
     const tail = focusTrailingText[id] || "";
@@ -4011,9 +4012,16 @@ function Canvas({
       const normalizedY = Math.max(0,Math.min(1,(event.clientY-mediaBox.top)/mediaBox.height));
       const choice = normalizedY < .33 ? 1 : normalizedY > .67 ? 3 : 0;
       const node = canvasNodes.find((item)=>item.id===Number(card.dataset.nodeId));
-      const horizontal = normalizedX < .34 ? "左侧" : normalizedX > .66 ? "右侧" : "中央";
-      const vertical = normalizedY < .34 ? "上部" : normalizedY > .66 ? "下部" : "主体";
-      const imageName = (node?.name || "图片").replace(/\s+\d+$/, "").trim();
+      const horizontal = normalizedX < .34 ? 0 : normalizedX > .66 ? 2 : 1;
+      const vertical = normalizedY < .34 ? 0 : normalizedY > .66 ? 2 : 1;
+      const sourceHint = `${node?.name || ""} ${node?.url || ""}`.toLowerCase();
+      const portraitLabels = [["人物发型","人物头像","面部轮廓"],["肩部服饰","人物五官","上身服饰"],["手部动作","下半身造型","人物配饰"]];
+      const posterLabels = [["顶部装饰","主标题","品牌标识"],["左侧文案","核心视觉","右侧文案"],["活动信息","副标题","底部落款"]];
+      const logoLabels = [["标志图形","品牌图标","标志边缘"],["图形左部","品牌主体","图形右部"],["辅助文字","品牌名称","底部说明"]];
+      const generalLabels = [["左上元素","画面标题","右上元素"],["左侧主体","核心主体","右侧主体"],["前景元素","底部文字","右下元素"]];
+      const labels = /教师|人物|头像|teacher|portrait|person|character|girl|boy/.test(sourceHint) ? portraitLabels : /海报|poster|banner|标题|活动/.test(sourceHint) ? posterLabels : /logo|标志|品牌/.test(sourceHint) ? logoLabels : generalLabels;
+      const baseLabel=labels[vertical][horizontal];
+      const duplicateCount=focusPicks.filter((item)=>(item.label||"").startsWith(baseLabel)).length;
       setFocusPicks((items) => [
         ...items,
         {
@@ -4027,7 +4035,7 @@ function Canvas({
           mediaH: mediaBox.height,
           normalizedX,
           normalizedY,
-          label:`${imageName} · ${horizontal}${vertical}`,
+          label:duplicateCount?`${baseLabel} ${duplicateCount+1}`:baseLabel,
           choice,
           open: false,
         },
@@ -5505,12 +5513,29 @@ function Canvas({
                     ))}
                 </div>
                 <div className="canvas-prompt-inline-content">
+                  <textarea
+                    className="canvas-inline-text canvas-primary-prompt-text"
+                    aria-label="描述生成内容"
+                    rows={1}
+                    value={canvasPromptTexts[node.id] || ""}
+                    onChange={(e) => {
+                      setCanvasPromptTexts((values) => ({ ...values, [node.id]: e.target.value }));
+                      e.currentTarget.style.height = "auto";
+                      e.currentTarget.style.height = String(e.currentTarget.scrollHeight) + "px";
+                    }}
+                    placeholder={focusPicks.length ? "" : "描述任何你想要生成的内容"}
+                  />
                   {focusPicks.map((pick) => (
                     <React.Fragment key={pick.id}>
                       <button
                         type="button"
+                        draggable
                         className={`canvas-inline-focus-tag ${activeFocusTagId === pick.id ? "active" : ""}`}
                         onClick={() => setActiveFocusTagId(pick.id)}
+                        onDragStart={(event)=>{event.stopPropagation();draggedFocusPickId.current=pick.id;event.dataTransfer.effectAllowed="move";}}
+                        onDragOver={(event)=>{event.preventDefault();event.stopPropagation();}}
+                        onDrop={(event)=>{event.preventDefault();event.stopPropagation();const sourceId=draggedFocusPickId.current;if(sourceId===null||sourceId===pick.id)return;setFocusPicks((items)=>{const source=items.find((item)=>item.id===sourceId);if(!source)return items;const remaining=items.filter((item)=>item.id!==sourceId);const targetIndex=remaining.findIndex((item)=>item.id===pick.id);return [...remaining.slice(0,targetIndex),source,...remaining.slice(targetIndex)];});draggedFocusPickId.current=null;}}
+                        onDragEnd={()=>{draggedFocusPickId.current=null;}}
                       >
                         <b>✦</b>
                         <span>{pick.label || focusChoices[pick.choice].name}</span>
@@ -5536,20 +5561,6 @@ function Canvas({
                       />
                     </React.Fragment>
                   ))}
-                  <textarea
-                    className="canvas-inline-text canvas-primary-prompt-text"
-                    aria-label="描述生成内容"
-                    rows={1}
-                    value={canvasPromptTexts[node.id] || ""}
-                    onChange={(e) => {
-                      setCanvasPromptTexts((values) => ({ ...values, [node.id]: e.target.value }));
-                      e.currentTarget.style.height = "auto";
-                      e.currentTarget.style.height = String(e.currentTarget.scrollHeight) + "px";
-                    }}
-                    placeholder={
-                      focusPicks.length ? "" : "描述任何你想要生成的内容"
-                    }
-                  />
                 </div>
                 <div className="canvas-node-prompt-footer">
                   <div>
