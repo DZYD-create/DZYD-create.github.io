@@ -3436,6 +3436,7 @@ function Canvas({
   >(savedCanvas.comments || []);
   const historySaveTimer = useRef<number | null>(null);
   const pendingHistoryRecord = useRef<CanvasHistoryRecord | null>(null);
+  const hadCanvasContent = useRef(Boolean(initialRecord));
   const [selectedCommentIds, setSelectedCommentIds] = useState<number[]>([]);
   useEffect(() => {
     canvasCloudReady.current = true;
@@ -3459,7 +3460,8 @@ function Canvas({
     }, 600);
   }, [projectTitle, folderNames, folderColors, canvasNodes, canvasLinks, canvasZoom, promptModel, promptQuality, promptRatio, promptWidth, promptHeight, canvasPromptTexts, canvasToolPromptText, focusTrailingText, focusPicks, canvasGroups, canvasComments]);
   useEffect(() => {
-    if (!canvasNodes.length && !initialRecord) return;
+    if (canvasNodes.length || canvasLinks.length || canvasGroups.length || canvasComments.length || Object.values(canvasPromptTexts).some(Boolean) || canvasToolPromptText.trim()) hadCanvasContent.current = true;
+    if (!hadCanvasContent.current) return;
     if (historySaveTimer.current) window.clearTimeout(historySaveTimer.current);
     const record: CanvasHistoryRecord = {
         id: canvasHistoryId.current,
@@ -7350,7 +7352,7 @@ function HistoryDrawer({ onClose, onOpenCanvas }: { onClose: () => void; onOpenC
   const historyItems = (tab === "画布"
     ? canvasHistoryCards.map((item)=>({ name:item.name, url:item.images[0] || "", images:item.images, record:item }))
     : featuredPeople.map((item)=>({...item,images:[item.url],record:undefined as CanvasHistoryRecord|undefined})))
-    .filter((item) => item.url && item.name.toLowerCase().includes(normalizedHistoryQuery));
+    .filter((item) => (item.record || item.url) && item.name.toLowerCase().includes(normalizedHistoryQuery));
   return (
     <aside className="figma-history-panel">
       <div className="figma-history-title">
@@ -7384,8 +7386,9 @@ function HistoryDrawer({ onClose, onOpenCanvas }: { onClose: () => void; onOpenC
           <button
             className="figma-history-card"
             onClick={()=>{if(item.record)onOpenCanvas(item.record);}}
-            draggable
+            draggable={Boolean(item.url)}
             onDragStart={(event) => {
+              if (!item.url) { event.preventDefault(); return; }
               pendingCanvasAssetDrag = {
                 name: item.name,
                 url: item.url,
@@ -7395,9 +7398,9 @@ function HistoryDrawer({ onClose, onOpenCanvas }: { onClose: () => void; onOpenC
               event.dataTransfer.setData("application/x-canvas-asset", payload);
               event.dataTransfer.setData("text/plain", payload);
             }}
-            key={item.url}
+            key={item.record?.id || item.url}
           >
-            <div className={`history-image-area ${tab==="画布"?"canvas-history-preview":""}`}>{item.images.slice(0,3).map((image,index)=><img src={image} alt="历史图片缩略图" key={`${image}-${index}`} />)}</div>
+            <div className={`history-image-area ${tab==="画布"?"canvas-history-preview":""}`}>{item.images.slice(0,3).map((image,index)=><img src={image} alt="历史图片缩略图" key={`${image}-${index}`} />)}{!item.images.length && <span>空画布</span>}</div>
             <strong>{item.name}</strong>
             <small>图片 · 今天</small>
           </button>
@@ -7779,6 +7782,7 @@ function History({
               <button className="history-record canvas-history-record" onClick={() => onCanvas(canvasItem.images[0], canvasItem.name, canvasItem.images, canvasItem)}>
                 <div className={`history-record-preview canvas-history-strip image-count-${canvasItem.images.length}`}>
                   {canvasItem.images.map((image, imageIndex) => <img key={`${canvasItem.name}-${imageIndex}`} src={image} alt="" />)}
+                  {!canvasItem.images.length && <span>空画布</span>}
                 </div>
                 <strong>{canvasItem.name}</strong>
                 <small>编辑于 {new Date(canvasItem.createdAt).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</small>
