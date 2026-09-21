@@ -16860,12 +16860,12 @@ section.generation-page>div.generation-composer>.home-asset-popover.figma-compos
   overflow:visible!important;
   contain:none!important
 }
-.figma-tool-modal.modal-图片尺寸 .resize-frame.ratio-原比例{width:76%!important;aspect-ratio:16/9!important}
-.figma-tool-modal.modal-图片尺寸 .resize-frame.ratio-1-1{width:auto!important;height:62%!important;aspect-ratio:1/1!important}
-.figma-tool-modal.modal-图片尺寸 .resize-frame.ratio-3-4{width:auto!important;height:72%!important;aspect-ratio:3/4!important}
-.figma-tool-modal.modal-图片尺寸 .resize-frame.ratio-9-16{width:auto!important;height:78%!important;aspect-ratio:9/16!important}
-.figma-tool-modal.modal-图片尺寸 .resize-frame.ratio-4-3{width:58%!important;aspect-ratio:4/3!important}
-.figma-tool-modal.modal-图片尺寸 .resize-frame.ratio-16-9{width:72%!important;aspect-ratio:16/9!important}
+.figma-tool-modal.modal-图片尺寸 .resize-frame.ratio-原比例{width:auto!important;height:88%!important;aspect-ratio:16/9!important}
+.figma-tool-modal.modal-图片尺寸 .resize-frame.ratio-1-1{width:auto!important;height:88%!important;aspect-ratio:1/1!important}
+.figma-tool-modal.modal-图片尺寸 .resize-frame.ratio-3-4{width:auto!important;height:90%!important;aspect-ratio:3/4!important}
+.figma-tool-modal.modal-图片尺寸 .resize-frame.ratio-9-16{width:auto!important;height:92%!important;aspect-ratio:9/16!important}
+.figma-tool-modal.modal-图片尺寸 .resize-frame.ratio-4-3{width:auto!important;height:88%!important;aspect-ratio:4/3!important}
+.figma-tool-modal.modal-图片尺寸 .resize-frame.ratio-16-9{width:auto!important;height:88%!important;aspect-ratio:16/9!important}
 .figma-tool-modal.modal-图片尺寸 .resize-frame>i{
   display:block!important;
   position:absolute!important;
@@ -16873,3 +16873,37 @@ section.generation-page>div.generation-composer>.home-asset-popover.figma-compos
   height:14px!important;
   border-color:#fff!important
 }
+
+/* Past-conversation Size panel is shorter, with equal top and bottom breathing room. */
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.size-selector-popover{
+  box-sizing:border-box!important;
+  height:264px!important;
+  padding:9px 14px!important
+}
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.size-selector-popover>strong{
+  height:22px!important;
+  line-height:22px!important;
+  margin-bottom:2px!important
+}
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.size-selector-popover>.size-quality-label,
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.size-selector-popover>.size-section-label,
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.size-selector-popover>small{
+  height:16px!important;
+  line-height:16px!important;
+  margin-bottom:2px!important
+}
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.size-selector-popover .size-quality{
+  height:32px!important;
+  margin-bottom:4px!important
+}
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.size-selector-popover .size-quality>button{height:32px!important}
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.size-selector-popover .size-fields{
+  height:34px!important;
+  margin-bottom:4px!important
+}
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.size-selector-popover .ratio-grid{
+  height:78px!important;
+  grid-template-rows:repeat(2,36px)!important;
+  gap:6px!important
+}
+section.generation-page>div.composer.figma-composer.generation-composer.new-creation-composer>.size-selector-popover .ratio-grid>button{height:36px!important}
