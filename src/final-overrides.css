@@ -16794,3 +16794,82 @@ section.generation-page>div.generation-composer>.home-asset-popover.figma-compos
   object-fit:contain!important;
   object-position:center!important
 }
+
+/* All four editor tools use the shared violet hover/selected treatment. */
+.figma-editor-page .figma-tool-grid>button:hover,
+.figma-editor-page .figma-tool-grid>button:focus-visible,
+.figma-editor-page .figma-tool-grid>button.active{
+  border-color:#8a67f4!important;
+  background:#f3f0ff!important;
+  box-shadow:none!important;
+  outline:0!important
+}
+.figma-editor-page .figma-tool-grid>button:hover strong,
+.figma-editor-page .figma-tool-grid>button:focus-visible strong,
+.figma-editor-page .figma-tool-grid>button.active strong{color:#6755df!important}
+
+/* Keep both detail actions visible and functional in the bottom-right panel. */
+.figma-editor-page .edit-panel-actions{
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:12px!important;
+  padding:0!important;
+  background:#fff!important
+}
+.figma-editor-page .edit-panel-actions>button{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:0!important;
+  height:42px!important
+}
+
+/* Image-size preview keeps the full image visible, darkens the outside, and animates the selected ratio frame. */
+.figma-tool-modal.modal-图片尺寸 .resize-stage{
+  position:relative!important;
+  overflow:hidden!important;
+  display:grid!important;
+  place-items:center!important
+}
+.figma-tool-modal.modal-图片尺寸 .resize-preview-source{
+  position:absolute!important;
+  inset:16px!important;
+  width:calc(100% - 32px)!important;
+  height:calc(100% - 32px)!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  object-position:center!important
+}
+.figma-tool-modal.modal-图片尺寸 .resize-frame{
+  position:relative!important;
+  z-index:2!important;
+  width:72%!important;
+  height:auto!important;
+  aspect-ratio:16/9!important;
+  max-width:82%!important;
+  max-height:82%!important;
+  border:2px solid #fff!important;
+  border-radius:4px!important;
+  background:transparent!important;
+  box-shadow:0 0 0 999px rgba(16,18,27,.56)!important;
+  transition:width .2s ease,aspect-ratio .2s ease!important;
+  overflow:visible!important;
+  contain:none!important
+}
+.figma-tool-modal.modal-图片尺寸 .resize-frame.ratio-原比例{width:76%!important;aspect-ratio:16/9!important}
+.figma-tool-modal.modal-图片尺寸 .resize-frame.ratio-1-1{width:auto!important;height:62%!important;aspect-ratio:1/1!important}
+.figma-tool-modal.modal-图片尺寸 .resize-frame.ratio-3-4{width:auto!important;height:72%!important;aspect-ratio:3/4!important}
+.figma-tool-modal.modal-图片尺寸 .resize-frame.ratio-9-16{width:auto!important;height:78%!important;aspect-ratio:9/16!important}
+.figma-tool-modal.modal-图片尺寸 .resize-frame.ratio-4-3{width:58%!important;aspect-ratio:4/3!important}
+.figma-tool-modal.modal-图片尺寸 .resize-frame.ratio-16-9{width:72%!important;aspect-ratio:16/9!important}
+.figma-tool-modal.modal-图片尺寸 .resize-frame>i{
+  display:block!important;
+  position:absolute!important;
+  width:14px!important;
+  height:14px!important;
+  border-color:#fff!important
+}

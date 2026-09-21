@@ -656,11 +656,17 @@ function App() {
             <TemplateDetail
               index={selectedTemplate}
               onClose={() => setTemplateDetailOpen(false)}
-              onUse={(text, model, ratio, image) => {
+              onUse={async (text, model, ratio, _image) => {
                 setTemplateDetailOpen(false);
                 setPrompt(text);
-                setTemplateAttachment({ name: templateDetails[selectedTemplate]?.title || "一键同款参考图", url: image });
-                setGenerationReferenceImage(image);
+                setTemplateAttachment(null);
+                setGenerationReferenceImage(null);
+                try { localStorage.setItem("dzyd-conversation-attachments", "[]"); } catch {}
+                await fetch(`${IMAGE_API_BASE}/workspace/dzyd-conversation-attachments`, {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: "[]",
+                }).catch(() => undefined);
                 setSelectedTemplateModel(model);
                 setSelectedTemplateRatio(ratio);
                 setSkill("预热海报");
@@ -2744,8 +2750,8 @@ function Editor({
             </button>
           </div>
           <div className="edit-panel-actions">
-            <button onClick={onClose}>重新生成</button>
-            <button className="save-edit" onClick={() => setSaved(true)}>
+            <button onClick={() => onGenerate(prompt || "基于当前图片重新生成", workingImage)}>重新生成</button>
+            <button className="save-edit" onClick={() => { onImageChange(workingImage); setSaved(true); }}>
               {saved ? "已保存修改" : "保存修改"}
             </button>
           </div>
@@ -2857,10 +2863,10 @@ function Editor({
             {tool === "图片尺寸" && (
               <>
                 <div className="resize-stage">
+                  <img className="resize-preview-source" src={workingImage} alt="原图尺寸预览" />
                   <div
                     className={`resize-frame ratio-${ratio.replace(":", "-")}`}
                   >
-                    <img src={workingImage} alt="尺寸预览" />
                     <i />
                     <i />
                     <i />
