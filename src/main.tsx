@@ -118,8 +118,18 @@ function usePersistentState<T>(key: string, fallback: T | (() => T)) {
         if (!active) return;
         if (payload.value !== null && payload.value !== undefined) {
           setValue((current) => {
+            if (Array.isArray(current) && Array.isArray(payload.value) && ["dzyd-generation-records", "dzyd-canvas-generation-history"].includes(key)) {
+              const remote = payload.value as Array<{ id: string; createdAt: string }>;
+              const remoteById = new Map(remote.map((item) => [item.id, item]));
+              const recentLocal = (current as Array<{ id: string; createdAt: string }>).filter((item) => {
+                const cloudItem = remoteById.get(item.id);
+                return Date.now() - Date.parse(item.createdAt) < 30_000 && (!cloudItem || item.createdAt > cloudItem.createdAt);
+              });
+              const localIds = new Set(recentLocal.map((item) => item.id));
+              return [...recentLocal, ...remote.filter((item) => !localIds.has(item.id))] as T;
+            }
             if (!changedBeforeCloudRead.current) return payload.value as T;
-            if (Array.isArray(current) && Array.isArray(payload.value) && ["dzyd-generation-records", "dzyd-canvas-generation-history", "dzyd-conversations"].includes(key)) {
+            if (Array.isArray(current) && Array.isArray(payload.value) && key === "dzyd-conversations") {
               const identity = (item: any) => key === "dzyd-conversations" ? item[0] : item.id;
               const localIds = new Set(current.map(identity));
               return [...current, ...payload.value.filter((item: any) => !localIds.has(identity(item)))] as T;
@@ -3425,6 +3435,7 @@ function Canvas({
     }>
   >(savedCanvas.comments || []);
   const historySaveTimer = useRef<number | null>(null);
+  const pendingHistoryRecord = useRef<CanvasHistoryRecord | null>(null);
   const [selectedCommentIds, setSelectedCommentIds] = useState<number[]>([]);
   useEffect(() => {
     canvasCloudReady.current = true;
@@ -3450,8 +3461,7 @@ function Canvas({
   useEffect(() => {
     if (!canvasNodes.length && !initialRecord) return;
     if (historySaveTimer.current) window.clearTimeout(historySaveTimer.current);
-    historySaveTimer.current = window.setTimeout(() => {
-      const record: CanvasHistoryRecord = {
+    const record: CanvasHistoryRecord = {
         id: canvasHistoryId.current,
         name: projectTitle,
         images: [...new Set(canvasNodes.map((node) => node.url).filter(Boolean))],
@@ -3466,11 +3476,23 @@ function Canvas({
           promptTexts: { ...canvasPromptTexts }, toolPromptText: canvasToolPromptText,
           trailingText: { ...focusTrailingText }, focusPicks: focusPicks.map((pick) => ({ ...pick, open: false })),
         },
-      };
+    };
+    pendingHistoryRecord.current = record;
+    historySaveTimer.current = window.setTimeout(() => {
       setCanvasHistory((items) => [record, ...items.filter((item) => item.id !== record.id)]);
+      pendingHistoryRecord.current = null;
     }, 700);
     return () => { if (historySaveTimer.current) window.clearTimeout(historySaveTimer.current); };
   }, [projectTitle, folderNames, folderColors, canvasNodes, canvasLinks, canvasGroups, canvasComments, canvasZoom, promptModel, promptQuality, promptRatio, promptWidth, promptHeight, canvasPromptTexts, canvasToolPromptText, focusTrailingText, focusPicks]);
+  useEffect(() => () => {
+    const record = pendingHistoryRecord.current;
+    if (!record) return;
+    const key = "dzyd-canvas-generation-history";
+    const local = readSaved<CanvasHistoryRecord[]>(key, []);
+    const next = [record, ...local.filter((item) => item.id !== record.id)];
+    try { localStorage.setItem(key, JSON.stringify(next)); } catch { /* Images are stored separately. */ }
+    fetch(`${IMAGE_API_BASE}/workspace/${key}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(next), keepalive: true }).catch(() => undefined);
+  }, []);
   type CanvasUndoSnapshot = {
     nodes: CanvasNode[];
     links: CanvasLink[];
