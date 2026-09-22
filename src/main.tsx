@@ -421,21 +421,31 @@ function App() {
   const [activeConversation, setActiveConversation] = usePersistentState<string | null>("dzyd-active-conversation", null);
   useEffect(() => {
     if (!generationRecords.length) return;
-    const fromRecords = [...generationRecords].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).map((record) => record.conversation).filter(Boolean);
+    const latestByTitle = new Map<string, string>();
+    generationRecords.forEach((record) => {
+      if (record.conversation && record.createdAt > (latestByTitle.get(record.conversation) || "")) latestByTitle.set(record.conversation, record.createdAt);
+    });
     setConversations((items) => {
       const existing = new Set(items.map(([title]) => title));
-      const missing = [...new Set(fromRecords)].filter((title) => !existing.has(title));
-      return missing.length ? [...missing.map((title) => [title, "已保存"] as [string, string]), ...items] : items;
+      const updated = items.map(([title, time]) => {
+        const latest = latestByTitle.get(title);
+        return [title, latest && (!Number.isFinite(Date.parse(time)) || Date.parse(latest) > Date.parse(time)) ? latest : time] as [string, string];
+      });
+      const missing = [...latestByTitle].filter(([title]) => !existing.has(title));
+      return missing.length || updated.some((item, index) => item[1] !== items[index][1]) ? [...missing, ...updated] : items;
     });
   }, [generationRecords]);
   const generationTimer = useRef<number | null>(null);
   const preparationTimer = useRef<number | null>(null);
+  const deletedConversationTitles = useRef(new Set<string>());
 
   useEffect(() => {
     Promise.all([
+      fetch(`${IMAGE_API_BASE}/workspace/dzyd-generation-records`).then((response) => response.ok ? response.json() : null),
       fetch(`${IMAGE_API_BASE}/workspace/dzyd-generated-images`).then((response) => response.ok ? response.json() : null),
       fetch(`${IMAGE_API_BASE}/workspace/dzyd-round-prompts`).then((response) => response.ok ? response.json() : null),
-    ]).then(([imagePayload, promptPayload]) => {
+    ]).then(([recordPayload, imagePayload, promptPayload]) => {
+      if (recordPayload?.value !== null && recordPayload?.value !== undefined) return;
       const imageRounds = imagePayload?.value as Record<string, string[]> | null;
       if (!imageRounds || !Object.keys(imageRounds).length) return;
       const prompts = Array.isArray(promptPayload?.value) ? promptPayload.value as string[] : [];
@@ -457,12 +467,12 @@ function App() {
     const nextPrompt = requestedPrompt.trim() || "夏日新品预热海报，清爽明亮的蓝色视觉";
     if (!prompt.trim()) setPrompt(nextPrompt);
     const title = conversationOverride || (nextPrompt.length > 18 ? `${nextPrompt.slice(0, 18)}…` : nextPrompt);
+    deletedConversationTitles.current.delete(title);
     setActiveConversation(title);
-    setConversations((items) =>
-      items.some(([name]) => name === title)
-        ? items
-        : [[title, "刚刚"], ...items],
-    );
+    const startedAt = new Date().toISOString();
+    setConversations((items) => items.some(([name]) => name === title)
+      ? items.map(([name, time]) => [name, name === title ? startedAt : time] as [string, string])
+      : [[title, startedAt], ...items]);
     setStudioView("generation");
     setPreparing(true);
     setGenerating(false);
@@ -499,6 +509,18 @@ function App() {
     setEditing(false);
     setTool(null);
     setActiveConversation(null);
+  };
+  const deleteConversation = (title: string) => {
+    deletedConversationTitles.current.add(title);
+    const nextConversations = conversations.filter(([name]) => name !== title);
+    const nextRecords = generationRecords.filter((record) => record.conversation !== title);
+    setConversations(nextConversations);
+    setGenerationRecords(nextRecords);
+    for (const [key, value] of [["dzyd-conversations", nextConversations], ["dzyd-generation-records", nextRecords]] as const) {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+      fetch(`${IMAGE_API_BASE}/workspace/${key}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(value) }).catch(() => undefined);
+    }
+    if (activeConversation === title) newCreation();
   };
 
   useEffect(() => {
@@ -677,6 +699,7 @@ function App() {
         studioView !== "detail" && (
           <StudioSidebar
             conversations={conversations}
+            records={generationRecords}
             activeConversation={activeConversation}
             onRename={(previous, next) => {
               setConversations((items) =>
@@ -687,6 +710,7 @@ function App() {
               setGenerationRecords((items) => items.map((record) => record.conversation === previous ? { ...record, conversation: next, id: record.id.replace(`${previous}:`, `${next}:`) } : record));
             }}
             onNewWork={newCreation}
+            onDeleteConversation={deleteConversation}
             onCollapse={() => setConversationCollapsed(true)}
             onClear={() => {
               setConversations([]);
@@ -765,10 +789,12 @@ function App() {
                 setGenerating(false);
                 setGenerated(false);
                 const conversationTitle = templateDetails[selectedTemplate]?.title || "一键同款创作";
+                deletedConversationTitles.current.delete(conversationTitle);
+                const startedAt = new Date().toISOString();
                 setActiveConversation(conversationTitle);
                 setConversations((items) => items.some(([title]) => title === conversationTitle)
-                  ? items
-                  : [[conversationTitle, "刚刚"], ...items]);
+                  ? items.map(([title, time]) => [title, title === conversationTitle ? startedAt : time] as [string, string])
+                  : [[conversationTitle, startedAt], ...items]);
                 setStudioView("generation");
               }}
             />
@@ -795,6 +821,7 @@ function App() {
             referenceImage={generationReferenceImage}
             editorGenerationToken={editorGenerationToken}
             onImagesGenerated={(record) => {
+              if (deletedConversationTitles.current.has(record.conversation)) return;
               setGenerationRecords((items) => [record, ...items.filter((item) => item.id !== record.id)]);
               setGenerationReferenceImage(null);
               setEditorGenerationToken(0);
@@ -825,13 +852,8 @@ function App() {
             }}
             onDeleteRound={(recordId) => setGenerationRecords((items) => items.filter((record) => record.id !== recordId))}
             onDeleteConversation={() => {
-              if (activeConversation) {
-                setConversations((items) =>
-                  items.filter(([title]) => title !== activeConversation),
-                );
-                setGenerationRecords((items) => items.filter((record) => record.conversation !== activeConversation));
-              }
-              newCreation();
+              if (activeConversation) deleteConversation(activeConversation);
+              else newCreation();
             }}
           />
         )}
@@ -1467,20 +1489,34 @@ function summarizeConversationTitle(title: string) {
   }
   return cleaned.length > 14 ? `${cleaned.slice(0, 13)}…` : cleaned;
 }
+function formatConversationTime(timestamp: number) {
+  if (!timestamp) return "时间未知";
+  const date = new Date(timestamp);
+  const today = new Date();
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+  const time = date.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", hour12: false });
+  if (timestamp >= todayStart) return `今天 ${time}`;
+  if (timestamp >= todayStart - 86_400_000) return `昨天 ${time}`;
+  return `${String(date.getMonth() + 1).padStart(2, "0")}月${String(date.getDate()).padStart(2, "0")}日`;
+}
 
 function StudioSidebar({
   conversations,
+  records,
   activeConversation,
   onRename,
   onNewWork,
+  onDeleteConversation,
   onCollapse,
   onClear,
   onOpenConversation,
 }: {
   conversations: Array<[string, string]>;
+  records: GenerationRecord[];
   activeConversation: string | null;
   onRename: (previous: string, next: string) => void;
   onNewWork: () => void;
+  onDeleteConversation: (title: string) => void;
   onCollapse: () => void;
   onClear: () => void;
   onOpenConversation: (title: string) => void;
@@ -1489,11 +1525,25 @@ function StudioSidebar({
   const [renaming, setRenaming] = useState<string | null>(null);
   const [renameDraft, setRenameDraft] = useState("");
   const [clearOpen, setClearOpen] = useState(false);
+  const [contextMenu, setContextMenu] = useState<{ title: string; x: number; y: number } | null>(null);
   const renameOriginal = useRef("");
   const renamePrevious = useRef("");
-  const visible = conversations.filter(([title]) =>
-    title.toLowerCase().includes(query.trim().toLowerCase()),
-  );
+  const latestByTitle = new Map<string, number>();
+  records.forEach((record) => latestByTitle.set(record.conversation, Math.max(latestByTitle.get(record.conversation) || 0, Date.parse(record.createdAt) || 0)));
+  const visible = conversations.map(([title, savedTime], index) => ({
+    title,
+    timestamp: Math.max(Number.isFinite(Date.parse(savedTime)) ? Date.parse(savedTime) : 0, latestByTitle.get(title) || 0),
+    index,
+  })).filter(({ title }) => title.toLowerCase().includes(query.trim().toLowerCase()))
+    .sort((a, b) => b.timestamp - a.timestamp || a.index - b.index);
+  useEffect(() => {
+    if (!contextMenu) return;
+    const close = () => setContextMenu(null);
+    const onEscape = (event: KeyboardEvent) => { if (event.key === "Escape") close(); };
+    document.addEventListener("pointerdown", close);
+    document.addEventListener("keydown", onEscape);
+    return () => { document.removeEventListener("pointerdown", close); document.removeEventListener("keydown", onEscape); };
+  }, [contextMenu]);
   return (
     <aside className="conversation-panel">
       <div className="conversation-panel-head">
@@ -1512,13 +1562,18 @@ function StudioSidebar({
       </label>
       <p className="muted label">过往对话</p>
       <div className="conversation-history-scroll">
-        {visible.map(([a, b]) => (
+        {visible.map(({ title: a, timestamp }) => (
           <button
             className={`history-row ${activeConversation === a ? "active" : ""}`}
-            onClick={() => onOpenConversation(a)}
+            onClick={() => { setContextMenu(null); onOpenConversation(a); }}
+            onContextMenu={(event) => {
+              event.preventDefault();
+              setContextMenu({ title: a, x: Math.min(event.clientX || event.currentTarget.getBoundingClientRect().right, window.innerWidth - 174), y: Math.min(event.clientY || event.currentTarget.getBoundingClientRect().bottom, window.innerHeight - 58) });
+            }}
             onDoubleClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
+              setContextMenu(null);
               renameOriginal.current = a;
               renamePrevious.current = a;
               setRenameDraft(a);
@@ -1526,10 +1581,15 @@ function StudioSidebar({
             }}
             key={a}
           >
-            <strong title={a}>{summarizeConversationTitle(a)}</strong><small>{b}</small>
+            <strong title={a}>{summarizeConversationTitle(a)}</strong><small>{formatConversationTime(timestamp)}</small>
           </button>
         ))}
       </div>
+      {contextMenu && createPortal(
+        <div className="conversation-context-menu" role="menu" style={{ left: contextMenu.x, top: contextMenu.y }} onPointerDown={(event) => event.stopPropagation()}>
+          <button role="menuitem" onClick={() => { onDeleteConversation(contextMenu.title); setContextMenu(null); }}><img src="/assets/action-trash.svg" alt="" />删除对话</button>
+        </div>, document.body,
+      )}
       <div className="panel-footer">
         <button onClick={() => setClearOpen(true)}>清空记录</button>
         <button className="conversation-collapse-button" aria-label="折叠侧边栏" onClick={onCollapse}><span aria-hidden="true" /></button>

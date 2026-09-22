@@ -16999,3 +16999,34 @@ section.generation-page>div.composer.figma-composer.generation-composer.new-crea
   object-fit:cover!important;
   border-radius:5px!important
 }
+
+.conversation-context-menu{
+  position:fixed;
+  z-index:100000;
+  width:164px;
+  padding:7px;
+  border:1px solid #e6e3f1;
+  border-radius:12px;
+  background:#fff;
+  box-shadow:0 14px 34px rgba(48,47,72,.16);
+}
+.conversation-context-menu>button{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:100%;
+  height:36px;
+  padding:0 11px;
+  border:1px solid transparent;
+  border-radius:8px;
+  background:#fff;
+  color:#343743;
+  font:400 14px/1 "Alibaba PuHuiTi","Microsoft YaHei",sans-serif;
+  cursor:pointer;
+}
+.conversation-context-menu>button>img{width:16px;height:16px;object-fit:contain}
+.conversation-context-menu>button:hover,.conversation-context-menu>button:focus-visible{
+  border-color:#e8d5ed;
+  background:#fff0f3;
+  color:#d64362;
+}
