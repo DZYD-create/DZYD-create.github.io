@@ -746,16 +746,17 @@ function App() {
             <TemplateDetail
               index={selectedTemplate}
               onClose={() => setTemplateDetailOpen(false)}
-              onUse={async (text, model, ratio, _image) => {
+              onUse={(text, model, ratio, image) => {
                 setTemplateDetailOpen(false);
                 setPrompt(text);
-                setTemplateAttachment(null);
-                setGenerationReferenceImage(null);
-                try { localStorage.setItem("dzyd-conversation-attachments", "[]"); } catch {}
-                await fetch(`${IMAGE_API_BASE}/workspace/dzyd-conversation-attachments`, {
+                const reference = { name: templateDetails[selectedTemplate]?.title || "一键同款参考图", url: image };
+                setTemplateAttachment(reference);
+                setGenerationReferenceImage(image);
+                try { localStorage.setItem("dzyd-conversation-attachments", JSON.stringify([reference])); } catch {}
+                fetch(`${IMAGE_API_BASE}/workspace/dzyd-conversation-attachments`, {
                   method: "PUT",
                   headers: { "Content-Type": "application/json" },
-                  body: "[]",
+                  body: JSON.stringify([reference]),
                 }).catch(() => undefined);
                 setSelectedTemplateModel(model);
                 setSelectedTemplateRatio(ratio);
@@ -1034,6 +1035,7 @@ function GenerationPage({
     prompt || "生成夏日新品直播海报，突出新品卖点，风格清爽明亮。",
   ]);
   const threadRef = useRef<HTMLDivElement>(null);
+  const scrollThreadToLatest = () => { if (threadRef.current) threadRef.current.scrollTop = threadRef.current.scrollHeight; };
   const handledEditorGeneration = useRef(0);
   const addGenerationImages = async (files: FileList | File[]) => {
     const images = Array.from(files).filter((file) => file.type.startsWith("image/"));
@@ -1090,11 +1092,10 @@ function GenerationPage({
     setDeletedRounds([]);
   }, [conversationTitle, editorGenerationToken, records]);
   useEffect(() => {
-    const scrollToLatest = () => { if (threadRef.current) threadRef.current.scrollTop = threadRef.current.scrollHeight; };
-    const frame = window.requestAnimationFrame(scrollToLatest);
-    const timer = window.setTimeout(scrollToLatest, 180);
-    return () => { window.cancelAnimationFrame(frame); window.clearTimeout(timer); };
-  }, [conversationTitle, records]);
+    const frame = window.requestAnimationFrame(scrollThreadToLatest);
+    const timers = [100, 400, 1200].map((delay) => window.setTimeout(scrollThreadToLatest, delay));
+    return () => { window.cancelAnimationFrame(frame); timers.forEach(window.clearTimeout); };
+  }, [conversationTitle, records, resultRound, preparing, generating, generatedImages]);
   useEffect(() => {
     const dismiss = () => {
       setModelOpen(false);
@@ -1204,7 +1205,7 @@ function GenerationPage({
                         {isGenerating ? (
                           <div className="generation-progress"><span>✦</span><strong>生成中 {progress}%</strong></div>
                         ) : (
-                          <img src={src} alt={`第 ${round + 1} 轮生成结果 ${i + 1}`} />
+                          <img src={src} alt={`第 ${round + 1} 轮生成结果 ${i + 1}`} onLoad={() => { if (round === resultRound) scrollThreadToLatest(); }} />
                         )}
                       </button>
                     ))}
